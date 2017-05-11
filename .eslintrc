@@ -1,0 +1,35 @@
+{
+  "extends": [
+    "airbnb-base",
+    "prettier"
+  ],
+  "parser": "babel-eslint",
+  "rules": {
+    "no-underscore-dangle": 0,
+    "arrow-body-style": 0,
+    "no-unused-expressions": 0,
+    "no-plusplus": 0,
+    "no-console": 0,
+    "func-names": 0,
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline",
+      "imports": "always-multiline",
+      "exports": "always-multiline",
+      "functions": "ignore",
+    }],
+    "prettier/prettier": ["error", {
+      "trailingComma": true,
+      "singleQuote": true,
+      "printWidth": 100
+    }]
+  },
+  "env": {
+    "jasmine": true,
+    "jest": true
+  },
+  "plugins": [
+    "flowtype",
+    "prettier"
+  ]
+}

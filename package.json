@@ -1,0 +1,74 @@
+{
+  "name": "mongodb-memory-server",
+  "version": "0.0.0-development",
+  "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
+  "main": "lib/index.js",
+  "jsnext:main": "es/index.js",
+  "repository": "https://github.com/nodkz/mongodb-memory-server",
+  "author": "Nodkz (pavel.chertorogov@gmail.com)",
+  "keywords": [
+    "mongodb",
+    "mongoose",
+    "mock",
+    "stub",
+    "mockgoose",
+    "mongodb-prebuilt",
+    "mongomem"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nodkz/mongodb-memory-server/issues"
+  },
+  "homepage": "https://github.com/nodkz/mongodb-memory-server",
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-eslint": "^7.1.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.22.0",
+    "babel-preset-env": "^1.1.8",
+    "cz-conventional-changelog": "^2.0.0",
+    "eslint": "^3.14.1",
+    "eslint-config-airbnb-base": "^11.0.1",
+    "eslint-config-prettier": "^2.0.0",
+    "eslint-plugin-flowtype": "^2.30.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-prettier": "^2.0.0",
+    "flow-bin": "^0.46.0",
+    "jest": "^20.0.1",
+    "jest-babel": "^1.0.1",
+    "npm-run-all": "^4.0.1",
+    "prettier": "^1.3.1",
+    "rimraf": "^2.5.4",
+    "semantic-release": "^6.3.2"
+  },
+  "dependencies": {
+    "get-port": "^3.1.0",
+    "mongodb-prebuilt": "^6.2.0",
+    "tmp": "^0.0.31",
+    "uuid": "^3.0.1"
+  },
+  "peerDependencies": {},
+  "scripts": {
+    "build": "npm-run-all build:*",
+    "build:cjs": "rimraf lib && babel src --ignore __tests__,__mocks__ -d lib",
+    "build:es": "rimraf es && BABEL_ENV=es babel src --ignore __tests__,__mocks__ -d es",
+    "build:flow": "find ./src -name '*.js' -not -path '*/__*' | while read filepath; do cp $filepath `echo $filepath | sed 's/\\/src\\//\\/lib\\//g'`.flow; done",
+    "coverage": "jest --coverage",
+    "lint": "eslint src test *.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "watch": "npm run test:watch",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+  },
+  "jest": {
+    "testPathDirs": [
+      "<rootDir>/src"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
