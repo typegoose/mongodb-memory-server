@@ -11,6 +11,8 @@ This package use [mongodb-prebuilt](https://github.com/winfinit/mongodb-prebuilt
 
 Every `MongodbMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
 
+Perfectly [works with Travis CI](https://github.com/nodkz/graphql-compose-mongoose/commit/7a6ac2de747d14281f9965f418065e97a57cfb37) without additional `services` and `addons` options in `.travis.yml`. 
+
 ## Installation
 ```
 yarn add mongodb-memory-server --dev
