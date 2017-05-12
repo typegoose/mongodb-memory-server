@@ -30,7 +30,11 @@ const uri = await mongod.getConnectionString();
 const port = await mongod.getPort();
 const dbPath = await mongod.getDbPath();
 
+// some code
+
+// you may stop mongod manually
 mongod.stop();
+// or it will be stopped automatically when you exit from script 
 ```
 
 ### Provide connection string to mongoose
@@ -78,6 +82,14 @@ mongoose.Promise = Promise;
 const mongoServer1 = new MongoMemoryServer();
 const mongoServer2 = new MongoMemoryServer();
 
+// Firstly create connection objects, which you may import in other files and create mongoose models.
+// Connection to databases will be estimated later (after model creation).
+const connections = {
+  conn1: mongoose.createConnection(),
+  conn2: mongoose.createConnection(),
+  conn3: mongoose.createConnection(),
+};
+
 const mongooseOpts = {
   server: {
     promiseLibrary = Promise;
@@ -87,41 +99,25 @@ const mongooseOpts = {
   },
 };
 
-function addEvents(connection, mongoUri) {
-  connection.on('error', (e) => {
-    if (e.message.code === 'ETIMEDOUT') {
-      console.log(e);
-      connect(mongoUri, mongooseOpts);
-    }
-    console.log(e);
-  });
-
+mongoServer1.getConnectionString('server1_db1').then((mongoUri) => {
+  connections.conn1.open(mongoUri, mongooseOpts);
   connection.once('open', () => {
     console.log(`MongoDB successfully connected to ${mongoUri}`);
   });
-}
-
-// Firstly create connection objects, which you may import in other files and create mongoose models.
-// Connection to databases will be estimated later (after model creation).
-const connections = {
-  conn1: mongoose.createConnection(),
-  conn2: mongoose.createConnection(),
-  conn3: mongoose.createConnection(),
-};
-
-mongoServer1.getConnectionString('server1_db1').then((mongoUri) => {
-  connections.conn1.connect(mongoUri, mongooseOpts);
-  addEvents(connections.conn1, mongoUri);
 });
 
 mongoServer1.getConnectionString('server1_db2').then((mongoUri) => {
-  connections.conn2.connect(mongoUri, mongooseOpts);
-  addEvents(connections.conn2, mongoUri);
+  connections.conn2.open(mongoUri, mongooseOpts);
+  connection.once('open', () => {
+    console.log(`MongoDB successfully connected to ${mongoUri}`);
+  });
 });
 
 mongoServer2.getConnectionString('server2_db').then((mongoUri) => {
-  connections.conn3.connect(mongoUri, mongooseOpts);
-  addEvents(connections.conn3, mongoUri);
+  connections.conn3.open(mongoUri, mongooseOpts);
+  connection.once('open', () => {
+    console.log(`MongoDB successfully connected to ${mongoUri}`);
+  });
 });
 
 export default connections;
@@ -146,6 +142,24 @@ export default {
   UserOnServer2: conn3.model('user', userSchema),
 }
 ```
+
+Note: When you create mongoose connection manually, you should do:
+```js
+import mongoose from 'mongoose';
+
+const conn = mongoose.createConnection(); // just create connection instance
+const User = conn.model('User', new mongoose.Schema({ name: String })); // define model
+conn.open(uri, opts); // open connection to database (NOT `connect` method!)
+```
+With default connection:
+```js
+import mongoose from 'mongoose';
+
+mongoose.connect(uri, opts);
+const User = mongoose.model('User', new mongoose.Schema({ name: String })); // define model
+```
+
+
 
 ### Simple Mocha test example
 ```js
