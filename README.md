@@ -9,7 +9,7 @@ This package spins up a actual/real MongoDB Server programmatically from node fo
 
 This package use [mongodb-prebuilt](https://github.com/winfinit/mongodb-prebuilt) which on first start downloads the latest MongoDB binaries and save it to `~/.mongodb-prebuilt` folder. So first run may take a time. All further runs will use downloaded version.
 
-Every `MongoMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
+Every `MongodbMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
 
 ## Installation
 ```
@@ -24,7 +24,7 @@ npm install mongodb-memory-server --save-dev
 ```js
 import MongodbMemoryServer from 'mongodb-memory-server';
 
-const mongod = new MongoMemoryServer();
+const mongod = new MongodbMemoryServer();
 
 const uri = await mongod.getConnectionString();
 const port = await mongod.getPort();
@@ -34,7 +34,7 @@ const dbPath = await mongod.getDbPath();
 
 // you may stop mongod manually
 mongod.stop();
-// or it will be stopped automatically when you exit from script 
+// or it will be stopped automatically when you exit from script
 ```
 
 ### Provide connection string to mongoose
@@ -42,7 +42,7 @@ mongod.stop();
 import mongoose from 'mongoose';
 import MongodbMemoryServer from 'mongodb-memory-server';
 
-const mongoServer = new MongoMemoryServer();
+const mongoServer = new MongodbMemoryServer();
 
 mongoose.Promise = Promise;
 mongoServer.getConnectionString().then((mongoUri) => {
@@ -79,8 +79,8 @@ import MongodbMemoryServer from 'mongodb-memory-server';
 
 mongoose.Promise = Promise;
 
-const mongoServer1 = new MongoMemoryServer();
-const mongoServer2 = new MongoMemoryServer();
+const mongoServer1 = new MongodbMemoryServer();
+const mongoServer2 = new MongodbMemoryServer();
 
 // Firstly create connection objects, which you may import in other files and create mongoose models.
 // Connection to databases will be estimated later (after model creation).
