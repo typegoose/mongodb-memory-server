@@ -85,7 +85,14 @@ export default class MongoDBMemoryServer {
 
       // Download if not exists mongo binaries in ~/.mongodb-prebuilt
       // After that startup MongoDB instance
-      await mongodCli.run();
+      await mongodCli.run().catch(err => {
+        if (!this.opts.debug) {
+          throw new Error(
+            `${err.message}\n\nUse debug option for more info: new MongoMemoryServer({ debug: true })`
+          );
+        }
+        throw err;
+      });
 
       data.mongodCli = mongodCli;
       data.tmpDir = tmpDir;
