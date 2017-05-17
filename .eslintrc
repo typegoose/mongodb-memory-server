@@ -22,7 +22,8 @@
       "trailingComma": true,
       "singleQuote": true,
       "printWidth": 100
-    }]
+    }],
+    "no-prototype-builtins": 0
   },
   "env": {
     "jasmine": true,

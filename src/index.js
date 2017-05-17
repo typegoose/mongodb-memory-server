@@ -12,6 +12,7 @@ export type MongoMemoryServerOptsT = {
   storageEngine?: string,
   dbPath?: string,
   autoStart?: boolean,
+  debug?: boolean,
 };
 
 export type MongoInstanceDataT = {
@@ -22,8 +23,8 @@ export type MongoInstanceDataT = {
   mongodCli: MongodHelper,
 };
 
-async function generateConnectionString(port: string, dbName: ?string): string {
-  const db = dbName || await uuid();
+async function generateConnectionString(port: string, dbName: ?string): Promise<string> {
+  const db = dbName || (await uuid());
   return `mongodb://localhost:${port}/${db}`;
 }
 
@@ -37,7 +38,7 @@ export default class MongoDBMemoryServer {
     this.opts = opts;
 
     // autoStart by default
-    if (!opts.hasOwnProperty('autoStart') || opts.autoStart) { // eslint-disable-line
+    if (!opts.hasOwnProperty('autoStart') || opts.autoStart) {
       if (opts.debug) {
         console.log('Autostarting MongoDB instance...');
       }
@@ -45,9 +46,11 @@ export default class MongoDBMemoryServer {
     }
   }
 
-  async start(): Promise<MongoInstanceDataT> {
+  async start(): Promise<boolean> {
     if (this.runningInstance) {
-      throw new Error('MongoDB instance already in status startup/running/error. Use opts.debug = true for more info.');
+      throw new Error(
+        'MongoDB instance already in status startup/running/error. Use opts.debug = true for more info.'
+      );
     }
 
     this.runningInstance = Promise.resolve().then(async () => {
@@ -68,14 +71,15 @@ export default class MongoDBMemoryServer {
         console.log(`Starting MongoDB instance with following options: ${JSON.stringify(data)}`);
       }
 
-      const mongodCli = new MongodHelper(
-        [
-          '--port', data.port,
-          '--storageEngine', data.storageEngine,
-          '--dbpath', data.dbPath,
-          '--noauth',
-        ]
-      );
+      const mongodCli = new MongodHelper([
+        '--port',
+        data.port,
+        '--storageEngine',
+        data.storageEngine,
+        '--dbpath',
+        data.dbPath,
+        '--noauth',
+      ]);
 
       mongodCli.debug.enabled = this.opts.debug;
 
@@ -88,14 +92,19 @@ export default class MongoDBMemoryServer {
 
       return data;
     });
+
+    return this.runningInstance.then(() => true);
   }
 
-  async stop() {
+  async stop(): Promise<boolean> {
     const { mongodCli, port, tmpDir } = await this.getInstanceData();
 
-    if (mongodCli && mongodCli.mongoBin.childProcess) { // .mongoBin.childProcess.connected
+    if (mongodCli && mongodCli.mongoBin.childProcess) {
+      // .mongoBin.childProcess.connected
       if (this.opts.debug) {
-        console.log(`Shutdown MongoDB server on port ${port} with pid ${mongodCli.mongoBin.childProcess.pid}`);
+        console.log(
+          `Shutdown MongoDB server on port ${port} with pid ${mongodCli.mongoBin.childProcess.pid}`
+        );
       }
       mongodCli.mongoBin.childProcess.kill();
     }
@@ -108,16 +117,19 @@ export default class MongoDBMemoryServer {
     }
 
     this.runningInstance = null;
+    return true;
   }
 
   async getInstanceData(): Promise<MongoInstanceDataT> {
     if (this.runningInstance) {
       return this.runningInstance;
     }
-    throw new Error('Database instance is not running. You should start database by calling start() method. BTW it should start automatically if opts.autoStart!=false. Also you may provide opts.debug=true for more info.');
+    throw new Error(
+      'Database instance is not running. You should start database by calling start() method. BTW it should start automatically if opts.autoStart!=false. Also you may provide opts.debug=true for more info.'
+    );
   }
 
-  async getUri(otherDbName?: string|boolean = false): Promise<string> {
+  async getUri(otherDbName?: string | boolean = false): Promise<string> {
     const { uri, port } = await this.getInstanceData();
 
     // IF true OR string
@@ -133,7 +145,7 @@ export default class MongoDBMemoryServer {
     return uri;
   }
 
-  async getConnectionString(otherDbName = false): Promise<string> {
+  async getConnectionString(otherDbName: string | boolean = false): Promise<string> {
     return this.getUri(otherDbName);
   }
 
