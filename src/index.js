@@ -29,7 +29,6 @@ async function generateConnectionString(port: string, dbName: ?string): Promise<
 }
 
 export default class MongoDBMemoryServer {
-  debug: boolean = false;
   isRunning: boolean = false;
   runningInstance: ?Promise<MongoInstanceDataT>;
   opts: MongoMemoryServerOptsT;
