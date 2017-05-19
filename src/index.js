@@ -46,6 +46,12 @@ export default class MongoDBMemoryServer {
     }
   }
 
+  debug(msg: string) {
+    if (this.opts.debug) {
+      console.log(msg);
+    }
+  }
+
   async start(): Promise<boolean> {
     if (this.runningInstance) {
       throw new Error(
@@ -53,39 +59,16 @@ export default class MongoDBMemoryServer {
       );
     }
 
-    this.runningInstance = Promise.resolve().then(async () => {
-      const data = {};
-      let tmpDir;
-
-      data.port = await getport(this.opts.port);
-      data.uri = await generateConnectionString(data.port);
-      data.storageEngine = this.opts.storageEngine || 'ephemeralForTest';
-      if (this.opts.dbPath) {
-        data.dbPath = this.opts.dbPath;
-      } else {
-        tmpDir = tmp.dirSync({ prefix: 'mongo-mem-', unsafeCleanup: true });
-        data.dbPath = tmpDir.name;
-      }
-
-      if (this.opts.debug) {
-        console.log(`Starting MongoDB instance with following options: ${JSON.stringify(data)}`);
-      }
-
-      const mongodCli = new MongodHelper([
-        '--port',
-        data.port,
-        '--storageEngine',
-        data.storageEngine,
-        '--dbpath',
-        data.dbPath,
-        '--noauth',
-      ]);
-
-      mongodCli.debug.enabled = this.opts.debug;
-
-      // Download if not exists mongo binaries in ~/.mongodb-prebuilt
-      // After that startup MongoDB instance
-      await mongodCli.run().catch(err => {
+    this.runningInstance = this._startUpInstance()
+      .catch(err => {
+        if (err.message === 'Mongod shutting down' || err === 'Mongod shutting down') {
+          this.debug(`Mongodb does not started. Trying to start on another port one more time...`);
+          this.opts.port = null;
+          return this._startUpInstance();
+        }
+        throw err;
+      })
+      .catch(err => {
         if (!this.opts.debug) {
           throw new Error(
             `${err.message}\n\nUse debug option for more info: new MongoMemoryServer({ debug: true })`
@@ -94,13 +77,45 @@ export default class MongoDBMemoryServer {
         throw err;
       });
 
-      data.mongodCli = mongodCli;
-      data.tmpDir = tmpDir;
-
-      return data;
-    });
-
     return this.runningInstance.then(() => true);
+  }
+
+  async _startUpInstance(): Promise<MongoInstanceDataT> {
+    const data = {};
+    let tmpDir;
+
+    data.port = await getport(this.opts.port);
+    data.uri = await generateConnectionString(data.port);
+    data.storageEngine = this.opts.storageEngine || 'ephemeralForTest';
+    if (this.opts.dbPath) {
+      data.dbPath = this.opts.dbPath;
+    } else {
+      tmpDir = tmp.dirSync({ prefix: 'mongo-mem-', unsafeCleanup: true });
+      data.dbPath = tmpDir.name;
+    }
+
+    this.debug(`Starting MongoDB instance with following options: ${JSON.stringify(data)}`);
+
+    const mongodCli = new MongodHelper([
+      '--port',
+      data.port,
+      '--storageEngine',
+      data.storageEngine,
+      '--dbpath',
+      data.dbPath,
+      '--noauth',
+    ]);
+
+    mongodCli.debug.enabled = this.opts.debug;
+
+    // Download if not exists mongo binaries in ~/.mongodb-prebuilt
+    // After that startup MongoDB instance
+    await mongodCli.run();
+
+    data.mongodCli = mongodCli;
+    data.tmpDir = tmpDir;
+
+    return data;
   }
 
   async stop(): Promise<boolean> {
@@ -108,18 +123,14 @@ export default class MongoDBMemoryServer {
 
     if (mongodCli && mongodCli.mongoBin.childProcess) {
       // .mongoBin.childProcess.connected
-      if (this.opts.debug) {
-        console.log(
-          `Shutdown MongoDB server on port ${port} with pid ${mongodCli.mongoBin.childProcess.pid}`
-        );
-      }
+      this.debug(
+        `Shutdown MongoDB server on port ${port} with pid ${mongodCli.mongoBin.childProcess.pid}`
+      );
       mongodCli.mongoBin.childProcess.kill();
     }
 
     if (tmpDir) {
-      if (this.opts.debug) {
-        console.log(`Removing tmpDir ${tmpDir.name}`);
-      }
+      this.debug(`Removing tmpDir ${tmpDir.name}`);
       tmpDir.removeCallback();
     }
 
