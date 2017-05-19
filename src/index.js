@@ -57,7 +57,7 @@ export default class MongoDBMemoryServer {
       const data = {};
       let tmpDir;
 
-      data.port = await getport(this.opts.port || 27017);
+      data.port = await getport(this.opts.port);
       data.uri = await generateConnectionString(data.port);
       data.storageEngine = this.opts.storageEngine || 'ephemeralForTest';
       if (this.opts.dbPath) {
