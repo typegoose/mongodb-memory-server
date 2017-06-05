@@ -8,7 +8,7 @@ import getport from 'get-port';
 tmp.setGracefulCleanup();
 
 export type MongoMemoryServerOptsT = {
-  port?: number,
+  port?: ?number,
   storageEngine?: string,
   dbPath?: string,
   autoStart?: boolean,
@@ -21,9 +21,13 @@ export type MongoInstanceDataT = {
   uri: string,
   storageEngine: string,
   mongodCli: MongodHelper,
+  tmpDir?: {
+    name: string,
+    removeCallback: Function,
+  },
 };
 
-async function generateConnectionString(port: string, dbName: ?string): Promise<string> {
+async function generateConnectionString(port: number, dbName: ?string): Promise<string> {
   const db = dbName || (await uuid());
   return `mongodb://localhost:${port}/${db}`;
 }
@@ -118,7 +122,7 @@ export default class MongoDBMemoryServer {
   }
 
   async stop(): Promise<boolean> {
-    const { mongodCli, port, tmpDir } = await this.getInstanceData();
+    const { mongodCli, port, tmpDir } = (await this.getInstanceData(): MongoInstanceDataT);
 
     if (mongodCli && mongodCli.mongoBin.childProcess) {
       // .mongoBin.childProcess.connected
@@ -147,7 +151,7 @@ export default class MongoDBMemoryServer {
   }
 
   async getUri(otherDbName?: string | boolean = false): Promise<string> {
-    const { uri, port } = await this.getInstanceData();
+    const { uri, port } = (await this.getInstanceData(): MongoInstanceDataT);
 
     // IF true OR string
     if (otherDbName) {
@@ -167,12 +171,12 @@ export default class MongoDBMemoryServer {
   }
 
   async getPort(): Promise<number> {
-    const { port } = await this.getInstanceData();
+    const { port } = (await this.getInstanceData(): MongoInstanceDataT);
     return port;
   }
 
   async getDbPath(): Promise<string> {
-    const { port } = await this.getInstanceData();
-    return port;
+    const { dbPath } = (await this.getInstanceData(): MongoInstanceDataT);
+    return dbPath;
   }
 }
