@@ -33,6 +33,7 @@ async function generateConnectionString(port: number, dbName: ?string): Promise<
 }
 
 export default class MongoDBMemoryServer {
+  static mongodHelperStartup: ?Promise<any>;
   isRunning: boolean = false;
   runningInstance: ?Promise<MongoInstanceDataT>;
   opts: MongoMemoryServerOptsT;
@@ -111,9 +112,15 @@ export default class MongoDBMemoryServer {
 
     mongodCli.debug.enabled = this.opts.debug;
 
+    if (this.constructor.mongodHelperStartup) {
+      await this.constructor.mongodHelperStartup;
+    }
+
     // Download if not exists mongo binaries in ~/.mongodb-prebuilt
     // After that startup MongoDB instance
-    await mongodCli.run();
+    const startupPromise = mongodCli.run();
+    this.constructor.mongodHelperStartup = startupPromise;
+    await startupPromise;
 
     data.mongodCli = mongodCli;
     data.tmpDir = tmpDir;
