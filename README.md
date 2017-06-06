@@ -164,27 +164,54 @@ const User = mongoose.model('User', new mongoose.Schema({ name: String })); // d
 
 
 
-### Simple Mocha test example
+### Simple Mocha/Chai test example
 ```js
 import mongoose from 'mongoose';
 import MongodbMemoryServer from 'mongodb-memory-server';
 
-before(function(done) {
+before((done) => {
   const mongoServer = new MongodbMemoryServer();
   mongoServer.getConnectionString().then((mongoUri) => {
-    mongoose.connect(mongoUri, function(err) {
+    mongoose.connect(mongoUri, (err) => {
       done(err);
     });
   });
 });
 
-describe('...', function() {
-    it("...", function() {
-      // ...
+describe('...', () => {
+    it("...", async () => {
+      const User = mongoose.model('User', new mongoose.Schema({ name: String }));
+      const cnt = await User.count();
+      expect(cnt).to.equal(0);
     });
 });
-
 ```
+
+### Simple Jest test example
+```js
+import mongoose from 'mongoose';
+import MongodbMemoryServer from 'mongodb-memory-server';
+
+beforeAll(async () => {
+  const mongoServer = new MongodbMemoryServer();
+  const mongoUri = await mongoServer.getConnectionString();
+  mongoose.connect(mongoUri, (err) => {
+    console.error(err);
+  });
+});
+
+describe('...', () => {
+    it("...", async () => {
+      const User = mongoose.model('User', new mongoose.Schema({ name: String }));
+      const cnt = await User.count();
+      expect(cnt).toEqual(0);
+    });
+});
+```
+
+Additional examples of Jest tests:
+- simple example with `mongodb` in [tests in current package](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/index-test.js)
+- more complex example with `mongoose` in [graphql-compose-mongoose](https://github.com/nodkz/graphql-compose-mongoose/blob/master/src/__mocks__/mongooseCommon.js)
 
 
 ## Credits
