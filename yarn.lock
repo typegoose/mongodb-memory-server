@@ -2938,9 +2938,9 @@ mongodb-core@2.1.12:
     bson "~1.0.4"
     require_optional "~1.0.0"
 
-mongodb-download@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/mongodb-download/-/mongodb-download-2.2.1.tgz#061df0835be6b33596480da0ce83fdabbfb9cbb4"
+mongodb-download@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/mongodb-download/-/mongodb-download-2.2.2.tgz#fd36079087628e9bdef0e8ac7d2df2e8123360a3"
   dependencies:
     debug "^2.2.0"
     decompress "^4.0.0"
@@ -2951,13 +2951,13 @@ mongodb-download@^2.2.1:
     request-promise "^4.1.1"
     yargs "^3.26.0"
 
-mongodb-prebuilt@^6.2.0:
-  version "6.3.1"
-  resolved "https://registry.yarnpkg.com/mongodb-prebuilt/-/mongodb-prebuilt-6.3.1.tgz#3533b69c55b71e945248cb540e74e3218a56d346"
+mongodb-prebuilt@^6.3.2:
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/mongodb-prebuilt/-/mongodb-prebuilt-6.3.2.tgz#028bfda570e0c7d7271b5099e418c2c788cd846d"
   dependencies:
     debug "^2.2.0"
     glob "^7.1.1"
-    mongodb-download "^2.2.1"
+    mongodb-download "^2.2.2"
     spawn-sync "1.0.15"
     yargs "^3.26.0"
 
@@ -3455,21 +3455,9 @@ read-pkg@^2.0.0:
     normalize-package-data "^2.3.2"
     path-type "^2.0.0"
 
-readable-stream@2.2.7:
+readable-stream@2.2.7, readable-stream@^2.0.0, "readable-stream@^2.0.0 || ^1.1.13", readable-stream@^2.0.2, readable-stream@^2.0.6, readable-stream@^2.1.4, readable-stream@^2.2.2:
   version "2.2.7"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.2.7.tgz#07057acbe2467b22042d36f98c5ad507054e95b1"
-  dependencies:
-    buffer-shims "~1.0.0"
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "~1.0.0"
-    process-nextick-args "~1.0.6"
-    string_decoder "~1.0.0"
-    util-deprecate "~1.0.1"
-
-readable-stream@^2.0.0, "readable-stream@^2.0.0 || ^1.1.13", readable-stream@^2.0.2, readable-stream@^2.0.6, readable-stream@^2.1.4, readable-stream@^2.2.2:
-  version "2.2.9"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.2.9.tgz#cf78ec6f4a6d1eb43d26488cac97f042e74b7fc8"
   dependencies:
     buffer-shims "~1.0.0"
     core-util-is "~1.0.0"
