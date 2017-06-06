@@ -192,6 +192,9 @@ describe('...', () => {
 import mongoose from 'mongoose';
 import MongodbMemoryServer from 'mongodb-memory-server';
 
+// May require additional time for downloading MongoDB binaries
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+
 beforeAll(async () => {
   const mongoServer = new MongodbMemoryServer();
   const mongoUri = await mongoServer.getConnectionString();

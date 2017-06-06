@@ -3,6 +3,8 @@
 import MongoDBMemoryServer from '../index';
 import { MongoClient } from 'mongodb';
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+
 describe('MongoDBMemoryServer', () => {
   it('should start mongo server', async () => {
     const server = new MongoDBMemoryServer();
