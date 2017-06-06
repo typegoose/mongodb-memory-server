@@ -169,8 +169,10 @@ const User = mongoose.model('User', new mongoose.Schema({ name: String })); // d
 import mongoose from 'mongoose';
 import MongodbMemoryServer from 'mongodb-memory-server';
 
+let mongoServer;
+
 before((done) => {
-  const mongoServer = new MongodbMemoryServer();
+  mongoServer = new MongodbMemoryServer();
   mongoServer.getConnectionString().then((mongoUri) => {
     mongoose.connect(mongoUri, (err) => {
       done(err);
@@ -178,12 +180,17 @@ before((done) => {
   });
 });
 
+after(() => {
+  mongoose.disconnect();
+  mongoServer.stop();
+});
+
 describe('...', () => {
-    it("...", async () => {
-      const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-      const cnt = await User.count();
-      expect(cnt).to.equal(0);
-    });
+  it("...", async () => {
+    const User = mongoose.model('User', new mongoose.Schema({ name: String }));
+    const cnt = await User.count();
+    expect(cnt).to.equal(0);
+  });
 });
 ```
 
@@ -195,25 +202,32 @@ import MongodbMemoryServer from 'mongodb-memory-server';
 // May require additional time for downloading MongoDB binaries
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 
+let mongoServer;
+
 beforeAll(async () => {
-  const mongoServer = new MongodbMemoryServer();
+  mongoServer = new MongodbMemoryServer();
   const mongoUri = await mongoServer.getConnectionString();
   mongoose.connect(mongoUri, (err) => {
     console.error(err);
   });
 });
 
+afterAll(() => {
+  mongoose.disconnect();
+  mongoServer.stop();
+});
+
 describe('...', () => {
-    it("...", async () => {
-      const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-      const cnt = await User.count();
-      expect(cnt).toEqual(0);
-    });
+  it("...", async () => {
+    const User = mongoose.model('User', new mongoose.Schema({ name: String }));
+    const cnt = await User.count();
+    expect(cnt).toEqual(0);
+  });
 });
 ```
 
 Additional examples of Jest tests:
-- simple example with `mongodb` in [tests in current package](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/index-test.js)
+- simple example with `mongodb` in [tests in current package](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/)
 - more complex example with `mongoose` in [graphql-compose-mongoose](https://github.com/nodkz/graphql-compose-mongoose/blob/master/src/__mocks__/mongooseCommon.js)
 
 
