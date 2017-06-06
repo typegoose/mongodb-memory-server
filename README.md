@@ -1,5 +1,6 @@
 # mongodb-memory-server
 
+[![travis build](https://img.shields.io/travis/nodkz/mongodb-memory-server.svg)](https://travis-ci.org/nodkz/mongodb-memory-server)
 [![NPM version](https://img.shields.io/npm/v/mongodb-memory-server.svg)](https://www.npmjs.com/package/mongodb-memory-server)
 [![Downloads stat](https://img.shields.io/npm/dt/mongodb-memory-server.svg)](http://www.npmtrends.com/mongodb-memory-server)
 [![Travis](https://img.shields.io/travis/nodkz/mongodb-memory-server.svg?maxAge=2592000)](https://travis-ci.org/nodkz/mongodb-memory-server)
@@ -11,7 +12,7 @@ This package use [mongodb-prebuilt](https://github.com/winfinit/mongodb-prebuilt
 
 Every `MongodbMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
 
-Perfectly [works with Travis CI](https://github.com/nodkz/graphql-compose-mongoose/commit/7a6ac2de747d14281f9965f418065e97a57cfb37) without additional `services` and `addons` options in `.travis.yml`. 
+Perfectly [works with Travis CI](https://github.com/nodkz/graphql-compose-mongoose/commit/7a6ac2de747d14281f9965f418065e97a57cfb37) without additional `services` and `addons` options in `.travis.yml`.
 
 ## Installation
 ```
