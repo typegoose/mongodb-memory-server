@@ -40,32 +40,40 @@ export default class MongoBinary {
         });
       });
       this.cache[version] = new Promise((resolve, reject) => {
-        lockFile.lock(downloadDir, { stale: 120000, retries: 3 }, (err, releaseLock) => {
-          if (err) {
-            reject(err);
-            return;
+        lockFile.lock(
+          downloadDir,
+          {
+            stale: 120000,
+            // try to get lock every second, give up after 3 minutes
+            retries: { retries: 180, factor: 1, minTimeout: 1000 },
+          },
+          (err, releaseLock) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+
+            const downloader = new MongoDBDownload({
+              downloadDir,
+              platform,
+              arch,
+              version,
+              http,
+            });
+
+            if (opts.debug) {
+              downloader.debug = console.log.bind(null);
+            }
+
+            downloader
+              .downloadAndExtract()
+              .then(releaseDir => {
+                releaseLock();
+                resolve(this.findBinPath(releaseDir));
+              })
+              .catch(e => reject(e));
           }
-
-          const downloader = new MongoDBDownload({
-            downloadDir,
-            platform,
-            arch,
-            version,
-            http,
-          });
-
-          if (opts.debug) {
-            downloader.debug = console.log.bind(null);
-          }
-
-          downloader
-            .downloadAndExtract()
-            .then(releaseDir => {
-              releaseLock();
-              resolve(this.findBinPath(releaseDir));
-            })
-            .catch(e => reject(e));
-        });
+        );
       });
     }
     return this.cache[version];
