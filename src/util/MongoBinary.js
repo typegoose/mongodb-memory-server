@@ -46,12 +46,15 @@ export default class MongoBinary {
     if (this.cache[version]) {
       debug(`MongoBinary: found cached binary path for ${version}`);
     } else {
+      // create downloadDir if not exists
       await new Promise((resolve, reject) => {
         mkdirp(downloadDir, err => {
           if (err) reject(err);
           else resolve();
         });
       });
+
+      // wait lock
       await new Promise((resolve, reject) => {
         lockFile.lock(
           downloadDir,
@@ -60,52 +63,34 @@ export default class MongoBinary {
             // try to get lock every second, give up after 3 minutes
             retries: { retries: 180, factor: 1, minTimeout: 1000 },
           },
-          (err, releaseLock) => {
-            debug('MongoBinary: Download lock created');
-
-            // cache may be populated by previous process
-            // check again
-            if (this.cache[version]) {
-              debug(`MongoBinary: found cached binary path for ${version}`);
-              resolve(this.cache[version]);
-            }
-
-            if (err) {
-              reject(err);
-              return;
-            }
-
-            const downloader = new MongoDBDownload({
-              downloadDir,
-              platform,
-              arch,
-              version,
-              http,
-            });
-
-            downloader.debug = debug;
-
-            downloader
-              .downloadAndExtract()
-              .then(releaseDir => {
-                releaseLock(e => {
-                  debug(
-                    e
-                      ? `MongoBinary: Error when removing download lock ${e}`
-                      : `MongoBinary: Download lock removed`
-                  );
-                });
-                return this.findBinPath(releaseDir);
-              })
-              .then(binPath => {
-                this.cache[version] = binPath;
-                resolve();
-              })
-              .catch(e => {
-                debug(`MongoBinary: Error with mongod binary path: ${e}`);
-                reject(e);
-              });
+          err => {
+            if (err) reject(err);
+            else resolve();
           }
+        );
+      });
+
+      // again check cache, maybe other instance resolve it
+      if (!this.cache[version]) {
+        const downloader = new MongoDBDownload({
+          downloadDir,
+          platform,
+          arch,
+          version,
+          http,
+        });
+
+        downloader.debug = debug;
+        const releaseDir = await downloader.downloadAndExtract();
+        this.cache[version] = await this.findBinPath(releaseDir);
+      }
+
+      // remove lock
+      lockFile.unlock(downloadDir, err => {
+        debug(
+          err
+            ? `MongoBinary: Error when removing download lock ${err}`
+            : `MongoBinary: Download lock removed`
         );
       });
     }
