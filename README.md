@@ -188,6 +188,9 @@ const User = mongoose.model('User', new mongoose.Schema({ name: String })); // d
 
 
 ### Simple Mocha/Chai test example
+
+Start Mocha with `--timeout 60000` cause first download of MongoDB binaries may take a time.
+
 ```js
 import mongoose from 'mongoose';
 import MongodbMemoryServer from 'mongodb-memory-server';
@@ -223,7 +226,7 @@ import mongoose from 'mongoose';
 import MongodbMemoryServer from 'mongodb-memory-server';
 
 // May require additional time for downloading MongoDB binaries
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
 let mongoServer;
 
@@ -252,6 +255,14 @@ describe('...', () => {
 Additional examples of Jest tests:
 - simple example with `mongodb` in [tests in current package](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/)
 - more complex example with `mongoose` in [graphql-compose-mongoose](https://github.com/nodkz/graphql-compose-mongoose/blob/master/src/__mocks__/mongooseCommon.js)
+
+## Travis
+You may cache downloaded MongoDB binaries on Travis to speed up further tests:
+```yml
+cache:
+  directories:
+    - $HOME/.mongodb-binaries
+```
 
 
 ## Credits

@@ -3,9 +3,11 @@
   "version": "0.0.0-development",
   "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
   "main": "lib/index.js",
-  "jsnext:main": "es/index.js",
   "repository": "https://github.com/nodkz/mongodb-memory-server",
   "author": "Nodkz (pavel.chertorogov@gmail.com)",
+  "files": [
+    "lib"
+  ],
   "keywords": [
     "mongodb",
     "mongoose",
@@ -55,7 +57,6 @@
   "scripts": {
     "build": "npm-run-all build:*",
     "build:cjs": "rimraf lib && babel src --ignore __tests__,__mocks__ -d lib",
-    "build:es": "rimraf es && BABEL_ENV=es babel src --ignore __tests__,__mocks__ -d es",
     "build:flow": "find ./src -name '*.js' -not -path '*/__*' | while read filepath; do cp $filepath `echo $filepath | sed 's/\\/src\\//\\/lib\\//g'`.flow; done",
     "coverage": "jest --coverage",
     "lint": "eslint src test *.js",

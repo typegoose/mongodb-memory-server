@@ -23,7 +23,7 @@ export default class MongoBinary {
 
   static getPath(opts?: MongoBinaryOpts = {}): Promise<string> {
     const {
-      downloadDir = path.resolve(os.homedir(), '.mongodb-prebuilt'),
+      downloadDir = path.resolve(os.homedir(), '.mongodb-binaries'),
       platform = os.platform(),
       arch = os.arch(),
       version = '3.4.4',

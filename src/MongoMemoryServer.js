@@ -33,7 +33,7 @@ export type MongoInstanceDataT = {
   dbPath: string,
   uri: string,
   storageEngine: string,
-  mongod: ChildProcess,
+  childProcess: ChildProcess,
   tmpDir?: {
     name: string,
     removeCallback: Function,
@@ -117,7 +117,7 @@ export default class MongoMemoryServer {
 
     // Download if not exists mongo binaries in ~/.mongodb-prebuilt
     // After that startup MongoDB instance
-    const mongod = await MongoInstance.run({
+    const childProcess = await MongoInstance.run({
       instance: {
         port: data.port,
         storageEngine: data.storageEngine,
@@ -128,18 +128,18 @@ export default class MongoMemoryServer {
       spawn: this.opts.spawn,
       debug: this.opts.debug,
     });
-    data.mongod = mongod;
+    data.childProcess = childProcess;
     data.tmpDir = tmpDir;
 
     return data;
   }
 
   async stop(): Promise<boolean> {
-    const { mongod, port, tmpDir } = (await this.getInstanceData(): MongoInstanceDataT);
+    const { childProcess, port, tmpDir } = (await this.getInstanceData(): MongoInstanceDataT);
 
-    if (mongod && mongod.kill) {
-      this.debug(`Shutdown MongoDB server on port ${port} with pid ${mongod.pid}`);
-      mongod.kill();
+    if (childProcess && childProcess.kill) {
+      this.debug(`Shutdown MongoDB server on port ${port} with pid ${childProcess.pid}`);
+      childProcess.kill();
     }
 
     if (tmpDir) {

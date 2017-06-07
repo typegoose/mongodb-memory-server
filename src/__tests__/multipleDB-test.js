@@ -3,7 +3,7 @@
 import { MongoClient } from 'mongodb';
 import MongoDBMemoryServer from '../MongoMemoryServer';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
 let db1;
 let db2;
@@ -28,11 +28,13 @@ afterAll(() => {
 
 describe('Multiple mongoServers', () => {
   it('should start several servers', async () => {
+    expect(db1).toBeDefined();
     const col1 = db1.collection('test');
     const result1 = await col1.insert([{ a: 1 }, { b: 1 }]);
     expect(result1.result).toMatchSnapshot();
     expect(await col1.count({})).toBe(2);
 
+    expect(db2).toBeDefined();
     const col2 = db2.collection('test');
     const result2 = await col2.insert([{ a: 2 }, { b: 2 }]);
     expect(result2.result).toMatchSnapshot();
