@@ -8,7 +8,7 @@ import lockFile from 'proper-lockfile';
 import mkdirp from 'mkdirp';
 
 export type MongoBinaryCache = {
-  [version: string]: Promise<string>,
+  [version: string]: string,
 };
 
 export type MongoBinaryOpts = {
@@ -52,7 +52,7 @@ export default class MongoBinary {
           else resolve();
         });
       });
-      this.cache[version] = new Promise((resolve, reject) => {
+      await new Promise((resolve, reject) => {
         lockFile.lock(
           downloadDir,
           {
@@ -62,6 +62,13 @@ export default class MongoBinary {
           },
           (err, releaseLock) => {
             debug('MongoBinary: Download lock created');
+
+            // cache may be populated by previous process
+            // check again
+            if (this.cache[version]) {
+              debug(`MongoBinary: found cached binary path for ${version}`);
+              resolve(this.cache[version]);
+            }
 
             if (err) {
               reject(err);
@@ -91,7 +98,8 @@ export default class MongoBinary {
                 return this.findBinPath(releaseDir);
               })
               .then(binPath => {
-                resolve(binPath);
+                this.cache[version] = binPath;
+                resolve();
               })
               .catch(e => {
                 debug(`MongoBinary: Error with mongod binary path: ${e}`);
@@ -102,10 +110,8 @@ export default class MongoBinary {
       });
     }
 
-    return this.cache[version].then(binPath => {
-      debug(`MongoBinary: Mongod binary path: ${binPath}`);
-      return binPath;
-    });
+    debug(`MongoBinary: Mongod binary path: ${this.cache[version]}`);
+    return this.cache[version];
   }
 
   static findBinPath(releaseDir: string): Promise<string> {

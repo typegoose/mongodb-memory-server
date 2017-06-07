@@ -21,15 +21,19 @@ describe('MongoBinary', () => {
 
     // reuse cache
     expect(MongoBinary.cache[version]).toBeDefined();
-    expect(MongoBinary.cache[version]).toBeInstanceOf(Promise);
-    await expect(MongoBinary.cache.latest).resolves.toEqual(binPath);
+    expect(MongoBinary.cache[version]).toEqual(binPath);
+    const binPathAgain = await MongoBinary.getPath({
+      downloadDir: tmpDir.name,
+      version,
+    });
+    expect(binPathAgain).toEqual(binPath);
 
     // cleanup
     tmpDir.removeCallback();
   });
 
   it('should use cache', async () => {
-    MongoBinary.cache['3.4.2'] = Promise.resolve('/bin/mongod');
+    MongoBinary.cache['3.4.2'] = '/bin/mongod';
     await expect(MongoBinary.getPath({ version: '3.4.2' })).resolves.toEqual('/bin/mongod');
   });
 });
