@@ -34,7 +34,7 @@ export type MongodOps = {
   debug?: boolean,
 };
 
-export default class BinRunner {
+export default class MongodbInstance {
   static childProcessList: ChildProcess[] = [];
   opts: MongodOps;
   debug: Function;
@@ -92,7 +92,9 @@ export default class BinRunner {
   }
 
   launchMongod(mongoBin: string): ChildProcess {
-    const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), this.opts.spawn);
+    const spawnOpts = this.opts.spawn || {};
+    if (!spawnOpts.stdio) spawnOpts.stdio = 'ignore';
+    const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), spawnOpts);
     childProcess.stderr.on('data', this.stderrHandler.bind(this));
     childProcess.stdout.on('data', this.stdoutHandler.bind(this));
     childProcess.on('close', this.closeHandler.bind(this));
@@ -103,11 +105,11 @@ export default class BinRunner {
 
   launchKiller(parentPid: number, childPid: number): ChildProcess {
     // spawn process which kills itself and mongo process if current process is dead
-    const killer = spawnChild(process.argv[0], [
-      path.resolve(__dirname, 'mongo_killer.js'),
-      parentPid.toString(),
-      childPid.toString(),
-    ]);
+    const killer = spawnChild(
+      process.argv[0],
+      [path.resolve(__dirname, 'mongo_killer.js'), parentPid.toString(), childPid.toString()],
+      { stdio: 'ignore' }
+    );
 
     return killer;
   }

@@ -4,7 +4,7 @@ cache:
   yarn: true
   directories:
     - node_modules
-    - $HOME/.mongodb-prebuilt
+    - $HOME/.mongodb-binaries
 notifications:
   email: true
 node_js:
