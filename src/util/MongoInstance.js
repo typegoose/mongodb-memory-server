@@ -93,7 +93,7 @@ export default class MongodbInstance {
 
   launchMongod(mongoBin: string): ChildProcess {
     const spawnOpts = this.opts.spawn || {};
-    if (!spawnOpts.stdio) spawnOpts.stdio = 'ignore';
+    if (!spawnOpts.stdio) spawnOpts.stdio = 'pipe';
     const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), spawnOpts);
     childProcess.stderr.on('data', this.stderrHandler.bind(this));
     childProcess.stdout.on('data', this.stdoutHandler.bind(this));
@@ -108,7 +108,7 @@ export default class MongodbInstance {
     const killer = spawnChild(
       process.argv[0],
       [path.resolve(__dirname, 'mongo_killer.js'), parentPid.toString(), childPid.toString()],
-      { stdio: 'ignore' }
+      { stdio: 'pipe' }
     );
 
     return killer;
