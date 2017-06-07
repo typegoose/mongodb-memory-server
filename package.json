@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "get-port": "^3.1.0",
-    "mongodb-prebuilt": "^6.3.2",
+    "mongodb-prebuilt": "^6.3.3",
     "tmp": "^0.0.31",
     "uuid": "^3.0.1"
   },

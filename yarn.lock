@@ -2938,9 +2938,9 @@ mongodb-core@2.1.12:
     bson "~1.0.4"
     require_optional "~1.0.0"
 
-mongodb-download@^2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/mongodb-download/-/mongodb-download-2.2.2.tgz#fd36079087628e9bdef0e8ac7d2df2e8123360a3"
+mongodb-download@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/mongodb-download/-/mongodb-download-2.2.3.tgz#5ab9396c6c15f7653756ed646e30722f0ad72a00"
   dependencies:
     debug "^2.2.0"
     decompress "^4.0.0"
@@ -2951,13 +2951,13 @@ mongodb-download@^2.2.2:
     request-promise "^4.1.1"
     yargs "^3.26.0"
 
-mongodb-prebuilt@^6.3.2:
-  version "6.3.2"
-  resolved "https://registry.yarnpkg.com/mongodb-prebuilt/-/mongodb-prebuilt-6.3.2.tgz#028bfda570e0c7d7271b5099e418c2c788cd846d"
+mongodb-prebuilt@^6.3.3:
+  version "6.3.3"
+  resolved "https://registry.yarnpkg.com/mongodb-prebuilt/-/mongodb-prebuilt-6.3.3.tgz#f1a17b34586c6739c6bc6dda196864e0464a836c"
   dependencies:
     debug "^2.2.0"
     glob "^7.1.1"
-    mongodb-download "^2.2.2"
+    mongodb-download "^2.2.3"
     spawn-sync "1.0.15"
     yargs "^3.26.0"
 
