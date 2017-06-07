@@ -29,6 +29,11 @@
     "jasmine": true,
     "jest": true
   },
+  "globals": {
+    "Class": true,
+    "Iterator": true,
+    "$Shape": true,
+  },
   "plugins": [
     "flowtype",
     "prettier"

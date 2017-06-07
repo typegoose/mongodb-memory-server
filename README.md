@@ -40,6 +40,29 @@ mongod.stop();
 // or it will be stopped automatically when you exit from script
 ```
 
+### Available options
+All options are optional.
+```js
+const mongod = new MongodbMemoryServer({
+  instance: {
+    port?: ?number, // by default choose any free port
+    dbPath?: string, // by default create in temp directory
+    storageEngine?: string, // by default `ephemeralForTest`
+    debug?: boolean, // by default false
+  },
+  binary: {
+    version?: string, // by default '3.4.4'
+    downloadDir?: string, // by default %HOME/.mongodb-prebuilt
+    platform?: string, // by default os.platform()
+    arch?: string, // by default os.arch()
+    http?: any, // see mongodb-download package
+    debug?: boolean, // by default false
+  },
+  debug?: boolean, // by default false
+  autoStart?: boolean, // by default true
+});
+```
+
 ### Provide connection string to mongoose
 ```js
 import mongoose from 'mongoose';

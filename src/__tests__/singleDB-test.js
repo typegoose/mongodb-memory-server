@@ -1,7 +1,7 @@
 /* @flow */
 
-import MongoDBMemoryServer from '../index';
 import { MongoClient } from 'mongodb';
+import MongoDBMemoryServer from '../MongoMemoryServer';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 

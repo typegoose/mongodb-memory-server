@@ -1,11 +1,43 @@
 [ignore]
-.*/lib/.*
-.*/src/.*
+.*/coverage/.*
+<PROJECT_ROOT>/lib/.*
+<PROJECT_ROOT>/dist/.*
+.*/node_modules/ajv.*
+.*/node_modules/acorn.*
+.*/node_modules/async.*
+.*/node_modules/babel.*
+.*/node_modules/bluebird.*
+.*/node_modules/caniuse-db.*
 .*/node_modules/config-chain.*
+.*/node_modules/conventional-changelog.*
+.*/node_modules/core-js.*
+.*/node_modules/cssstyle.*
+.*/node_modules/diff.*
+.*/node_modules/es5-ext.*
+.*/node_modules/escope.*
+.*/node_modules/escodegen.*
+.*/node_modules/eslint.*
+.*/node_modules/github.*
+.*/node_modules/fsevents.*
+.*/node_modules/jsdoctypeparser.*
+.*/node_modules/jsdom.*
+.*/node_modules/iconv.*
+.*/node_modules/istanbul.*
+.*/node_modules/handlebars.*
+.*/node_modules/markdown.*
+.*/node_modules/node-notifier.*
 .*/node_modules/npmconf.*
+.*/node_modules/prettier.*
+.*/node_modules/source-map.*
+.*/node_modules/travis.*
+.*/node_modules/uglify.*
+.*/node_modules/yargs.*
 
 [include]
 
 [libs]
 
 [options]
+esproposal.class_instance_fields=enable
+suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
+unsafe.enable_getters_and_setters=true
