@@ -4,6 +4,8 @@ import { MongoDBDownload } from 'mongodb-download';
 import glob from 'glob';
 import os from 'os';
 import path from 'path';
+import lockFile from 'proper-lockfile';
+import mkdirp from 'mkdirp';
 
 export type MongoBinaryCache = {
   [version: string]: Promise<string>,
@@ -21,7 +23,7 @@ export type MongoBinaryOpts = {
 export default class MongoBinary {
   static cache: MongoBinaryCache = {};
 
-  static getPath(opts?: MongoBinaryOpts = {}): Promise<string> {
+  static async getPath(opts?: MongoBinaryOpts = {}): Promise<string> {
     const {
       downloadDir = path.resolve(os.homedir(), '.mongodb-binaries'),
       platform = os.platform(),
@@ -31,20 +33,39 @@ export default class MongoBinary {
     } = opts;
 
     if (!this.cache[version]) {
-      const downloader = new MongoDBDownload({
-        downloadDir,
-        platform,
-        arch,
-        version,
-        http,
+      await new Promise((resolve, reject) => {
+        mkdirp(downloadDir, err => {
+          if (err) reject(err);
+          else resolve();
+        });
       });
+      this.cache[version] = new Promise((resolve, reject) => {
+        lockFile.lock(downloadDir, { stale: 120000, retries: 3 }, (err, releaseLock) => {
+          if (err) {
+            reject(err);
+            return;
+          }
 
-      if (opts.debug) {
-        downloader.debug = console.log.bind(null);
-      }
+          const downloader = new MongoDBDownload({
+            downloadDir,
+            platform,
+            arch,
+            version,
+            http,
+          });
 
-      this.cache[version] = downloader.downloadAndExtract().then(releaseDir => {
-        return this.findBinPath(releaseDir);
+          if (opts.debug) {
+            downloader.debug = console.log.bind(null);
+          }
+
+          downloader
+            .downloadAndExtract()
+            .then(releaseDir => {
+              releaseLock();
+              resolve(this.findBinPath(releaseDir));
+            })
+            .catch(e => reject(e));
+        });
       });
     }
     return this.cache[version];
