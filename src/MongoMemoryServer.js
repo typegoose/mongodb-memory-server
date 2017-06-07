@@ -4,6 +4,7 @@ import type { ChildProcess } from 'child_process';
 import uuid from 'uuid/v4';
 import tmp from 'tmp';
 import getport from 'get-port';
+import Debug from 'debug';
 import MongoInstance from './util/MongoInstance';
 
 tmp.setGracefulCleanup();
@@ -13,7 +14,7 @@ export type MongoMemoryServerOptsT = {
     port?: ?number,
     dbPath?: string,
     storageEngine?: string,
-    debug?: boolean,
+    debug?: boolean | Function,
   },
   binary: {
     version?: string,
@@ -21,7 +22,7 @@ export type MongoMemoryServerOptsT = {
     platform?: string,
     arch?: string,
     http?: any,
-    debug?: boolean,
+    debug?: boolean | Function,
   },
   debug?: boolean,
   spawn: any,
@@ -49,24 +50,23 @@ export default class MongoMemoryServer {
   isRunning: boolean = false;
   runningInstance: ?Promise<MongoInstanceDataT>;
   opts: MongoMemoryServerOptsT;
+  debug: Function;
 
   constructor(opts?: $Shape<MongoMemoryServerOptsT> = {}) {
     this.opts = opts;
     if (!this.opts.instance) this.opts.instance = {};
     if (!this.opts.binary) this.opts.binary = {};
 
+    this.debug = (msg: string) => {
+      if (this.opts.debug) {
+        console.log(msg);
+      }
+    };
+
     // autoStart by default
     if (!opts.hasOwnProperty('autoStart') || opts.autoStart) {
-      if (opts.debug) {
-        console.log('Autostarting MongoDB instance...');
-      }
+      this.debug('Autostarting MongoDB instance...');
       this.start();
-    }
-  }
-
-  debug(msg: string) {
-    if (this.opts.debug) {
-      console.log(msg);
     }
   }
 
@@ -104,6 +104,8 @@ export default class MongoMemoryServer {
 
     const instOpts = this.opts.instance;
     data.port = await getport(instOpts.port);
+    this.debug = Debug(`Mongo[${data.port}]`);
+    this.debug.enabled = !!this.opts.debug;
     data.uri = await generateConnectionString(data.port);
     data.storageEngine = instOpts.storageEngine || 'ephemeralForTest';
     if (instOpts.dbPath) {
@@ -126,7 +128,7 @@ export default class MongoMemoryServer {
       },
       binary: this.opts.binary,
       spawn: this.opts.spawn,
-      debug: this.opts.debug,
+      debug: this.debug,
     });
     data.childProcess = childProcess;
     data.tmpDir = tmpDir;

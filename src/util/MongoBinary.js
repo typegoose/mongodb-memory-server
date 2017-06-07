@@ -17,7 +17,7 @@ export type MongoBinaryOpts = {
   platform?: string,
   arch?: string,
   http?: any,
-  debug?: boolean,
+  debug?: boolean | Function,
 };
 
 export default class MongoBinary {
@@ -32,7 +32,20 @@ export default class MongoBinary {
       http = {},
     } = opts;
 
-    if (!this.cache[version]) {
+    let debug;
+    if (opts.debug) {
+      if (opts.debug.call && typeof opts.debug === 'function' && opts.debug.apply) {
+        debug = opts.debug;
+      } else {
+        debug = console.log.bind(null);
+      }
+    } else {
+      debug = (msg: string) => {}; // eslint-disable-line
+    }
+
+    if (this.cache[version]) {
+      debug(`MongoBinary: found cached binary path for ${version}`);
+    } else {
       await new Promise((resolve, reject) => {
         mkdirp(downloadDir, err => {
           if (err) reject(err);
@@ -48,6 +61,8 @@ export default class MongoBinary {
             retries: { retries: 180, factor: 1, minTimeout: 1000 },
           },
           (err, releaseLock) => {
+            debug('MongoBinary: Download lock created');
+
             if (err) {
               reject(err);
               return;
@@ -61,22 +76,36 @@ export default class MongoBinary {
               http,
             });
 
-            if (opts.debug) {
-              downloader.debug = console.log.bind(null);
-            }
+            downloader.debug = debug;
 
             downloader
               .downloadAndExtract()
               .then(releaseDir => {
-                releaseLock();
-                resolve(this.findBinPath(releaseDir));
+                releaseLock(e => {
+                  debug(
+                    e
+                      ? `MongoBinary: Error when removing download lock ${e}`
+                      : `MongoBinary: Download lock removed`
+                  );
+                });
+                return this.findBinPath(releaseDir);
               })
-              .catch(e => reject(e));
+              .then(binPath => {
+                resolve(binPath);
+              })
+              .catch(e => {
+                debug(`MongoBinary: Error with mongod binary path: ${e}`);
+                reject(e);
+              });
           }
         );
       });
     }
-    return this.cache[version];
+
+    return this.cache[version].then(binPath => {
+      debug(`MongoBinary: Mongod binary path: ${binPath}`);
+      return binPath;
+    });
   }
 
   static findBinPath(releaseDir: string): Promise<string> {

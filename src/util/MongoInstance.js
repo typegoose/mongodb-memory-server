@@ -13,7 +13,7 @@ export type MongodOps = {
     port: number,
     storageEngine?: string,
     dbPath: string,
-    debug?: boolean,
+    debug?: boolean | Function,
   },
 
   // mongo binary options
@@ -31,7 +31,7 @@ export type MongodOps = {
     shell?: boolean | string,
   },
 
-  debug?: boolean,
+  debug?: boolean | Function,
 };
 
 export default class MongodbInstance {
@@ -59,7 +59,19 @@ export default class MongodbInstance {
       this.opts.binary.debug = this.opts.debug;
     }
 
-    this.debug = this.opts.instance && this.opts.instance.debug ? console.log.bind(null) : () => {};
+    if (this.opts.instance && this.opts.instance.debug) {
+      if (
+        this.opts.instance.debug.call &&
+        typeof this.opts.instance.debug === 'function' &&
+        this.opts.instance.debug.apply
+      ) {
+        this.debug = this.opts.instance.debug;
+      } else {
+        this.debug = console.log.bind(null);
+      }
+    } else {
+      this.debug = () => {};
+    }
   }
 
   prepareCommandArgs(): string[] {
@@ -76,8 +88,12 @@ export default class MongodbInstance {
 
   async run(): Promise<ChildProcess> {
     const launch = new Promise((resolve, reject) => {
-      this.instanceReady = resolve;
+      this.instanceReady = () => {
+        this.debug('MongodbInstance: is ready!');
+        resolve(this.childProcess);
+      };
       this.instanceFailed = err => {
+        this.debug(`MongodbInstance: is failed: ${err.toString()}`);
         if (this.killerProcess) this.killerProcess.kill();
         reject(err);
       };
@@ -131,7 +147,7 @@ export default class MongodbInstance {
 
     const log: string = message.toString();
     if (/waiting for connections on port/i.test(log)) {
-      this.instanceReady(true);
+      this.instanceReady();
     } else if (/addr already in use/i.test(log)) {
       this.instanceFailed(`Port ${this.opts.instance.port} already in use`);
     } else if (/mongod instance already running/i.test(log)) {
