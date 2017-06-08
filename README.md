@@ -264,6 +264,13 @@ cache:
     - $HOME/.mongodb-binaries
 ```
 
+**Also it is very important** to limit spawned number of Jest workers for avoiding race condition. Cause Jest spawn huge amount of workers for every node environment on same machine. [More details](https://github.com/facebook/jest/issues/3765)
+Use `--maxWorkers 4` or `--runInBand` option.
+```diff
+script:
+-  - yarn run coverage
++  - yarn run coverage -- --maxWorkers 4
+```
 
 ## Credits
 Inspired by alternative runners for [mongodb-prebuilt](https://github.com/winfinit/mongodb-prebuilt):
