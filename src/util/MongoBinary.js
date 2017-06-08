@@ -4,7 +4,7 @@ import { MongoDBDownload } from 'mongodb-download';
 import glob from 'glob';
 import os from 'os';
 import path from 'path';
-import lockFile from 'proper-lockfile';
+import LockFile from 'lockfile';
 import mkdirp from 'mkdirp';
 
 export type MongoBinaryCache = {
@@ -54,14 +54,18 @@ export default class MongoBinary {
         });
       });
 
+      const lockfile = path.resolve(downloadDir, `${version}.lock`);
+
       // wait lock
       await new Promise((resolve, reject) => {
-        lockFile.lock(
-          downloadDir,
+        LockFile.lock(
+          lockfile,
           {
-            stale: 120000,
-            // try to get lock every second, give up after 3 minutes
-            retries: { retries: 180, factor: 1, minTimeout: 1000 },
+            wait: 120000,
+            pollPeriod: 100,
+            stale: 110000,
+            retries: 3,
+            retryWait: 100,
           },
           err => {
             if (err) reject(err);
@@ -86,7 +90,7 @@ export default class MongoBinary {
       }
 
       // remove lock
-      lockFile.unlock(downloadDir, err => {
+      LockFile.unlock(lockfile, err => {
         debug(
           err
             ? `MongoBinary: Error when removing download lock ${err}`
