@@ -29,7 +29,7 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.22.0",
-    "babel-preset-env": "^1.5.1",
+    "babel-preset-env": "^1.5.2",
     "cz-conventional-changelog": "^2.0.0",
     "eslint": "^3.14.1",
     "eslint-config-airbnb-base": "^11.2.0",
@@ -41,7 +41,7 @@
     "jest": "^20.0.4",
     "mongodb": "^2.2.28",
     "npm-run-all": "^4.0.1",
-    "prettier": "^1.4.2",
+    "prettier": "^1.4.4",
     "rimraf": "^2.5.4",
     "semantic-release": "^6.3.6"
   },
@@ -60,11 +60,11 @@
     "build": "npm-run-all build:*",
     "build:cjs": "rimraf lib && babel src --ignore __tests__,__mocks__ -d lib",
     "build:flow": "find ./src -name '*.js' -not -path '*/__*' | while read filepath; do cp $filepath `echo $filepath | sed 's/\\/src\\//\\/lib\\//g'`.flow; done",
+    "watch": "jest --watch",
     "coverage": "jest --coverage",
-    "lint": "eslint src test *.js",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "watch": "npm run test:watch",
+    "lint": "eslint --ext .js ./src",
+    "flow": "./node_modules/.bin/flow stop && ./node_modules/.bin/flow",
+    "test": "npm run coverage && npm run lint && npm run flow",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "jest": {

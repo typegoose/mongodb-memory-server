@@ -12,8 +12,11 @@ node_js:
   - "6"
   - "5"
   - "4"
+before_install: yarn global add greenkeeper-lockfile@1
+before_script: greenkeeper-lockfile-update
+after_script: greenkeeper-lockfile-upload
 script:
-  - yarn run coverage
+  - yarn run test
   - yarn run build
 after_success:
   - 'curl -Lo travis_after_all.py https://git.io/travis_after_all'

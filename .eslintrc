@@ -19,9 +19,9 @@
       "functions": "ignore",
     }],
     "prettier/prettier": ["error", {
-      "trailingComma": true,
+      "printWidth": 100,
       "singleQuote": true,
-      "printWidth": 100
+      "trailingComma": "es5",
     }],
     "no-prototype-builtins": 0
   },
