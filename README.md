@@ -1,5 +1,7 @@
 # mongodb-memory-server
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/nodkz/mongodb-memory-server.svg)](https://greenkeeper.io/)
+
 [![travis build](https://img.shields.io/travis/nodkz/mongodb-memory-server.svg)](https://travis-ci.org/nodkz/mongodb-memory-server)
 [![NPM version](https://img.shields.io/npm/v/mongodb-memory-server.svg)](https://www.npmjs.com/package/mongodb-memory-server)
 [![Downloads stat](https://img.shields.io/npm/dt/mongodb-memory-server.svg)](http://www.npmtrends.com/mongodb-memory-server)
