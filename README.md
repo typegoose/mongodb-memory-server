@@ -21,6 +21,7 @@ yarn add mongodb-memory-server --dev
 OR
 npm install mongodb-memory-server --save-dev
 ```
+For Node v6 and below required to add [regenerator-runtime](https://babeljs.io/docs/plugins/transform-regenerator/) on top of your tests or add it to the start scripts of your test framework (related discussion #9).
 
 ## Usage
 
@@ -256,6 +257,10 @@ describe('...', () => {
 Additional examples of Jest tests:
 - simple example with `mongodb` in [tests in current package](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/)
 - more complex example with `mongoose` in [graphql-compose-mongoose](https://github.com/nodkz/graphql-compose-mongoose/blob/master/src/__mocks__/mongooseCommon.js)
+
+### AVA test runner
+For AVA written [detailed tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) how to test mongoose models by @zellwk.
+
 
 ## Travis
 You may cache downloaded MongoDB binaries on Travis to speed up further tests:
