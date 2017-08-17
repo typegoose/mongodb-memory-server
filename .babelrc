@@ -9,6 +9,11 @@
   "plugins": [
     "transform-object-rest-spread",
     "transform-class-properties",
-    "transform-flow-strip-types"
+    "transform-flow-strip-types",
+    ["transform-runtime", {
+      "helpers": false,
+      "polyfill": false,
+      "regenerator": true,
+    }]
   ]
 }

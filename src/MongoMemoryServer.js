@@ -7,7 +7,6 @@ import getport from 'get-port';
 import Debug from 'debug';
 import MongoInstance from './util/MongoInstance';
 
-require('regenerator-runtime/runtime'); // eslint-disable-line
 tmp.setGracefulCleanup();
 
 export type MongoMemoryServerOptsT = {

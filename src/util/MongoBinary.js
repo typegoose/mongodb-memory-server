@@ -7,8 +7,6 @@ import path from 'path';
 import LockFile from 'lockfile';
 import mkdirp from 'mkdirp';
 
-require('regenerator-runtime/runtime'); // eslint-disable-line
-
 export type MongoBinaryCache = {
   [version: string]: string,
 };

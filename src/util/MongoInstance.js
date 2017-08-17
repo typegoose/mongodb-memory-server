@@ -6,8 +6,6 @@ import path from 'path';
 import MongoBinary from './MongoBinary';
 import type { MongoBinaryOpts } from './MongoBinary';
 
-require('regenerator-runtime/runtime'); // eslint-disable-line
-
 export type MongodOps = {
   // instance options
   instance: {

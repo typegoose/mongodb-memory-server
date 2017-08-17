@@ -29,6 +29,7 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.22.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.5.2",
     "cz-conventional-changelog": "^2.0.0",
     "eslint": "^4.0.0",
@@ -46,13 +47,13 @@
     "semantic-release": "^7.0.1"
   },
   "dependencies": {
+    "babel-runtime": "^6.26.0",
     "debug": "^3.0.0",
     "get-port": "^3.1.0",
     "glob": "^7.1.2",
     "lockfile": "^1.0.3",
     "mkdirp": "^0.5.1",
     "mongodb-download": "^2.2.3",
-    "regenerator-runtime": "^0.11.0",
     "tmp": "^0.0.33",
     "uuid": "^3.0.1"
   },
