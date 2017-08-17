@@ -21,7 +21,6 @@ yarn add mongodb-memory-server --dev
 OR
 npm install mongodb-memory-server --save-dev
 ```
-For Node v6 and below required to add [regenerator-runtime](https://babeljs.io/docs/plugins/transform-regenerator/) on top of your tests or add it to the start scripts of your test framework (related discussion #9).
 
 ## Usage
 
