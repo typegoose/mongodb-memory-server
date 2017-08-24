@@ -73,12 +73,11 @@ const mongoServer = new MongodbMemoryServer();
 
 mongoose.Promise = Promise;
 mongoServer.getConnectionString().then((mongoUri) => {
-  const mongooseOpts = {
-    server: {
-      auto_reconnect: true,
-      reconnectTries: Number.MAX_VALUE,
-      reconnectInterval: 1000,
-    },
+  const mongooseOpts = { // options for mongoose 4.11.3 and above
+    autoReconnect: true,
+    reconnectTries: Number.MAX_VALUE,
+    reconnectInterval: 1000,
+    useMongoClient: true,
   };
 
   mongoose.connect(mongoUri, mongooseOpts);
@@ -117,13 +116,12 @@ const connections = {
   conn3: mongoose.createConnection(),
 };
 
-const mongooseOpts = {
-  server: {
-    promiseLibrary = Promise;
-    auto_reconnect: true,
-    reconnectTries: Number.MAX_VALUE,
-    reconnectInterval: 1000,
-  },
+const mongooseOpts = { // options for mongoose 4.11.3 and above
+  promiseLibrary = Promise;
+  autoReconnect: true,
+  reconnectTries: Number.MAX_VALUE,
+  reconnectInterval: 1000,
+  useMongoClient: true,
 };
 
 mongoServer1.getConnectionString('server1_db1').then((mongoUri) => {
@@ -174,6 +172,7 @@ Note: When you create mongoose connection manually, you should do:
 ```js
 import mongoose from 'mongoose';
 
+const opts = { useMongoClient: true };
 const conn = mongoose.createConnection(); // just create connection instance
 const User = conn.model('User', new mongoose.Schema({ name: String })); // define model
 conn.open(uri, opts); // open connection to database (NOT `connect` method!)
@@ -182,6 +181,7 @@ With default connection:
 ```js
 import mongoose from 'mongoose';
 
+const opts = { useMongoClient: true };
 mongoose.connect(uri, opts);
 const User = mongoose.model('User', new mongoose.Schema({ name: String })); // define model
 ```
@@ -197,11 +197,12 @@ import mongoose from 'mongoose';
 import MongodbMemoryServer from 'mongodb-memory-server';
 
 let mongoServer;
+const opts = { useMongoClient: true };
 
 before((done) => {
   mongoServer = new MongodbMemoryServer();
   mongoServer.getConnectionString().then((mongoUri) => {
-    mongoose.connect(mongoUri, (err) => {
+    mongoose.connect(mongoUri, opts, (err) => {
       done(err);
     });
   });
@@ -230,11 +231,12 @@ import MongodbMemoryServer from 'mongodb-memory-server';
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
 let mongoServer;
+const opts = { useMongoClient: true };
 
 beforeAll(async () => {
   mongoServer = new MongodbMemoryServer();
   const mongoUri = await mongoServer.getConnectionString();
-  mongoose.connect(mongoUri, (err) => {
+  mongoose.connect(mongoUri, opts, (err) => {
     console.error(err);
   });
 });
