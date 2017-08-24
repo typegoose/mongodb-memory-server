@@ -13,6 +13,7 @@ export type MongoMemoryServerOptsT = {
   instance: {
     port?: ?number,
     dbPath?: string,
+    dbName?: string,
     storageEngine?: string,
     debug?: boolean | Function,
   },
@@ -32,6 +33,7 @@ export type MongoMemoryServerOptsT = {
 export type MongoInstanceDataT = {
   port: number,
   dbPath: string,
+  dbName: string,
   uri: string,
   storageEngine: string,
   childProcess: ChildProcess,
@@ -41,9 +43,12 @@ export type MongoInstanceDataT = {
   },
 };
 
-async function generateConnectionString(port: number, dbName: ?string): Promise<string> {
-  const db = dbName || (await uuid());
-  return `mongodb://localhost:${port}/${db}`;
+async function generateDbName(dbName?: string): Promise<string> {
+  return dbName || uuid();
+}
+
+async function generateConnectionString(port: number, dbName: string): Promise<string> {
+  return `mongodb://localhost:${port}/${dbName}`;
 }
 
 export default class MongoMemoryServer {
@@ -106,7 +111,8 @@ export default class MongoMemoryServer {
     data.port = await getport(instOpts.port);
     this.debug = Debug(`Mongo[${data.port}]`);
     this.debug.enabled = !!this.opts.debug;
-    data.uri = await generateConnectionString(data.port);
+    data.dbName = await generateDbName(instOpts.dbName);
+    data.uri = await generateConnectionString(data.port, data.dbName);
     data.storageEngine = instOpts.storageEngine || 'ephemeralForTest';
     if (instOpts.dbPath) {
       data.dbPath = instOpts.dbPath;
@@ -172,7 +178,7 @@ export default class MongoMemoryServer {
         return generateConnectionString(port, otherDbName);
       }
       // generate new random db name
-      return generateConnectionString(port);
+      return generateConnectionString(port, await generateDbName());
     }
 
     return uri;

@@ -47,6 +47,7 @@ All options are optional.
 const mongod = new MongodbMemoryServer({
   instance: {
     port?: ?number, // by default choose any free port
+    dbName?: string, // by default generate random dbName
     dbPath?: string, // by default create in temp directory
     storageEngine?: string, // by default `ephemeralForTest`
     debug?: boolean, // by default false
