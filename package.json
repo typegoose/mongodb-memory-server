@@ -33,7 +33,7 @@
     "babel-preset-env": "^1.5.2",
     "cz-conventional-changelog": "^2.0.0",
     "eslint": "^4.0.0",
-    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-config-airbnb-base": "^12.0.0",
     "eslint-config-prettier": "^2.1.1",
     "eslint-plugin-flowtype": "^2.34.0",
     "eslint-plugin-import": "^2.3.0",
