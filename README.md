@@ -9,7 +9,7 @@
 
 This package spins up a actual/real MongoDB Server programmatically from node for testing or mocking during development. By default it holds the data in memory. Fresh spinned up `mongod` process takes about 7Mb of memory. The server will allow you to connect your favorite ODM or client library to the MongoDB Server and run integration tests isolated from each other.
 
-This package use [mongodb-prebuilt](https://github.com/winfinit/mongodb-prebuilt) which on first start downloads the latest MongoDB binaries and save it to `~/.mongodb-prebuilt` folder. So first run may take a time. All further runs will use downloaded version.
+This package use [mongodb-prebuilt](https://github.com/winfinit/mongodb-prebuilt) which on first start downloads the latest MongoDB binaries and save it to `~/.mongodb-binaries` folder. So first run may take a time. All further runs will use downloaded version.
 
 Every `MongodbMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
 
@@ -54,7 +54,7 @@ const mongod = new MongodbMemoryServer({
   },
   binary: {
     version?: string, // by default '3.4.4'
-    downloadDir?: string, // by default %HOME/.mongodb-prebuilt
+    downloadDir?: string, // by default %HOME/.mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
     http?: any, // see mongodb-download package
