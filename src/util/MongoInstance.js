@@ -98,7 +98,7 @@ export default class MongodbInstance {
       };
     });
 
-    const mongoBin = path.resolve(await MongoBinary.getPath(this.opts.binary), 'mongod');
+    const mongoBin = await MongoBinary.getPath(this.opts.binary);
     this.childProcess = this.launchMongod(mongoBin);
     this.killerProcess = this.launchKiller(process.pid, this.childProcess.pid);
 

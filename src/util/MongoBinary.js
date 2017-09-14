@@ -1,11 +1,10 @@
 /* @flow */
 
-import { MongoDBDownload } from 'mongodb-download';
-import glob from 'glob';
 import os from 'os';
 import path from 'path';
 import LockFile from 'lockfile';
 import mkdirp from 'mkdirp';
+import MongoBinaryDownload from './MongoBinaryDownload';
 
 export type MongoBinaryCache = {
   [version: string]: string,
@@ -76,7 +75,7 @@ export default class MongoBinary {
 
       // again check cache, maybe other instance resolve it
       if (!this.cache[version]) {
-        const downloader = new MongoDBDownload({
+        const downloader = new MongoBinaryDownload({
           downloadDir,
           platform,
           arch,
@@ -85,8 +84,7 @@ export default class MongoBinary {
         });
 
         downloader.debug = debug;
-        const releaseDir = await downloader.downloadAndExtract();
-        this.cache[version] = await this.findBinPath(releaseDir);
+        this.cache[version] = await downloader.getMongodPath();
       }
 
       // remove lock
@@ -101,21 +99,6 @@ export default class MongoBinary {
 
     debug(`MongoBinary: Mongod binary path: ${this.cache[version]}`);
     return this.cache[version];
-  }
-
-  static findBinPath(releaseDir: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      glob(`${releaseDir}/*/bin`, {}, (err: any, files: string[]) => {
-        if (err) {
-          reject(err);
-        } else if (this.hasValidBinPath(files) === true) {
-          const resolvedBinPath: string = files[0];
-          resolve(resolvedBinPath);
-        } else {
-          reject(`path not found`);
-        }
-      });
-    });
   }
 
   static hasValidBinPath(files: string[]): boolean {

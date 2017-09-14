@@ -17,7 +17,7 @@ describe('MongoBinary', () => {
       version,
     });
     // eg. /tmp/mongo-mem-bin-33990ScJTSRNSsFYf/mongodb-download/a811facba94753a2eba574f446561b7e/mongodb-macOS-x86_64-3.5.5-13-g00ee4f5/
-    expect(binPath).toMatch(/mongo-mem-bin-.*\/mongodb.*\/bin$/);
+    expect(binPath).toMatch(/mongo-mem-bin-.*\/.*\/mongod$/);
 
     // reuse cache
     expect(MongoBinary.cache[version]).toBeDefined();

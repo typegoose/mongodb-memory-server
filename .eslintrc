@@ -23,7 +23,8 @@
       "singleQuote": true,
       "trailingComma": "es5",
     }],
-    "no-prototype-builtins": 0
+    "no-prototype-builtins": 0,
+    "prefer-destructuring": 0
   },
   "env": {
     "jasmine": true,
