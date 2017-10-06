@@ -68,7 +68,8 @@ export default class MongoBinaryDownload {
   }
 
   async getMongodPath(): Promise<string> {
-    const mongodPath = path.resolve(this.downloadDir, this.version, 'mongod');
+    const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
+    const mongodPath = path.resolve(this.downloadDir, this.version, binaryName);
     if (this.locationExists(mongodPath)) {
       return mongodPath;
     }
@@ -115,12 +116,20 @@ export default class MongoBinaryDownload {
   }
 
   async extract(mongoDBArchive: string): Promise<string> {
+    const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
     const extractDir = path.resolve(this.downloadDir, this.version);
     this.debug(`extract(): ${extractDir}`);
     await fs.ensureDir(extractDir);
+    const _filter = file => {
+      if (this.platform === 'win32'){
+        return /bin\/mongod.exe$/.test(file.path)
+      } else {
+        return /bin\/mongod$/.test(file.path)
+      }
+    }
     await decompress(mongoDBArchive, extractDir, {
       // extract only `bin/mongod` file
-      filter: file => /bin\/mongod$/.test(file.path),
+      filter: _filter,
       // extract to root folder
       map: file => {
         file.path = path.basename(file.path); // eslint-disable-line
@@ -128,7 +137,7 @@ export default class MongoBinaryDownload {
       },
     });
 
-    if (!this.locationExists(path.resolve(this.downloadDir, this.version, 'mongod'))) {
+    if (!this.locationExists(path.resolve(this.downloadDir, this.version, binaryName))) {
       throw new Error(`MongoBinaryDownload: missing mongod binary in ${mongoDBArchive}`);
     }
     return extractDir;
