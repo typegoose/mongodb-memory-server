@@ -42,7 +42,12 @@ describe('MongoInstance', () => {
     });
 
     expect(mongod.pid).toBeGreaterThan(0);
-    mongod.kill();
+
+    // Kill mongod process
+    return new Promise(resolve => {
+      mongod.once('exit', resolve);
+      mongod.kill();
+    });
   });
 
   it('should throw error if port is busy', async () => {
@@ -58,6 +63,10 @@ describe('MongoInstance', () => {
       })
     ).rejects.toBeDefined();
 
-    mongod.kill();
+    // Kill mongod process
+    return new Promise(resolve => {
+      mongod.once('exit', resolve);
+      mongod.kill();
+    });
   });
 });

@@ -147,7 +147,10 @@ export default class MongoMemoryServer {
 
     if (childProcess && childProcess.kill) {
       this.debug(`Shutdown MongoDB server on port ${port} with pid ${childProcess.pid}`);
-      childProcess.kill();
+      await new Promise(resolve => {
+        childProcess.once(`exit`, resolve);
+        childProcess.kill();
+      });
     }
 
     if (tmpDir) {
