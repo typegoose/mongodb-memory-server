@@ -43,7 +43,7 @@ export default class MongodbInstance {
   instanceReady: Function;
   instanceFailed: Function;
 
-  static run(opts: MongodOps): Promise<ChildProcess> {
+  static run(opts: MongodOps): Promise<MongodbInstance> {
     const instance = new this(opts);
     return instance.run();
   }
@@ -85,7 +85,7 @@ export default class MongodbInstance {
     return result;
   }
 
-  async run(): Promise<ChildProcess> {
+  async run(): Promise<MongodbInstance> {
     const launch = new Promise((resolve, reject) => {
       this.instanceReady = () => {
         this.debug('MongodbInstance: is ready!');
@@ -99,14 +99,28 @@ export default class MongodbInstance {
     });
 
     const mongoBin = await MongoBinary.getPath(this.opts.binary);
-    this.childProcess = this.launchMongod(mongoBin);
-    this.killerProcess = this.launchKiller(process.pid, this.childProcess.pid);
+    this.childProcess = this._launchMongod(mongoBin);
+    this.killerProcess = this._launchKiller(process.pid, this.childProcess.pid);
 
     await launch;
-    return this.childProcess;
+    return this;
   }
 
-  launchMongod(mongoBin: string): ChildProcess {
+  async kill(): Promise<MongodbInstance> {
+    if (this.childProcess && !this.childProcess.killed) {
+      await new Promise(resolve => {
+        this.childProcess.once(`exit`, resolve);
+        this.childProcess.kill();
+      });
+    }
+    return this;
+  }
+
+  getPid(): ?number {
+    return this.childProcess ? this.childProcess.pid : undefined;
+  }
+
+  _launchMongod(mongoBin: string): ChildProcess {
     const spawnOpts = this.opts.spawn || {};
     if (!spawnOpts.stdio) spawnOpts.stdio = 'pipe';
     const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), spawnOpts);
@@ -118,7 +132,7 @@ export default class MongodbInstance {
     return childProcess;
   }
 
-  launchKiller(parentPid: number, childPid: number): ChildProcess {
+  _launchKiller(parentPid: number, childPid: number): ChildProcess {
     // spawn process which kills itself and mongo process if current process is dead
     const killer = spawnChild(
       process.argv[0],
