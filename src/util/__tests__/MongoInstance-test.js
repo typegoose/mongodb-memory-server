@@ -61,4 +61,28 @@ describe('MongoInstance', () => {
 
     await mongod.kill();
   });
+
+  it('should await while mongo is killed', async () => {
+    const mongod = await MongoInstance.run({
+      instance: { port: 27445, dbPath: tmpDir.name },
+      binary: { version: '3.4.4' },
+    });
+    const pid: any = mongod.getPid();
+    expect(pid).toBeGreaterThan(0);
+
+    function isPidRunning(p: number) {
+      try {
+        return process.kill(p, 0);
+      } catch (e) {
+        return e.code === 'EPERM';
+      }
+    }
+
+    const killOnNextTick = new Promise(resolve => {
+      mongod.kill().then(resolve);
+    });
+    expect(isPidRunning(pid)).toBeTruthy();
+    await killOnNextTick;
+    expect(isPidRunning(pid)).toBeFalsy();
+  });
 });
