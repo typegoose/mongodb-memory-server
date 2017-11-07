@@ -36,6 +36,7 @@ export type MongoInstanceDataT = {
   dbName: string,
   uri: string,
   storageEngine: string,
+  instance: MongoInstance,
   childProcess: ChildProcess,
   tmpDir?: {
     name: string,
@@ -125,7 +126,7 @@ export default class MongoMemoryServer {
 
     // Download if not exists mongo binaries in ~/.mongodb-prebuilt
     // After that startup MongoDB instance
-    const childProcess = await MongoInstance.run({
+    const instance = await MongoInstance.run({
       instance: {
         port: data.port,
         storageEngine: data.storageEngine,
@@ -136,7 +137,8 @@ export default class MongoMemoryServer {
       spawn: this.opts.spawn,
       debug: this.debug,
     });
-    data.childProcess = childProcess;
+    data.instance = instance;
+    data.childProcess = instance.childProcess;
     data.tmpDir = tmpDir;
 
     return data;
@@ -147,7 +149,10 @@ export default class MongoMemoryServer {
 
     if (childProcess && childProcess.kill) {
       this.debug(`Shutdown MongoDB server on port ${port} with pid ${childProcess.pid}`);
-      childProcess.kill();
+      await new Promise(resolve => {
+        childProcess.once(`exit`, resolve);
+        childProcess.kill();
+      });
     }
 
     if (tmpDir) {

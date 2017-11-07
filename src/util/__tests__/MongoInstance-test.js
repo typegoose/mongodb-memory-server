@@ -41,8 +41,9 @@ describe('MongoInstance', () => {
       binary: { version: '3.4.4' },
     });
 
-    expect(mongod.pid).toBeGreaterThan(0);
-    mongod.kill();
+    expect(mongod.getPid()).toBeGreaterThan(0);
+
+    await mongod.kill();
   });
 
   it('should throw error if port is busy', async () => {
@@ -58,6 +59,27 @@ describe('MongoInstance', () => {
       })
     ).rejects.toBeDefined();
 
-    mongod.kill();
+    await mongod.kill();
+  });
+
+  it('should await while mongo is killed', async () => {
+    const mongod = await MongoInstance.run({
+      instance: { port: 27445, dbPath: tmpDir.name },
+      binary: { version: '3.4.4' },
+    });
+    const pid: any = mongod.getPid();
+    expect(pid).toBeGreaterThan(0);
+
+    function isPidRunning(p: number) {
+      try {
+        return process.kill(p, 0);
+      } catch (e) {
+        return e.code === 'EPERM';
+      }
+    }
+
+    expect(isPidRunning(pid)).toBeTruthy();
+    await mongod.kill();
+    expect(isPidRunning(pid)).toBeFalsy();
   });
 });
