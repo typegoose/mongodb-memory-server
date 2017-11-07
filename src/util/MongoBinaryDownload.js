@@ -190,8 +190,8 @@ export default class MongoBinaryDownload {
 
     const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
     process.stdout.write(
-      `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb / ${this
-        .dlProgress.totalMb}mb)${crReturn}`
+      `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb ` +
+        `/ ${this.dlProgress.totalMb}mb)${crReturn}`
     );
   }
 

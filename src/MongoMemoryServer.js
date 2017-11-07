@@ -95,7 +95,8 @@ export default class MongoMemoryServer {
       .catch(err => {
         if (!this.opts.debug) {
           throw new Error(
-            `${err.message}\n\nUse debug option for more info: new MongoMemoryServer({ debug: true })`
+            `${err.message}\n\nUse debug option for more info: ` +
+              `new MongoMemoryServer({ debug: true })`
           );
         }
         throw err;
@@ -145,15 +146,10 @@ export default class MongoMemoryServer {
   }
 
   async stop(): Promise<boolean> {
-    const { childProcess, port, tmpDir } = (await this.getInstanceData(): MongoInstanceDataT);
+    const { instance, port, tmpDir } = (await this.getInstanceData(): MongoInstanceDataT);
 
-    if (childProcess && childProcess.kill) {
-      this.debug(`Shutdown MongoDB server on port ${port} with pid ${childProcess.pid}`);
-      await new Promise(resolve => {
-        childProcess.once(`exit`, resolve);
-        childProcess.kill();
-      });
-    }
+    this.debug(`Shutdown MongoDB server on port ${port} with pid ${instance.getPid() || ''}`);
+    await instance.kill();
 
     if (tmpDir) {
       this.debug(`Removing tmpDir ${tmpDir.name}`);

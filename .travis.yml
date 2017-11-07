@@ -8,10 +8,8 @@ cache:
 notifications:
   email: true
 node_js:
-  - "7"
+  - "8"
   - "6"
-  - "5"
-  - "4"
 before_install: yarn global add greenkeeper-lockfile@1
 before_script: greenkeeper-lockfile-update
 after_script: greenkeeper-lockfile-upload
