@@ -78,11 +78,8 @@ describe('MongoInstance', () => {
       }
     }
 
-    const killOnNextTick = new Promise(resolve => {
-      mongod.kill().then(resolve);
-    });
     expect(isPidRunning(pid)).toBeTruthy();
-    await killOnNextTick;
+    await mongod.kill();
     expect(isPidRunning(pid)).toBeFalsy();
   });
 });
