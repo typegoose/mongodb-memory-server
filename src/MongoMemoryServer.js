@@ -95,7 +95,8 @@ export default class MongoMemoryServer {
       .catch(err => {
         if (!this.opts.debug) {
           throw new Error(
-            `${err.message}\n\nUse debug option for more info: new MongoMemoryServer({ debug: true })`
+            `${err.message}\n\nUse debug option for more info: ` +
+              `new MongoMemoryServer({ debug: true })`
           );
         }
         throw err;
