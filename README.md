@@ -238,7 +238,7 @@ beforeAll(async () => {
   mongoServer = new MongodbMemoryServer();
   const mongoUri = await mongoServer.getConnectionString();
   mongoose.connect(mongoUri, opts, (err) => {
-    console.error(err);
+    if (err) console.error(err);
   });
 });
 
