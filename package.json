@@ -44,7 +44,7 @@
     "npm-run-all": "^4.1.1",
     "prettier": "^1.8.0",
     "rimraf": "^2.6.2",
-    "semantic-release": "^8.2.0"
+    "semantic-release": "^11.0.2"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
