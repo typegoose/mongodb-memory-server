@@ -142,4 +142,16 @@ describe('MongoBinaryDownloadUrl', () => {
       ).toBe('debian81');
     });
   });
+
+  describe('getMintVersionString', () => {
+    const downloadUrl = new MongoBinaryDownloadUrl({
+      platform: 'linux',
+      arch: 'x64',
+      version: '3.4.4',
+    });
+
+    it('should return an archive name for Linux Mint', () => {
+      expect(downloadUrl.getMintVersionString({ dist: 'Linux Mint' })).toBe('ubuntu1404');
+    });
+  });
 });

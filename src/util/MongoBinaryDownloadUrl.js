@@ -4,8 +4,8 @@
 import getos from 'getos';
 
 type OS = {
-  release: string,
   dist: string,
+  release?: string,
 };
 
 const DOWNLOAD_URI = 'https://downloads.mongodb.org';
@@ -79,6 +79,8 @@ export default class MongoBinaryDownloadUrl {
       return this.getFedoraVersionString(os);
     } else if (/debian/i.test(os.dist)) {
       return this.getDebianVersionString(os);
+    } else if (/mint/i.test(os.dist)) {
+      return this.getMintVersionString(os);
     }
     throw new Error(`Cannot determine version string for ${JSON.stringify(os)}`);
   }
@@ -109,18 +111,27 @@ export default class MongoBinaryDownloadUrl {
 
   getRhelVersionString(os: OS): string {
     let name: string = 'rhel';
-    if (/^7/.test(os.release)) {
-      name += '70';
-    } else if (/^6/.test(os.release)) {
-      name += '62';
-    } else if (/^5/.test(os.release)) {
-      name += '55';
+    const { release } = os;
+    if (release) {
+      if (/^7/.test(release)) {
+        name += '70';
+      } else if (/^6/.test(release)) {
+        name += '62';
+      } else if (/^5/.test(release)) {
+        name += '55';
+      }
     }
     return name;
   }
 
   // eslint-disable-next-line no-unused-vars
   getElementaryOSVersionString(os: OS): string {
+    return 'ubuntu1404';
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  getMintVersionString(os: OS): string {
+    // unfortunately getos doesn't return version for Mint
     return 'ubuntu1404';
   }
 

@@ -1,3 +1,5 @@
+/* @flow */
+
 import MongoMemoryServer from './MongoMemoryServer';
 import MongoInstance from './util/MongoInstance';
 import MongoBinary from './util/MongoBinary';
