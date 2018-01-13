@@ -71,7 +71,7 @@
     "lint": "eslint --ext .js ./src",
     "flow": "./node_modules/.bin/flow",
     "test": "npm run coverage && npm run lint && npm run flow",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release"
   },
   "jest": {
     "roots": [
