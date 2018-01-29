@@ -203,10 +203,10 @@ const opts = { useMongoClient: true };
 before((done) => {
   mongoServer = new MongodbMemoryServer();
   mongoServer.getConnectionString().then((mongoUri) => {
-    mongoose.connect(mongoUri, opts, (err) => {
-      done(err);
+    return mongoose.connect(mongoUri, opts, (err) => {
+      if (err) done(err);
     });
-  });
+  }).then(() => done());
 });
 
 after(() => {
@@ -237,7 +237,7 @@ const opts = { useMongoClient: true };
 beforeAll(async () => {
   mongoServer = new MongodbMemoryServer();
   const mongoUri = await mongoServer.getConnectionString();
-  mongoose.connect(mongoUri, opts, (err) => {
+  await mongoose.connect(mongoUri, opts, (err) => {
     if (err) console.error(err);
   });
 });
