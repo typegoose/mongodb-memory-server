@@ -82,7 +82,8 @@ export default class MongoBinaryDownloadUrl {
     } else if (/mint/i.test(os.dist)) {
       return this.getMintVersionString(os);
     }
-    throw new Error(`Cannot determine version string for ${JSON.stringify(os)}`);
+    console.warn(`Unknown linux distro ${os.dist}, falling back to legacy MongoDB build`);
+    return this.getLegacyVersionString(os);
   }
 
   getDebianVersionString(os: OS): string {
@@ -133,6 +134,11 @@ export default class MongoBinaryDownloadUrl {
   getMintVersionString(os: OS): string {
     // unfortunately getos doesn't return version for Mint
     return 'ubuntu1404';
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  getLegacyVersionString(os: OS): string {
+    return '';
   }
 
   getSuseVersionString(os: any): string {

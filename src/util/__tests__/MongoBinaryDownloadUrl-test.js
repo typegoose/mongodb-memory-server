@@ -44,6 +44,20 @@ describe('MongoBinaryDownloadUrl', () => {
         'https://downloads.mongodb.org/win32/mongodb-win32-x86_64-3.4.4.zip'
       );
     });
+
+    it('fallback', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.4.4',
+        os: {
+          dist: 'Gentoo Linux',
+        },
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://downloads.mongodb.org/linux/mongodb-linux-x86_64-3.4.4.tgz'
+      );
+    });
   });
 
   describe('getUbuntuVersionString()', () => {
@@ -152,6 +166,18 @@ describe('MongoBinaryDownloadUrl', () => {
 
     it('should return an archive name for Linux Mint', () => {
       expect(downloadUrl.getMintVersionString({ dist: 'Linux Mint' })).toBe('ubuntu1404');
+    });
+  });
+
+  describe('getLegacyVersionString', () => {
+    const downloadUrl = new MongoBinaryDownloadUrl({
+      platform: 'linux',
+      arch: 'x64',
+      version: '3.4.4',
+    });
+
+    it('should return an archive name for Gentoo Linux', () => {
+      expect(downloadUrl.getLegacyVersionString({ dist: 'Gentoo Linux' })).toBe('');
     });
   });
 });
