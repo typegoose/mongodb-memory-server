@@ -51,7 +51,7 @@ describe('MongoBinaryDownloadUrl', () => {
         arch: 'x64',
         version: '3.4.4',
         os: {
-          dist: 'Gentoo Linux'
+          dist: 'Gentoo Linux',
         },
       });
       expect(await du.getDownloadUrl()).toBe(
