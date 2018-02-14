@@ -66,6 +66,10 @@ const mongod = new MongodbMemoryServer({
 });
 ```
 
+### Simple test with MongoClient
+
+Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/singleDB-test.js).
+
 ### Provide connection string to mongoose
 ```js
 import mongoose from 'mongoose';
@@ -79,7 +83,7 @@ mongoServer.getConnectionString().then((mongoUri) => {
     autoReconnect: true,
     reconnectTries: Number.MAX_VALUE,
     reconnectInterval: 1000,
-    useMongoClient: true,
+    useMongoClient: true, // remove this line if you use mongoose 5 and above
   };
 
   mongoose.connect(mongoUri, mongooseOpts);
@@ -123,7 +127,7 @@ const mongooseOpts = { // options for mongoose 4.11.3 and above
   autoReconnect: true,
   reconnectTries: Number.MAX_VALUE,
   reconnectInterval: 1000,
-  useMongoClient: true,
+  useMongoClient: true, // remove this line if you use mongoose 5 and above
 };
 
 mongoServer1.getConnectionString('server1_db1').then((mongoUri) => {
@@ -174,7 +178,7 @@ Note: When you create mongoose connection manually, you should do:
 ```js
 import mongoose from 'mongoose';
 
-const opts = { useMongoClient: true };
+const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 const conn = mongoose.createConnection(); // just create connection instance
 const User = conn.model('User', new mongoose.Schema({ name: String })); // define model
 conn.open(uri, opts); // open connection to database (NOT `connect` method!)
@@ -183,7 +187,7 @@ With default connection:
 ```js
 import mongoose from 'mongoose';
 
-const opts = { useMongoClient: true };
+const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 mongoose.connect(uri, opts);
 const User = mongoose.model('User', new mongoose.Schema({ name: String })); // define model
 ```
@@ -199,7 +203,7 @@ import mongoose from 'mongoose';
 import MongodbMemoryServer from 'mongodb-memory-server';
 
 let mongoServer;
-const opts = { useMongoClient: true };
+const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 
 before((done) => {
   mongoServer = new MongodbMemoryServer();
@@ -233,7 +237,7 @@ import MongodbMemoryServer from 'mongodb-memory-server';
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
 let mongoServer;
-const opts = { useMongoClient: true };
+const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 
 beforeAll(async () => {
   mongoServer = new MongodbMemoryServer();
