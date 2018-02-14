@@ -25,26 +25,26 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.1",
-    "babel-jest": "^22.0.6",
+    "babel-jest": "^22.2.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "cz-conventional-changelog": "^2.1.0",
-    "eslint": "^4.15.0",
+    "eslint": "^4.17.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-flowtype": "^2.41.0",
+    "eslint-plugin-flowtype": "^2.44.0",
     "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-prettier": "^2.4.0",
-    "flow-bin": "^0.63.1",
-    "jest": "^22.0.6",
-    "mongodb": "^2.2.33",
+    "eslint-plugin-prettier": "^2.6.0",
+    "flow-bin": "^0.65.0",
+    "jest": "^22.3.0",
+    "mongodb": "3.0.2",
     "npm-run-all": "^4.1.2",
     "prettier": "^1.10.2",
     "rimraf": "^2.6.2",
-    "semantic-release": "^11.0.2"
+    "semantic-release": "^12.4.1"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
@@ -59,7 +59,7 @@
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "tmp": "^0.0.33",
-    "uuid": "^3.0.1"
+    "uuid": "^3.2.1"
   },
   "peerDependencies": {},
   "scripts": {
