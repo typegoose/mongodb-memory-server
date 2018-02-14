@@ -4,6 +4,43 @@ import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 
 describe('MongoBinaryDownloadUrl', () => {
   describe('getDownloadUrl()', () => {
+    describe('for mac', () => {
+      it('3.4.4 without ssl', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'x64',
+          version: '3.4.4',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://downloads.mongodb.org/osx/mongodb-osx-x86_64-3.4.4.tgz'
+        );
+      });
+
+      it('3.4.4 with ssl', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'x64',
+          version: '3.4.4',
+          ssl: true,
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://downloads.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.4.4.tgz'
+        );
+      });
+
+      it('3.6.2 with ssl', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'x64',
+          version: '3.6.2',
+          ssl: true,
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://downloads.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.2.tgz'
+        );
+      });
+    });
+
     it('for ubuntu', async () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',

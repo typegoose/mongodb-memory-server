@@ -15,6 +15,7 @@ export type MongoBinaryDownloadOpts = {
   downloadDir: string,
   platform: string,
   arch: string,
+  ssl: boolean,
   debug?: boolean | Function,
 };
 
@@ -31,18 +32,21 @@ export default class MongoBinaryDownload {
 
   downloadDir: string;
   arch: string;
+  ssl: boolean;
   version: string;
   platform: string;
 
   constructor({
     platform,
     arch,
+    ssl,
     downloadDir,
     version,
     debug,
   }: $Shape<MongoBinaryDownloadOpts>) {
     this.platform = platform || os.platform();
     this.arch = arch || os.arch();
+    this.ssl = ssl || false;
     this.version = version || 'latest';
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
     this.dlProgress = {
@@ -85,6 +89,7 @@ export default class MongoBinaryDownload {
     const mbdUrl = new MongoBinaryDownloadUrl({
       platform: this.platform,
       arch: this.arch,
+      ssl: this.ssl,
       version: this.version,
     });
 

@@ -14,18 +14,21 @@ export type MongoBinaryDownloadUrlOpts = {
   version: string,
   platform: string,
   arch: string,
+  ssl?: boolean,
   os?: ?OS, // getos() result
 };
 
 export default class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
+  ssl: ?boolean;
   version: string;
   os: ?OS;
 
-  constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
+  constructor({ platform, arch, ssl, version, os }: MongoBinaryDownloadUrlOpts) {
     this.platform = this.translatePlatform(platform);
     this.arch = this.translateArch(arch, this.platform);
+    this.ssl = ssl;
     this.version = version;
     this.os = os;
   }
@@ -36,7 +39,13 @@ export default class MongoBinaryDownloadUrl {
   }
 
   async getArchiveName(): Promise<string> {
-    let name = `mongodb-${this.platform}-${this.arch}`;
+    let name = `mongodb-${this.platform}`;
+
+    if (this.ssl) {
+      name += '-ssl';
+    }
+
+    name += `-${this.arch}`;
 
     let osString;
     if (this.platform === 'linux' && this.arch !== 'i686') {
