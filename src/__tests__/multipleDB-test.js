@@ -5,6 +5,8 @@ import MongoDBMemoryServer from '../MongoMemoryServer';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
+let con1;
+let con2;
 let db1;
 let db2;
 let mongoServer1;
@@ -12,16 +14,18 @@ let mongoServer2;
 beforeAll(async () => {
   mongoServer1 = new MongoDBMemoryServer();
   const mongoUri = await mongoServer1.getConnectionString();
-  db1 = await MongoClient.connect(mongoUri);
+  con1 = await MongoClient.connect(mongoUri);
+  db1 = con1.db(await mongoServer1.getDbName());
 
   mongoServer2 = new MongoDBMemoryServer();
   const mongoUri2 = await mongoServer2.getConnectionString();
-  db2 = await MongoClient.connect(mongoUri2);
+  con2 = await MongoClient.connect(mongoUri2);
+  db2 = con2.db(await mongoServer1.getDbName());
 });
 
 afterAll(() => {
-  db1.close();
-  db2.close();
+  con1.close();
+  con2.close();
   mongoServer1.stop();
   mongoServer2.stop();
 });
