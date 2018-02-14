@@ -22,7 +22,6 @@ export type MongoMemoryServerOptsT = {
     downloadDir?: string,
     platform?: string,
     arch?: string,
-    http?: any,
     debug?: boolean | Function,
   },
   debug?: boolean,
