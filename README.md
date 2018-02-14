@@ -57,7 +57,7 @@ const mongod = new MongodbMemoryServer({
     downloadDir?: string, // by default %HOME/.mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
-    ssl?: boolean, // by default false
+    ssl?: boolean, // by default false (use it if mongodb dist has only ssl version binary)
     debug?: boolean, // by default false
   },
   debug?: boolean, // by default false
