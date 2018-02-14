@@ -198,4 +198,9 @@ export default class MongoMemoryServer {
     const { dbPath } = (await this.getInstanceData(): MongoInstanceDataT);
     return dbPath;
   }
+
+  async getDbName(): Promise<string> {
+    const { dbName } = (await this.getInstanceData(): MongoInstanceDataT);
+    return dbName;
+  }
 }
