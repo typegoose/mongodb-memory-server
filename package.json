@@ -38,7 +38,7 @@
     "eslint-plugin-flowtype": "^2.44.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-prettier": "^2.6.0",
-    "flow-bin": "^0.65.0",
+    "flow-bin": "^0.66.0",
     "jest": "^22.3.0",
     "mongodb": "3.0.2",
     "npm-run-all": "^4.1.2",
