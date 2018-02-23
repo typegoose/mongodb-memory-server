@@ -40,7 +40,7 @@
     "eslint-plugin-prettier": "^2.6.0",
     "flow-bin": "^0.65.0",
     "jest": "^22.3.0",
-    "mongodb": "3.0.2",
+    "mongodb": "3.0.3",
     "npm-run-all": "^4.1.2",
     "prettier": "^1.10.2",
     "rimraf": "^2.6.2",
