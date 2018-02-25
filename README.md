@@ -33,7 +33,7 @@ const mongod = new MongodbMemoryServer();
 const uri = await mongod.getConnectionString();
 const port = await mongod.getPort();
 const dbPath = await mongod.getDbPath();
-const dbName = await mongoServer.getDbName();
+const dbName = await mongod.getDbName();
 
 // some code
 
