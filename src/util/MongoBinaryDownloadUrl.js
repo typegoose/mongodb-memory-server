@@ -8,7 +8,7 @@ type OS = {
   release?: string,
 };
 
-const DOWNLOAD_URI = 'https://downloads.mongodb.org';
+const DOWNLOAD_URI = 'https://fastdl.mongodb.org';
 
 export type MongoBinaryDownloadUrlOpts = {
   version: string,

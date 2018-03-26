@@ -5,38 +5,38 @@ import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 describe('MongoBinaryDownloadUrl', () => {
   describe('getDownloadUrl()', () => {
     describe('for mac', () => {
-      it('3.4.4 without ssl', async () => {
+      it('3.6.3 without ssl', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
-          version: '3.4.4',
+          version: '3.6.3',
         });
         expect(await du.getDownloadUrl()).toBe(
-          'https://downloads.mongodb.org/osx/mongodb-osx-x86_64-3.4.4.tgz'
+          'https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.6.3.tgz'
         );
       });
 
-      it('3.4.4 with ssl', async () => {
+      it('3.6.3 with ssl', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
-          version: '3.4.4',
+          version: '3.6.3',
           ssl: true,
         });
         expect(await du.getDownloadUrl()).toBe(
-          'https://downloads.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.4.4.tgz'
+          'https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz'
         );
       });
 
-      it('3.6.2 with ssl', async () => {
+      it('3.6.3 with ssl', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
-          version: '3.6.2',
+          version: '3.6.3',
           ssl: true,
         });
         expect(await du.getDownloadUrl()).toBe(
-          'https://downloads.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.2.tgz'
+          'https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz'
         );
       });
     });
@@ -45,14 +45,14 @@ describe('MongoBinaryDownloadUrl', () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
-        version: '3.4.4',
+        version: '3.6.3',
         os: {
           dist: 'Ubuntu Linux',
           release: '14.04',
         },
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://downloads.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.4.4.tgz'
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz'
       );
     });
 
@@ -60,14 +60,14 @@ describe('MongoBinaryDownloadUrl', () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
-        version: '3.4.4',
+        version: '3.6.3',
         os: {
           dist: 'debian',
           release: '8.1',
         },
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://downloads.mongodb.org/linux/mongodb-linux-x86_64-debian81-3.4.4.tgz'
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian81-3.6.3.tgz'
       );
     });
 
@@ -75,10 +75,10 @@ describe('MongoBinaryDownloadUrl', () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'win32',
         arch: 'x64',
-        version: '3.4.4',
+        version: '3.6.3',
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://downloads.mongodb.org/win32/mongodb-win32-x86_64-3.4.4.zip'
+        'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-3.6.3.zip'
       );
     });
 
@@ -86,13 +86,13 @@ describe('MongoBinaryDownloadUrl', () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
-        version: '3.4.4',
+        version: '3.6.3',
         os: {
           dist: 'Gentoo Linux',
         },
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://downloads.mongodb.org/linux/mongodb-linux-x86_64-3.4.4.tgz'
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
       );
     });
   });
@@ -101,7 +101,7 @@ describe('MongoBinaryDownloadUrl', () => {
     const downloadUrl = new MongoBinaryDownloadUrl({
       platform: 'linux',
       arch: 'x64',
-      version: '3.4.4',
+      version: '3.6.3',
     });
 
     it('should return a archive name for Ubuntu 14.10', () => {
@@ -136,7 +136,7 @@ describe('MongoBinaryDownloadUrl', () => {
     const downloadUrl = new MongoBinaryDownloadUrl({
       platform: 'linux',
       arch: 'x64',
-      version: '3.4.4',
+      version: '3.6.3',
     });
 
     it('should return a archive name for debian 6.2', () => {
@@ -198,7 +198,7 @@ describe('MongoBinaryDownloadUrl', () => {
     const downloadUrl = new MongoBinaryDownloadUrl({
       platform: 'linux',
       arch: 'x64',
-      version: '3.4.4',
+      version: '3.6.3',
     });
 
     it('should return an archive name for Linux Mint', () => {
@@ -210,7 +210,7 @@ describe('MongoBinaryDownloadUrl', () => {
     const downloadUrl = new MongoBinaryDownloadUrl({
       platform: 'linux',
       arch: 'x64',
-      version: '3.4.4',
+      version: '3.6.3',
     });
 
     it('should return an archive name for Gentoo Linux', () => {
