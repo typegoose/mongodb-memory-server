@@ -78,7 +78,7 @@ describe('MongoBinaryDownloadUrl', () => {
         version: '3.6.3',
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-3.6.3.zip'
+        'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-3.6.3.zip'
       );
     });
 

@@ -39,31 +39,51 @@ export default class MongoBinaryDownloadUrl {
   }
 
   async getArchiveName(): Promise<string> {
-    let name = `mongodb-${this.platform}`;
+    switch (this.platform) {
+      case 'osx':
+        return this.getArchiveNameOsx();
+      case 'win32':
+        return this.getArchiveNameWin();
+      case 'linux':
+      default:
+        return this.getArchiveNameLinux();
+    }
+  }
 
+  async getArchiveNameWin(): Promise<string> {
+    let name = `mongodb-${this.platform}`;
+    name += `-${this.arch}`;
+    name += '-2008plus-ssl';
+    name += `-${this.version}.zip`;
+    return name;
+  }
+
+  async getArchiveNameOsx(): Promise<string> {
+    let name = `mongodb-osx`;
     if (this.ssl) {
       name += '-ssl';
     }
+    name += `-${this.arch}`;
+    name += `-${this.version}.tgz`;
+    return name;
+  }
 
+  async getArchiveNameLinux(): Promise<string> {
+    let name = `mongodb-linux`;
     name += `-${this.arch}`;
 
     let osString;
-    if (this.platform === 'linux' && this.arch !== 'i686') {
+    if (this.arch !== 'i686') {
       if (!this.os) this.os = await this.getos();
       osString = this.getLinuxOSVersionString(this.os);
     }
-
     if (osString) {
       name += `-${osString}`;
     }
 
-    name += `-${this.version}.${this.getArchiveType()}`;
+    name += `-${this.version}.tgz`;
 
     return name;
-  }
-
-  getArchiveType(): string {
-    return this.platform === 'win32' ? 'zip' : 'tgz';
   }
 
   async getos(): Promise<OS> {
