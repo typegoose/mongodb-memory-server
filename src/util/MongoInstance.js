@@ -107,7 +107,7 @@ export default class MongodbInstance {
   }
 
   async kill(): Promise<MongodbInstance> {
-    if (this.childProcess && !this.childProcess.killed) {
+    if (this.childProcess && !(this.childProcess: any).killed) {
       await new Promise(resolve => {
         this.childProcess.once(`exit`, resolve);
         this.childProcess.kill();
