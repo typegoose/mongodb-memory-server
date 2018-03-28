@@ -14,21 +14,18 @@ export type MongoBinaryDownloadUrlOpts = {
   version: string,
   platform: string,
   arch: string,
-  ssl?: boolean,
   os?: ?OS, // getos() result
 };
 
 export default class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
-  ssl: ?boolean;
   version: string;
   os: ?OS;
 
-  constructor({ platform, arch, ssl, version, os }: MongoBinaryDownloadUrlOpts) {
+  constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
     this.platform = this.translatePlatform(platform);
     this.arch = this.translateArch(arch, this.platform);
-    this.ssl = ssl;
     this.version = version;
     this.os = os;
   }
@@ -50,6 +47,7 @@ export default class MongoBinaryDownloadUrl {
     }
   }
 
+  // https://www.mongodb.org/dl/win32
   async getArchiveNameWin(): Promise<string> {
     let name = `mongodb-${this.platform}`;
     name += `-${this.arch}`;
@@ -58,9 +56,16 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
+  // https://www.mongodb.org/dl/osx
   async getArchiveNameOsx(): Promise<string> {
     let name = `mongodb-osx`;
-    if (this.ssl) {
+    if (
+      !(
+        this.version.indexOf('3.0') === 0 ||
+        this.version.indexOf('2.') === 0 ||
+        this.version.indexOf('1.') === 0
+      )
+    ) {
       name += '-ssl';
     }
     name += `-${this.arch}`;
@@ -68,6 +73,7 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
+  // https://www.mongodb.org/dl/linux
   async getArchiveNameLinux(): Promise<string> {
     let name = `mongodb-linux`;
     name += `-${this.arch}`;

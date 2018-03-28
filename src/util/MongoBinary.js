@@ -15,7 +15,6 @@ export type MongoBinaryOpts = {
   downloadDir?: string,
   platform?: string,
   arch?: string,
-  ssl?: boolean,
   debug?: boolean | Function,
 };
 
@@ -27,7 +26,6 @@ export default class MongoBinary {
       downloadDir = path.resolve(os.homedir(), '.mongodb-binaries'),
       platform = os.platform(),
       arch = os.arch(),
-      ssl = false,
       version = '3.4.4',
     } = opts;
 
@@ -79,7 +77,6 @@ export default class MongoBinary {
           downloadDir,
           platform,
           arch,
-          ssl,
           version,
         });
 
