@@ -5,38 +5,25 @@ import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 describe('MongoBinaryDownloadUrl', () => {
   describe('getDownloadUrl()', () => {
     describe('for mac', () => {
-      it('3.6.3 without ssl', async () => {
+      it('above 3.0', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
           version: '3.6.3',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.6.3.tgz'
-        );
-      });
-
-      it('3.6.3 with ssl', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: '3.6.3',
-          ssl: true,
         });
         expect(await du.getDownloadUrl()).toBe(
           'https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz'
         );
       });
 
-      it('3.6.3 with ssl', async () => {
+      it('below and include 3.0', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
-          version: '3.6.3',
-          ssl: true,
+          version: '3.0.0',
         });
         expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz'
+          'https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.0.0.tgz'
         );
       });
     });
