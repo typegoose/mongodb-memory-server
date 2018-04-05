@@ -54,7 +54,7 @@
     "get-port": "^3.2.0",
     "getos": "^3.1.0",
     "lockfile": "^1.0.3",
-    "md5-file": "^3.2.3",
+    "md5-file": "^4.0.0",
     "mkdirp": "^0.5.1",
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
