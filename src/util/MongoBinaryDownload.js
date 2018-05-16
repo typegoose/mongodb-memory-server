@@ -111,10 +111,14 @@ export default class MongoBinaryDownload {
     this.debug(`extract(): ${extractDir}`);
     await fs.ensureDir(extractDir);
 
-    const filter =
-      this.platform === 'win32'
-        ? file => /bin\/mongod.exe$/.test(file.path)
-        : file => /bin\/mongod$/.test(file.path);
+    let filter;
+    if (this.platform === 'win32') {
+      filter = file => {
+        return /bin\/mongod.exe$/.test(file.path) || /.dll$/.test(file.path);
+      };
+    } else {
+      filter = file => /bin\/mongod$/.test(file.path);
+    }
 
     await decompress(mongoDBArchive, extractDir, {
       // extract only `bin/mongod` file
