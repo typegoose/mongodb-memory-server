@@ -8,7 +8,12 @@ It helps to skip timeout setup `jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;`
 when first test run hits MongoDB binary downloading to the cache.
 */
 
-if (require.resolve('./lib/util/MongoBinary')) {
+function isModuleExists(name) {
+  try { return !!require.resolve(name); }
+  catch(e) { return false }
+}
+
+if (isModuleExists('./lib/util/MongoBinary')) {
   const MongoBinary = require('./lib/util/MongoBinary').default;
 
   console.log('mongodb-memory-server: checking MongoDB binaries cache...');
