@@ -6,7 +6,8 @@
   "repository": "https://github.com/nodkz/mongodb-memory-server",
   "author": "Nodkz (pavel.chertorogov@gmail.com)",
   "files": [
-    "lib"
+    "lib",
+    "postinstall.js"
   ],
   "keywords": [
     "mongodb",
@@ -71,7 +72,8 @@
     "lint": "eslint --ext .js ./src",
     "flow": "./node_modules/.bin/flow",
     "test": "npm run coverage && npm run lint && npm run flow",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "postinstall": "node ./postinstall.js"
   },
   "jest": {
     "roots": [
