@@ -147,7 +147,7 @@ export default class MongoBinaryDownload {
       const req: any = https.get(httpOptions, (response: any) => {
         this.dlProgress.current = 0;
         this.dlProgress.length = parseInt(response.headers['content-length'], 10);
-        this.dlProgress.totalMb = Math.round(this.dlProgress.length / 1048576 * 10) / 10;
+        this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
 
         response.pipe(fileStream);
 
@@ -179,8 +179,8 @@ export default class MongoBinaryDownload {
     this.dlProgress.lastPrintedAt = now;
 
     const percentComplete =
-      Math.round(100.0 * this.dlProgress.current / this.dlProgress.length * 10) / 10;
-    const mbComplete = Math.round(this.dlProgress.current / 1048576 * 10) / 10;
+      Math.round(((100.0 * this.dlProgress.current) / this.dlProgress.length) * 10) / 10;
+    const mbComplete = Math.round((this.dlProgress.current / 1048576) * 10) / 10;
 
     const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
     process.stdout.write(
