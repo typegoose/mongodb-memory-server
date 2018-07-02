@@ -4,7 +4,6 @@
 import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
-import request from 'request-promise';
 import md5File from 'md5-file';
 import https from 'https';
 

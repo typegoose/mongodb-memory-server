@@ -2,7 +2,7 @@
 /* eslint-disable class-methods-use-this */
 
 import getos from 'getos';
-import httpsProxyAgent from 'https-proxy-agent';
+import HttpsProxyAgent from 'https-proxy-agent';
 
 type OS = {
   dist: string,
@@ -48,7 +48,7 @@ export default class MongoBinaryDownloadUrl {
       process.env.http_proxy;
 
     if (proxy) {
-      downloadOptions.agent = new httpsProxyAgent(proxy);
+      downloadOptions.agent = new HttpsProxyAgent(proxy);
     }
 
     return downloadOptions;

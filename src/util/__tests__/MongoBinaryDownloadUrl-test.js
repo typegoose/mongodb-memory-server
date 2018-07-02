@@ -11,7 +11,7 @@ describe('MongoBinaryDownloadUrl', () => {
           arch: 'x64',
           version: '3.6.3',
         });
-        expect(await du.getDownloadOptions()).toEqual({
+        expect(await du.getDownloadOptions()).toMatchObject({
           hostname: 'fastdl.mongodb.org',
           port: 443,
           path: `/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz`,
@@ -25,7 +25,7 @@ describe('MongoBinaryDownloadUrl', () => {
           arch: 'x64',
           version: '3.0.0',
         });
-        expect(await du.getDownloadOptions()).toEqual({
+        expect(await du.getDownloadOptions()).toMatchObject({
           hostname: 'fastdl.mongodb.org',
           port: 443,
           path: `/osx/mongodb-osx-x86_64-3.0.0.tgz`,
@@ -44,7 +44,7 @@ describe('MongoBinaryDownloadUrl', () => {
           release: '14.04',
         },
       });
-      expect(await du.getDownloadOptions()).toEqual({
+      expect(await du.getDownloadOptions()).toMatchObject({
         hostname: 'fastdl.mongodb.org',
         port: 443,
         path: `/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz`,
@@ -62,7 +62,7 @@ describe('MongoBinaryDownloadUrl', () => {
           release: '8.1',
         },
       });
-      expect(await du.getDownloadOptions()).toEqual({
+      expect(await du.getDownloadOptions()).toMatchObject({
         hostname: 'fastdl.mongodb.org',
         port: 443,
         path: `/linux/mongodb-linux-x86_64-debian81-3.6.3.tgz`,
@@ -76,7 +76,7 @@ describe('MongoBinaryDownloadUrl', () => {
         arch: 'x64',
         version: '3.6.3',
       });
-      expect(await du.getDownloadOptions()).toEqual({
+      expect(await du.getDownloadOptions()).toMatchObject({
         hostname: 'fastdl.mongodb.org',
         port: 443,
         path: `/win32/mongodb-win32-x86_64-2008plus-ssl-3.6.3.zip`,
@@ -93,7 +93,7 @@ describe('MongoBinaryDownloadUrl', () => {
           dist: 'Gentoo Linux',
         },
       });
-      expect(await du.getDownloadOptions()).toEqual({
+      expect(await du.getDownloadOptions()).toMatchObject({
         hostname: 'fastdl.mongodb.org',
         port: 443,
         path: `/linux/mongodb-linux-x86_64-3.6.3.tgz`,
