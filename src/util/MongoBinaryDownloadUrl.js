@@ -32,13 +32,6 @@ export default class MongoBinaryDownloadUrl {
   async getDownloadOptions(): Promise<Object> {
     const archive = await this.getArchiveName();
 
-    const downloadOptions = {
-      hostname: 'fastdl.mongodb.org',
-      port: 443,
-      path: `/${this.platform}/${archive}`,
-      method: 'GET',
-    };
-
     const proxy =
       process.env['yarn_https-proxy'] ||
       process.env.yarn_proxy ||
@@ -47,9 +40,13 @@ export default class MongoBinaryDownloadUrl {
       process.env.https_proxy ||
       process.env.http_proxy;
 
-    if (proxy) {
-      downloadOptions.agent = new HttpsProxyAgent(proxy);
-    }
+    const downloadOptions = {
+      hostname: 'fastdl.mongodb.org',
+      port: 443,
+      path: `/${this.platform}/${archive}`,
+      method: 'GET',
+      agent = proxy ? new HttpsProxyAgent(proxy) : undefined
+    };
 
     return downloadOptions;
   }
