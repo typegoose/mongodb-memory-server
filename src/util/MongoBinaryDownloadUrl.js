@@ -29,7 +29,7 @@ export default class MongoBinaryDownloadUrl {
     this.os = os;
   }
 
-  async getDownloadOptions(): Promise<string> {
+  async getDownloadOptions(): Promise<Object> {
     const archive = await this.getArchiveName();
 
     const downloadOptions = {

@@ -102,7 +102,7 @@ export default class MongoBinaryDownload {
     return mongoDBArchive;
   }
 
-  async checkMd5(mongoDBArchiveMd5, mongoDBArchive) {
+  async checkMd5(mongoDBArchiveMd5: string, mongoDBArchive: string) {
     const signatureContent = (await fs.readFile(mongoDBArchiveMd5)).toString('UTF-8');
     const md5Remote = signatureContent.match(/(.*?)\s/)[1];
     const md5Local = md5File.sync(mongoDBArchive);
@@ -111,7 +111,7 @@ export default class MongoBinaryDownload {
     }
   }
 
-  async download(archName, downloadOptions) {
+  async download(archName: string, downloadOptions: object) {
     const downloadLocation = path.resolve(this.downloadDir, archName);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${archName}.downloading`);
     console.log('Downloading:', `https://${downloadOptions.hostname}${downloadOptions.path}`);
