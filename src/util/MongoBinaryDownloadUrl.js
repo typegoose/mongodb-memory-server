@@ -38,6 +38,7 @@ export default class MongoBinaryDownloadUrl {
             path: `/${this.platform}/${archive}`,
             method: 'GET',
         };
+
         const proxy =
             process.env['yarn_https-proxy'] ||
             process.env['yarn_proxy'] ||
