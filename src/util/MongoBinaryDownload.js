@@ -111,7 +111,7 @@ export default class MongoBinaryDownload {
     }
   }
 
-  async download(archName: string, downloadOptions: object) {
+  async download(archName: string, downloadOptions: any) {
     const downloadLocation = path.resolve(this.downloadDir, archName);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${archName}.downloading`);
     console.log('Downloading:', `https://${downloadOptions.hostname}${downloadOptions.path}`);
