@@ -45,7 +45,7 @@ export default class MongoBinaryDownloadUrl {
       port: 443,
       path: `/${this.platform}/${archive}`,
       method: 'GET',
-      agent = proxy ? new HttpsProxyAgent(proxy) : undefined
+      agent: proxy ? new HttpsProxyAgent(proxy) : undefined
     };
 
     return downloadOptions;
