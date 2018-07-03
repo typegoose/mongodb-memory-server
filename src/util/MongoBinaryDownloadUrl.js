@@ -2,7 +2,6 @@
 /* eslint-disable class-methods-use-this */
 
 import getos from 'getos';
-import HttpsProxyAgent from 'https-proxy-agent';
 
 type OS = {
   dist: string,
@@ -29,26 +28,9 @@ export default class MongoBinaryDownloadUrl {
     this.os = os;
   }
 
-  async getDownloadOptions(): Promise<Object> {
+  async getDownloadUrl(): Promise<string> {
     const archive = await this.getArchiveName();
-
-    const proxy =
-      process.env['yarn_https-proxy'] ||
-      process.env.yarn_proxy ||
-      process.env['npm_config_https-proxy'] ||
-      process.env.npm_config_proxy ||
-      process.env.https_proxy ||
-      process.env.http_proxy;
-
-    const downloadOptions = {
-      hostname: 'fastdl.mongodb.org',
-      port: 443,
-      path: `/${this.platform}/${archive}`,
-      method: 'GET',
-      agent: proxy ? new HttpsProxyAgent(proxy) : undefined,
-    };
-
-    return downloadOptions;
+    return `https://fastdl.mongodb.org/${this.platform}/${archive}`;
   }
 
   async getArchiveName(): Promise<string> {

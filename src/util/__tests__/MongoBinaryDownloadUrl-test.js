@@ -3,7 +3,7 @@
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 
 describe('MongoBinaryDownloadUrl', () => {
-  describe('getDownloadOptions()', () => {
+  describe('getDownloadUrl()', () => {
     describe('for mac', () => {
       it('above 3.0', async () => {
         const du = new MongoBinaryDownloadUrl({
@@ -11,12 +11,9 @@ describe('MongoBinaryDownloadUrl', () => {
           arch: 'x64',
           version: '3.6.3',
         });
-        expect(await du.getDownloadOptions()).toMatchObject({
-          hostname: 'fastdl.mongodb.org',
-          port: 443,
-          path: `/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz`,
-          method: 'GET',
-        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz'
+        );
       });
 
       it('below and include 3.0', async () => {
@@ -25,12 +22,9 @@ describe('MongoBinaryDownloadUrl', () => {
           arch: 'x64',
           version: '3.0.0',
         });
-        expect(await du.getDownloadOptions()).toMatchObject({
-          hostname: 'fastdl.mongodb.org',
-          port: 443,
-          path: `/osx/mongodb-osx-x86_64-3.0.0.tgz`,
-          method: 'GET',
-        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.0.0.tgz'
+        );
       });
     });
 
@@ -44,12 +38,9 @@ describe('MongoBinaryDownloadUrl', () => {
           release: '14.04',
         },
       });
-      expect(await du.getDownloadOptions()).toMatchObject({
-        hostname: 'fastdl.mongodb.org',
-        port: 443,
-        path: `/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz`,
-        method: 'GET',
-      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz'
+      );
     });
 
     it('for debian', async () => {
@@ -62,12 +53,9 @@ describe('MongoBinaryDownloadUrl', () => {
           release: '8.1',
         },
       });
-      expect(await du.getDownloadOptions()).toMatchObject({
-        hostname: 'fastdl.mongodb.org',
-        port: 443,
-        path: `/linux/mongodb-linux-x86_64-debian81-3.6.3.tgz`,
-        method: 'GET',
-      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian81-3.6.3.tgz'
+      );
     });
 
     it('for win32', async () => {
@@ -76,12 +64,9 @@ describe('MongoBinaryDownloadUrl', () => {
         arch: 'x64',
         version: '3.6.3',
       });
-      expect(await du.getDownloadOptions()).toMatchObject({
-        hostname: 'fastdl.mongodb.org',
-        port: 443,
-        path: `/win32/mongodb-win32-x86_64-2008plus-ssl-3.6.3.zip`,
-        method: 'GET',
-      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-3.6.3.zip'
+      );
     });
 
     it('fallback', async () => {
@@ -93,26 +78,9 @@ describe('MongoBinaryDownloadUrl', () => {
           dist: 'Gentoo Linux',
         },
       });
-      expect(await du.getDownloadOptions()).toMatchObject({
-        hostname: 'fastdl.mongodb.org',
-        port: 443,
-        path: `/linux/mongodb-linux-x86_64-3.6.3.tgz`,
-        method: 'GET',
-      });
-    });
-
-    it('should pick up proxy from env vars', async () => {
-      process.env.http_proxy = 'http://user:pass@proxy:8080';
-      const du = new MongoBinaryDownloadUrl({
-        platform: 'linux',
-        arch: 'x64',
-        version: '3.6.3',
-        os: {
-          dist: 'Gentoo Linux',
-        },
-      });
-      const downloadOptions = await du.getDownloadOptions();
-      expect(downloadOptions.agent).toBeDefined();
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
+      );
     });
   });
 
