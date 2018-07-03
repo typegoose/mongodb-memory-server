@@ -2,11 +2,12 @@
 /* eslint-disable class-methods-use-this */
 
 import os from 'os';
+import url from 'url';
 import path from 'path';
 import fs from 'fs-extra';
 import md5File from 'md5-file';
 import https from 'https';
-
+import HttpsProxyAgent from 'https-proxy-agent';
 import decompress from 'decompress';
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 
@@ -84,19 +85,10 @@ export default class MongoBinaryDownload {
 
     await fs.ensureDir(this.downloadDir);
 
-    const downloadOptions = await mbdUrl.getDownloadOptions();
-    const archName = await mbdUrl.getArchiveName();
-    const mongoDBArchive = await this.download(archName, downloadOptions);
-    // const mongoDBArchive = path.resolve(this.downloadDir, archName);
+    const downloadUrl = await mbdUrl.getDownloadUrl();
+    const mongoDBArchive = await this.download(downloadUrl);
 
-    let mongoDBArchiveMd5 = '';
-
-    const downloadOptionsMd5 = await mbdUrl.getDownloadOptions();
-    downloadOptionsMd5.path = `${downloadOptionsMd5.path}.md5`;
-    const archMd5Name = `${archName}.md5`;
-
-    mongoDBArchiveMd5 = await this.download(archMd5Name, downloadOptionsMd5);
-
+    const mongoDBArchiveMd5 = await this.download(`${downloadUrl}.md5`);
     await this.checkMd5(mongoDBArchiveMd5, mongoDBArchive);
 
     return mongoDBArchive;
@@ -111,10 +103,33 @@ export default class MongoBinaryDownload {
     }
   }
 
-  async download(archName: string, downloadOptions: any) {
-    const downloadLocation = path.resolve(this.downloadDir, archName);
-    const tempDownloadLocation = path.resolve(this.downloadDir, `${archName}.downloading`);
-    console.log('Downloading:', `https://${downloadOptions.hostname}${downloadOptions.path}`);
+  async download(downloadUrl: string) {
+    const proxy =
+      process.env['yarn_https-proxy'] ||
+      process.env.yarn_proxy ||
+      process.env['npm_config_https-proxy'] ||
+      process.env.npm_config_proxy ||
+      process.env.https_proxy ||
+      process.env.http_proxy;
+
+    const urlObject = url.parse(downloadUrl);
+
+    const downloadOptions = {
+      hostname: urlObject.hostname,
+      port: urlObject.port || 443,
+      path: urlObject.path,
+      method: 'GET',
+      agent: proxy ? new HttpsProxyAgent(proxy) : undefined,
+    };
+
+    const filename = (urlObject.pathname || '').split('/').pop();
+    if (!filename) {
+      throw new Error(`MongoBinaryDownload: missing filename for url ${downloadUrl}`);
+    }
+
+    const downloadLocation = path.resolve(this.downloadDir, filename);
+    const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
+    console.log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}:`, downloadUrl);
     const downloadedFile = await this.httpDownload(
       downloadOptions,
       downloadLocation,
