@@ -8,8 +8,6 @@ type OS = {
   release?: string,
 };
 
-const DOWNLOAD_URI = 'https://fastdl.mongodb.org';
-
 export type MongoBinaryDownloadUrlOpts = {
   version: string,
   platform: string,
@@ -32,7 +30,7 @@ export default class MongoBinaryDownloadUrl {
 
   async getDownloadUrl(): Promise<string> {
     const archive = await this.getArchiveName();
-    return `${DOWNLOAD_URI}/${this.platform}/${archive}`;
+    return `https://fastdl.mongodb.org/${this.platform}/${archive}`;
   }
 
   async getArchiveName(): Promise<string> {

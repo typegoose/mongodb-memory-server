@@ -24,7 +24,9 @@
       "trailingComma": "es5",
     }],
     "no-prototype-builtins": 0,
-    "prefer-destructuring": 0
+    "prefer-destructuring": 0,
+    "no-else-return": 0,
+    "lines-between-class-members": ["error", "always", { exceptAfterSingleLine: true }],
   },
   "env": {
     "jasmine": true,

@@ -2,11 +2,12 @@
 /* eslint-disable class-methods-use-this */
 
 import os from 'os';
+import url from 'url';
 import path from 'path';
 import fs from 'fs-extra';
-import request from 'request-promise';
 import md5File from 'md5-file';
 import https from 'https';
+import HttpsProxyAgent from 'https-proxy-agent';
 import decompress from 'decompress';
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 
@@ -64,7 +65,7 @@ export default class MongoBinaryDownload {
       return mongodPath;
     }
 
-    const mongoDBArchive = await this.download();
+    const mongoDBArchive = await this.startDownload();
     await this.extract(mongoDBArchive);
     fs.unlinkSync(mongoDBArchive);
 
@@ -75,7 +76,7 @@ export default class MongoBinaryDownload {
     throw new Error(`Cannot find downloaded mongod binary by path ${mongodPath}`);
   }
 
-  async download(): Promise<string> {
+  async startDownload(): Promise<string> {
     const mbdUrl = new MongoBinaryDownloadUrl({
       platform: this.platform,
       arch: this.arch,
@@ -83,26 +84,58 @@ export default class MongoBinaryDownload {
     });
 
     await fs.ensureDir(this.downloadDir);
-    const url = await mbdUrl.getDownloadUrl();
-    const archName = await mbdUrl.getArchiveName();
-    const downloadLocation = path.resolve(this.downloadDir, archName);
-    console.log('Downloading MongoDB:', url);
-    const tempDownloadLocation = path.resolve(this.downloadDir, `${archName}.downloading`);
-    const mongoDBArchive = await this.httpDownload(url, downloadLocation, tempDownloadLocation);
-    const md5Remote = await this.downloadMD5(`${url}.md5`);
+
+    const downloadUrl = await mbdUrl.getDownloadUrl();
+    const mongoDBArchive = await this.download(downloadUrl);
+
+    const mongoDBArchiveMd5 = await this.download(`${downloadUrl}.md5`);
+    await this.checkMd5(mongoDBArchiveMd5, mongoDBArchive);
+
+    return mongoDBArchive;
+  }
+
+  async checkMd5(mongoDBArchiveMd5: string, mongoDBArchive: string) {
+    const signatureContent = (await fs.readFile(mongoDBArchiveMd5)).toString('UTF-8');
+    const md5Remote = signatureContent.match(/(.*?)\s/)[1];
     const md5Local = md5File.sync(mongoDBArchive);
     if (md5Remote !== md5Local) {
       throw new Error('MongoBinaryDownload: md5 check is failed');
     }
-    return mongoDBArchive;
   }
 
-  async downloadMD5(md5url: string): Promise<string> {
-    const signatureContent = await request(md5url);
-    this.debug(`getDownloadMD5Hash content: ${signatureContent}`);
-    const signature = signatureContent.match(/(.*?)\s/)[1];
-    this.debug(`getDownloadMD5Hash extracted signature: ${signature}`);
-    return signature;
+  async download(downloadUrl: string) {
+    const proxy =
+      process.env['yarn_https-proxy'] ||
+      process.env.yarn_proxy ||
+      process.env['npm_config_https-proxy'] ||
+      process.env.npm_config_proxy ||
+      process.env.https_proxy ||
+      process.env.http_proxy;
+
+    const urlObject = url.parse(downloadUrl);
+
+    const downloadOptions = {
+      hostname: urlObject.hostname,
+      port: urlObject.port || 443,
+      path: urlObject.path,
+      method: 'GET',
+      agent: proxy ? new HttpsProxyAgent(proxy) : undefined,
+    };
+
+    const filename = (urlObject.pathname || '').split('/').pop();
+    if (!filename) {
+      throw new Error(`MongoBinaryDownload: missing filename for url ${downloadUrl}`);
+    }
+
+    const downloadLocation = path.resolve(this.downloadDir, filename);
+    const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
+    console.log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}:`, downloadUrl);
+    const downloadedFile = await this.httpDownload(
+      downloadOptions,
+      downloadLocation,
+      tempDownloadLocation
+    );
+    return downloadedFile;
   }
 
   async extract(mongoDBArchive: string): Promise<string> {
