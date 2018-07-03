@@ -4,7 +4,7 @@ import tmp from 'tmp';
 import MongoBinary from '../MongoBinary';
 
 tmp.setGracefulCleanup();
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 160000;
 
 describe('MongoBinary', () => {
   it('should download binary and keep it in cache', async () => {
