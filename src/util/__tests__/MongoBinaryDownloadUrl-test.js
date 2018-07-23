@@ -177,7 +177,7 @@ describe('MongoBinaryDownloadUrl', () => {
           dist: 'debian',
           release: '9.0',
         })
-      ).toBe('debian81');
+      ).toBe('debian92');
     });
   });
 
