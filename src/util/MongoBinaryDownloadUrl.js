@@ -122,7 +122,9 @@ export default class MongoBinaryDownloadUrl {
   getDebianVersionString(os: OS): string {
     let name: string = 'debian';
     const release: number = parseFloat(os.release);
-    if (release >= 8.1) {
+    if (release >= 9) {
+      name += '92';
+    } else if (release >= 8.1) {
       name += '81';
     } else if (release >= 7.1) {
       name += '71';
