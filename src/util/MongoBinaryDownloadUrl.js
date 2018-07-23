@@ -124,7 +124,7 @@ export default class MongoBinaryDownloadUrl {
     const release: number = parseFloat(os.release);
     if (release >= 9) {
       name += '92';
-    else if (release >= 8.1) {
+    } else if (release >= 8.1) {
       name += '81';
     } else if (release >= 7.1) {
       name += '71';
