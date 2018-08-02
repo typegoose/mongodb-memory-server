@@ -4,7 +4,7 @@
 import os from 'os';
 import url from 'url';
 import path from 'path';
-import fs from 'fs-extra';
+import fs from 'fs';
 import md5File from 'md5-file';
 import https from 'https';
 import HttpsProxyAgent from 'https-proxy-agent';
@@ -83,7 +83,9 @@ export default class MongoBinaryDownload {
       version: this.version,
     });
 
-    await fs.ensureDir(this.downloadDir);
+    if (!fs.existsSync(this.downloadDir)) {
+      fs.mkdirSync(this.downloadDir);
+    }
 
     const downloadUrl = await mbdUrl.getDownloadUrl();
     const mongoDBArchive = await this.download(downloadUrl);
@@ -95,8 +97,9 @@ export default class MongoBinaryDownload {
   }
 
   async checkMd5(mongoDBArchiveMd5: string, mongoDBArchive: string) {
-    const signatureContent = (await fs.readFile(mongoDBArchiveMd5)).toString('UTF-8');
-    const md5Remote = signatureContent.match(/(.*?)\s/)[1];
+    const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('UTF-8');
+    const m = signatureContent.match(/(.*?)\s/);
+    const md5Remote = m ? m[1] : null;
     const md5Local = md5File.sync(mongoDBArchive);
     if (md5Remote !== md5Local) {
       throw new Error('MongoBinaryDownload: md5 check is failed');
@@ -142,7 +145,10 @@ export default class MongoBinaryDownload {
     const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
     const extractDir = path.resolve(this.downloadDir, this.version);
     this.debug(`extract(): ${extractDir}`);
-    await fs.ensureDir(extractDir);
+
+    if (!fs.existsSync(extractDir)) {
+      fs.mkdirSync(extractDir);
+    }
 
     let filter;
     if (this.platform === 'win32') {
@@ -185,11 +191,10 @@ export default class MongoBinaryDownload {
         response.pipe(fileStream);
 
         fileStream.on('finish', () => {
-          fileStream.close(() => {
-            fs.renameSync(tempDownloadLocation, downloadLocation);
-            this.debug(`renamed ${tempDownloadLocation} to ${downloadLocation}`);
-            resolve(downloadLocation);
-          });
+          fileStream.close();
+          fs.renameSync(tempDownloadLocation, downloadLocation);
+          this.debug(`renamed ${tempDownloadLocation} to ${downloadLocation}`);
+          resolve(downloadLocation);
         });
 
         response.on('data', (chunk: any) => {
