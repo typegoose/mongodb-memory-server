@@ -26,7 +26,7 @@ export default class MongoBinary {
       downloadDir = path.resolve(os.homedir(), '.mongodb-binaries'),
       platform = os.platform(),
       arch = os.arch(),
-      version = '3.4.4',
+      version = 'latest',
     } = opts;
 
     let debug;

@@ -53,7 +53,7 @@ const mongod = new MongodbMemoryServer({
     debug?: boolean, // by default false
   },
   binary: {
-    version?: string, // by default '3.4.4'
+    version?: string, // by default 'latest'
     downloadDir?: string, // by default %HOME/.mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
