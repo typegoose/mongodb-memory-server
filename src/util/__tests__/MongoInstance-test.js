@@ -38,7 +38,7 @@ describe('MongoInstance', () => {
   it('should start instance on port 27333', async () => {
     const mongod = await MongoInstance.run({
       instance: { port: 27333, dbPath: tmpDir.name },
-      binary: { version: '3.4.4' },
+      binary: { version: 'latest' },
     });
 
     expect(mongod.getPid()).toBeGreaterThan(0);
@@ -49,13 +49,13 @@ describe('MongoInstance', () => {
   it('should throw error if port is busy', async () => {
     const mongod = await MongoInstance.run({
       instance: { port: 27444, dbPath: tmpDir.name },
-      binary: { version: '3.4.4' },
+      binary: { version: 'latest' },
     });
 
     await expect(
       MongoInstance.run({
         instance: { port: 27444, dbPath: tmpDir.name },
-        binary: { version: '3.4.4' },
+        binary: { version: 'latest' },
       })
     ).rejects.toBeDefined();
 
@@ -65,7 +65,7 @@ describe('MongoInstance', () => {
   it('should await while mongo is killed', async () => {
     const mongod = await MongoInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
-      binary: { version: '3.4.4' },
+      binary: { version: 'latest' },
     });
     const pid: any = mongod.getPid();
     expect(pid).toBeGreaterThan(0);
