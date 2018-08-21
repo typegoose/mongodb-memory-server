@@ -109,7 +109,7 @@ export default class MongoMemoryServer {
     let tmpDir;
 
     const instOpts = this.opts.instance;
-    data.port = await getport(instOpts.port);
+    data.port = await getport({ port: instOpts.port });
     this.debug = Debug(`Mongo[${data.port}]`);
     this.debug.enabled = !!this.opts.debug;
     data.dbName = await generateDbName(instOpts.dbName);
