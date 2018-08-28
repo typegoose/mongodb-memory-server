@@ -48,7 +48,7 @@ async function generateDbName(dbName?: string): Promise<string> {
 }
 
 async function generateConnectionString(port: number, dbName: string): Promise<string> {
-  return `mongodb://localhost:${port}/${dbName}`;
+  return `mongodb://127.0.0.1:${port}/${dbName}`;
 }
 
 export default class MongoMemoryServer {
