@@ -10,6 +10,7 @@ export type MongodOps = {
   // instance options
   instance: {
     port: number,
+    ip?: string, // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
     storageEngine?: string,
     dbPath: string,
     debug?: boolean | Function,
@@ -74,9 +75,10 @@ export default class MongodbInstance {
   }
 
   prepareCommandArgs(): string[] {
-    const { port, storageEngine, dbPath } = this.opts.instance;
+    const { ip, port, storageEngine, dbPath } = this.opts.instance;
 
     const result = [];
+    result.push('--bind_ip', ip || '127.0.0.1');
     if (port) result.push('--port', port.toString());
     if (storageEngine) result.push('--storageEngine', storageEngine);
     if (dbPath) result.push('--dbpath', dbPath);

@@ -12,6 +12,7 @@ tmp.setGracefulCleanup();
 export type MongoMemoryServerOptsT = {
   instance: {
     port?: ?number,
+    ip?: string, // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
     dbPath?: string,
     dbName?: string,
     storageEngine?: string,

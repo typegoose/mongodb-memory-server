@@ -47,6 +47,7 @@ All options are optional.
 const mongod = new MongodbMemoryServer({
   instance: {
     port?: ?number, // by default choose any free port
+    ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`, 
     dbName?: string, // by default generate random dbName
     dbPath?: string, // by default create in temp directory
     storageEngine?: string, // by default `ephemeralForTest`
