@@ -64,7 +64,14 @@ const mongod = new MongodbMemoryServer({
   autoStart?: boolean, // by default true
 });
 ```
-
+Also you can use the environment variables for configure installation process
+```
+MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
+MONGOMS_PLATFORM=linux
+MONGOMS_ARCH=x64
+MONGOMS_VERSION=3
+MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
+```
 ### Simple test with MongoClient
 
 Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/singleDB-test.js).

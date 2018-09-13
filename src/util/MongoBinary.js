@@ -22,12 +22,19 @@ export default class MongoBinary {
   static cache: MongoBinaryCache = {};
 
   static async getPath(opts?: MongoBinaryOpts = {}): Promise<string> {
-    const {
-      downloadDir = path.resolve(os.homedir(), '.mongodb-binaries'),
-      platform = os.platform(),
-      arch = os.arch(),
-      version = 'latest',
-    } = opts;
+    const defaultOptions = {
+      downloadDir:
+        process.env?.MONGOMS_DOWNLOAD_DIR || path.resolve(os.homedir(), '.mongodb-binaries'),
+      platform: process.env?.MONGOMS_PLATFORM || os.platform(),
+      arch: process.env?.MONGOMS_ARCH || os.arch(),
+      version: process.env?.MONGOMS_VERSION || 'latest',
+      debug:
+        typeof process.env.MONGOMS_DEBUG === 'string'
+          ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_DEBUG.toLowerCase()) !== -1
+          : false,
+    };
+
+    const { downloadDir, platform, arch, version } = Object.assign({}, defaultOptions, opts);
 
     let debug;
     if (opts.debug) {
