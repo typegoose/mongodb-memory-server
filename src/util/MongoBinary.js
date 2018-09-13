@@ -23,28 +23,22 @@ export default class MongoBinary {
 
   static async getPath(opts?: MongoBinaryOpts = {}): Promise<string> {
     const defaultOptions = {
-      downloadDir: process.env.hasOwnProperty('MONGOMS_DOWNLOAD_DIR') ?
-        process.env.MONGOMS_DOWNLOAD_DIR : path.resolve(os.homedir(), '.mongodb-binaries'),
-      platform: process.env.hasOwnProperty('MONGOMS_PLATFORM') ?
-        process.env.MONGOMS_PLATFORM : os.platform(),
-      arch: process.env.hasOwnProperty('MONGOMS_ARCH') ?
-        process.env.MONGOMS_ARCH : os.arch(),
-      version: process.env.hasOwnProperty('MONGOMS_VERSION') ?
-        process.env.MONGOMS_VERSION : 'latest',
-      debug: process.env.hasOwnProperty('MONGOMS_DEBUG') ?
-        ['1', 'on', 'yes'].indexOf(process.env.MONGOMS_DEBUG.toLowerCase()) !== -1 : false
+      downloadDir: process.env.hasOwnProperty('MONGOMS_DOWNLOAD_DIR')
+        ? process.env.MONGOMS_DOWNLOAD_DIR
+        : path.resolve(os.homedir(), '.mongodb-binaries'),
+      platform: process.env.hasOwnProperty('MONGOMS_PLATFORM')
+        ? process.env.MONGOMS_PLATFORM
+        : os.platform(),
+      arch: process.env.hasOwnProperty('MONGOMS_ARCH') ? process.env.MONGOMS_ARCH : os.arch(),
+      version: process.env.hasOwnProperty('MONGOMS_VERSION')
+        ? process.env.MONGOMS_VERSION
+        : 'latest',
+      debug: process.env.hasOwnProperty('MONGOMS_DEBUG')
+        ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_DEBUG.toLowerCase()) !== -1
+        : false,
     };
 
-    console.log('defaultOptions', defaultOptions);
-
     const { downloadDir, platform, arch, version } = Object.assign({}, defaultOptions, opts);
-
-    console.log('options', {
-      downloadDir,
-      platform,
-      arch,
-      version
-    });
 
     let debug;
     if (opts.debug) {
