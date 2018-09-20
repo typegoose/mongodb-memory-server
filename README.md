@@ -50,7 +50,7 @@ const mongod = new MongodbMemoryServer({
     ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`, 
     dbName?: string, // by default generate random dbName
     dbPath?: string, // by default create in temp directory
-    storageEngine?: string, // by default `ephemeralForTest`
+    storageEngine?: string, // by default `ephemeralForTest`, available engines: [ 'devnull', 'ephemeralForTest', 'mmapv1', 'wiredTiger' ]
     debug?: boolean, // by default false
   },
   binary: {
