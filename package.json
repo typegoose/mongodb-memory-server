@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/nodkz/mongodb-memory-server",
   "author": "Nodkz (pavel.chertorogov@gmail.com)",
   "files": [
