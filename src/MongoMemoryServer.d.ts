@@ -10,6 +10,9 @@ export interface MongoMemoryServerOptsT {
     dbName?: string;
     storageEngine?: string;
     debug?: boolean | ((...args: any[]) => any);
+    replSet?: string;
+    auth?: boolean;
+    args?: string[];
   };
   binary: {
     version?: string;
@@ -35,6 +38,7 @@ export interface MongoInstanceDataT {
     name: string;
     removeCallback: ((...args: any[]) => any);
   };
+  replSet?: string;
 }
 
 export default class MongoMemoryServer {

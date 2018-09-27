@@ -53,6 +53,9 @@ const mongod = new MongodbMemoryServer({
     dbPath?: string, // by default create in temp directory
     storageEngine?: string, // by default `ephemeralForTest`, available engines: [ 'devnull', 'ephemeralForTest', 'mmapv1', 'wiredTiger' ]
     debug?: boolean, // by default false
+    replSet?: string, // by default no replica set, replica set name
+    auth?: boolean, // by default `mongod` is started with '--noauth', start `mongod` with '--auth'
+    args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },
   binary: {
     version?: string, // by default 'latest'

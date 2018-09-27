@@ -37,6 +37,59 @@ describe('MongoInstance', () => {
     ]);
   });
 
+  it('should allow specifying replSet', () => {
+    const inst = new MongoInstance({
+      instance: {
+        port: 27555,
+        dbPath: '/data',
+        replSet: 'testset',
+      },
+    });
+    expect(inst.prepareCommandArgs()).toEqual([
+      '--bind_ip',
+      '127.0.0.1',
+      '--port',
+      '27555',
+      '--dbpath',
+      '/data',
+      '--noauth',
+      '--replSet',
+      'testset',
+    ]);
+  });
+
+  it('should be able to enable auth', () => {
+    const inst = new MongoInstance({
+      instance: {
+        port: 27555,
+        dbPath: '/data',
+        auth: true,
+      },
+    });
+    expect(inst.prepareCommandArgs()).toEqual([
+      '--bind_ip',
+      '127.0.0.1',
+      '--port',
+      '27555',
+      '--dbpath',
+      '/data',
+    ]);
+  });
+
+  it('should be able to pass arbitrary args', () => {
+    const args = ['--notablescan', '--nounixsocket'];
+    const inst = new MongoInstance({
+      instance: {
+        port: 27555,
+        dbPath: '/data',
+        args,
+      },
+    });
+    expect(inst.prepareCommandArgs()).toEqual(
+      ['--bind_ip', '127.0.0.1', '--port', '27555', '--dbpath', '/data', '--noauth'].concat(args)
+    );
+  });
+
   it('should start instance on port 27333', async () => {
     const mongod = await MongoInstance.run({
       instance: { port: 27333, dbPath: tmpDir.name },
