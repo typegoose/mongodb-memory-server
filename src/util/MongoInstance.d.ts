@@ -10,6 +10,9 @@ export interface MongodOps {
         storageEngine?: string;
         dbPath: string;
         debug?: boolean | ((...args: any[]) => any);
+        replSet?: string;
+        args?: string[];
+        auth?: boolean;
     };
 
     // mongo binary options
