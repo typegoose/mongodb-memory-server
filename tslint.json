@@ -1,0 +1,16 @@
+{
+  "defaultSeverity": "error",
+  "extends": "tslint:recommended",
+  "jsRules": {},
+  "rules": {
+    "ban-types": [true, ["Object", "Use {} instead."], ["String"]],
+    "quotemark": [true, "single"],
+    "trailing-comma": [false],
+    "ordered-imports": false,
+    "member-access": false,
+    "member-ordering": [true, { "order": "fields-first" }],
+    "variable-name": false,
+    "interface-name": false,
+    "no-reference-import": false
+  }
+}

@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/nodkz/mongodb-memory-server",
   "author": "Nodkz (pavel.chertorogov@gmail.com)",
   "files": [
@@ -32,6 +33,8 @@
     "@babel/plugin-transform-flow-strip-types": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-flow": "^7.0.0",
+    "@types/getos": "^3.0.0",
+    "@types/node": "^10.11.1",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
     "babel-jest": "^23.6.0",
@@ -48,7 +51,9 @@
     "npm-run-all": "^4.1.3",
     "prettier": "^1.14.2",
     "rimraf": "^2.6.2",
-    "semantic-release": "^15.9.15"
+    "semantic-release": "^15.9.15",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
@@ -68,11 +73,14 @@
     "build": "npm-run-all build:*",
     "build:cjs": "rimraf lib && babel src --ignore __tests__,__mocks__ -d lib",
     "build:flow": "find ./src -name '*.js' -not -path '*/__*' | while read filepath; do cp $filepath `echo $filepath | sed 's/\\/src\\//\\/lib\\//g'`.flow; done",
+    "build:ts": "find ./src -name '*.d.ts' -not -path '*/__*' | while read filepath; do cp $filepath `echo $filepath | sed 's/\\/src\\//\\/lib\\//g'`; done",
     "watch": "jest --watch",
     "coverage": "jest --coverage",
-    "lint": "eslint --ext .js ./src",
+    "lint": "eslint --ext .js ./src && npm run tslint",
     "flow": "./node_modules/.bin/flow",
-    "test": "npm run coverage && npm run lint && npm run flow",
+    "test": "npm run coverage && npm run lint && npm run flow && npm run tscheck",
+    "tscheck": "tsc",
+    "tslint": "tslint -p . \"src/**/*.d.ts\"",
     "semantic-release": "semantic-release",
     "postinstall": "node ./postinstall.js"
   },
