@@ -45,6 +45,7 @@ export type MongoInstanceDataT = {
     name: string,
     removeCallback: Function,
   },
+  replSet?: string,
 };
 
 async function generateDbName(dbName?: string): Promise<string> {
@@ -119,6 +120,7 @@ export default class MongoMemoryServer {
     data.dbName = await generateDbName(instOpts.dbName);
     data.uri = await generateConnectionString(data.port, data.dbName);
     data.storageEngine = instOpts.storageEngine || 'ephemeralForTest';
+    data.replSet = instOpts.replSet;
     if (instOpts.dbPath) {
       data.dbPath = instOpts.dbPath;
     } else {
@@ -136,7 +138,7 @@ export default class MongoMemoryServer {
         storageEngine: data.storageEngine,
         dbPath: data.dbPath,
         debug: this.opts.instance.debug,
-        replSet: this.opts.instance.replSet,
+        replSet: data.replSet,
         args: this.opts.instance.args,
         auth: this.opts.instance.auth,
       },
