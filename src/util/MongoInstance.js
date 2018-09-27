@@ -14,6 +14,9 @@ export type MongodOps = {
     storageEngine?: string,
     dbPath: string,
     debug?: boolean | Function,
+    replSet?: string,
+    args?: string[],
+    auth?: boolean,
   },
 
   // mongo binary options
@@ -75,16 +78,17 @@ export default class MongodbInstance {
   }
 
   prepareCommandArgs(): string[] {
-    const { ip, port, storageEngine, dbPath } = this.opts.instance;
+    const { ip, port, storageEngine, dbPath, replSet, auth, args } = this.opts.instance;
 
     const result = [];
     result.push('--bind_ip', ip || '127.0.0.1');
     if (port) result.push('--port', port.toString());
     if (storageEngine) result.push('--storageEngine', storageEngine);
     if (dbPath) result.push('--dbpath', dbPath);
-    result.push('--noauth');
+    if (!auth) result.push('--noauth');
+    if (replSet) result.push('--replSet', replSet);
 
-    return result;
+    return result.concat(args || []);
   }
 
   async run(): Promise<MongodbInstance> {
