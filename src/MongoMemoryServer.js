@@ -6,6 +6,8 @@ import tmp from 'tmp';
 import getport from 'get-port';
 import Debug from 'debug';
 import MongoInstance from './util/MongoInstance';
+import type { MongoBinaryOpts } from './util/MongoBinary';
+import type { CallbackFn, DebugFn, DebugPropT, SpawnOptions, StorageEngineT } from './types';
 
 tmp.setGracefulCleanup();
 
@@ -15,21 +17,15 @@ export type MongoMemoryServerOptsT = {
     ip?: string, // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
     dbPath?: string,
     dbName?: string,
-    storageEngine?: string,
-    debug?: boolean | Function,
+    storageEngine?: StorageEngineT,
+    debug?: DebugPropT,
     replSet?: string,
     args?: string[],
     auth?: boolean,
   },
-  binary: {
-    version?: string,
-    downloadDir?: string,
-    platform?: string,
-    arch?: string,
-    debug?: boolean | Function,
-  },
+  binary: MongoBinaryOpts,
   debug?: boolean,
-  spawn: any,
+  spawn: SpawnOptions,
   autoStart?: boolean,
 };
 
@@ -38,12 +34,12 @@ export type MongoInstanceDataT = {
   dbPath: string,
   dbName: string,
   uri: string,
-  storageEngine: string,
+  storageEngine: StorageEngineT,
   instance: MongoInstance,
   childProcess: ChildProcess,
   tmpDir?: {
     name: string,
-    removeCallback: Function,
+    removeCallback: CallbackFn,
   },
   replSet?: string,
 };
@@ -60,7 +56,7 @@ export default class MongoMemoryServer {
   isRunning: boolean = false;
   runningInstance: ?Promise<MongoInstanceDataT>;
   opts: MongoMemoryServerOptsT;
-  debug: Function;
+  debug: DebugFn;
 
   constructor(opts?: $Shape<MongoMemoryServerOptsT> = {}) {
     this.opts = opts;

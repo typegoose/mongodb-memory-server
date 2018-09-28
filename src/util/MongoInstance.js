@@ -5,15 +5,16 @@ import { ChildProcess, spawn as spawnChild } from 'child_process';
 import path from 'path';
 import MongoBinary from './MongoBinary';
 import type { MongoBinaryOpts } from './MongoBinary';
+import type { DebugPropT, StorageEngineT, SpawnOptions } from '../types';
 
 export type MongodOps = {
   // instance options
   instance: {
     port: number,
     ip?: string, // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
-    storageEngine?: string,
+    storageEngine?: StorageEngineT,
     dbPath: string,
-    debug?: boolean | Function,
+    debug?: DebugPropT,
     replSet?: string,
     args?: string[],
     auth?: boolean,
@@ -23,18 +24,8 @@ export type MongodOps = {
   binary?: MongoBinaryOpts,
 
   // child process spawn options
-  spawn?: {
-    cwd?: string,
-    env?: Object,
-    argv0?: string,
-    stdio?: string | Array<any>,
-    detached?: boolean,
-    uid?: number,
-    gid?: number,
-    shell?: boolean | string,
-  },
-
-  debug?: boolean | Function,
+  spawn?: SpawnOptions,
+  debug?: DebugPropT,
 };
 
 export default class MongodbInstance {
