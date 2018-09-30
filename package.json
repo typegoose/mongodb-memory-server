@@ -47,7 +47,7 @@
     "eslint-plugin-prettier": "^2.6.2",
     "flow-bin": "^0.80.0",
     "jest": "^23.6.0",
-    "mongodb": "3.1.4",
+    "mongodb": "^3.1.6",
     "npm-run-all": "^4.1.3",
     "prettier": "^1.14.2",
     "rimraf": "^2.6.2",
@@ -68,7 +68,9 @@
     "tmp": "^0.0.33",
     "uuid": "^3.2.1"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "mongodb": ">= 3.0"
+  },
   "scripts": {
     "build": "npm-run-all build:*",
     "build:cjs": "rimraf lib && babel src --ignore __tests__,__mocks__ -d lib",

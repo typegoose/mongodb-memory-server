@@ -126,7 +126,7 @@ export default class MongoBinaryDownload {
 
     const downloadLocation = path.resolve(this.downloadDir, filename);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
-    console.log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}:`, downloadUrl);
+    this.debug(`Downloading${proxy ? ` via proxy ${proxy}` : ''}:`, downloadUrl);
     const downloadedFile = await this.httpDownload(
       downloadOptions,
       downloadLocation,
