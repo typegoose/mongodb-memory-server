@@ -148,8 +148,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     if (this._state !== 'stopped') {
       throw new Error(`Already in 'init' or 'running' state. Use opts.debug = true for more info.`);
     }
-    this._state = 'init';
-    this.emit('state', 'init');
+    this.emit((this._state = 'init'));
     this.debug('init');
     // Any servers defined within `opts.instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
@@ -176,18 +175,21 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     if (this._state === 'stopped') return false;
     const servers = this.servers;
     this.servers = [];
-    this._state = 'stopped';
     return Promise.all(servers.map(s => s.stop()))
-      .then(() => true)
+      .then(() => {
+        this.emit((this._state = 'stopped'));
+        return true;
+      })
       .catch(err => {
         this.debug(err);
+        this.emit((this._state = 'stopped'), err);
         return false;
       });
   }
 
   async waitUntilRunning() {
     if (this._state === 'running') return;
-    await new Promise(resolve => this.on('state', state => state === 'running' && resolve()));
+    await new Promise(resolve => this.once('running', () => resolve()));
   }
 
   /**
@@ -218,8 +220,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
       await admin.command({ replSetInitiate: rsConfig });
       this.debug('Waiting for replica set to have a PRIMARY member.');
       await this._waitForPrimary(admin);
-      this._state = 'running';
-      this.emit('state', 'running');
+      this.emit((this._state = 'running'));
       this.debug('running');
     } finally {
       await conn.close();
