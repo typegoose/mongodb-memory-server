@@ -1,35 +1,27 @@
 /* @flow */
 
 import type { ChildProcess } from 'child_process';
-import uuid from 'uuid/v4';
 import tmp from 'tmp';
 import getport from 'get-port';
 import Debug from 'debug';
+import { generateDbName } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
+import type { MongoBinaryOpts } from './util/MongoBinary';
+import type {
+  CallbackFn,
+  DebugFn,
+  MongoMemoryInstancePropT,
+  SpawnOptions,
+  StorageEngineT,
+} from './types';
 
 tmp.setGracefulCleanup();
 
 export type MongoMemoryServerOptsT = {
-  instance: {
-    port?: ?number,
-    ip?: string, // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
-    dbPath?: string,
-    dbName?: string,
-    storageEngine?: string,
-    debug?: boolean | Function,
-    replSet?: string,
-    args?: string[],
-    auth?: boolean,
-  },
-  binary: {
-    version?: string,
-    downloadDir?: string,
-    platform?: string,
-    arch?: string,
-    debug?: boolean | Function,
-  },
+  instance: MongoMemoryInstancePropT,
+  binary: MongoBinaryOpts,
   debug?: boolean,
-  spawn: any,
+  spawn: SpawnOptions,
   autoStart?: boolean,
 };
 
@@ -38,19 +30,15 @@ export type MongoInstanceDataT = {
   dbPath: string,
   dbName: string,
   uri: string,
-  storageEngine: string,
+  storageEngine: StorageEngineT,
   instance: MongoInstance,
   childProcess: ChildProcess,
   tmpDir?: {
     name: string,
-    removeCallback: Function,
+    removeCallback: CallbackFn,
   },
   replSet?: string,
 };
-
-async function generateDbName(dbName?: string): Promise<string> {
-  return dbName || uuid();
-}
 
 async function generateConnectionString(port: number, dbName: string): Promise<string> {
   return `mongodb://127.0.0.1:${port}/${dbName}`;
@@ -60,7 +48,7 @@ export default class MongoMemoryServer {
   isRunning: boolean = false;
   runningInstance: ?Promise<MongoInstanceDataT>;
   opts: MongoMemoryServerOptsT;
-  debug: Function;
+  debug: DebugFn;
 
   constructor(opts?: $Shape<MongoMemoryServerOptsT> = {}) {
     this.opts = opts;
@@ -117,7 +105,7 @@ export default class MongoMemoryServer {
     data.port = await getport({ port: instOpts.port });
     this.debug = Debug(`Mongo[${data.port}]`);
     this.debug.enabled = !!this.opts.debug;
-    data.dbName = await generateDbName(instOpts.dbName);
+    data.dbName = generateDbName(instOpts.dbName);
     data.uri = await generateConnectionString(data.port, data.dbName);
     data.storageEngine = instOpts.storageEngine || 'ephemeralForTest';
     data.replSet = instOpts.replSet;
@@ -187,7 +175,7 @@ export default class MongoMemoryServer {
         return generateConnectionString(port, otherDbName);
       }
       // generate new random db name
-      return generateConnectionString(port, await generateDbName());
+      return generateConnectionString(port, generateDbName());
     }
 
     return uri;

@@ -48,7 +48,7 @@ All options are optional.
 const mongod = new MongodbMemoryServer({
   instance: {
     port?: ?number, // by default choose any free port
-    ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`, 
+    ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`,
     dbName?: string, // by default generate random dbName
     dbPath?: string, // by default create in temp directory
     storageEngine?: string, // by default `ephemeralForTest`, available engines: [ 'devnull', 'ephemeralForTest', 'mmapv1', 'wiredTiger' ]
@@ -76,6 +76,57 @@ MONGOMS_ARCH=x64
 MONGOMS_VERSION=3
 MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
 ```
+
+### Replica Set start:
+```js
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
+
+const replSet = new MongoMemoryReplSet();
+await replSet.waitUntilRunning();
+const uri = await mongod.getConnectionString();
+const port = await mongod.getPort();
+const dbPath = await mongod.getDbPath();
+const dbName = await mongod.getDbName();
+
+// some code
+
+// stop replica set manually
+replSet.stop();
+// or it should be stopped automatically when you exit from script
+```
+
+### Available options
+All options are optional.
+```js
+const replSet = new MongoMemoryReplSet({
+  autoStart, // same as for MongoMemoryServer
+  binary: binaryOpts, // same as for MongoMemoryServer
+  debug, // same as for MongoMemoryServer
+  instanceOpts: [
+    {
+      args,  // any additional instance specific args
+      port,  // port number for the instance
+      dbPath, // path to database files for this instance
+      storageEngine,  // same storage engine options
+    },
+    // each entry will result in a MongoMemoryServer
+  ],
+  // unless otherwise noted below these values will be in common with all instances spawned.
+  replSet: {
+    name,  // replica set name (default: 'testset')
+    auth,  //  enable auth support? (default: false)
+    args,  // any args specified here will be combined with any per instance args from `instanceOpts`
+    count,  // number of `mongod` processes to start; (default: 1)
+    dbName,  // default database for db URI strings. (default: uuid.v4())
+    ip,  // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`
+    oplogSize,  // size (in MB) for the oplog; (default: 1)
+    spawn,  // spawn options when creating the child processes
+    storageEngine,  // default storage engine for instance. (Can be overridden per instance)
+  }
+});
+```
+
+
 ### Simple test with MongoClient
 
 Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/singleDB-test.js).

@@ -1,21 +1,16 @@
+import { DebugPropT, DebugFn, DownloadProgressT } from '../types';
+
 export interface MongoBinaryDownloadOpts {
   version: string;
   downloadDir: string;
   platform: string;
   arch: string;
-  debug?: boolean | Function;
-}
-
-interface dlProgress {  // tslint:disable-line
-  current: number;
-  length: number;
-  totalMb: number;
-  lastPrintedAt: number;
+  debug?: DebugPropT;
 }
 
 export default class MongoBinaryDownload {
-  debug: Function;
-  dlProgress: dlProgress;
+  debug: DebugFn;
+  dlProgress: DownloadProgressT;
 
   downloadDir: string;
   arch: string;

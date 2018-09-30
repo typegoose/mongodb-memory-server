@@ -1,3 +1,5 @@
+import { DebugPropT } from '../types';
+
 export interface MongoBinaryCache {
   [version: string]: string;
 }
@@ -7,7 +9,7 @@ export interface MongoBinaryOpts {
   downloadDir?: string;
   platform?: string;
   arch?: string;
-  debug?: boolean | ((...args: any[]) => any);
+  debug?: DebugPropT;
 }
 
 // disable error for a class with all static functions,

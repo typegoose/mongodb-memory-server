@@ -1,15 +1,16 @@
 /// <reference types='node' />
 
-import { ChildProcess } from 'child_process';
+import { ChildProcess, SpawnOptions } from 'child_process';
 import { MongoBinaryOpts } from './MongoBinary';
+import { DebugFn, DebugPropT, CallbackFn, StorageEngineT } from '../types';
 
 export interface MongodOps {
     // instance options
     instance: {
         port: number;
-        storageEngine?: string;
+        storageEngine?: StorageEngineT;
         dbPath: string;
-        debug?: boolean | ((...args: any[]) => any);
+        debug?: DebugPropT;
         replSet?: string;
         args?: string[];
         auth?: boolean;
@@ -19,29 +20,20 @@ export interface MongodOps {
     binary?: MongoBinaryOpts;
 
     // child process spawn options
-    spawn?: {
-        cwd?: string;
-        env?: object;
-        argv0?: string;
-        stdio?: string | any[];
-        detached?: boolean;
-        uid?: number;
-        gid?: number;
-        shell?: boolean | string;
-    };
+    spawn?: SpawnOptions;
 
-    debug?: boolean | ((...args: any[]) => any);
+    debug?: DebugPropT;
 }
 
 export default class MongodbInstance {
     static childProcessList: ChildProcess[];
 
     opts: MongodOps;
-    debug: ((...args: any[]) => any);
+    debug: DebugFn;
     childProcess: ChildProcess;
     killerProcess: ChildProcess;
-    instanceReady: ((...args: any[]) => any);
-    instanceFailed: ((...args: any[]) => any);
+    instanceReady: CallbackFn;
+    instanceFailed: CallbackFn;
 
     constructor(opts: MongodOps);
 
@@ -54,7 +46,4 @@ export default class MongodbInstance {
     closeHandler(code: number): void;
     stderrHandler(message: string | Buffer): void;
     stdoutHandler(message: string | Buffer): void;
-
-    private _launchMongod(mongoBin: string): ChildProcess;
-    private _launchKiller(parentPid: number, childPid: number): ChildProcess;
 }

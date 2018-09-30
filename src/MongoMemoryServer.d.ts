@@ -1,28 +1,15 @@
 /// <reference types='node' />
 
-import { ChildProcess } from 'child_process';
+import { ChildProcess, SpawnOptions } from 'child_process';
 import MongoInstance from './util/MongoInstance';
+import { MongoBinaryOpts } from './util/MongoBinary';
+import { CallbackFn, DebugFn, MongoMemoryInstancePropT, StorageEngineT } from './types';
 
 export interface MongoMemoryServerOptsT {
-  instance: {
-    port?: number;
-    dbPath?: string;
-    dbName?: string;
-    storageEngine?: string;
-    debug?: boolean | ((...args: any[]) => any);
-    replSet?: string;
-    auth?: boolean;
-    args?: string[];
-  };
-  binary: {
-    version?: string;
-    downloadDir?: string;
-    platform?: string;
-    arch?: string;
-    debug?: boolean | ((...args: any[]) => any);
-  };
+  instance: MongoMemoryInstancePropT;
+  binary: MongoBinaryOpts;
   debug?: boolean;
-  spawn: any;
+  spawn: SpawnOptions;
   autoStart?: boolean;
 }
 
@@ -31,12 +18,12 @@ export interface MongoInstanceDataT {
   dbPath: string;
   dbName: string;
   uri: string;
-  storageEngine: string;
+  storageEngine: StorageEngineT;
   instance: MongoInstance;
   childProcess: ChildProcess;
   tmpDir?: {
     name: string;
-    removeCallback: ((...args: any[]) => any);
+    removeCallback: CallbackFn;
   };
   replSet?: string;
 }
@@ -45,7 +32,7 @@ export default class MongoMemoryServer {
   isRunning: boolean;
   runningInstance: Promise<MongoInstanceDataT> | undefined;
   opts: MongoMemoryServerOptsT;
-  debug: ((...args: any[]) => any);
+  debug: DebugFn;
 
   constructor(opts?: Partial<MongoMemoryServerOptsT>);
 
@@ -57,6 +44,4 @@ export default class MongoMemoryServer {
   getPort(): Promise<number>;
   getDbPath(): Promise<string>;
   getDbName(): Promise<string>;
-
-  protected _startUpInstance(): Promise<MongoInstanceDataT>;
 }

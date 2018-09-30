@@ -10,25 +10,19 @@ import https from 'https';
 import HttpsProxyAgent from 'https-proxy-agent';
 import decompress from 'decompress';
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
+import type { DebugFn, DebugPropT, DownloadProgressT } from '../types';
 
 export type MongoBinaryDownloadOpts = {
   version: string,
   downloadDir: string,
   platform: string,
   arch: string,
-  debug?: boolean | Function,
-};
-
-type dlProgress = {
-  current: number,
-  length: number,
-  totalMb: number,
-  lastPrintedAt: number,
+  debug?: DebugPropT,
 };
 
 export default class MongoBinaryDownload {
-  debug: Function;
-  dlProgress: dlProgress;
+  debug: DebugFn;
+  dlProgress: DownloadProgressT;
 
   downloadDir: string;
   arch: string;
@@ -132,7 +126,7 @@ export default class MongoBinaryDownload {
 
     const downloadLocation = path.resolve(this.downloadDir, filename);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
-    console.log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}:`, downloadUrl);
+    this.debug(`Downloading${proxy ? ` via proxy ${proxy}` : ''}:`, downloadUrl);
     const downloadedFile = await this.httpDownload(
       downloadOptions,
       downloadLocation,
