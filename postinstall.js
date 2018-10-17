@@ -17,9 +17,9 @@ if (isModuleExists('./lib/util/MongoBinary')) {
   const MongoBinary = require('./lib/util/MongoBinary').default;
 
   console.log('mongodb-memory-server: checking MongoDB binaries cache...');
-  MongoBinary.getPath({
-    version: 'latest',
-  }).then(binPath => {
+  MongoBinary.getPath({}).then(binPath => {
     console.log(`mongodb-memory-server: binary path is ${binPath}`);
   });
+} else {
+  console.log("Can't resolve MongoBinary module");
 }
