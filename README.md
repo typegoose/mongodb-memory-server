@@ -75,6 +75,7 @@ MONGOMS_PLATFORM=linux
 MONGOMS_ARCH=x64
 MONGOMS_VERSION=3
 MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
+MONGOMS_DOWNLOAD_MIRROR=url # your mirror url to download the mongodb binary
 ```
 
 ### Replica Set start:
