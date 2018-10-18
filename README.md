@@ -75,6 +75,7 @@ MONGOMS_PLATFORM=linux
 MONGOMS_ARCH=x64
 MONGOMS_VERSION=3
 MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
+MONGOMS_DOWNLOAD_ON_POSTINSTALL=0 # if you don't want to download binaries on npm i
 ```
 
 ### Replica Set start:

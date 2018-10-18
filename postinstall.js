@@ -13,6 +13,15 @@ function isModuleExists(name) {
   catch(e) { return false }
 }
 
+const download = typeof process.env.MONGOMS_DOWNLOAD_ON_POSTINSTALL === 'string'
+  ? ['0', 'off', 'no', 'false'].indexOf(process.env.MONGOMS_DOWNLOAD_ON_POSTINSTALL.toLowerCase()) === -1
+  : true;
+
+if (!download) {
+  console.log("Download is skipped by MONGOMS_DOWNLOAD_ON_POSTINSTALL variable");
+  process.exit(0);
+}
+
 if (isModuleExists('./lib/util/MongoBinary')) {
   const MongoBinary = require('./lib/util/MongoBinary').default;
 
