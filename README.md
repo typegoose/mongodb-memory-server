@@ -11,7 +11,7 @@ This package spins up a actual/real MongoDB Server programmatically from node fo
 
 This package on first start downloads the latest MongoDB binaries and save it to `~/.mongodb-binaries` folder. So first run may take a time. All further runs will fast, because use already downloaded binaries.
 
-Every `MongodbMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
+Every `MongoMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
 
 Perfectly [works with Travis CI](https://github.com/nodkz/graphql-compose-mongoose/commit/7a6ac2de747d14281f9965f418065e97a57cfb37) without additional `services` and `addons` options in `.travis.yml`.
 
@@ -26,9 +26,9 @@ npm install mongodb-memory-server --save-dev
 
 ### Simple server start:
 ```js
-import MongodbMemoryServer from 'mongodb-memory-server';
+import MongoMemoryServer from 'mongodb-memory-server';
 
-const mongod = new MongodbMemoryServer();
+const mongod = new MongoMemoryServer();
 
 const uri = await mongod.getConnectionString();
 const port = await mongod.getPort();
@@ -45,7 +45,7 @@ mongod.stop();
 ### Available options
 All options are optional.
 ```js
-const mongod = new MongodbMemoryServer({
+const mongod = new MongoMemoryServer({
   instance: {
     port?: ?number, // by default choose any free port
     ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`,
@@ -135,9 +135,9 @@ Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/b
 ### Provide connection string to mongoose
 ```js
 import mongoose from 'mongoose';
-import MongodbMemoryServer from 'mongodb-memory-server';
+import MongoMemoryServer from 'mongodb-memory-server';
 
-const mongoServer = new MongodbMemoryServer();
+const mongoServer = new MongoMemoryServer();
 
 mongoose.Promise = Promise;
 mongoServer.getConnectionString().then((mongoUri) => {
@@ -169,12 +169,12 @@ For additional information I recommend you to read this article [Testing a Graph
 ### Several mongoose connections simultaneously
 ```js
 import mongoose from 'mongoose';
-import MongodbMemoryServer from 'mongodb-memory-server';
+import MongoMemoryServer from 'mongodb-memory-server';
 
 mongoose.Promise = Promise;
 
-const mongoServer1 = new MongodbMemoryServer();
-const mongoServer2 = new MongodbMemoryServer();
+const mongoServer1 = new MongoMemoryServer();
+const mongoServer2 = new MongoMemoryServer();
 
 // Firstly create connection objects, which you may import in other files and create mongoose models.
 // Connection to databases will be estimated later (after model creation).
@@ -262,13 +262,13 @@ Start Mocha with `--timeout 60000` cause first download of MongoDB binaries may 
 
 ```js
 import mongoose from 'mongoose';
-import MongodbMemoryServer from 'mongodb-memory-server';
+import MongoMemoryServer from 'mongodb-memory-server';
 
 let mongoServer;
 const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 
 before((done) => {
-  mongoServer = new MongodbMemoryServer();
+  mongoServer = new MongoMemoryServer();
   mongoServer.getConnectionString().then((mongoUri) => {
     return mongoose.connect(mongoUri, opts, (err) => {
       if (err) done(err);
@@ -293,7 +293,7 @@ describe('...', () => {
 ### Simple Jest test example
 ```js
 import mongoose from 'mongoose';
-import MongodbMemoryServer from 'mongodb-memory-server';
+import MongoMemoryServer from 'mongodb-memory-server';
 
 // May require additional time for downloading MongoDB binaries
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
@@ -302,7 +302,7 @@ let mongoServer;
 const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 
 beforeAll(async () => {
-  mongoServer = new MongodbMemoryServer();
+  mongoServer = new MongoMemoryServer();
   const mongoUri = await mongoServer.getConnectionString();
   await mongoose.connect(mongoUri, opts, (err) => {
     if (err) console.error(err);
