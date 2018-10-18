@@ -13,12 +13,12 @@ function isModuleExists(name) {
   catch(e) { return false }
 }
 
-const download = typeof process.env.MONGOMS_DOWNLOAD_ON_POSTINSTALL === 'string'
-  ? ['0', 'off', 'no', 'false'].indexOf(process.env.MONGOMS_DOWNLOAD_ON_POSTINSTALL.toLowerCase()) === -1
-  : true;
+const skipDownload = typeof process.env.MONGOMS_DISABLE_POSTINSTALL === 'string'
+  ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_DISABLE_POSTINSTALL.toLowerCase()) !== -1
+  : false;
 
-if (!download) {
-  console.log("Download is skipped by MONGOMS_DOWNLOAD_ON_POSTINSTALL variable");
+if (skipDownload) {
+  console.log("Download is skipped by MONGOMS_DISABLE_POSTINSTALL variable");
   process.exit(0);
 }
 
