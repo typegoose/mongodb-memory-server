@@ -25,8 +25,7 @@ export default class MongoBinaryDownloadUrl {
 
   async getDownloadUrl(): Promise<string> {
     const archive = await this.getArchiveName();
-    return `${process.env?.MONGOMS_DOWNLOAD_MIRROR || 'https://fastdl.mongodb.org'}/
-    ${this.platform}/${archive}`;
+    return `${process.env?.MONGOMS_DOWNLOAD_MIRROR || 'https://fastdl.mongodb.org'}/${this.platform}/${archive}`;
   }
 
   async getArchiveName(): Promise<string> {
