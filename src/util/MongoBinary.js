@@ -34,8 +34,6 @@ export default class MongoBinary {
           : false,
     };
 
-    const { downloadDir, platform, arch, version } = Object.assign({}, defaultOptions, opts);
-
     let debug;
     if (opts.debug) {
       if (opts.debug.call && typeof opts.debug === 'function' && opts.debug.apply) {
@@ -46,6 +44,11 @@ export default class MongoBinary {
     } else {
       debug = (msg: string) => {}; // eslint-disable-line
     }
+
+    const options = { ...defaultOptions, ...opts };
+    debug(`MongoBinary options: ${JSON.stringify(options)}`);
+
+    const { downloadDir, platform, arch, version } = options;
 
     if (this.cache[version]) {
       debug(`MongoBinary: found cached binary path for ${version}`);

@@ -168,6 +168,8 @@ export default class MongodbInstance {
       this.instanceFailed('Data directory not found');
     } else if (/shutting down with code/i.test(log)) {
       this.instanceFailed('Mongod shutting down');
+    } else if (/\*\*\*aborting after/i.test(log)) {
+      this.instanceFailed('Mongod internal error');
     }
   }
 }

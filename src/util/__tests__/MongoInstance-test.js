@@ -137,4 +137,15 @@ describe('MongoInstance', () => {
     await mongod.kill();
     expect(isPidRunning(pid)).toBeFalsy();
   });
+
+  it('should work with mongodb 4.0.3', async () => {
+    const mongod = await MongoInstance.run({
+      instance: { port: 27445, dbPath: tmpDir.name },
+      binary: { version: '4.0.3' },
+      debug: true,
+    });
+    const pid: any = mongod.getPid();
+    expect(pid).toBeGreaterThan(0);
+    await mongod.kill();
+  });
 });

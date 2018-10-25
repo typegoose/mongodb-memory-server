@@ -112,7 +112,12 @@ export default class MongoMemoryServer {
     if (instOpts.dbPath) {
       data.dbPath = instOpts.dbPath;
     } else {
-      tmpDir = tmp.dirSync({ prefix: 'mongo-mem-', unsafeCleanup: true });
+      tmpDir = tmp.dirSync({
+        prefix: 'mongo-mem-',
+        unsafeCleanup: true,
+        discardDescriptor: true,
+        mode: '0755',
+      });
       data.dbPath = tmpDir.name;
     }
 
