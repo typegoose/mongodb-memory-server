@@ -200,6 +200,8 @@ export default class MongoBinaryDownloadUrl {
       name += '1604';
     } else if (majorVer === 16) {
       name += '1604';
+    } else if (majorVer === 18) {
+      name += '1804';
     } else {
       name += '1404';
     }
