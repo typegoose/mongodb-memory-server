@@ -117,6 +117,14 @@ describe('MongoBinaryDownloadUrl', () => {
         })
       ).toBe('ubuntu1204');
     });
+    it('should return a archive name for Ubuntu 18.04', () => {
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          dist: 'Ubuntu Linux',
+          release: '18.04',
+        })
+      ).toBe('ubuntu1804');
+    });
   });
 
   describe('getDebianVersionString()', () => {
