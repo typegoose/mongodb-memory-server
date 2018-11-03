@@ -8,7 +8,7 @@
 
 This package spins up a actual/real MongoDB Server programmatically from node for testing or mocking during development. By default it holds the data in memory. Fresh spinned up `mongod` process takes about 7Mb of memory. The server will allow you to connect your favorite ODM or client library to the MongoDB Server and run integration tests isolated from each other.
 
-This package on first start downloads the latest MongoDB binaries and save it to `~/.mongodb-binaries` folder. So first run may take a time. All further runs will fast, because use already downloaded binaries.
+This package on first start downloads the latest MongoDB binaries and save it to `node_modules/.cache/mongodb-memory-server/mongodb-binaries` folder. So first run may take a time. All further runs will fast, because use already downloaded binaries.
 
 Every `MongoMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
 
@@ -58,7 +58,7 @@ const mongod = new MongoMemoryServer({
   },
   binary: {
     version?: string, // by default 'latest'
-    downloadDir?: string, // by default %HOME/.mongodb-binaries
+    downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
     debug?: boolean, // by default false
@@ -332,14 +332,8 @@ For AVA written [detailed tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d
 
 
 ## Travis
-You may cache downloaded MongoDB binaries on Travis to speed up further tests:
-```yml
-cache:
-  directories:
-    - $HOME/.mongodb-binaries
-```
 
-**Also it is very important** to limit spawned number of Jest workers for avoiding race condition. Cause Jest spawn huge amount of workers for every node environment on same machine. [More details](https://github.com/facebook/jest/issues/3765)
+**It is very important** to limit spawned number of Jest workers for avoiding race condition. Cause Jest spawn huge amount of workers for every node environment on same machine. [More details](https://github.com/facebook/jest/issues/3765)
 Use `--maxWorkers 4` or `--runInBand` option.
 ```diff
 script:
