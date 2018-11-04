@@ -1,5 +1,6 @@
 /* @flow */
 
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import LockFile from 'lockfile';
@@ -23,10 +24,13 @@ export default class MongoBinary {
   static cache: MongoBinaryCache = {};
 
   static async getPath(opts?: MongoBinaryOpts = {}): Promise<string> {
+    const legacyDLDir = path.resolve(os.homedir(), '.mongodb-binaries');
     const defaultOptions = {
       downloadDir:
         process.env?.MONGOMS_DOWNLOAD_DIR ||
-        path.resolve(findCacheDir({ name: 'mongodb-memory-server' }), 'mongodb-binaries'),
+        (fs.existsSync(legacyDLDir)
+          ? legacyDLDir
+          : path.resolve(findCacheDir({ name: 'mongodb-memory-server' }), 'mongodb-binaries')),
       platform: process.env?.MONGOMS_PLATFORM || os.platform(),
       arch: process.env?.MONGOMS_ARCH || os.arch(),
       version: process.env?.MONGOMS_VERSION || 'latest',
