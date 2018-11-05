@@ -17,9 +17,9 @@ export default class MongoBinaryDownloadUrl {
   os: ?getos.Os;
 
   constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
+    this.version = version;
     this.platform = this.translatePlatform(platform);
     this.arch = this.translateArch(arch, this.platform);
-    this.version = version;
     this.os = os;
   }
 
@@ -201,7 +201,14 @@ export default class MongoBinaryDownloadUrl {
     } else if (majorVer === 16) {
       name += '1604';
     } else if (majorVer === 18) {
-      name += '1804';
+      if (this.version && this.version.indexOf('3.') === 0) {
+        // For MongoDB 3.x using 1604 binaries, download distro does not have builds for Ubuntu 1804
+        // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
+        name += '1604';
+      } else {
+        // See fulllist of versions https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
+        name += '1804';
+      }
     } else {
       name += '1404';
     }
