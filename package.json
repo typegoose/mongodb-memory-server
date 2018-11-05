@@ -60,6 +60,7 @@
     "@babel/runtime": "^7.0.0",
     "debug": "^4.0.1",
     "decompress": "^4.2.0",
+    "find-cache-dir": "^2.0.0",
     "get-port": "^4.0.0",
     "getos": "^3.1.0",
     "https-proxy-agent": "^2.2.1",
