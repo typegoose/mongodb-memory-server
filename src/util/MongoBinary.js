@@ -30,7 +30,16 @@ export default class MongoBinary {
         process.env?.MONGOMS_DOWNLOAD_DIR ||
         (fs.existsSync(legacyDLDir)
           ? legacyDLDir
-          : path.resolve(findCacheDir({ name: 'mongodb-memory-server' }), 'mongodb-binaries')),
+          : path.resolve(
+              findCacheDir({
+                name: 'mongodb-memory-server',
+                // if we're in postinstall script, npm will set the cwd too deep
+                cwd: new RegExp(`node_modules${path.sep}mongodb-memory-server$`).test(process.cwd())
+                  ? path.resolve(process.cwd(), '..', '..')
+                  : process.cwd(),
+              }),
+              'mongodb-binaries'
+            )),
       platform: process.env?.MONGOMS_PLATFORM || os.platform(),
       arch: process.env?.MONGOMS_ARCH || os.arch(),
       version: process.env?.MONGOMS_VERSION || 'latest',
