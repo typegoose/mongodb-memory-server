@@ -107,7 +107,9 @@ export default class MongoBinaryDownload {
       process.env['npm_config_https-proxy'] ||
       process.env.npm_config_proxy ||
       process.env.https_proxy ||
-      process.env.http_proxy;
+      process.env.http_proxy ||
+      process.env.HTTPS_PROXY ||
+      process.env.HTTP_PROXY;
 
     const urlObject = url.parse(downloadUrl);
 
