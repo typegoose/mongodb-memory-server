@@ -62,7 +62,7 @@
     "decompress": "^4.2.0",
     "find-cache-dir": "^2.0.0",
     "get-port": "^4.0.0",
-    "getos": "^3.1.0",
+    "getos": "^3.1.1",
     "https-proxy-agent": "^2.2.1",
     "lockfile": "^1.0.4",
     "md5-file": "^4.0.0",
