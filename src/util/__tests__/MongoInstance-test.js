@@ -73,6 +73,7 @@ describe('MongoInstance', () => {
       '27555',
       '--dbpath',
       '/data',
+      '--auth',
     ]);
   });
 

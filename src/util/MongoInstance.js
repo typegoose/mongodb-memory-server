@@ -77,6 +77,7 @@ export default class MongodbInstance {
     if (storageEngine) result.push('--storageEngine', storageEngine);
     if (dbPath) result.push('--dbpath', dbPath);
     if (!auth) result.push('--noauth');
+    else if (auth) result.push('--auth');
     if (replSet) result.push('--replSet', replSet);
 
     return result.concat(args || []);
