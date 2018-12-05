@@ -14,7 +14,7 @@ function isModuleExists(name) {
 }
 
 const skipDownload = (typeof process.env.MONGOMS_DISABLE_POSTINSTALL === 'string') &&
-  ['1', 'on', 'yes', 'true'].includes(process.env.MONGOMS_DISABLE_POSTINSTALL.toLowerCase())
+  (['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_DISABLE_POSTINSTALL.toLowerCase()) !== -1)
 
 if (skipDownload) {
   console.log("Download is skipped by MONGOMS_DISABLE_POSTINSTALL variable");
