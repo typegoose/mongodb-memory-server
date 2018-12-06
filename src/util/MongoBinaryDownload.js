@@ -18,22 +18,40 @@ export type MongoBinaryDownloadOpts = {
   platform: string,
   arch: string,
   debug?: DebugPropT,
+  skipMD5?: boolean,
 };
 
 export default class MongoBinaryDownload {
   debug: DebugFn;
   dlProgress: DownloadProgressT;
 
+  skipMD5: boolean;
   downloadDir: string;
   arch: string;
   version: string;
   platform: string;
 
-  constructor({ platform, arch, downloadDir, version, debug }: $Shape<MongoBinaryDownloadOpts>) {
+  constructor({
+    platform,
+    arch,
+    downloadDir,
+    version,
+    skipMD5,
+    debug,
+  }: $Shape<MongoBinaryDownloadOpts>) {
     this.platform = platform || os.platform();
     this.arch = arch || os.arch();
     this.version = version || 'latest';
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
+    if (skipMD5 === undefined) {
+      this.skipMD5 =
+        typeof process.env.MONGOMS_SKIP_MD5_CHECK === 'string'
+          ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_SKIP_MD5_CHECK.toLowerCase()) !==
+            -1
+          : false;
+    } else {
+      this.skipMD5 = skipMD5;
+    }
     this.dlProgress = {
       current: 0,
       length: 0,
@@ -91,12 +109,7 @@ export default class MongoBinaryDownload {
   }
 
   async checkMd5(mongoDBArchiveMd5: string, mongoDBArchive: string): Promise<?boolean> {
-    if (
-      typeof process.env.MONGOMS_SKIP_MD5_CHECK === 'string'
-        ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_SKIP_MD5_CHECK.toLowerCase()) !==
-          -1
-        : false
-    ) {
+    if (this.skipMD5) {
       return undefined;
     }
     const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('UTF-8');
