@@ -90,7 +90,7 @@ export default class MongoBinaryDownload {
     return mongoDBArchive;
   }
 
-  async checkMd5(mongoDBArchiveMd5: string, mongoDBArchive: string) {
+  async checkMd5(mongoDBArchiveMd5: string, mongoDBArchive: string): Promise<?boolean> {
     if (
       typeof process.env.MONGOMS_SKIP_MD5_CHECK === 'string'
         ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_SKIP_MD5_CHECK.toLowerCase()) !==
@@ -106,7 +106,7 @@ export default class MongoBinaryDownload {
     if (md5Remote !== md5Local) {
       throw new Error('MongoBinaryDownload: md5 check is failed');
     }
-    return undefined;
+    return true;
   }
 
   async download(downloadUrl: string) {
