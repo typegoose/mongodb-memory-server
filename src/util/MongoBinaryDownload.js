@@ -91,6 +91,14 @@ export default class MongoBinaryDownload {
   }
 
   async checkMd5(mongoDBArchiveMd5: string, mongoDBArchive: string) {
+    if (
+      typeof process.env.MONGOMS_SKIP_MD5_CHECK === 'string'
+        ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_SKIP_MD5_CHECK.toLowerCase()) !==
+          -1
+        : false
+    ) {
+      return undefined;
+    }
     const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('UTF-8');
     const m = signatureContent.match(/(.*?)\s/);
     const md5Remote = m ? m[1] : null;
@@ -98,6 +106,7 @@ export default class MongoBinaryDownload {
     if (md5Remote !== md5Local) {
       throw new Error('MongoBinaryDownload: md5 check is failed');
     }
+    return undefined;
   }
 
   async download(downloadUrl: string) {

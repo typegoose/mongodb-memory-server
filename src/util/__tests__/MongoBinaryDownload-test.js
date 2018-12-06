@@ -1,8 +1,17 @@
 /* @flow */
 
+import fs from 'fs';
+import md5file from 'md5-file';
 import MongoBinaryDownload from '../MongoBinaryDownload';
 
+jest.mock('fs');
+jest.mock('md5-file');
+
 describe('MongoBinaryDownload', () => {
+  afterEach(() => {
+    delete process.env.MONGOMS_SKIP_MD5_CHECK;
+  });
+
   it('should use direct download', async () => {
     process.env['yarn_https-proxy'] = '';
     process.env.yarn_proxy = '';
@@ -33,5 +42,41 @@ describe('MongoBinaryDownload', () => {
     const callArg1 = du.httpDownload.mock.calls[0][0];
     expect(callArg1.agent).toBeDefined();
     expect(callArg1.agent.options.href).toBe('http://user:pass@proxy:8080/');
+  });
+
+  it(`checkMd5 returns undefined if md5 of downloaded mongoDBArchive is
+the same as in the reference result`, () => {
+    const someMd5 = 'md5';
+    fs.readFileSync.mockImplementationOnce(() => `${someMd5} fileName`);
+    md5file.sync.mockImplementationOnce(() => someMd5);
+    const mongoDBArchivePath = '/some/path';
+    const fileWithReferenceMd5 = '/another/path';
+    const du = new MongoBinaryDownload({});
+    return du.checkMd5(fileWithReferenceMd5, mongoDBArchivePath).then(res => {
+      expect(res).toBe(undefined);
+      expect(fs.readFileSync).toBeCalledWith(fileWithReferenceMd5);
+      expect(md5file.sync).toBeCalledWith(mongoDBArchivePath);
+    });
+  });
+
+  it(`checkMd5 throws an error if md5 of downloaded mongoDBArchive is NOT
+  the same as in the reference result`, () => {
+    fs.readFileSync.mockImplementationOnce(() => 'someMd5 fileName');
+    md5file.sync.mockImplementationOnce(() => 'anotherMd5');
+    const du = new MongoBinaryDownload({});
+    expect(du.checkMd5('', '')).rejects.toMatchInlineSnapshot(
+      `[Error: MongoBinaryDownload: md5 check is failed]`
+    );
+  });
+
+  it('environment variable MONGOMS_SKIP_MD5_CHECK disables checkMd5 validation', () => {
+    expect.assertions(1);
+    process.env.MONGOMS_SKIP_MD5_CHECK = '1';
+    fs.readFileSync.mockImplementationOnce(() => 'someMd5 fileName');
+    md5file.sync.mockImplementationOnce(() => 'anotherMd5');
+    const du = new MongoBinaryDownload({});
+    return du.checkMd5('', '').then(res => {
+      expect(res).toBe(undefined);
+    });
   });
 });
