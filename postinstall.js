@@ -27,6 +27,11 @@ if (isModuleExists('./lib/util/MongoBinary')) {
   console.log('mongodb-memory-server: checking MongoDB binaries cache...');
   MongoBinary.getPath({}).then(binPath => {
     console.log(`mongodb-memory-server: binary path is ${binPath}`);
+  })
+  .catch((err) => {
+    console.log(`failed to download/install MongoDB binaries. The error:
+${err}`)
+    process.exit(1)
   });
 } else {
   console.log("Can't resolve MongoBinary module");

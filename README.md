@@ -62,6 +62,7 @@ const mongod = new MongoMemoryServer({
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
     debug?: boolean, // by default false
+    skipMD5?: boolean, // by default false OR process.env.MONGOMS_SKIP_MD5_CHECK
   },
   debug?: boolean, // by default false
   autoStart?: boolean, // by default true
@@ -76,6 +77,8 @@ MONGOMS_VERSION=3
 MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
 MONGOMS_DOWNLOAD_MIRROR=url # your mirror url to download the mongodb binary
 MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
+MONGOMS_SKIP_MD5_CHECK=1 # if you want to skip MD5 check of downloaded binary.
+# Passed constructor parameter `binary.skipMD5` has higher priority.
 ```
 
 ### Replica Set start:

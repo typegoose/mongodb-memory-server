@@ -18,22 +18,38 @@ export type MongoBinaryDownloadOpts = {
   platform: string,
   arch: string,
   debug?: DebugPropT,
+  skipMD5?: boolean,
 };
 
 export default class MongoBinaryDownload {
   debug: DebugFn;
   dlProgress: DownloadProgressT;
 
+  skipMD5: boolean;
   downloadDir: string;
   arch: string;
   version: string;
   platform: string;
 
-  constructor({ platform, arch, downloadDir, version, debug }: $Shape<MongoBinaryDownloadOpts>) {
+  constructor({
+    platform,
+    arch,
+    downloadDir,
+    version,
+    skipMD5,
+    debug,
+  }: $Shape<MongoBinaryDownloadOpts>) {
     this.platform = platform || os.platform();
     this.arch = arch || os.arch();
     this.version = version || 'latest';
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
+    if (skipMD5 === undefined) {
+      this.skipMD5 =
+        typeof process.env.MONGOMS_SKIP_MD5_CHECK === 'string' &&
+        ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_SKIP_MD5_CHECK.toLowerCase()) !== -1;
+    } else {
+      this.skipMD5 = skipMD5;
+    }
     this.dlProgress = {
       current: 0,
       length: 0,
@@ -84,13 +100,16 @@ export default class MongoBinaryDownload {
     const downloadUrl = await mbdUrl.getDownloadUrl();
     const mongoDBArchive = await this.download(downloadUrl);
 
-    const mongoDBArchiveMd5 = await this.download(`${downloadUrl}.md5`);
-    await this.checkMd5(mongoDBArchiveMd5, mongoDBArchive);
+    await this.checkMD5(`${downloadUrl}.md5`, mongoDBArchive);
 
     return mongoDBArchive;
   }
 
-  async checkMd5(mongoDBArchiveMd5: string, mongoDBArchive: string) {
+  async checkMD5(urlForReferenceMD5: string, mongoDBArchive: string): Promise<?boolean> {
+    if (this.skipMD5) {
+      return undefined;
+    }
+    const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
     const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('UTF-8');
     const m = signatureContent.match(/(.*?)\s/);
     const md5Remote = m ? m[1] : null;
@@ -98,6 +117,7 @@ export default class MongoBinaryDownload {
     if (md5Remote !== md5Local) {
       throw new Error('MongoBinaryDownload: md5 check is failed');
     }
+    return true;
   }
 
   async download(downloadUrl: string) {
