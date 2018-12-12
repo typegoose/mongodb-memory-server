@@ -29,7 +29,6 @@ export interface MongoInstanceDataT {
 }
 
 export default class MongoMemoryServer {
-  isRunning: boolean;
   runningInstance: Promise<MongoInstanceDataT> | undefined;
   opts: MongoMemoryServerOptsT;
   debug: DebugFn;
