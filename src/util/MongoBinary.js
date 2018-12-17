@@ -69,14 +69,8 @@ export default class MongoBinary {
     const { downloadDir, platform, arch, version, systemBinary } = options;
 
     if (systemBinary) {
-      try {
-        await fs.access(systemBinary);
-
-        debug(`MongoBinary: found sytem binary path at ${systemBinary}`);
-        this.cache[version] = systemBinary;
-      } catch (err) {
-        debug(`MongoBinary: can't find system binary at ${systemBinary}`);
-      }
+      debug(`MongoBinary: found sytem binary path at ${systemBinary}`);
+      this.cache[version] = systemBinary;
     }
 
     if (this.cache[version]) {
