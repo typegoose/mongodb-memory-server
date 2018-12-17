@@ -45,7 +45,7 @@ export default class MongoBinary {
       platform: process.env?.MONGOMS_PLATFORM || os.platform(),
       arch: process.env?.MONGOMS_ARCH || os.arch(),
       version: process.env?.MONGOMS_VERSION || 'latest',
-      systemBinary: process.env?.MONGOMMS_SYSTEM_BINARY,
+      systemBinary: process.env?.MONGOMS_SYSTEM_BINARY,
       debug:
         typeof process.env.MONGOMS_DEBUG === 'string'
           ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_DEBUG.toLowerCase()) !== -1
@@ -69,8 +69,14 @@ export default class MongoBinary {
     const { downloadDir, platform, arch, version, systemBinary } = options;
 
     if (systemBinary) {
-      debug(`MongoBinary: found sytem binary path at ${systemBinary}`);
-      this.cache[version] = systemBinary;
+      try {
+        await fs.access(systemBinary);
+
+        debug(`MongoBinary: found sytem binary path at ${systemBinary}`);
+        this.cache[version] = systemBinary;
+      } catch (err) {
+        debug(`MongoBinary: can't find system binary at ${systemBinary}`);
+      }
     }
 
     if (this.cache[version]) {
@@ -130,7 +136,12 @@ export default class MongoBinary {
     if (version && systemBinary) {
       console.log(dedent`
         MongoMemoryServer: Possible version conflict
-          SystemBinary version: ${execSync('mongod --version')}
+          SystemBinary version: ${
+            execSync('mongod --version')
+              .toString()
+              .split('\n')[0]
+              .split(' ')[2]
+          }
           Requested version:    ${version}
 
           Using SystemBinary!

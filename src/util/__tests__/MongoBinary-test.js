@@ -43,17 +43,29 @@ describe('MongoBinary', () => {
     await expect(MongoBinary.getPath({ version: '3.4.2' })).resolves.toEqual('/bin/mongod');
   });
 
-  it('should use system binary if option is passed.', async () => {
-    const binPath = await MongoBinary.getPath({
-      systemBinary: '/usr/bin/mongod',
+  describe('System Binary', () => {
+    let fsMock: any;
+    let binPath: string;
+
+    beforeEach(async () => {
+      fsMock = await jest.doMock('fs', () => ({ access: jest.fn() }));
     });
 
-    expect(binPath).toEqual('/usr/bin/mongod');
-  });
+    afterEach(() => fsMock.access.mockReset());
 
-  it('should get system binary from the environment', async () => {
-    process.env.MONGOMMS_SYSTEM_BINARY = '/usr/local/bin/mongod';
+    it('should use system binary if option is passed.', async () => {
+      binPath = await MongoBinary.getPath({ systemBinary: '/usr/bin/mongod' });
 
-    await expect(MongoBinary.getPath()).resolves.toEqual('/usr/local/bin/mongod');
+      expect(binPath).toEqual('/usr/bin/mongod');
+      expect(fsMock.access).toHaveBeenCalledWith('/usr/bin/mongod');
+    });
+
+    it('should get system binary from the environment', async () => {
+      process.env.MONGOMS_SYSTEM_BINARY = '/usr/local/bin/mongod';
+      binPath = await MongoBinary.getPath();
+
+      expect(binPath).toBe('/usr/local/bin/mongod');
+      expect(fsMock.access).toHaveBeenCalledWith('/usr/local/bin/mongod');
+    });
   });
 });
