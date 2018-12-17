@@ -7,16 +7,16 @@ tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 160000;
 
 describe('MongoBinary', () => {
-  let tmpDir
+  let tmpDir;
 
   beforeEach(() => {
     tmpDir = tmp.dirSync({ prefix: 'mongo-mem-bin-', unsafeCleanup: true });
-  })
+  });
 
   afterEach(() => {
     // cleanup
     tmpDir.removeCallback();
-  })
+  });
 
   it('should download binary and keep it in cache', async () => {
     // download
