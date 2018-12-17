@@ -7,9 +7,18 @@ tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 160000;
 
 describe('MongoBinary', () => {
-  it('should download binary and keep it in cache', async () => {
-    const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-bin-', unsafeCleanup: true });
+  let tmpDir
 
+  beforeEach(() => {
+    tmpDir = tmp.dirSync({ prefix: 'mongo-mem-bin-', unsafeCleanup: true });
+  })
+
+  afterEach(() => {
+    // cleanup
+    tmpDir.removeCallback();
+  })
+
+  it('should download binary and keep it in cache', async () => {
     // download
     const version = 'latest';
     const binPath = await MongoBinary.getPath({
@@ -27,13 +36,24 @@ describe('MongoBinary', () => {
       version,
     });
     expect(binPathAgain).toEqual(binPath);
-
-    // cleanup
-    tmpDir.removeCallback();
   });
 
   it('should use cache', async () => {
     MongoBinary.cache['3.4.2'] = '/bin/mongod';
     await expect(MongoBinary.getPath({ version: '3.4.2' })).resolves.toEqual('/bin/mongod');
+  });
+
+  it('should use system binary if option is passed.', async () => {
+    const binPath = await MongoBinary.getPath({
+      systemBinary: '/usr/bin/mongod',
+    });
+
+    expect(binPath).toEqual('/usr/bin/mongod');
+  });
+
+  it('should get system binary from the environment', async () => {
+    process.env.MONGOMMS_SYSTEM_BINARY = '/usr/local/bin/mongod';
+
+    await expect(MongoBinary.getPath()).resolves.toEqual('/usr/local/bin/mongod');
   });
 });
