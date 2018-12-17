@@ -1,6 +1,7 @@
 /* @flow */
 
 import tmp from 'tmp';
+import fs from 'fs';
 import MongoBinary from '../MongoBinary';
 
 tmp.setGracefulCleanup();
@@ -44,28 +45,25 @@ describe('MongoBinary', () => {
   });
 
   describe('System Binary', () => {
-    let fsMock: any;
-    let binPath: string;
+    let accessSpy: any;
 
-    beforeEach(async () => {
-      fsMock = await jest.doMock('fs', () => ({ access: jest.fn() }));
+    beforeEach(() => {
+      accessSpy = jest.spyOn(fs, 'access');
     });
 
-    afterEach(() => fsMock.access.mockReset());
+    afterEach(() => accessSpy.mockClear());
 
     it('should use system binary if option is passed.', async () => {
-      binPath = await MongoBinary.getPath({ systemBinary: '/usr/bin/mongod' });
+      await MongoBinary.getPath({ systemBinary: '/usr/bin/mongod' });
 
-      expect(binPath).toEqual('/usr/bin/mongod');
-      expect(fsMock.access).toHaveBeenCalledWith('/usr/bin/mongod');
+      expect(accessSpy).toHaveBeenCalledWith('/usr/bin/mongod');
     });
 
     it('should get system binary from the environment', async () => {
       process.env.MONGOMS_SYSTEM_BINARY = '/usr/local/bin/mongod';
-      binPath = await MongoBinary.getPath();
+      await MongoBinary.getPath();
 
-      expect(binPath).toBe('/usr/local/bin/mongod');
-      expect(fsMock.access).toHaveBeenCalledWith('/usr/local/bin/mongod');
+      expect(accessSpy).toHaveBeenCalledWith('/usr/local/bin/mongod');
     });
   });
 });

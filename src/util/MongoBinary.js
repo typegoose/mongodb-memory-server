@@ -133,7 +133,7 @@ export default class MongoBinary {
       });
     }
 
-    if (version && systemBinary) {
+    if (version !== 'latest' && systemBinary) {
       console.log(dedent`
         MongoMemoryServer: Possible version conflict
           SystemBinary version: ${
