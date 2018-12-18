@@ -24,6 +24,83 @@ export type MongoBinaryOpts = {
 
 export default class MongoBinary {
   static cache: MongoBinaryCache = {};
+  static debug: Function;
+
+  static async getSystemPath(systemBinary: string): Promise<string> {
+    let binaryPath: string = '';
+
+    try {
+      await fs.access(systemBinary);
+
+      this.debug(`MongoBinary: found sytem binary path at ${systemBinary}`);
+      binaryPath = systemBinary;
+    } catch (err) {
+      this.debug(`MongoBinary: can't find system binary at ${systemBinary}`);
+    }
+
+    return binaryPath;
+  }
+
+  static async getCachePath(version: string) {
+    this.debug(`MongoBinary: found cached binary path for ${version}`);
+    return this.cache[version];
+  }
+
+  static async getDownloadPath(options: MongoBinaryOpts): Promise<string> {
+    const { downloadDir, platform, arch, version } = options;
+
+    // create downloadDir if not exists
+    await new Promise((resolve, reject) => {
+      mkdirp(downloadDir, err => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    const lockfile = path.resolve(downloadDir, `${version}.lock`);
+
+    // wait lock
+    await new Promise((resolve, reject) => {
+      LockFile.lock(
+        lockfile,
+        {
+          wait: 120000,
+          pollPeriod: 100,
+          stale: 110000,
+          retries: 3,
+          retryWait: 100,
+        },
+        err => {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
+    });
+
+    // again check cache, maybe other instance resolve it
+    if (!this.cache[version]) {
+      const downloader = new MongoBinaryDownload({
+        downloadDir,
+        platform,
+        arch,
+        version,
+      });
+
+      downloader.debug = this.debug;
+      this.cache[version] = await downloader.getMongodPath();
+    }
+
+    // remove lock
+    LockFile.unlock(lockfile, err => {
+      this.debug(
+        err
+          ? `MongoBinary: Error when removing download lock ${err}`
+          : `MongoBinary: Download lock removed`
+      );
+    });
+
+    return this.cache[version];
+  }
 
   static async getPath(opts?: MongoBinaryOpts = {}): Promise<string> {
     const legacyDLDir = path.resolve(os.homedir(), '.mongodb-binaries');
@@ -52,89 +129,38 @@ export default class MongoBinary {
           : false,
     };
 
-    let debug;
     if (opts.debug) {
       if (opts.debug.call && typeof opts.debug === 'function' && opts.debug.apply) {
-        debug = opts.debug;
+        this.debug = opts.debug;
       } else {
-        debug = console.log.bind(null);
+        this.debug = console.log.bind(null);
       }
     } else {
-      debug = (msg: string) => {}; // eslint-disable-line
+      this.debug = (msg: string) => {}; // eslint-disable-line
     }
 
     const options = { ...defaultOptions, ...opts };
-    debug(`MongoBinary options: ${JSON.stringify(options)}`);
+    this.debug(`MongoBinary options: ${JSON.stringify(options)}`);
 
-    const { downloadDir, platform, arch, version, systemBinary } = options;
+    const { version, systemBinary } = options;
+
+    let binaryPath: string = '';
 
     if (systemBinary) {
-      try {
-        await fs.access(systemBinary);
-
-        debug(`MongoBinary: found sytem binary path at ${systemBinary}`);
-        this.cache[version] = systemBinary;
-      } catch (err) {
-        debug(`MongoBinary: can't find system binary at ${systemBinary}`);
-      }
+      binaryPath = await this.getSystemPath(systemBinary);
     }
 
-    if (this.cache[version]) {
-      debug(`MongoBinary: found cached binary path for ${version}`);
-    } else {
-      // create downloadDir if not exists
-      await new Promise((resolve, reject) => {
-        mkdirp(downloadDir, err => {
-          if (err) reject(err);
-          else resolve();
-        });
-      });
+    if (!binaryPath) {
+      binaryPath = await this.getCachePath(version);
+    }
 
-      const lockfile = path.resolve(downloadDir, `${version}.lock`);
-
-      // wait lock
-      await new Promise((resolve, reject) => {
-        LockFile.lock(
-          lockfile,
-          {
-            wait: 120000,
-            pollPeriod: 100,
-            stale: 110000,
-            retries: 3,
-            retryWait: 100,
-          },
-          err => {
-            if (err) reject(err);
-            else resolve();
-          }
-        );
-      });
-
-      // again check cache, maybe other instance resolve it
-      if (!this.cache[version]) {
-        const downloader = new MongoBinaryDownload({
-          downloadDir,
-          platform,
-          arch,
-          version,
-        });
-
-        downloader.debug = debug;
-        this.cache[version] = await downloader.getMongodPath();
-      }
-
-      // remove lock
-      LockFile.unlock(lockfile, err => {
-        debug(
-          err
-            ? `MongoBinary: Error when removing download lock ${err}`
-            : `MongoBinary: Download lock removed`
-        );
-      });
+    if (!binaryPath) {
+      binaryPath = await this.getDownloadPath(options);
     }
 
     if (version !== 'latest' && systemBinary) {
-      console.log(dedent`
+      // we will log the version number of the system binary and the version requested so the user can see the difference
+      this.debug(dedent`
         MongoMemoryServer: Possible version conflict
           SystemBinary version: ${
             execSync('mongod --version')
@@ -148,8 +174,8 @@ export default class MongoBinary {
       `);
     }
 
-    debug(`MongoBinary: Mongod binary path: ${this.cache[version]}`);
-    return this.cache[version];
+    this.debug(`MongoBinary: Mongod binary path: ${binaryPath}`);
+    return binaryPath;
   }
 
   static hasValidBinPath(files: string[]): boolean {
