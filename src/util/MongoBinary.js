@@ -46,7 +46,7 @@ export default class MongoBinary {
     return this.cache[version];
   }
 
-  static async getDownloadPath(options: MongoBinaryOpts): Promise<string> {
+  static async getDownloadPath(options: any): Promise<string> {
     const { downloadDir, platform, arch, version } = options;
 
     // create downloadDir if not exists

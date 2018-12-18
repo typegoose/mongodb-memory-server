@@ -4,9 +4,8 @@ import tmp from 'tmp';
 import fs from 'fs';
 import os from 'os';
 import MongoBinary from '../MongoBinary';
-import MongoBinaryDownload from '../MongoBinaryDownload';
 
-// const { MongoBinaryDownload } = require.requireMock('../MongoBinaryDownload')
+const MongoBinaryDownload: any = require('../MongoBinaryDownload');
 
 tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 160000;
