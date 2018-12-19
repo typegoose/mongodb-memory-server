@@ -63,6 +63,7 @@ const mongod = new MongoMemoryServer({
     arch?: string, // by default os.arch()
     debug?: boolean, // by default false
     skipMD5?: boolean, // by default false OR process.env.MONGOMS_SKIP_MD5_CHECK
+    systemBinary?: string, // by default undefined or process.env.MONGOMS_SYSTEM_BINARY
   },
   debug?: boolean, // by default false
   autoStart?: boolean, // by default true
@@ -77,6 +78,7 @@ MONGOMS_VERSION=3
 MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
 MONGOMS_DOWNLOAD_MIRROR=url # your mirror url to download the mongodb binary
 MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
+MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
 MONGOMS_SKIP_MD5_CHECK=1 # if you want to skip MD5 check of downloaded binary.
 # Passed constructor parameter `binary.skipMD5` has higher priority.
 ```
@@ -333,6 +335,11 @@ Additional examples of Jest tests:
 ### AVA test runner
 For AVA written [detailed tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) how to test mongoose models by @zellwk.
 
+### Docker Alpine
+There isn't currently an official MongoDB release for alpine linux.  This means that we can't pull binaries for Alpine
+(or any other platform that isn't officially supported by MongoDB), but you can use a Docker image that already has mongod
+built in and then set the MONGOMS_SYSTEM_BINARY variable to point at that binary. This should allow you to use
+mongodb-memory-server on any system on which you can install mongod.
 
 ## Travis
 
