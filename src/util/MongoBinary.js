@@ -51,7 +51,7 @@ export default class MongoBinary {
 
     let debug;
     if (opts.debug) {
-      if (typeof opts.debug === 'function' && opts.debug.apply) {
+      if (typeof opts.debug === 'function' && opts.debug.apply && opts.debug.call) {
         debug = opts.debug;
       } else {
         debug = console.log.bind(null);

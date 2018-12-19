@@ -54,7 +54,11 @@ export default class MongodbInstance {
     }
 
     if (this.opts.instance && this.opts.instance.debug) {
-      if (typeof this.opts.instance.debug === 'function' && this.opts.instance.debug.apply) {
+      if (
+        typeof this.opts.instance.debug === 'function' &&
+        this.opts.instance.debug.apply &&
+        this.opts.instance.debug.call
+      ) {
         this.debug = this.opts.instance.debug;
       } else {
         this.debug = console.log.bind(null);
