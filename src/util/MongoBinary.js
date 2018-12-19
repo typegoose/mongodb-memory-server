@@ -131,7 +131,7 @@ export default class MongoBinary {
 
     if (opts.debug) {
       if (typeof opts.debug === 'function' && opts.debug.apply && opts.debug.call) {
-        debug = opts.debug;
+        this.debug = opts.debug;
       } else {
         this.debug = console.log.bind(null);
       }
@@ -149,7 +149,7 @@ export default class MongoBinary {
     if (systemBinary) {
       binaryPath = await this.getSystemPath(systemBinary);
       if (binaryPath) {
-        const binaryVersion = execSync('mongod --version')
+        const binaryVersion = execSync(`${binaryPath} --version`)
           .toString()
           .split('\n')[0]
           .split(' ')[2];
