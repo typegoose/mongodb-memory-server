@@ -148,20 +148,22 @@ export default class MongoBinary {
 
     if (systemBinary) {
       binaryPath = await this.getSystemPath(systemBinary);
-      const binaryVersion = execSync('mongod --version')
-        .toString()
-        .split('\n')[0]
-        .split(' ')[2];
+      if (binaryPath) {
+        const binaryVersion = execSync('mongod --version')
+          .toString()
+          .split('\n')[0]
+          .split(' ')[2];
 
-      if (version !== 'latest' && version !== binaryVersion) {
-        // we will log the version number of the system binary and the version requested so the user can see the difference
-        this.debug(dedent`
-          MongoMemoryServer: Possible version conflict
-            SystemBinary version: ${binaryVersion}
-            Requested version:    ${version}
+        if (version !== 'latest' && version !== binaryVersion) {
+          // we will log the version number of the system binary and the version requested so the user can see the difference
+          this.debug(dedent`
+            MongoMemoryServer: Possible version conflict
+              SystemBinary version: ${binaryVersion}
+              Requested version:    ${version}
 
-            Using SystemBinary!
-        `);
+              Using SystemBinary!
+          `);
+        }
       }
     }
 
