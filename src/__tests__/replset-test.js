@@ -2,7 +2,7 @@
 
 import MongoMemoryReplSet from '../MongoMemoryReplSet';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 describe('single server replset', () => {
   let replSet: MongoMemoryReplSet;

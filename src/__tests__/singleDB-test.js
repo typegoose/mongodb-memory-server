@@ -3,7 +3,7 @@
 import { MongoClient } from 'mongodb';
 import MongoDBMemoryServer from '../MongoMemoryServer';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 let con;
 let db;
@@ -16,8 +16,8 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  con.close();
-  mongoServer.stop();
+  if (con) con.close();
+  if (mongoServer) mongoServer.stop();
 });
 
 describe('Single mongoServer', () => {

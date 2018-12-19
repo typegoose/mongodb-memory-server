@@ -299,7 +299,7 @@ import mongoose from 'mongoose';
 import MongoMemoryServer from 'mongodb-memory-server';
 
 // May require additional time for downloading MongoDB binaries
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 let mongoServer;
 const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above

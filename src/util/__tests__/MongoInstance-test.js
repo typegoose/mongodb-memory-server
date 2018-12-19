@@ -3,7 +3,7 @@
 import tmp from 'tmp';
 import MongoInstance from '../MongoInstance';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 240000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 let tmpDir;
 beforeEach(() => {
