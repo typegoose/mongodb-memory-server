@@ -8,7 +8,7 @@ import fs from 'fs';
 import md5File from 'md5-file';
 import https from 'https';
 import HttpsProxyAgent from 'https-proxy-agent';
-import decompress from 'decompress';
+import decompress from 'decompress'; // 💩💩💩 this package does not work with Node@11+Jest+Babel
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import type { DebugFn, DebugPropT, DownloadProgressT } from '../types';
 
@@ -58,7 +58,7 @@ export default class MongoBinaryDownload {
     };
 
     if (debug) {
-      if (debug.call && typeof debug === 'function' && debug.apply) {
+      if (typeof debug === 'function' && debug.apply) {
         this.debug = debug;
       } else {
         this.debug = console.log.bind(null);

@@ -130,8 +130,8 @@ export default class MongoBinary {
     };
 
     if (opts.debug) {
-      if (opts.debug.call && typeof opts.debug === 'function' && opts.debug.apply) {
-        this.debug = opts.debug;
+      if (typeof opts.debug === 'function' && opts.debug.apply) {
+        debug = opts.debug;
       } else {
         this.debug = console.log.bind(null);
       }

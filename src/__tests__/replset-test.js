@@ -2,7 +2,7 @@
 
 import MongoMemoryReplSet from '../MongoMemoryReplSet';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 describe('single server replset', () => {
   let replSet: MongoMemoryReplSet;
@@ -53,16 +53,12 @@ describe('multi-member replica set', () => {
     replSet = (null: any);
   });
 
-  it(
-    'should enter running state',
-    async () => {
-      const opts: any = { replSet: { count: 3 } };
-      replSet = new MongoMemoryReplSet(opts);
-      await replSet.waitUntilRunning();
-      expect(replSet.servers.length).toEqual(3);
-      const uri = await replSet.getUri();
-      expect(uri.split(',').length).toEqual(3);
-    },
-    40000
-  );
+  it('should enter running state', async () => {
+    const opts: any = { replSet: { count: 3 } };
+    replSet = new MongoMemoryReplSet(opts);
+    await replSet.waitUntilRunning();
+    expect(replSet.servers.length).toEqual(3);
+    const uri = await replSet.getUri();
+    expect(uri.split(',').length).toEqual(3);
+  }, 40000);
 });

@@ -8,7 +8,7 @@ import MongoBinary from '../MongoBinary';
 const MongoBinaryDownload: any = require('../MongoBinaryDownload');
 
 tmp.setGracefulCleanup();
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 160000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 const mockGetMongodPath = jest.fn().mockResolvedValue('/temp/path');
 
