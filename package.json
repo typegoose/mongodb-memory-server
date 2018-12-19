@@ -61,6 +61,7 @@
     "@babel/runtime": "^7.2.0",
     "debug": "^4.1.0",
     "decompress": "^4.2.0",
+    "dedent": "^0.7.0",
     "find-cache-dir": "^2.0.0",
     "get-port": "^4.0.0",
     "getos": "^3.1.1",
