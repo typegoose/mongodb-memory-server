@@ -58,7 +58,7 @@ export default class MongoBinaryDownload {
     };
 
     if (debug) {
-      if (debug.call && typeof debug === 'function' && debug.apply) {
+      if (typeof debug === 'function' && debug.apply) {
         this.debug = debug;
       } else {
         this.debug = console.log.bind(null);
