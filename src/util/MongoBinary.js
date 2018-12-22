@@ -8,6 +8,7 @@ import mkdirp from 'mkdirp';
 import findCacheDir from 'find-cache-dir';
 import { execSync } from 'child_process';
 import dedent from 'dedent';
+import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 
 export type MongoBinaryCache = {
@@ -30,12 +31,12 @@ export default class MongoBinary {
     let binaryPath: string = '';
 
     try {
-      await fs.access(systemBinary);
+      await promisify(fs.access)(systemBinary);
 
       this.debug(`MongoBinary: found sytem binary path at ${systemBinary}`);
       binaryPath = systemBinary;
     } catch (err) {
-      this.debug(`MongoBinary: can't find system binary at ${systemBinary}`);
+      this.debug(`MongoBinary: can't find system binary at ${systemBinary}. ${err.message}`);
     }
 
     return binaryPath;

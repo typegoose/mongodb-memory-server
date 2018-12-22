@@ -39,7 +39,7 @@ describe('MongoBinary', () => {
       process.env.MONGOMS_SYSTEM_BINARY = '/usr/local/bin/mongod';
       await MongoBinary.getPath();
 
-      expect(accessSpy).toHaveBeenCalledWith('/usr/local/bin/mongod');
+      expect(accessSpy).toHaveBeenCalledWith('/usr/local/bin/mongod', expect.any(Function));
 
       accessSpy.mockClear();
     });
@@ -81,7 +81,7 @@ describe('MongoBinary', () => {
       const accessSpy = jest.spyOn(fs, 'access');
       await MongoBinary.getSystemPath('/usr/bin/mongod');
 
-      expect(accessSpy).toHaveBeenCalledWith('/usr/bin/mongod');
+      expect(accessSpy).toHaveBeenCalledWith('/usr/bin/mongod', expect.any(Function));
 
       accessSpy.mockClear();
     });
