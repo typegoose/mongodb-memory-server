@@ -129,9 +129,11 @@ describe('MongoInstance', () => {
     expect(killerPid).toBeGreaterThan(0);
 
     function isPidRunning(p: number) {
+      console.log('---------------------------------- isPidRunning', p);
       try {
         return process.kill(p, 0);
       } catch (e) {
+        console.log('---------------------', e.code);
         return e.code === 'EPERM';
       }
     }
