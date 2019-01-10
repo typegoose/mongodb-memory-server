@@ -108,12 +108,14 @@ export default class MongodbInstance {
     if (this.childProcess && !(this.childProcess: any).killed) {
       await new Promise(resolve => {
         this.childProcess.once(`exit`, resolve);
+        console.log('killing childProcess');
         this.childProcess.kill();
       });
     }
     if (this.killerProcess && !(this.killerProcess: any).killed) {
       await new Promise(resolve => {
         this.killerProcess.once(`exit`, resolve);
+        console.log('killing killerProcess');
         this.killerProcess.kill();
       });
     }
