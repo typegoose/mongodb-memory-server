@@ -124,7 +124,9 @@ describe('MongoInstance', () => {
       binary: { version: 'latest' },
     });
     const pid: any = mongod.getPid();
+    const killerPid: any = mongod.killerProcess.pid;
     expect(pid).toBeGreaterThan(0);
+    expect(killerPid).toBeGreaterThan(0);
 
     function isPidRunning(p: number) {
       try {
@@ -135,8 +137,10 @@ describe('MongoInstance', () => {
     }
 
     expect(isPidRunning(pid)).toBeTruthy();
+    expect(isPidRunning(killerPid)).toBeTruthy();
     await mongod.kill();
     expect(isPidRunning(pid)).toBeFalsy();
+    expect(isPidRunning(killerPid)).toBeFalsy();
   });
 
   it('should work with mongodb 4.0.3', async () => {
