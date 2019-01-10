@@ -118,7 +118,7 @@ describe('MongoInstance', () => {
     await mongod.kill();
   });
 
-  it('should await while mongo is killed', async () => {
+  it.only('should await while mongo is killed', async () => {
     const mongod = await MongoInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version: 'latest' },
