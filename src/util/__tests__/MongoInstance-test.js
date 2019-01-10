@@ -118,7 +118,7 @@ describe('MongoInstance', () => {
     await mongod.kill();
   });
 
-  it.only('should await while mongo is killed', async () => {
+  it('should await while mongo is killed', async () => {
     const mongod = await MongoInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version: 'latest' },
@@ -129,11 +129,9 @@ describe('MongoInstance', () => {
     expect(killerPid).toBeGreaterThan(0);
 
     function isPidRunning(p: number) {
-      console.log('---------------------------------- isPidRunning', p);
       try {
         return process.kill(p, 0);
       } catch (e) {
-        console.log('---------------------', e.code);
         return e.code === 'EPERM';
       }
     }
