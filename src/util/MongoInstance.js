@@ -37,6 +37,7 @@ export default class MongodbInstance {
   killerProcess: ChildProcess;
   instanceReady: Function;
   instanceFailed: Function;
+  isInstanceReady: boolean;
 
   static run(opts: MongodOps): Promise<MongodbInstance> {
     const instance = new this(opts);
@@ -45,6 +46,7 @@ export default class MongodbInstance {
 
   constructor(opts: MongodOps) {
     this.opts = opts;
+    this.isInstanceReady = false;
 
     if (this.opts.debug) {
       if (!this.opts.instance) this.opts.instance = {};
@@ -86,6 +88,7 @@ export default class MongodbInstance {
   async run(): Promise<MongodbInstance> {
     const launch = new Promise((resolve, reject) => {
       this.instanceReady = () => {
+        this.isInstanceReady = true;
         this.debug('MongodbInstance: is ready!');
         resolve(this.childProcess);
       };
@@ -174,7 +177,10 @@ export default class MongodbInstance {
     } else if (/Data directory .*? not found/i.test(log)) {
       this.instanceFailed('Data directory not found');
     } else if (/shutting down with code/i.test(log)) {
-      this.instanceFailed('Mongod shutting down');
+      // if mongod started succesfully then no error on shutdown!
+      if (!this.isInstanceReady) {
+        this.instanceFailed('Mongod shutting down');
+      }
     } else if (/\*\*\*aborting after/i.test(log)) {
       this.instanceFailed('Mongod internal error');
     }

@@ -34,6 +34,7 @@ export default class MongodbInstance {
     killerProcess: ChildProcess;
     instanceReady: CallbackFn;
     instanceFailed: CallbackFn;
+    isInstanceReady: boolean;
 
     constructor(opts: MongodOps);
 
