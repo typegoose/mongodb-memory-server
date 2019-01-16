@@ -12,6 +12,7 @@ export default class MongoBinaryDownload {
   debug: DebugFn;
   dlProgress: DownloadProgressT;
 
+  checkMD5: boolean;
   downloadDir: string;
   arch: string;
   version: string;
@@ -20,7 +21,7 @@ export default class MongoBinaryDownload {
   constructor(opts: MongoBinaryDownloadOpts);
   getMongodPath(): Promise<string>;
   startDownload(): Promise<string>;
-  checkMd5(mongoDBArchiveMd5: string, mongoDBArchive: string): Promise<void>;
+  makeMd5check(mongoDBArchiveMd5: string, mongoDBArchive: string): Promise<void>;
   download(downloadUrl: string): Promise<string>;
   extract(mongoDBArchive: string): Promise<string>;
   httpDownload(

@@ -62,15 +62,17 @@ const mongod = new MongoMemoryServer({
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
     debug?: boolean, // by default false
-    skipMD5?: boolean, // by default false OR process.env.MONGOMS_SKIP_MD5_CHECK
+    checkMD5?: boolean, // by default false OR process.env.MONGOMS_MD5_CHECK
     systemBinary?: string, // by default undefined or process.env.MONGOMS_SYSTEM_BINARY
   },
   debug?: boolean, // by default false
   autoStart?: boolean, // by default true
 });
 ```
+
 Also you can use the environment variables for configure installation process
-```
+
+```txt
 MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
 MONGOMS_PLATFORM=linux
 MONGOMS_ARCH=x64
@@ -79,11 +81,12 @@ MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
 MONGOMS_DOWNLOAD_MIRROR=url # your mirror url to download the mongodb binary
 MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
 MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
-MONGOMS_SKIP_MD5_CHECK=1 # if you want to skip MD5 check of downloaded binary.
-# Passed constructor parameter `binary.skipMD5` has higher priority.
+MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
+# Passed constructor parameter `binary.checkMD5` has higher priority.
 ```
 
 ### Replica Set start:
+
 ```js
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 

@@ -18,14 +18,14 @@ export type MongoBinaryDownloadOpts = {
   platform: string,
   arch: string,
   debug?: DebugPropT,
-  skipMD5?: boolean,
+  checkMD5?: boolean,
 };
 
 export default class MongoBinaryDownload {
   debug: DebugFn;
   dlProgress: DownloadProgressT;
 
-  skipMD5: boolean;
+  checkMD5: boolean;
   downloadDir: string;
   arch: string;
   version: string;
@@ -36,19 +36,19 @@ export default class MongoBinaryDownload {
     arch,
     downloadDir,
     version,
-    skipMD5,
+    checkMD5,
     debug,
   }: $Shape<MongoBinaryDownloadOpts>) {
     this.platform = platform || os.platform();
     this.arch = arch || os.arch();
     this.version = version || 'latest';
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
-    if (skipMD5 === undefined) {
-      this.skipMD5 =
-        typeof process.env.MONGOMS_SKIP_MD5_CHECK === 'string' &&
-        ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_SKIP_MD5_CHECK.toLowerCase()) !== -1;
+    if (checkMD5 === undefined) {
+      this.checkMD5 =
+        typeof process.env.MONGOMS_MD5_CHECK === 'string' &&
+        ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_MD5_CHECK.toLowerCase()) !== -1;
     } else {
-      this.skipMD5 = skipMD5;
+      this.checkMD5 = checkMD5;
     }
     this.dlProgress = {
       current: 0,
@@ -100,13 +100,13 @@ export default class MongoBinaryDownload {
     const downloadUrl = await mbdUrl.getDownloadUrl();
     const mongoDBArchive = await this.download(downloadUrl);
 
-    await this.checkMD5(`${downloadUrl}.md5`, mongoDBArchive);
+    await this.makeMD5check(`${downloadUrl}.md5`, mongoDBArchive);
 
     return mongoDBArchive;
   }
 
-  async checkMD5(urlForReferenceMD5: string, mongoDBArchive: string): Promise<?boolean> {
-    if (this.skipMD5) {
+  async makeMD5check(urlForReferenceMD5: string, mongoDBArchive: string): Promise<?boolean> {
+    if (!this.checkMD5) {
       return undefined;
     }
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);

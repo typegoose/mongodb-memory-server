@@ -12,16 +12,16 @@ describe('MongoBinaryDownload', () => {
     delete process.env.MONGOMS_SKIP_MD5_CHECK;
   });
 
-  it('skipMD5 attribute can be set via constructor parameter', () => {
-    expect(new MongoBinaryDownload({ skipMD5: true }).skipMD5).toBe(true);
-    expect(new MongoBinaryDownload({ skipMD5: false }).skipMD5).toBe(false);
+  it('checkMD5 attribute can be set via constructor parameter', () => {
+    expect(new MongoBinaryDownload({ checkMD5: true }).checkMD5).toBe(true);
+    expect(new MongoBinaryDownload({ checkMD5: false }).checkMD5).toBe(false);
   });
 
-  it(`if skipMD5 input parameter is missing, then it checks 
-MONGOMS_SKIP_MD5_CHECK environment variable`, () => {
-    expect(new MongoBinaryDownload({}).skipMD5).toBe(false);
-    process.env.MONGOMS_SKIP_MD5_CHECK = '1';
-    expect(new MongoBinaryDownload({}).skipMD5).toBe(true);
+  it(`if checkMD5 input parameter is missing, then it checks 
+MONGOMS_MD5_CHECK environment variable`, () => {
+    expect(new MongoBinaryDownload({}).checkMD5).toBe(false);
+    process.env.MONGOMS_MD5_CHECK = '1';
+    expect(new MongoBinaryDownload({}).checkMD5).toBe(true);
   });
 
   it('should use direct download', async () => {
@@ -56,7 +56,7 @@ MONGOMS_SKIP_MD5_CHECK environment variable`, () => {
     expect(callArg1.agent.options.href).toBe('http://user:pass@proxy:8080/');
   });
 
-  it(`checkMD5 returns true if md5 of downloaded mongoDBArchive is
+  it(`makeMD5check returns true if md5 of downloaded mongoDBArchive is
 the same as in the reference result`, () => {
     const someMd5 = 'md5';
     fs.readFileSync.mockImplementationOnce(() => `${someMd5} fileName`);
@@ -67,7 +67,8 @@ the same as in the reference result`, () => {
     // $FlowFixMe
     du.download = jest.fn(() => Promise.resolve(fileWithReferenceMd5));
     const urlToMongoDBArchivePath = 'some-url';
-    return du.checkMD5(urlToMongoDBArchivePath, mongoDBArchivePath).then(res => {
+    du.checkMD5 = true;
+    return du.makeMD5check(urlToMongoDBArchivePath, mongoDBArchivePath).then(res => {
       expect(res).toBe(true);
       expect(du.download).toBeCalledWith(urlToMongoDBArchivePath);
       expect(fs.readFileSync).toBeCalledWith(fileWithReferenceMd5);
@@ -75,25 +76,26 @@ the same as in the reference result`, () => {
     });
   });
 
-  it(`checkMD5 throws an error if md5 of downloaded mongoDBArchive is NOT
+  it(`makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT
   the same as in the reference result`, () => {
     fs.readFileSync.mockImplementationOnce(() => 'someMd5 fileName');
     md5file.sync.mockImplementationOnce(() => 'anotherMd5');
     const du = new MongoBinaryDownload({});
+    du.checkMD5 = true;
     // $FlowFixMe
     du.download = jest.fn(() => Promise.resolve(''));
-    expect(du.checkMD5('', '')).rejects.toMatchInlineSnapshot(
+    expect(du.makeMD5check('', '')).rejects.toMatchInlineSnapshot(
       `[Error: MongoBinaryDownload: md5 check is failed]`
     );
   });
 
-  it('true value of skipMD5 attribute disables checkMD5 validation', () => {
+  it('false value of checkMD5 attribute disables makeMD5check validation', () => {
     expect.assertions(1);
     fs.readFileSync.mockImplementationOnce(() => 'someMd5 fileName');
     md5file.sync.mockImplementationOnce(() => 'anotherMd5');
     const du = new MongoBinaryDownload({});
-    du.skipMD5 = true;
-    return du.checkMD5('', '').then(res => {
+    du.checkMD5 = false;
+    return du.makeMD5check('', '').then(res => {
       expect(res).toBe(undefined);
     });
   });
