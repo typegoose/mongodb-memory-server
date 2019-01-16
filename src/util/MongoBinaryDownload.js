@@ -24,6 +24,7 @@ export type MongoBinaryDownloadOpts = {
 export default class MongoBinaryDownload {
   debug: DebugFn;
   dlProgress: DownloadProgressT;
+  _downloadingUrl: ?string;
 
   checkMD5: boolean;
   downloadDir: string;
@@ -98,6 +99,7 @@ export default class MongoBinaryDownload {
     }
 
     const downloadUrl = await mbdUrl.getDownloadUrl();
+    this._downloadingUrl = downloadUrl;
     const mongoDBArchive = await this.download(downloadUrl);
 
     await this.makeMD5check(`${downloadUrl}.md5`, mongoDBArchive);
@@ -133,9 +135,13 @@ export default class MongoBinaryDownload {
 
     const urlObject = url.parse(downloadUrl);
 
+    if (!urlObject.hostname || !urlObject.path) {
+      throw new Error(`Provided incorrect download url: ${downloadUrl}`);
+    }
+
     const downloadOptions = {
       hostname: urlObject.hostname,
-      port: urlObject.port || 443,
+      port: urlObject.port || '443',
       path: urlObject.path,
       method: 'GET',
       agent: proxy ? new HttpsProxyAgent(proxy) : undefined,
@@ -186,13 +192,22 @@ export default class MongoBinaryDownload {
     });
 
     if (!this.locationExists(path.resolve(this.downloadDir, this.version, binaryName))) {
-      throw new Error(`MongoBinaryDownload: missing mongod binary in ${mongoDBArchive}`);
+      throw new Error(
+        `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${this
+          ._downloadingUrl || ''}). Broken package in MongoDB distro?`
+      );
     }
     return extractDir;
   }
 
   async httpDownload(
-    httpOptions: any,
+    httpOptions: {
+      hostname: string,
+      port: string,
+      path: string,
+      method: 'GET' | 'POST',
+      agent: any,
+    },
     downloadLocation: string,
     tempDownloadLocation: string
   ): Promise<string> {
@@ -207,6 +222,18 @@ export default class MongoBinaryDownload {
         response.pipe(fileStream);
 
         fileStream.on('finish', () => {
+          if (this.dlProgress.current < 1000000) {
+            const downloadUrl =
+              this._downloadingUrl || `https://${httpOptions.hostname}/${httpOptions.path}`;
+            reject(
+              new Error(
+                `Too small (${
+                  this.dlProgress.current
+                } bytes) mongod binary downloaded from ${downloadUrl}`
+              )
+            );
+            return;
+          }
           fileStream.close();
           fs.renameSync(tempDownloadLocation, downloadLocation);
           this.debug(`renamed ${tempDownloadLocation} to ${downloadLocation}`);
