@@ -3,7 +3,7 @@
 import tmp from 'tmp';
 import fs from 'fs';
 import os from 'os';
-import MongoBinary from '../MongoBinary';
+import MongoBinary, { LATEST_VERSION } from '../MongoBinary';
 
 const MongoBinaryDownload: any = require('../MongoBinaryDownload');
 
@@ -48,7 +48,7 @@ describe('MongoBinary', () => {
   describe('getDownloadPath', () => {
     it('should download binary and keep it in cache', async () => {
       // download
-      const version = 'latest';
+      const version = LATEST_VERSION;
       const binPath = await MongoBinary.getPath({
         downloadDir: tmpDir.name,
         version,

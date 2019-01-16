@@ -11,6 +11,11 @@ import dedent from 'dedent';
 import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 
+// TODO: return back `latest` version when it will be fixed in MongoDB distro (for now use 4.0.3 😂)
+// More details in https://github.com/nodkz/mongodb-memory-server/issues/131
+// export const LATEST_VERSION = 'latest';
+export const LATEST_VERSION = '4.0.3';
+
 export type MongoBinaryCache = {
   [version: string]: string,
 };
@@ -122,7 +127,7 @@ export default class MongoBinary {
             )),
       platform: process.env?.MONGOMS_PLATFORM || os.platform(),
       arch: process.env?.MONGOMS_ARCH || os.arch(),
-      version: process.env?.MONGOMS_VERSION || 'latest',
+      version: process.env?.MONGOMS_VERSION || LATEST_VERSION,
       systemBinary: process.env?.MONGOMS_SYSTEM_BINARY,
       debug:
         typeof process.env.MONGOMS_DEBUG === 'string'
@@ -155,7 +160,7 @@ export default class MongoBinary {
           .split('\n')[0]
           .split(' ')[2];
 
-        if (version !== 'latest' && version !== binaryVersion) {
+        if (version !== LATEST_VERSION && version !== binaryVersion) {
           // we will log the version number of the system binary and the version requested so the user can see the difference
           this.debug(dedent`
             MongoMemoryServer: Possible version conflict

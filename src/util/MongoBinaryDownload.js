@@ -11,6 +11,7 @@ import HttpsProxyAgent from 'https-proxy-agent';
 import decompress from 'decompress'; // 💩💩💩 this package does not work with Node@11+Jest+Babel
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import type { DebugFn, DebugPropT, DownloadProgressT } from '../types';
+import { LATEST_VERSION } from './MongoBinary';
 
 export type MongoBinaryDownloadOpts = {
   version: string,
@@ -42,7 +43,7 @@ export default class MongoBinaryDownload {
   }: $Shape<MongoBinaryDownloadOpts>) {
     this.platform = platform || os.platform();
     this.arch = arch || os.arch();
-    this.version = version || 'latest';
+    this.version = version || LATEST_VERSION;
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
     if (checkMD5 === undefined) {
       this.checkMD5 =
