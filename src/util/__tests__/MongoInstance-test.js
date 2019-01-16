@@ -5,6 +5,11 @@ import MongoInstance from '../MongoInstance';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
+// TODO: return back `latest` version when it will be fixed in MongoDB distro (for now use 4.0.3 😂)
+// more details in https://github.com/nodkz/mongodb-memory-server/issues/131
+// const latestVersion = 'latest';
+const latestVersion = '4.0.3';
+
 let tmpDir;
 beforeEach(() => {
   tmp.setGracefulCleanup();
@@ -94,7 +99,7 @@ describe('MongoInstance', () => {
   it('should start instance on port 27333', async () => {
     const mongod = await MongoInstance.run({
       instance: { port: 27333, dbPath: tmpDir.name },
-      binary: { version: 'latest' },
+      binary: { version: latestVersion },
     });
 
     expect(mongod.getPid()).toBeGreaterThan(0);
@@ -105,13 +110,13 @@ describe('MongoInstance', () => {
   it('should throw error if port is busy', async () => {
     const mongod = await MongoInstance.run({
       instance: { port: 27444, dbPath: tmpDir.name },
-      binary: { version: 'latest' },
+      binary: { version: latestVersion },
     });
 
     await expect(
       MongoInstance.run({
         instance: { port: 27444, dbPath: tmpDir.name },
-        binary: { version: 'latest' },
+        binary: { version: latestVersion },
       })
     ).rejects.toBeDefined();
 
@@ -121,7 +126,7 @@ describe('MongoInstance', () => {
   it('should await while mongo is killed', async () => {
     const mongod = await MongoInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
-      binary: { version: 'latest' },
+      binary: { version: latestVersion },
     });
     const pid: any = mongod.getPid();
     const killerPid: any = mongod.killerProcess.pid;
