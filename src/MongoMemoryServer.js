@@ -161,6 +161,9 @@ export default class MongoMemoryServer {
   }
 
   async getInstanceData(): Promise<MongoInstanceDataT> {
+    if (!this.runningInstance) {
+      await this.start();
+    }
     if (this.runningInstance) {
       return this.runningInstance;
     }
