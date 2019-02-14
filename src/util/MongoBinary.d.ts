@@ -10,6 +10,7 @@ export interface MongoBinaryOpts {
   platform?: string;
   arch?: string;
   debug?: DebugPropT;
+  checkMD5?: boolean;
 }
 
 // disable error for a class with all static functions,

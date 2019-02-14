@@ -223,7 +223,7 @@ export default class MongoBinaryDownload {
         response.pipe(fileStream);
 
         fileStream.on('finish', () => {
-          if (this.dlProgress.current < 1000000) {
+          if (this.dlProgress.current < 1000000 && !httpOptions.path.endsWith('.md5')) {
             const downloadUrl =
               this._downloadingUrl || `https://${httpOptions.hostname}/${httpOptions.path}`;
             reject(
