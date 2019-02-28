@@ -158,7 +158,7 @@ export default class MongoBinary {
       binaryPath = await this.getSystemPath(systemBinary);
       if (binaryPath) {
         if (~binaryPath.indexOf(' ')) {
-          binaryPath = `'${binaryPath}'`;
+          binaryPath = `"${binaryPath}"`;
         }
 
         const binaryVersion = execSync(`${binaryPath} --version`)
