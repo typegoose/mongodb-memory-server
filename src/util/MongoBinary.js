@@ -1,5 +1,7 @@
 /* @flow */
 
+/* eslint no-bitwise: ['error', { 'allow': ['~'] }] */
+
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -155,6 +157,10 @@ export default class MongoBinary {
     if (systemBinary) {
       binaryPath = await this.getSystemPath(systemBinary);
       if (binaryPath) {
+        if (~binaryPath.indexOf(' ')) {
+          binaryPath = `"${binaryPath}"`;
+        }
+
         const binaryVersion = execSync(`${binaryPath} --version`)
           .toString()
           .split('\n')[0]
