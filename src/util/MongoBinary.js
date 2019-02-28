@@ -1,5 +1,6 @@
 /* @flow */
-/*eslint no-bitwise: ["error", { "allow": ["~"] }] */
+
+/* eslint no-bitwise: ["error", { "allow": ["~"] }] */
 
 import fs from 'fs';
 import os from 'os';
