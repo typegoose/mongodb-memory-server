@@ -1,6 +1,6 @@
 /* @flow */
 
-/* eslint no-bitwise: ["error", { "allow": ["~"] }] */
+/* eslint no-bitwise: ['error', { 'allow': ['~'] }] */
 
 import fs from 'fs';
 import os from 'os';
@@ -114,10 +114,10 @@ export default class MongoBinary {
     const legacyDLDir = path.resolve(os.homedir(), '.mongodb-binaries');
     const defaultOptions = {
       downloadDir:
-        process.env ?.MONGOMS_DOWNLOAD_DIR ||
-          (fs.existsSync(legacyDLDir)
-            ? legacyDLDir
-            : path.resolve(
+        process.env?.MONGOMS_DOWNLOAD_DIR ||
+        (fs.existsSync(legacyDLDir)
+          ? legacyDLDir
+          : path.resolve(
               findCacheDir({
                 name: 'mongodb-memory-server',
                 // if we're in postinstall script, npm will set the cwd too deep
@@ -127,10 +127,10 @@ export default class MongoBinary {
               }),
               'mongodb-binaries'
             )),
-      platform: process.env ?.MONGOMS_PLATFORM || os.platform(),
-      arch: process.env ?.MONGOMS_ARCH || os.arch(),
-      version: process.env ?.MONGOMS_VERSION || LATEST_VERSION,
-      systemBinary: process.env ?.MONGOMS_SYSTEM_BINARY,
+      platform: process.env?.MONGOMS_PLATFORM || os.platform(),
+      arch: process.env?.MONGOMS_ARCH || os.arch(),
+      version: process.env?.MONGOMS_VERSION || LATEST_VERSION,
+      systemBinary: process.env?.MONGOMS_SYSTEM_BINARY,
       debug:
         typeof process.env.MONGOMS_DEBUG === 'string'
           ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_DEBUG.toLowerCase()) !== -1
@@ -144,7 +144,7 @@ export default class MongoBinary {
         this.debug = console.log.bind(null);
       }
     } else {
-      this.debug = (msg: string) => { }; // eslint-disable-line
+      this.debug = (msg: string) => {}; // eslint-disable-line
     }
 
     const options = { ...defaultOptions, ...opts };
@@ -158,7 +158,7 @@ export default class MongoBinary {
       binaryPath = await this.getSystemPath(systemBinary);
       if (binaryPath) {
         if (~binaryPath.indexOf(' ')) {
-          binaryPath = `"${binaryPath}"`;
+          binaryPath = `'${binaryPath}'`;
         }
 
         const binaryVersion = execSync(`${binaryPath} --version`)
