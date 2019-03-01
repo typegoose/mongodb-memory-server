@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2018",
     "module": "commonjs",
+    "outDir": "./lib",
     "strict": true,
-    "rootDir": ".",
+    "rootDir": "./src",
     "declaration": true,
-    "lib": ["es2017", "esnext.asynciterable"]
+    "lib": ["es2018"],
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
-  "include": [ "src/**/*.d.ts" ]
+
+  "include": [ "src/**/*" ]
 }

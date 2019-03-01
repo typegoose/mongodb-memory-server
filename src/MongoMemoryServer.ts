@@ -1,58 +1,58 @@
-/* @flow */
 
-import type { ChildProcess } from 'child_process';
-import tmp from 'tmp';
-import getport from 'get-port';
-import Debug from 'debug';
+import { ChildProcess } from 'child_process';
+import * as tmp from 'tmp';
+// import Debug from 'debug';  // TODO : Do we really need this package ?
 import { generateDbName } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
-import type { MongoBinaryOpts } from './util/MongoBinary';
-import type {
-  CallbackFn,
+import { MongoBinaryOpts } from './util/MongoBinary';
+import { CallbackFn,
   DebugFn,
   MongoMemoryInstancePropT,
-  SpawnOptions,
   StorageEngineT,
+  SpawnOptions
 } from './types';
+// @tslint-ignore
+const getPort = require('get-port')
 
 tmp.setGracefulCleanup();
 
-export type MongoMemoryServerOptsT = {
-  instance: MongoMemoryInstancePropT,
-  binary: MongoBinaryOpts,
-  debug?: boolean,
-  spawn: SpawnOptions,
-  autoStart?: boolean,
-};
+export interface MongoMemoryServerOptsT {
+  instance?: MongoMemoryInstancePropT;
+  binary?: MongoBinaryOpts;
+  debug?: boolean;
+  spawn?: SpawnOptions;
+  autoStart?: boolean;
+}
 
-export type MongoInstanceDataT = {
-  port: number,
-  dbPath: string,
-  dbName: string,
-  uri: string,
-  storageEngine: StorageEngineT,
-  instance: MongoInstance,
-  childProcess: ChildProcess,
+export interface MongoInstanceDataT {
+  port: number;
+  dbPath: string;
+  dbName: string;
+  uri: string;
+  storageEngine: StorageEngineT;
+  instance: MongoInstance;
+  childProcess: ChildProcess;
   tmpDir?: {
-    name: string,
-    removeCallback: CallbackFn,
-  },
-  replSet?: string,
-};
+    name: string;
+    removeCallback: CallbackFn;
+  };
+  replSet?: string;
+}
 
 async function generateConnectionString(port: number, dbName: string): Promise<string> {
   return `mongodb://127.0.0.1:${port}/${dbName}`;
 }
 
 export default class MongoMemoryServer {
-  runningInstance: ?Promise<MongoInstanceDataT>;
+  runningInstance: Promise<MongoInstanceDataT> | null;
   opts: MongoMemoryServerOptsT;
   debug: DebugFn;
 
-  constructor(opts?: $Shape<MongoMemoryServerOptsT> = {}) {
-    this.opts = opts;
-    if (!this.opts.instance) this.opts.instance = {};
-    if (!this.opts.binary) this.opts.binary = {};
+  constructor(opts?: MongoMemoryServerOptsT) {
+    this.opts = { ...opts }; // create a new object by parsing opts
+    this.runningInstance = null
+    // if (!this.opts.instance) this.opts.instance = {};
+    // if (!this.opts.binary) this.opts.binary = {};
 
     this.debug = (msg: string) => {
       if (this.opts.debug) {
@@ -60,11 +60,16 @@ export default class MongoMemoryServer {
       }
     };
 
+    this.debug('Autostarting MongoDB instance...');
+    this.start();
+
     // autoStart by default
-    if (!opts.hasOwnProperty('autoStart') || opts.autoStart) {
+    // TODO: Why do we do this check if it is always valid ?
+    /* if (!opts.hasOwnProperty('autoStart') || opts.autoStart) {
       this.debug('Autostarting MongoDB instance...');
       this.start();
     }
+    */
   }
 
   async start(): Promise<boolean> {
@@ -78,7 +83,9 @@ export default class MongoMemoryServer {
       .catch(err => {
         if (err.message === 'Mongod shutting down' || err === 'Mongod shutting down') {
           this.debug(`Mongodb does not started. Trying to start on another port one more time...`);
-          this.opts.instance.port = null;
+          if (this.opts.instance && this.opts.instance.port) {
+            this.opts.instance.port = null;
+          }
           return this._startUpInstance();
         }
         throw err;
@@ -87,7 +94,7 @@ export default class MongoMemoryServer {
         if (!this.opts.debug) {
           throw new Error(
             `${err.message}\n\nUse debug option for more info: ` +
-              `new MongoMemoryServer({ debug: true })`
+            `new MongoMemoryServer({ debug: true })`
           );
         }
         throw err;
@@ -97,25 +104,28 @@ export default class MongoMemoryServer {
   }
 
   async _startUpInstance(): Promise<MongoInstanceDataT> {
-    const data = {};
+    const data: any = {};
     let tmpDir;
 
     const instOpts = this.opts.instance;
-    data.port = await getport({ port: instOpts.port });
-    this.debug = Debug(`Mongo[${data.port}]`);
-    this.debug.enabled = !!this.opts.debug;
-    data.dbName = generateDbName(instOpts.dbName);
+    data.port = await getPort({ port: (instOpts && instOpts.port) || undefined });
+    /*
+      this.debug = Debug(`Mongo[${data.port}]`); // TODO: Why do we dont just use this.debug here ?
+      this.debug.enabled = !!this.opts.debug; // Useful ?
+    */
+    this.debug(`Mongo[${data.port}]`)
+    data.dbName = generateDbName(instOpts && instOpts.dbName);
     data.uri = await generateConnectionString(data.port, data.dbName);
-    data.storageEngine = instOpts.storageEngine || 'ephemeralForTest';
-    data.replSet = instOpts.replSet;
-    if (instOpts.dbPath) {
+    data.storageEngine = (instOpts && instOpts.storageEngine) || 'ephemeralForTest';
+    data.replSet = instOpts && instOpts.replSet;
+    if (instOpts && instOpts.dbPath) {
       data.dbPath = instOpts.dbPath;
     } else {
       tmpDir = tmp.dirSync({
+        discardDescriptor: true,
+        mode: 755,
         prefix: 'mongo-mem-',
         unsafeCleanup: true,
-        discardDescriptor: true,
-        mode: '0755',
       });
       data.dbPath = tmpDir.name;
     }
@@ -126,13 +136,13 @@ export default class MongoMemoryServer {
     // After that startup MongoDB instance
     const instance = await MongoInstance.run({
       instance: {
+        dbPath: data.dbPath,
+        debug: this.opts.instance && this.opts.instance.debug,
         port: data.port,
         storageEngine: data.storageEngine,
-        dbPath: data.dbPath,
-        debug: this.opts.instance.debug,
         replSet: data.replSet,
-        args: this.opts.instance.args,
-        auth: this.opts.instance.auth,
+        args: this.opts.instance && this.opts.instance.args,
+        auth: this.opts.instance && this.opts.instance.auth,
       },
       binary: this.opts.binary,
       spawn: this.opts.spawn,
@@ -146,7 +156,7 @@ export default class MongoMemoryServer {
   }
 
   async stop(): Promise<boolean> {
-    const { instance, port, tmpDir } = (await this.getInstanceData(): MongoInstanceDataT);
+    const { instance, port, tmpDir }: MongoInstanceDataT = await this.getInstanceData();
 
     this.debug(`Shutdown MongoDB server on port ${port} with pid ${instance.getPid() || ''}`);
     await instance.kill();
@@ -172,8 +182,8 @@ export default class MongoMemoryServer {
     );
   }
 
-  async getUri(otherDbName?: string | boolean = false): Promise<string> {
-    const { uri, port } = (await this.getInstanceData(): MongoInstanceDataT);
+  async getUri(otherDbName: string | boolean = false): Promise<string> {
+    const { uri, port }: MongoInstanceDataT = await this.getInstanceData();
 
     // IF true OR string
     if (otherDbName) {
@@ -193,17 +203,17 @@ export default class MongoMemoryServer {
   }
 
   async getPort(): Promise<number> {
-    const { port } = (await this.getInstanceData(): MongoInstanceDataT);
+    const { port }: MongoInstanceDataT = await this.getInstanceData();
     return port;
   }
 
   async getDbPath(): Promise<string> {
-    const { dbPath } = (await this.getInstanceData(): MongoInstanceDataT);
+    const { dbPath }: MongoInstanceDataT = await this.getInstanceData();
     return dbPath;
   }
 
   async getDbName(): Promise<string> {
-    const { dbName } = (await this.getInstanceData(): MongoInstanceDataT);
+    const { dbName }: MongoInstanceDataT = await this.getInstanceData();
     return dbName;
   }
 }

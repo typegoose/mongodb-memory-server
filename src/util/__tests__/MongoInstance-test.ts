@@ -1,12 +1,11 @@
-/* @flow */
 
-import tmp from 'tmp';
-import MongoInstance from '../MongoInstance';
+import tmp, { SynchrounousResult } from 'tmp';
 import { LATEST_VERSION } from '../MongoBinary';
+import MongodbInstance from '../MongoInstance';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
-let tmpDir;
+let tmpDir: SynchrounousResult;
 beforeEach(() => {
   tmp.setGracefulCleanup();
   tmpDir = tmp.dirSync({ prefix: 'mongo-mem-', unsafeCleanup: true });
@@ -16,9 +15,9 @@ afterEach(() => {
   tmpDir.removeCallback();
 });
 
-describe('MongoInstance', () => {
+describe('MongodbInstance', () => {
   it('should prepare command args', () => {
-    const inst = new MongoInstance({
+    const inst = new MongodbInstance({
       instance: {
         port: 27333,
         dbPath: '/data',
@@ -39,7 +38,7 @@ describe('MongoInstance', () => {
   });
 
   it('should allow specifying replSet', () => {
-    const inst = new MongoInstance({
+    const inst = new MongodbInstance({
       instance: {
         port: 27555,
         dbPath: '/data',
@@ -60,7 +59,7 @@ describe('MongoInstance', () => {
   });
 
   it('should be able to enable auth', () => {
-    const inst = new MongoInstance({
+    const inst = new MongodbInstance({
       instance: {
         port: 27555,
         dbPath: '/data',
@@ -80,7 +79,7 @@ describe('MongoInstance', () => {
 
   it('should be able to pass arbitrary args', () => {
     const args = ['--notablescan', '--nounixsocket'];
-    const inst = new MongoInstance({
+    const inst = new MongodbInstance({
       instance: {
         port: 27555,
         dbPath: '/data',
@@ -93,7 +92,7 @@ describe('MongoInstance', () => {
   });
 
   it('should start instance on port 27333', async () => {
-    const mongod = await MongoInstance.run({
+    const mongod = await MongodbInstance.run({
       instance: { port: 27333, dbPath: tmpDir.name },
       binary: { version: LATEST_VERSION },
     });
@@ -104,13 +103,13 @@ describe('MongoInstance', () => {
   });
 
   it('should throw error if port is busy', async () => {
-    const mongod = await MongoInstance.run({
+    const mongod = await MongodbInstance.run({
       instance: { port: 27444, dbPath: tmpDir.name },
       binary: { version: LATEST_VERSION },
     });
 
     await expect(
-      MongoInstance.run({
+      MongodbInstance.run({
         instance: { port: 27444, dbPath: tmpDir.name },
         binary: { version: LATEST_VERSION },
       })
@@ -120,12 +119,12 @@ describe('MongoInstance', () => {
   });
 
   it('should await while mongo is killed', async () => {
-    const mongod = await MongoInstance.run({
+    const mongod: MongodbInstance = await MongodbInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version: LATEST_VERSION },
     });
     const pid: any = mongod.getPid();
-    const killerPid: any = mongod.killerProcess.pid;
+    const killerPid: any = mongod.killerProcess && mongod.killerProcess.pid; // TODO: need to type this var but has a problem of null value in the class
     expect(pid).toBeGreaterThan(0);
     expect(killerPid).toBeGreaterThan(0);
 
@@ -145,7 +144,7 @@ describe('MongoInstance', () => {
   });
 
   it('should work with mongodb 4.0.3', async () => {
-    const mongod = await MongoInstance.run({
+    const mongod = await MongodbInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version: '4.0.3' },
       debug: true,

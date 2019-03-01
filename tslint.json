@@ -11,6 +11,12 @@
     "member-ordering": [true, { "order": "fields-first" }],
     "variable-name": false,
     "interface-name": false,
-    "no-reference-import": false
+    "no-reference-import": false,
+    "curly": false,
+    "arrow-parens": false,
+    "object-literal-sort-keys": false,
+    "no-console": false,
+    "interface-over-type-literal": false
+
   }
 }

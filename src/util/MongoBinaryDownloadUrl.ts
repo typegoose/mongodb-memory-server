@@ -1,5 +1,3 @@
-/* @flow */
-/* eslint-disable class-methods-use-this */
 
 import getos from 'getos';
 
@@ -7,14 +5,14 @@ export type MongoBinaryDownloadUrlOpts = {
   version: string,
   platform: string,
   arch: string,
-  os?: ?getos.Os,
+  os?: getos.Os,
 };
 
 export default class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
   version: string;
-  os: ?getos.Os;
+  os: getos.Os | undefined;
 
   constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
     this.version = version;
@@ -25,9 +23,9 @@ export default class MongoBinaryDownloadUrl {
 
   async getDownloadUrl(): Promise<string> {
     const archive = await this.getArchiveName();
-    return `${process.env?.MONGOMS_DOWNLOAD_MIRROR || 'https://fastdl.mongodb.org'}/${
+    return `${process.env.MONGOMS_DOWNLOAD_MIRROR || 'https://fastdl.mongodb.org'}/${
       this.platform
-    }/${archive}`;
+      }/${archive}`;
   }
 
   async getArchiveName(): Promise<string> {
@@ -76,7 +74,7 @@ export default class MongoBinaryDownloadUrl {
     let osString;
     if (this.arch !== 'i686') {
       if (!this.os) this.os = await this.getos();
-      osString = this.getLinuxOSVersionString(this.os);
+      osString = this.getLinuxOSVersionString(this.os as getos.LinuxOs);
     }
     if (osString) {
       name += `-${osString}`;
@@ -96,7 +94,7 @@ export default class MongoBinaryDownloadUrl {
     });
   }
 
-  getLinuxOSVersionString(os: getos.Os): string {
+  getLinuxOSVersionString(os: getos.LinuxOs): string {
     if (/ubuntu/i.test(os.dist)) {
       return this.getUbuntuVersionString(os);
     } else if (/elementary OS/i.test(os.dist)) {
@@ -118,8 +116,8 @@ export default class MongoBinaryDownloadUrl {
 
   getDebianVersionString(os: getos.Os): string {
     let name: string = 'debian';
-    const release: number = parseFloat(os.release);
-    if (release >= 9 || os.release === 'unstable') {
+    const release: number = parseFloat((os as getos.LinuxOs).release);
+    if (release >= 9 || (os as getos.LinuxOs).release === 'unstable') {
       name += '92';
     } else if (release >= 8.1) {
       name += '81';
@@ -131,7 +129,7 @@ export default class MongoBinaryDownloadUrl {
 
   getFedoraVersionString(os: getos.Os): string {
     let name: string = 'rhel';
-    const fedoraVer: number = parseInt(os.release, 10);
+    const fedoraVer: number = parseInt((os as getos.LinuxOs).release, 10);
     if (fedoraVer > 18) {
       name += '70';
     } else if (fedoraVer < 19 && fedoraVer >= 12) {
@@ -144,7 +142,7 @@ export default class MongoBinaryDownloadUrl {
 
   getRhelVersionString(os: getos.Os): string {
     let name: string = 'rhel';
-    const { release } = os;
+    const { release } = (os as getos.LinuxOs);
     if (release) {
       if (/^7/.test(release)) {
         name += '70';
@@ -174,15 +172,15 @@ export default class MongoBinaryDownloadUrl {
   }
 
   getSuseVersionString(os: getos.Os): string {
-    const [release]: [string | null] = os.release.match(/(^11|^12)/) || [null];
+    const releaseMatch: RegExpMatchArray | null = (os as getos.LinuxOs).release.match(/(^11|^12)/);
 
-    if (release) {
-      return `suse${release}`;
+    if (releaseMatch) {
+      return `suse${releaseMatch[0]}`;
     }
     return '';
   }
 
-  getUbuntuVersionString(os: getos.Os): string {
+  getUbuntuVersionString(os: getos.LinuxOs): string {
     let name: string = 'ubuntu';
     const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
     const majorVer: number = parseInt(ubuntuVer[0], 10);

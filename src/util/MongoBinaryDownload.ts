@@ -1,5 +1,3 @@
-/* @flow */
-/* eslint-disable class-methods-use-this */
 
 import os from 'os';
 import url from 'url';
@@ -7,12 +5,14 @@ import path from 'path';
 import fs from 'fs';
 import md5File from 'md5-file';
 import https from 'https';
-import HttpsProxyAgent from 'https-proxy-agent';
 import decompress from 'decompress'; // 💩💩💩 this package does not work with Node@11+Jest+Babel
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
-import type { DebugFn, DebugPropT, DownloadProgressT } from '../types';
+import { DebugFn, DebugPropT, DownloadProgressT } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
 
+const HttpsProxyAgent = require('https-proxy-agent') // TODO: fix type by adding declaration file for http-proxy module
+
+// TODO: Regarding the tests on this class, does this type should really have only required fields ?
 export type MongoBinaryDownloadOpts = {
   version: string,
   downloadDir: string,
@@ -22,10 +22,18 @@ export type MongoBinaryDownloadOpts = {
   checkMD5?: boolean,
 };
 
+type HttpDownloadOptions = {
+  hostname: string;
+  port: string;
+  path: string;
+  method: 'GET' | 'POST',
+  agent: any | undefined; // TODO: fix type by adding declaration file for http-proxy module
+};
+
 export default class MongoBinaryDownload {
   debug: DebugFn;
   dlProgress: DownloadProgressT;
-  _downloadingUrl: ?string;
+  _downloadingUrl?: string;
 
   checkMD5: boolean;
   downloadDir: string;
@@ -34,13 +42,13 @@ export default class MongoBinaryDownload {
   platform: string;
 
   constructor({
-    platform,
-    arch,
-    downloadDir,
-    version,
-    checkMD5,
-    debug,
-  }: $Shape<MongoBinaryDownloadOpts>) {
+                platform,
+                arch,
+                downloadDir,
+                version,
+                checkMD5,
+                debug,
+              }: MongoBinaryDownloadOpts) {
     this.platform = platform || os.platform();
     this.arch = arch || os.arch();
     this.version = version || LATEST_VERSION;
@@ -108,9 +116,9 @@ export default class MongoBinaryDownload {
     return mongoDBArchive;
   }
 
-  async makeMD5check(urlForReferenceMD5: string, mongoDBArchive: string): Promise<?boolean> {
+  async makeMD5check(urlForReferenceMD5: string, mongoDBArchive: string): Promise<boolean> {
     if (!this.checkMD5) {
-      return undefined;
+      return false; // TODO : why was it return undefined; ?
     }
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
     const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('UTF-8');
@@ -140,7 +148,7 @@ export default class MongoBinaryDownload {
       throw new Error(`Provided incorrect download url: ${downloadUrl}`);
     }
 
-    const downloadOptions = {
+    const downloadOptions: HttpDownloadOptions = {
       hostname: urlObject.hostname,
       port: urlObject.port || '443',
       path: urlObject.path,
@@ -175,11 +183,11 @@ export default class MongoBinaryDownload {
 
     let filter;
     if (this.platform === 'win32') {
-      filter = file => {
+      filter = (file: any) => {
         return /bin\/mongod.exe$/.test(file.path) || /.dll$/.test(file.path);
       };
     } else {
-      filter = file => /bin\/mongod$/.test(file.path);
+      filter = (file: any) => /bin\/mongod$/.test(file.path);
     }
 
     await decompress(mongoDBArchive, extractDir, {
@@ -202,13 +210,7 @@ export default class MongoBinaryDownload {
   }
 
   async httpDownload(
-    httpOptions: {
-      hostname: string,
-      port: string,
-      path: string,
-      method: 'GET' | 'POST',
-      agent: any,
-    },
+    httpOptions: HttpDownloadOptions,
     downloadLocation: string,
     tempDownloadLocation: string
   ): Promise<string> {
@@ -230,7 +232,7 @@ export default class MongoBinaryDownload {
               new Error(
                 `Too small (${
                   this.dlProgress.current
-                } bytes) mongod binary downloaded from ${downloadUrl}`
+                  } bytes) mongod binary downloaded from ${downloadUrl}`
               )
             );
             return;
@@ -253,7 +255,7 @@ export default class MongoBinaryDownload {
     });
   }
 
-  printDownloadProgress(chunk: *): void {
+  printDownloadProgress(chunk: any) { // TODO : chunk type ?
     this.dlProgress.current += chunk.length;
 
     const now = Date.now();
@@ -267,7 +269,7 @@ export default class MongoBinaryDownload {
     const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
     process.stdout.write(
       `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb ` +
-        `/ ${this.dlProgress.totalMb}mb)${crReturn}`
+      `/ ${this.dlProgress.totalMb}mb)${crReturn}`
     );
   }
 

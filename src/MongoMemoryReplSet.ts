@@ -1,11 +1,10 @@
-// @flow
 import events from 'events';
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from './MongoMemoryServer';
-import type { MongoMemoryServerOptsT } from './MongoMemoryServer';
+import { MongoMemoryServerOptsT } from './MongoMemoryServer';
 import { generateDbName, getHost, getReplStatus } from './util/db_util';
-import type { MongoBinaryOpts } from './util/MongoBinary';
-import type {
+import { MongoBinaryOpts } from './util/MongoBinary';
+import {
   DebugFn,
   MongoMemoryInstancePropT,
   MongoMemoryInstancePropBaseT,
@@ -51,7 +50,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
   debug: DebugFn;
   _state: 'init' | 'running' | 'stopped';
 
-  constructor(opts?: $Shape<MongoMemoryReplSetOptsT> = {}) {
+  constructor(opts?: MongoMemoryReplSetOptsT) {
     super();
     const replSetDefaults: ReplSetOpts = {
       auth: false,
@@ -64,23 +63,35 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
       spawn: {},
       storageEngine: 'ephemeralForTest',
     };
+    this.servers = []; // TODO : added this to fix tslint error about not initializing a member variable
     this._state = 'stopped';
-    this.opts = {
-      binary: opts.binary || {},
-      debug: !!opts.debug,
-      instanceOpts: opts.instanceOpts || [],
-      replSet: Object.assign(replSetDefaults, (opts.replSet: any)),
-    };
+    if (opts) {
+      this.opts = {
+        binary: opts.binary || {},
+        debug: !!opts.debug,
+        instanceOpts: opts.instanceOpts || [],
+        replSet: {...replSetDefaults, ...opts.replSet},
+      };
+    } else {
+      this.opts = {
+        binary: {},
+        debug: false,
+        instanceOpts: [],
+        replSet: replSetDefaults,
+      };
+    }
     this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
     this.debug = (...args: any[]) => {
       if (!this.opts.debug) return;
       console.log(...args);
     };
-    // auto start by default
-    if (opts.autoStart || !('autoStart' in opts)) {
+    // TODO: Why do we do this check if it is always valid ?
+    /* if (opts.autoStart || !('autoStart' in opts)) {
       this.debug('Autostarting MongoMemoryReplSet.');
       setTimeout(() => this.start(), 0);
-    }
+    } */
+    this.debug('Autostarting MongoMemoryReplSet.');
+    setTimeout(() => this.start(), 0);
     process.on('beforeExit', () => this.stop());
   }
 
@@ -95,6 +106,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     // this function is only async for consistency with MongoMemoryServer
     // I don't see much point to either of them being async but don't
     // care enough to change it and introduce a breaking change.
+    // TODO : I pretty much agree on this
     return this.opts.replSet.dbName;
   }
 
@@ -123,9 +135,10 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
    * Returns a mongodb: URI to connect to a given database.
    */
   async getUri(otherDb?: string | boolean): Promise<string> {
-    if (this._state === 'init') {
+    // TODO : Dooes this case exists ? this should give an undefined access in this function if we pass nothing
+    /* if (this._state === 'init') {
       await this._waitForPrimary();
-    }
+    } */
     if (this._state !== 'running') {
       throw new Error('Replica Set is not running. Use opts.debug for more info.');
     }
@@ -233,7 +246,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
       debug: this.opts.debug,
       binary: this.opts.binary,
       instance: instanceOpts,
-      spawn: (this.opts.replSet.spawn: any),
+      spawn: this.opts.replSet.spawn
     };
     const server = new MongoMemoryServer(serverOpts);
     return server;

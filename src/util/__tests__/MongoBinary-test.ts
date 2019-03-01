@@ -1,11 +1,8 @@
-/* @flow */
-
-import tmp from 'tmp';
+import tmp, { SynchrounousResult } from 'tmp';
 import fs from 'fs';
 import os from 'os';
 import MongoBinary, { LATEST_VERSION } from '../MongoBinary';
-
-const MongoBinaryDownload: any = require('../MongoBinaryDownload');
+import MongoBinaryDownload from '../MongoBinaryDownload';
 
 tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -19,7 +16,7 @@ jest.mock('../MongoBinaryDownload', () => {
 });
 
 describe('MongoBinary', () => {
-  let tmpDir;
+  let tmpDir: SynchrounousResult;
 
   beforeEach(() => {
     tmpDir = tmp.dirSync({ prefix: 'mongo-mem-bin-', unsafeCleanup: true });
@@ -28,7 +25,7 @@ describe('MongoBinary', () => {
   // cleanup
   afterEach(() => {
     tmpDir.removeCallback();
-    MongoBinaryDownload.mockClear();
+    (MongoBinaryDownload as jest.Mock).mockClear();
     mockGetMongodPath.mockClear();
     MongoBinary.cache = {};
   });

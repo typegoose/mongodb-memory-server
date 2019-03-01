@@ -1,5 +1,3 @@
-/* @flow */
-
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 
 describe('MongoBinaryDownloadUrl', () => {
@@ -34,6 +32,7 @@ describe('MongoBinaryDownloadUrl', () => {
         arch: 'x64',
         version: '3.6.3',
         os: {
+          os: 'linux',
           dist: 'Ubuntu Linux',
           release: '14.04',
         },
@@ -49,6 +48,7 @@ describe('MongoBinaryDownloadUrl', () => {
         arch: 'x64',
         version: '3.6.3',
         os: {
+          os: 'linux',
           dist: 'debian',
           release: '8.1',
         },
@@ -75,7 +75,9 @@ describe('MongoBinaryDownloadUrl', () => {
         arch: 'x64',
         version: '3.6.3',
         os: {
+          os: 'linux',
           dist: 'Gentoo Linux',
+          release: ''
         },
       });
       expect(await du.getDownloadUrl()).toBe(
@@ -94,6 +96,7 @@ describe('MongoBinaryDownloadUrl', () => {
     it('should return a archive name for Ubuntu 14.10', () => {
       expect(
         downloadUrl.getUbuntuVersionString({
+          os: 'linux',
           dist: 'Ubuntu Linux',
           release: '14.10',
         })
@@ -103,6 +106,7 @@ describe('MongoBinaryDownloadUrl', () => {
     it('should return a archive name for Ubuntu 14.04', () => {
       expect(
         downloadUrl.getUbuntuVersionString({
+          os: 'linux',
           dist: 'Ubuntu Linux',
           release: '14.04',
         })
@@ -112,6 +116,7 @@ describe('MongoBinaryDownloadUrl', () => {
     it('should return a archive name for Ubuntu 12.04', () => {
       expect(
         downloadUrl.getUbuntuVersionString({
+          os: 'linux',
           dist: 'Ubuntu Linux',
           release: '12.04',
         })
@@ -122,6 +127,7 @@ describe('MongoBinaryDownloadUrl', () => {
       downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getUbuntuVersionString({
+          os: 'linux',
           dist: 'Ubuntu Linux',
           release: '18.04',
         })
@@ -129,6 +135,7 @@ describe('MongoBinaryDownloadUrl', () => {
       downloadUrl.version = '4.0.1';
       expect(
         downloadUrl.getUbuntuVersionString({
+          os: 'linux',
           dist: 'Ubuntu Linux',
           release: '18.04',
         })
@@ -147,6 +154,7 @@ describe('MongoBinaryDownloadUrl', () => {
     it('should return a archive name for debian 6.2', () => {
       expect(
         downloadUrl.getDebianVersionString({
+          os: 'linux',
           dist: 'debian',
           release: '6.2',
         })
@@ -156,6 +164,7 @@ describe('MongoBinaryDownloadUrl', () => {
     it('should return a archive name for debian 7.0', () => {
       expect(
         downloadUrl.getDebianVersionString({
+          os: 'linux',
           dist: 'debian',
           release: '7.0',
         })
@@ -165,6 +174,7 @@ describe('MongoBinaryDownloadUrl', () => {
     it('should return a archive name for debian 7.1', () => {
       expect(
         downloadUrl.getDebianVersionString({
+          os: 'linux',
           dist: 'debian',
           release: '7.1',
         })
@@ -174,6 +184,7 @@ describe('MongoBinaryDownloadUrl', () => {
     it('should return a archive name for debian 8.0', () => {
       expect(
         downloadUrl.getDebianVersionString({
+          os: 'linux',
           dist: 'debian',
           release: '8.0',
         })
@@ -183,6 +194,7 @@ describe('MongoBinaryDownloadUrl', () => {
     it('should return a archive name for debian 8.1', () => {
       expect(
         downloadUrl.getDebianVersionString({
+          os: 'linux',
           dist: 'debian',
           release: '8.1',
         })
@@ -192,6 +204,7 @@ describe('MongoBinaryDownloadUrl', () => {
     it('should return a archive name for debian 9.0', () => {
       expect(
         downloadUrl.getDebianVersionString({
+          os: 'linux',
           dist: 'debian',
           release: '9.0',
         })
@@ -207,7 +220,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return an archive name for Linux Mint', () => {
-      expect(downloadUrl.getMintVersionString({ dist: 'Linux Mint' })).toBe('ubuntu1404');
+      expect(downloadUrl.getMintVersionString({ os: 'linux', dist: 'Linux Mint', release: '' })).toBe('ubuntu1404');
     });
   });
 
@@ -219,7 +232,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return an archive name for Gentoo Linux', () => {
-      expect(downloadUrl.getLegacyVersionString({ dist: 'Gentoo Linux' })).toBe('');
+      expect(downloadUrl.getLegacyVersionString({ os: 'linux', dist: 'Gentoo Linux', release: '' })).toBe('');
     });
   });
 });

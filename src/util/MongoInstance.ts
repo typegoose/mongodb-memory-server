@@ -4,28 +4,28 @@
 import { ChildProcess, spawn as spawnChild } from 'child_process';
 import path from 'path';
 import MongoBinary from './MongoBinary';
-import type { MongoBinaryOpts } from './MongoBinary';
-import type { DebugPropT, StorageEngineT, SpawnOptions } from '../types';
+import { MongoBinaryOpts } from './MongoBinary';
+import { DebugPropT, StorageEngineT, SpawnOptions } from '../types';
 
 export type MongodOps = {
   // instance options
   instance: {
-    port: number,
-    ip?: string, // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
-    storageEngine?: StorageEngineT,
-    dbPath: string,
-    debug?: DebugPropT,
-    replSet?: string,
-    args?: string[],
-    auth?: boolean,
-  },
+    port?: number;
+    ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
+    storageEngine?: StorageEngineT;
+    dbPath?: string;
+    debug?: DebugPropT;
+    replSet?: string;
+    args?: string[];
+    auth?: boolean;
+  }
 
   // mongo binary options
-  binary?: MongoBinaryOpts,
+  binary?: MongoBinaryOpts;
 
   // child process spawn options
-  spawn?: SpawnOptions,
-  debug?: DebugPropT,
+  spawn?: SpawnOptions;
+  debug?: DebugPropT;
 };
 
 export default class MongodbInstance {
@@ -33,20 +33,19 @@ export default class MongodbInstance {
   opts: MongodOps;
   debug: Function;
 
-  childProcess: ChildProcess;
-  killerProcess: ChildProcess;
+  childProcess: ChildProcess | null;
+  killerProcess: ChildProcess | null;
+  // @ts-ignore: Need to initialize this function
   instanceReady: Function;
+  // @ts-ignore: Need to initialize this function
   instanceFailed: Function;
   isInstanceReady: boolean;
-
-  static run(opts: MongodOps): Promise<MongodbInstance> {
-    const instance = new this(opts);
-    return instance.run();
-  }
 
   constructor(opts: MongodOps) {
     this.opts = opts;
     this.isInstanceReady = false;
+    this.childProcess = null;
+    this.killerProcess = null;
 
     if (this.opts.debug) {
       if (!this.opts.instance) this.opts.instance = {};
@@ -70,6 +69,11 @@ export default class MongodbInstance {
     }
   }
 
+  static run(opts: MongodOps): Promise<MongodbInstance> {
+    const instance = new this(opts);
+    return instance.run();
+  }
+
   prepareCommandArgs(): string[] {
     const { ip, port, storageEngine, dbPath, replSet, auth, args } = this.opts.instance;
 
@@ -90,9 +94,9 @@ export default class MongodbInstance {
       this.instanceReady = () => {
         this.isInstanceReady = true;
         this.debug('MongodbInstance: is ready!');
-        resolve(this.childProcess);
+        resolve({...this.childProcess});
       };
-      this.instanceFailed = err => {
+      this.instanceFailed = (err: any) => {
         this.debug(`MongodbInstance: is failed: ${err.toString()}`);
         if (this.killerProcess) this.killerProcess.kill();
         reject(err);
@@ -108,22 +112,26 @@ export default class MongodbInstance {
   }
 
   async kill(): Promise<MongodbInstance> {
-    if (this.childProcess && !(this.childProcess: any).killed) {
+    if (this.childProcess && !this.childProcess.killed) {
       await new Promise(resolve => {
-        this.childProcess.once(`exit`, resolve);
-        this.childProcess.kill();
+        if (this.childProcess) {
+          this.childProcess.once(`exit`, resolve);
+          this.childProcess.kill();
+        }
       });
     }
-    if (this.killerProcess && !(this.killerProcess: any).killed) {
+    if (this.killerProcess && !this.killerProcess.killed) {
       await new Promise(resolve => {
-        this.killerProcess.once(`exit`, resolve);
-        this.killerProcess.kill();
+        if (this.killerProcess) {
+          this.killerProcess.once(`exit`, resolve);
+          this.killerProcess.kill();
+        }
       });
     }
     return this;
   }
 
-  getPid(): ?number {
+  getPid(): number | undefined {
     return this.childProcess ? this.childProcess.pid : undefined;
   }
 

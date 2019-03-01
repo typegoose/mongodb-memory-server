@@ -1,23 +1,23 @@
 /* @flow */
 
 import { MongoClient } from 'mongodb';
-import MongoDBMemoryServer from '../MongoMemoryServer';
+import MongoMemoryServer from '../MongoMemoryServer';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
-let con1;
-let con2;
-let db1;
-let db2;
-let mongoServer1;
-let mongoServer2;
+let con1: any; // TODO: what is the type of the var ?
+let con2: any;
+let db1: any; // TODO: what is the type of the var ?
+let db2: any;
+let mongoServer1: MongoMemoryServer;
+let mongoServer2: MongoMemoryServer;
 beforeAll(async () => {
-  mongoServer1 = new MongoDBMemoryServer();
+  mongoServer1 = new MongoMemoryServer();
   const mongoUri = await mongoServer1.getConnectionString();
   con1 = await MongoClient.connect(mongoUri);
   db1 = con1.db(await mongoServer1.getDbName());
 
-  mongoServer2 = new MongoDBMemoryServer();
+  mongoServer2 = new MongoMemoryServer();
   const mongoUri2 = await mongoServer2.getConnectionString();
   con2 = await MongoClient.connect(mongoUri2);
   db2 = con2.db(await mongoServer1.getDbName());

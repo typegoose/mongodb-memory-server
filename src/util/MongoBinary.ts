@@ -1,4 +1,3 @@
-/* @flow */
 
 import fs from 'fs';
 import os from 'os';
@@ -10,6 +9,7 @@ import { execSync } from 'child_process';
 import dedent from 'dedent';
 import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
+import { DebugFn } from '../types';
 
 // TODO: return back `latest` version when it will be fixed in MongoDB distro (for now use 4.0.3 😂)
 // More details in https://github.com/nodkz/mongodb-memory-server/issues/131
@@ -17,7 +17,7 @@ import MongoBinaryDownload from './MongoBinaryDownload';
 export const LATEST_VERSION = '4.0.3';
 
 export type MongoBinaryCache = {
-  [version: string]: string,
+  [version: string]: string
 };
 
 export type MongoBinaryOpts = {
@@ -30,7 +30,7 @@ export type MongoBinaryOpts = {
 
 export default class MongoBinary {
   static cache: MongoBinaryCache = {};
-  static debug: Function;
+  static debug: DebugFn;
 
   static async getSystemPath(systemBinary: string): Promise<string> {
     let binaryPath: string = '';
@@ -57,7 +57,7 @@ export default class MongoBinary {
 
     // create downloadDir if not exists
     await new Promise((resolve, reject) => {
-      mkdirp(downloadDir, err => {
+      mkdirp(downloadDir, (err: any) => {
         if (err) reject(err);
         else resolve();
       });
@@ -76,7 +76,7 @@ export default class MongoBinary {
           retries: 3,
           retryWait: 100,
         },
-        err => {
+        (err: any) => {
           if (err) reject(err);
           else resolve();
         }
@@ -97,7 +97,7 @@ export default class MongoBinary {
     }
 
     // remove lock
-    LockFile.unlock(lockfile, err => {
+    LockFile.unlock(lockfile, (err: any) => {
       this.debug(
         err
           ? `MongoBinary: Error when removing download lock ${err}`
@@ -108,27 +108,27 @@ export default class MongoBinary {
     return this.cache[version];
   }
 
-  static async getPath(opts?: MongoBinaryOpts = {}): Promise<string> {
+  static async getPath(opts: MongoBinaryOpts = {}): Promise<string> {
     const legacyDLDir = path.resolve(os.homedir(), '.mongodb-binaries');
     const defaultOptions = {
       downloadDir:
-        process.env?.MONGOMS_DOWNLOAD_DIR ||
+        process.env.MONGOMS_DOWNLOAD_DIR ||
         (fs.existsSync(legacyDLDir)
           ? legacyDLDir
           : path.resolve(
-              findCacheDir({
-                name: 'mongodb-memory-server',
-                // if we're in postinstall script, npm will set the cwd too deep
-                cwd: new RegExp(`node_modules${path.sep}mongodb-memory-server$`).test(process.cwd())
-                  ? path.resolve(process.cwd(), '..', '..')
-                  : process.cwd(),
-              }),
-              'mongodb-binaries'
-            )),
-      platform: process.env?.MONGOMS_PLATFORM || os.platform(),
-      arch: process.env?.MONGOMS_ARCH || os.arch(),
-      version: process.env?.MONGOMS_VERSION || LATEST_VERSION,
-      systemBinary: process.env?.MONGOMS_SYSTEM_BINARY,
+            (findCacheDir({
+              name: 'mongodb-memory-server',
+              // if we're in postinstall script, npm will set the cwd too deep
+              cwd: new RegExp(`node_modules${path.sep}mongodb-memory-server$`).test(process.cwd())
+                ? path.resolve(process.cwd(), '..', '..')
+                : process.cwd(),
+            }) || ''), // TODO : path resolve doesnt accept string | null
+            'mongodb-binaries'
+          )),
+      platform: process.env.MONGOMS_PLATFORM || os.platform(),
+      arch: process.env.MONGOMS_ARCH || os.arch(),
+      version: process.env.MONGOMS_VERSION || LATEST_VERSION,
+      systemBinary: process.env.MONGOMS_SYSTEM_BINARY,
       debug:
         typeof process.env.MONGOMS_DEBUG === 'string'
           ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_DEBUG.toLowerCase()) !== -1
@@ -137,7 +137,7 @@ export default class MongoBinary {
 
     if (opts.debug) {
       if (typeof opts.debug === 'function' && opts.debug.apply && opts.debug.call) {
-        this.debug = opts.debug;
+        this.debug = opts.debug as DebugFn;
       } else {
         this.debug = console.log.bind(null);
       }

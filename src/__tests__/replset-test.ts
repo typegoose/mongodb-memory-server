@@ -1,6 +1,5 @@
-// @flow
 
-import MongoMemoryReplSet from '../MongoMemoryReplSet';
+import MongoMemoryReplSet, { MongoMemoryReplSetOptsT } from '../MongoMemoryReplSet';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
@@ -9,7 +8,7 @@ describe('single server replset', () => {
   afterEach(async () => {
     if (!(replSet && replSet._state === 'running')) return;
     await replSet.stop();
-    replSet = (null: any);
+    // replSet = (null: any); // TODO: why do we need this ?
   });
 
   it('should enter running state', async () => {
@@ -37,7 +36,7 @@ describe('single server replset', () => {
   });
 
   it('should not autostart if autostart: false', async () => {
-    replSet = new MongoMemoryReplSet({ autoStart: false });
+    replSet = new MongoMemoryReplSet({ autoStart: false } as MongoMemoryReplSetOptsT);
     await new Promise((resolve, reject) => {
       replSet.once('state', state => reject(new Error(`Invalid state: ${state}`)));
       setTimeout(resolve, 500);
@@ -50,7 +49,7 @@ describe('multi-member replica set', () => {
   afterEach(async () => {
     if (!replSet) return;
     await replSet.stop();
-    replSet = (null: any);
+    // replSet = (null: any); // TODO : why do we need this ?
   });
 
   it('should enter running state', async () => {

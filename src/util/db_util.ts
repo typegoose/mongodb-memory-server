@@ -1,6 +1,5 @@
-// @flow
 import uuid from 'uuid/v4';
-import type { ReplStatusResultT } from '../types';
+import { ReplStatusResultT } from '../types';
 /**
  * Returns a database name string.
  * @param {string} dbName
