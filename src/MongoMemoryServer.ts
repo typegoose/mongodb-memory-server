@@ -1,6 +1,7 @@
 
 import { ChildProcess } from 'child_process';
 import * as tmp from 'tmp';
+import getPort from 'get-port';
 // import Debug from 'debug';  // TODO : Do we really need this package ?
 import { generateDbName } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
@@ -11,8 +12,6 @@ import { CallbackFn,
   StorageEngineT,
   SpawnOptions
 } from './types';
-// @tslint-ignore
-const getPort = require('get-port')
 
 tmp.setGracefulCleanup();
 

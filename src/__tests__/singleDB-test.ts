@@ -7,7 +7,7 @@ let con: any;
 let db: any;
 let mongoServer: MongoMemoryServer;
 beforeAll(async () => {
-  mongoServer = new MongoMemoryServer();
+  mongoServer = new MongoMemoryServer({ debug: true });
   const mongoUri = await mongoServer.getConnectionString();
   con = await MongoClient.connect(mongoUri);
   db = con.db(await mongoServer.getDbName());
