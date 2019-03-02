@@ -47,24 +47,28 @@ export default class MongoBinary {
     return binaryPath;
   }
 
-  static async getCachePath(version: string) {
-    this.debug(`MongoBinary: found cached binary path for ${version}`);
+  static async getCachePath(version: string): Promise<string> {
+    this.debug(`MongoBinary: found cached binary path for ${version} : ${this.cache}`);
     return this.cache[version];
   }
 
   static async getDownloadPath(options: any): Promise<string> {
     const { downloadDir, platform, arch, version } = options;
-
+    this.debug(`MongoBinary getDownloadPath: ${options}`);
     // create downloadDir if not exists
     await new Promise((resolve, reject) => {
       mkdirp(downloadDir, (err: any) => {
-        if (err) reject(err);
-        else resolve();
+        if (err) {
+          this.debug(`MongoBinary mkdirp err : ${err}`);
+          reject(err);
+        } else {
+          resolve();
+        }
       });
     });
 
     const lockfile = path.resolve(downloadDir, `${version}.lock`);
-
+    this.debug(`MongoBinary locking file : ${lockfile}`);
     // wait lock
     await new Promise((resolve, reject) => {
       LockFile.lock(
@@ -77,12 +81,17 @@ export default class MongoBinary {
           retryWait: 100,
         },
         (err: any) => {
-          if (err) reject(err);
-          else resolve();
+          if (err) {
+            this.debug(`MongoBinary LockFile err : ${err}`);
+            reject(err);
+          } else {
+            resolve();
+          }
         }
       );
     });
 
+    this.debug(`MongoBinary getDownloadPath : ${this.cache[version]}`);
     // again check cache, maybe other instance resolve it
     if (!this.cache[version]) {
       const downloader = new MongoBinaryDownload({
@@ -91,11 +100,12 @@ export default class MongoBinary {
         arch,
         version,
       });
-
+      this.debug(`MongoBinary getDownloadPath MongoBinaryDownload`);
       downloader.debug = this.debug;
       this.cache[version] = await downloader.getMongodPath();
+      this.debug(`MongoBinary getDownloadPath getMongodPath`);
     }
-
+    this.debug(`MongoBinary unlocking file : ${lockfile}`);
     // remove lock
     LockFile.unlock(lockfile, (err: any) => {
       this.debug(
@@ -104,7 +114,7 @@ export default class MongoBinary {
           : `MongoBinary: Download lock removed`
       );
     });
-
+    this.debug(`MongoBinary getDownloadPath : ${this.cache[version]}`);
     return this.cache[version];
   }
 
@@ -176,6 +186,9 @@ export default class MongoBinary {
     if (!binaryPath) {
       binaryPath = await this.getCachePath(version);
     }
+
+    this.debug(`MongoBinary binaryPath: ${binaryPath}`);
+
 
     if (!binaryPath) {
       binaryPath = await this.getDownloadPath(options);
