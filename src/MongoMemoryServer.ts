@@ -59,17 +59,10 @@ export default class MongoMemoryServer {
         console.log(msg);
       }
     };
-
-    this.debug('Autostarting MongoDB instance...');
-    this.start();
-
-    // autoStart by default
-    // TODO: Why do we do this check if it is always valid ?
-    /* if (!opts.hasOwnProperty('autoStart') || opts.autoStart) {
+    if (!(opts && opts.autoStart === false) ) {
       this.debug('Autostarting MongoDB instance...');
       this.start();
     }
-    */
   }
 
   async start(): Promise<boolean> {

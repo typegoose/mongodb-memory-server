@@ -79,7 +79,7 @@
     "watch": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --watch",
     "coverage": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --coverage",
     "lint": "eslint --ext .js ./src && npm run tslint",
-    "test": "jest src/__tests__/replset-test.ts",
+    "test": "jest",
     "tscheck": "tsc",
     "tslint": "tslint -p . \"src/**/*\"",
     "semantic-release": "semantic-release",
