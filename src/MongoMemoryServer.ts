@@ -1,6 +1,6 @@
 
 import { ChildProcess } from 'child_process';
-import * as tmp from 'tmp';
+import tmp from 'tmp';
 import getPort from 'get-port';
 // import Debug from 'debug';  // TODO : Do we really need this package ?
 import { generateDbName } from './util/db_util';
@@ -12,6 +12,7 @@ import { CallbackFn,
   StorageEngineT,
   SpawnOptions
 } from './types';
+import { SynchrounousResult } from 'tmp';
 
 tmp.setGracefulCleanup();
 
@@ -104,7 +105,7 @@ export default class MongoMemoryServer {
 
   async _startUpInstance(): Promise<MongoInstanceDataT> {
     const data: any = {};
-    let tmpDir;
+    let tmpDir: SynchrounousResult;
 
     const instOpts = this.opts.instance;
     data.port = await getPort({ port: (instOpts && instOpts.port) || undefined });
@@ -120,9 +121,10 @@ export default class MongoMemoryServer {
     if (instOpts && instOpts.dbPath) {
       data.dbPath = instOpts.dbPath;
     } else {
+      // @ts-ignore
       tmpDir = tmp.dirSync({
         discardDescriptor: true,
-        mode: 755,
+        mode: '0755',
         prefix: 'mongo-mem-',
         unsafeCleanup: true,
       });
@@ -149,7 +151,7 @@ export default class MongoMemoryServer {
     });
     data.instance = instance;
     data.childProcess = instance.childProcess;
-    data.tmpDir = tmpDir;
+    // data.tmpDir = tmpDir;
 
     return data;
   }
