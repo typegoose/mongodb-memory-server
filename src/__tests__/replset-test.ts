@@ -8,8 +8,7 @@ describe('single server replset', () => {
   afterEach(async () => {
     if (!(replSet && replSet._state === 'running')) return;
     await replSet.stop();
-    // @ts-ignore
-    replSet = null; // TODO: why do we need this ?
+    // replSet = (null: any); // TODO : why do we need this ?
   });
 
   it('should enter running state', async () => {

@@ -1,5 +1,5 @@
 import events from 'events';
-import { MongoClient } from 'mongodb';
+import { Db, MongoClient } from 'mongodb';
 import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOptsT } from './MongoMemoryServer';
 import { generateDbName, getHost, getReplStatus } from './util/db_util';
@@ -133,7 +133,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
    * Returns a mongodb: URI to connect to a given database.
    */
   async getUri(otherDb?: string | boolean): Promise<string> {
-    // TODO : Dooes this case exists ? this should give an undefined access in this function if we pass nothing
+    // TODO : Does this case exists ? this should give an undefined access in this function if we pass nothing
     /* if (this._state === 'init') {
       await this._waitForPrimary();
     } */
@@ -216,7 +216,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
       throw new Error('One or more server is required.');
     }
     const uris = await Promise.all(this.servers.map(server => server.getUri()));
-    const conn = await MongoClient.connect(
+    const conn: MongoClient = await MongoClient.connect(
       uris[0],
       { useNewUrlParser: true }
     );
@@ -230,6 +230,8 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
       };
       await admin.command({ replSetInitiate: rsConfig });
       this.debug('Waiting for replica set to have a PRIMARY member.');
+      // @ts-ignore : why do we passe an Admin instance instead of an Db instance, shoud we have a more specific function
+      // for an Admin instance ?
       await this._waitForPrimary(admin);
       this.emit((this._state = 'running'));
       this.debug('running');
@@ -250,7 +252,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     return server;
   }
 
-  async _waitForPrimary(db: any): Promise<boolean> {
+  async _waitForPrimary(db: Db): Promise<boolean> {
     const replStatus = await getReplStatus(db);
     this.debug('   replStatus:', replStatus);
     const hasPrimary = replStatus.members.some(m => m.stateStr === 'PRIMARY');

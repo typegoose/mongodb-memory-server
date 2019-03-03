@@ -1,14 +1,15 @@
-import { MongoClient } from 'mongodb';
+import { Db, MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
-let con1: any; // TODO: what is the type of the var ?
-let con2: any;
-let db1: any; // TODO: what is the type of the var ?
-let db2: any;
+let con1: MongoClient;
+let con2: MongoClient;
+let db1: Db;
+let db2: Db;
 let mongoServer1: MongoMemoryServer;
 let mongoServer2: MongoMemoryServer;
+
 beforeAll(async () => {
   mongoServer1 = new MongoMemoryServer();
   const mongoUri = await mongoServer1.getConnectionString();
