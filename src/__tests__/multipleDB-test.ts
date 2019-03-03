@@ -10,12 +10,12 @@ let db2: any;
 let mongoServer1: MongoMemoryServer;
 let mongoServer2: MongoMemoryServer;
 beforeAll(async () => {
-  mongoServer1 = new MongoMemoryServer({ debug: true });
+  mongoServer1 = new MongoMemoryServer();
   const mongoUri = await mongoServer1.getConnectionString();
   con1 = await MongoClient.connect(mongoUri, { useNewUrlParser: true });
   db1 = con1.db(await mongoServer1.getDbName());
 
-  mongoServer2 = new MongoMemoryServer({ debug: true });
+  mongoServer2 = new MongoMemoryServer();
   const mongoUri2 = await mongoServer2.getConnectionString();
   con2 = await MongoClient.connect(mongoUri2, { useNewUrlParser: true });
   db2 = con2.db(await mongoServer1.getDbName());
