@@ -49,10 +49,8 @@ export default class MongoMemoryServer {
   debug: DebugFn;
 
   constructor(opts?: MongoMemoryServerOptsT) {
-    this.opts = { ...opts }; // create a new object by parsing opts
+    this.opts = { ...opts };
     this.runningInstance = null;
-    // if (!this.opts.instance) this.opts.instance = {};
-    // if (!this.opts.binary) this.opts.binary = {};
 
     this.debug = (msg: string) => {
       if (this.opts.debug) {
@@ -114,10 +112,9 @@ export default class MongoMemoryServer {
     if (instOpts && instOpts.dbPath) {
       data.dbPath = instOpts.dbPath;
     } else {
-      // @ts-ignore
       tmpDir = tmp.dirSync({
         discardDescriptor: true,
-        mode: '0755',
+        mode: 0o755,
         prefix: 'mongo-mem-',
         unsafeCleanup: true,
       });

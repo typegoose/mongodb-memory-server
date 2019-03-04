@@ -111,7 +111,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
       dbName: rsOpts.dbName,
       ip: rsOpts.ip,
       replSet: rsOpts.name,
-      // storageEngine: rsOpts.storageEngine
+      storageEngine: rsOpts.storageEngine,
     };
     if (baseOpts.args) opts.args = rsOpts.args.concat(baseOpts.args);
     if (baseOpts.port) opts.port = baseOpts.port;
