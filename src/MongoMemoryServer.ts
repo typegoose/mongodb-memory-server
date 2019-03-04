@@ -1,4 +1,3 @@
-
 import { ChildProcess } from 'child_process';
 import tmp from 'tmp';
 import getPort from 'get-port';
@@ -6,11 +5,12 @@ import getPort from 'get-port';
 import { generateDbName } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import { CallbackFn,
+import {
+  CallbackFn,
   DebugFn,
   MongoMemoryInstancePropT,
   StorageEngineT,
-  SpawnOptions
+  SpawnOptions,
 } from './types';
 import { SynchrounousResult } from 'tmp';
 
@@ -50,7 +50,7 @@ export default class MongoMemoryServer {
 
   constructor(opts?: MongoMemoryServerOptsT) {
     this.opts = { ...opts }; // create a new object by parsing opts
-    this.runningInstance = null
+    this.runningInstance = null;
     // if (!this.opts.instance) this.opts.instance = {};
     // if (!this.opts.binary) this.opts.binary = {};
 
@@ -59,7 +59,7 @@ export default class MongoMemoryServer {
         console.log(msg);
       }
     };
-    if (!(opts && opts.autoStart === false) ) {
+    if (!(opts && opts.autoStart === false)) {
       this.debug('Autostarting MongoDB instance...');
       this.start();
     }
@@ -73,7 +73,7 @@ export default class MongoMemoryServer {
     }
 
     this.runningInstance = this._startUpInstance()
-      .catch(err => {
+      .catch((err) => {
         if (err.message === 'Mongod shutting down' || err === 'Mongod shutting down') {
           this.debug(`Mongodb does not started. Trying to start on another port one more time...`);
           if (this.opts.instance && this.opts.instance.port) {
@@ -83,11 +83,11 @@ export default class MongoMemoryServer {
         }
         throw err;
       })
-      .catch(err => {
+      .catch((err) => {
         if (!this.opts.debug) {
           throw new Error(
             `${err.message}\n\nUse debug option for more info: ` +
-            `new MongoMemoryServer({ debug: true })`
+              `new MongoMemoryServer({ debug: true })`
           );
         }
         throw err;
@@ -106,7 +106,7 @@ export default class MongoMemoryServer {
       this.debug = Debug(`Mongo[${data.port}]`); // TODO: Why do we dont just use this.debug here ?
       this.debug.enabled = !!this.opts.debug; // Useful ?
     */
-    this.debug(`Mongo[${data.port}]`)
+    this.debug(`Mongo[${data.port}]`);
     data.dbName = generateDbName(instOpts && instOpts.dbName);
     data.uri = await generateConnectionString(data.port, data.dbName);
     data.storageEngine = (instOpts && instOpts.storageEngine) || 'ephemeralForTest';

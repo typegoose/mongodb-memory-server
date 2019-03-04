@@ -1,4 +1,4 @@
-import MongoMemoryReplSet, { MongoMemoryReplSetOptsT } from '../MongoMemoryReplSet';
+import MongoMemoryReplSet from '../MongoMemoryReplSet';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
@@ -38,9 +38,9 @@ describe('single server replset', () => {
   // Maybe should we re think how this functionality is tested by just mocking
   // MongoMemoryReplSet.start function
   it('should not autostart if autostart: false', async () => {
-    replSet = new MongoMemoryReplSet({ autoStart: false } as MongoMemoryReplSetOptsT);
+    replSet = new MongoMemoryReplSet({ autoStart: false });
     await new Promise((resolve, reject) => {
-      replSet.once('state', state => reject(new Error(`Invalid state: ${state}`)));
+      replSet.once('state', (state) => reject(new Error(`Invalid state: ${state}`)));
       setTimeout(resolve, 500);
     });
   });

@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -16,24 +15,24 @@ import { DebugFn } from '../types';
 // export const LATEST_VERSION = 'latest';
 export const LATEST_VERSION = '4.0.3';
 
-export type MongoBinaryCache = {
-  [version: string]: string
-};
+export interface MongoBinaryCache {
+  [version: string]: string;
+}
 
-export type MongoBinaryOpts = {
-  version?: string,
-  downloadDir?: string,
-  platform?: string,
-  arch?: string,
-  debug?: boolean | Function,
-};
+export interface MongoBinaryOpts {
+  version?: string;
+  downloadDir?: string;
+  platform?: string;
+  arch?: string;
+  debug?: boolean | Function;
+}
 
 export default class MongoBinary {
   static cache: MongoBinaryCache = {};
   static debug: DebugFn;
 
   static async getSystemPath(systemBinary: string): Promise<string> {
-    let binaryPath: string = '';
+    let binaryPath = '';
 
     try {
       await promisify(fs.access)(systemBinary);
@@ -126,15 +125,15 @@ export default class MongoBinary {
         (fs.existsSync(legacyDLDir)
           ? legacyDLDir
           : path.resolve(
-            (findCacheDir({
-              name: 'mongodb-memory-server',
-              // if we're in postinstall script, npm will set the cwd too deep
-              cwd: new RegExp(`node_modules${path.sep}mongodb-memory-server$`).test(process.cwd())
-                ? path.resolve(process.cwd(), '..', '..')
-                : process.cwd(),
-            }) || ''), // TODO : path resolve doesnt accept string | null
-            'mongodb-binaries'
-          )),
+              findCacheDir({
+                name: 'mongodb-memory-server',
+                // if we're in postinstall script, npm will set the cwd too deep
+                cwd: new RegExp(`node_modules${path.sep}mongodb-memory-server$`).test(process.cwd())
+                  ? path.resolve(process.cwd(), '..', '..')
+                  : process.cwd(),
+              }) || '', // TODO : path resolve doesnt accept string | null
+              'mongodb-binaries'
+            )),
       platform: process.env.MONGOMS_PLATFORM || os.platform(),
       arch: process.env.MONGOMS_ARCH || os.arch(),
       version: process.env.MONGOMS_VERSION || LATEST_VERSION,
@@ -160,7 +159,7 @@ export default class MongoBinary {
 
     const { version, systemBinary } = options;
 
-    let binaryPath: string = '';
+    let binaryPath = '';
 
     if (systemBinary) {
       binaryPath = await this.getSystemPath(systemBinary);
@@ -188,7 +187,6 @@ export default class MongoBinary {
     }
 
     this.debug(`MongoBinary binaryPath: ${binaryPath}`);
-
 
     if (!binaryPath) {
       binaryPath = await this.getDownloadPath(options);

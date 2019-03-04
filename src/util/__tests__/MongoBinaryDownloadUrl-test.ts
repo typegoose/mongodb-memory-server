@@ -77,7 +77,7 @@ describe('MongoBinaryDownloadUrl', () => {
         os: {
           os: 'linux',
           dist: 'Gentoo Linux',
-          release: ''
+          release: '',
         },
       });
       expect(await du.getDownloadUrl()).toBe(
@@ -220,7 +220,9 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return an archive name for Linux Mint', () => {
-      expect(downloadUrl.getMintVersionString({ os: 'linux', dist: 'Linux Mint', release: '' })).toBe('ubuntu1404');
+      expect(
+        downloadUrl.getMintVersionString({ os: 'linux', dist: 'Linux Mint', release: '' })
+      ).toBe('ubuntu1404');
     });
   });
 
@@ -232,7 +234,9 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return an archive name for Gentoo Linux', () => {
-      expect(downloadUrl.getLegacyVersionString({ os: 'linux', dist: 'Gentoo Linux', release: '' })).toBe('');
+      expect(
+        downloadUrl.getLegacyVersionString({ os: 'linux', dist: 'Gentoo Linux', release: '' })
+      ).toBe('');
     });
   });
 });

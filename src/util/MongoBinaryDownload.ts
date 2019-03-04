@@ -1,4 +1,3 @@
-
 import os from 'os';
 import url from 'url';
 import path from 'path';
@@ -9,26 +8,24 @@ import decompress from 'decompress'; // 💩💩💩 this package does not work 
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { DebugFn, DebugPropT, DownloadProgressT } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
+import HttpsProxyAgent from 'https-proxy-agent';
 
-const HttpsProxyAgent = require('https-proxy-agent') // TODO: fix type by adding declaration file for http-proxy module
+export interface MongoBinaryDownloadOpts {
+  version?: string;
+  downloadDir?: string;
+  platform?: string;
+  arch?: string;
+  debug?: DebugPropT;
+  checkMD5?: boolean;
+}
 
-// TODO: Regarding the tests on this class, does this type should really have only required fields ?
-export type MongoBinaryDownloadOpts = {
-  version: string,
-  downloadDir: string,
-  platform: string,
-  arch: string,
-  debug?: DebugPropT,
-  checkMD5?: boolean,
-};
-
-type HttpDownloadOptions = {
+interface HttpDownloadOptions {
   hostname: string;
   port: string;
   path: string;
-  method: 'GET' | 'POST',
+  method: 'GET' | 'POST';
   agent: any | undefined; // TODO: fix type by adding declaration file for http-proxy module
-};
+}
 
 export default class MongoBinaryDownload {
   debug: DebugFn;
@@ -41,14 +38,7 @@ export default class MongoBinaryDownload {
   version: string;
   platform: string;
 
-  constructor({
-                platform,
-                arch,
-                downloadDir,
-                version,
-                checkMD5,
-                debug,
-              }: MongoBinaryDownloadOpts) {
+  constructor({ platform, arch, downloadDir, version, checkMD5, debug }: MongoBinaryDownloadOpts) {
     this.platform = platform || os.platform();
     this.arch = arch || os.arch();
     this.version = version || LATEST_VERSION;
@@ -131,7 +121,7 @@ export default class MongoBinaryDownload {
     return true;
   }
 
-  async download(downloadUrl: string) {
+  async download(downloadUrl: string): Promise<string> {
     const proxy =
       process.env['yarn_https-proxy'] ||
       process.env.yarn_proxy ||
@@ -194,7 +184,7 @@ export default class MongoBinaryDownload {
       // extract only `bin/mongod` file
       filter,
       // extract to root folder
-      map: file => {
+      map: (file) => {
         file.path = path.basename(file.path); // eslint-disable-line
         return file;
       },
@@ -232,7 +222,7 @@ export default class MongoBinaryDownload {
               new Error(
                 `Too small (${
                   this.dlProgress.current
-                  } bytes) mongod binary downloaded from ${downloadUrl}`
+                } bytes) mongod binary downloaded from ${downloadUrl}`
               )
             );
             return;
@@ -255,7 +245,8 @@ export default class MongoBinaryDownload {
     });
   }
 
-  printDownloadProgress(chunk: any) { // TODO : chunk type ?
+  printDownloadProgress(chunk: any): void {
+    // TODO : chunk type ?
     this.dlProgress.current += chunk.length;
 
     const now = Date.now();
@@ -269,7 +260,7 @@ export default class MongoBinaryDownload {
     const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
     process.stdout.write(
       `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb ` +
-      `/ ${this.dlProgress.totalMb}mb)${crReturn}`
+        `/ ${this.dlProgress.totalMb}mb)${crReturn}`
     );
   }
 

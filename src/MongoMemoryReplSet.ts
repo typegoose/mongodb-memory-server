@@ -137,8 +137,8 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     } else {
       dbName = this.opts.replSet.dbName;
     }
-    const ports = await Promise.all(this.servers.map(s => s.getPort()));
-    const hosts = ports.map(port => `127.0.0.1:${port}`).join(',');
+    const ports = await Promise.all(this.servers.map((s) => s.getPort()));
+    const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
     return `mongodb://${hosts}/${dbName}`;
   }
 
@@ -155,7 +155,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     // Any servers defined within `opts.instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
     // the `replSetInitiate` command against that server.
-    const servers = this.opts.instanceOpts.map(opts => {
+    const servers = this.opts.instanceOpts.map((opts) => {
       this.debug('  starting server from instanceOpts:', opts, '...');
       return this._startServer(this.getInstanceOpts(opts));
     });
@@ -166,7 +166,7 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     }
     this.servers = servers;
     // Brief delay to wait for servers to start up.
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await this._initReplSet();
   }
 
@@ -177,21 +177,21 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     if (this._state === 'stopped') return false;
     const servers = this.servers;
     this.servers = [];
-    return Promise.all(servers.map(s => s.stop()))
+    return Promise.all(servers.map((s) => s.stop()))
       .then(() => {
         this.emit((this._state = 'stopped'));
         return true;
       })
-      .catch(err => {
+      .catch((err) => {
         this.debug(err);
         this.emit((this._state = 'stopped'), err);
         return false;
       });
   }
 
-  async waitUntilRunning() {
+  async waitUntilRunning(): Promise<void> {
     if (this._state === 'running') return;
-    await new Promise(resolve => this.once('running', () => resolve()));
+    await new Promise((resolve) => this.once('running', () => resolve()));
   }
 
   /**
@@ -206,11 +206,8 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     if (!this.servers.length) {
       throw new Error('One or more server is required.');
     }
-    const uris = await Promise.all(this.servers.map(server => server.getUri()));
-    const conn: MongoClient = await MongoClient.connect(
-      uris[0],
-      { useNewUrlParser: true }
-    );
+    const uris = await Promise.all(this.servers.map((server) => server.getUri()));
+    const conn: MongoClient = await MongoClient.connect(uris[0], { useNewUrlParser: true });
     try {
       const db = await conn.db(this.opts.replSet.dbName);
       this.admin = db.admin();
@@ -247,10 +244,10 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     }
     const replStatus: ReplStatusResultT = await this.admin.command({ replSetGetStatus: 1 });
     this.debug('   replStatus:', replStatus);
-    const hasPrimary = replStatus.members.some(m => m.stateStr === 'PRIMARY');
+    const hasPrimary = replStatus.members.some((m) => m.stateStr === 'PRIMARY');
     if (!hasPrimary) {
       this.debug('No PRIMARY yet. Waiting...');
-      return new Promise(resolve => setTimeout(() => resolve(this._waitForPrimary()), 1000));
+      return new Promise((resolve) => setTimeout(() => resolve(this._waitForPrimary()), 1000));
     }
     return true;
   }

@@ -1,4 +1,3 @@
-
 import tmp, { SynchrounousResult } from 'tmp';
 import { LATEST_VERSION } from '../MongoBinary';
 import MongodbInstance from '../MongoInstance';
@@ -128,9 +127,10 @@ describe('MongodbInstance', () => {
     expect(pid).toBeGreaterThan(0);
     expect(killerPid).toBeGreaterThan(0);
 
-    function isPidRunning(p: number) {
+    function isPidRunning(p: number): boolean {
       try {
-        return process.kill(p, 0);
+        process.kill(p, 0);
+        return true;
       } catch (e) {
         return e.code === 'EPERM';
       }

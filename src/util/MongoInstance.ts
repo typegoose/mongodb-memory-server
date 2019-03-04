@@ -7,7 +7,7 @@ import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { DebugPropT, StorageEngineT, SpawnOptions } from '../types';
 
-export type MongodOps = {
+export interface MongodOps {
   // instance options
   instance: {
     port?: number;
@@ -18,7 +18,7 @@ export type MongodOps = {
     replSet?: string;
     args?: string[];
     auth?: boolean;
-  }
+  };
 
   // mongo binary options
   binary?: MongoBinaryOpts;
@@ -26,7 +26,7 @@ export type MongodOps = {
   // child process spawn options
   spawn?: SpawnOptions;
   debug?: DebugPropT;
-};
+}
 
 export default class MongodbInstance {
   static childProcessList: ChildProcess[] = [];
@@ -94,7 +94,7 @@ export default class MongodbInstance {
       this.instanceReady = () => {
         this.isInstanceReady = true;
         this.debug('MongodbInstance: is ready!');
-        resolve({...this.childProcess});
+        resolve({ ...this.childProcess });
       };
       this.instanceFailed = (err: any) => {
         this.debug(`MongodbInstance: is failed: ${err.toString()}`);
@@ -113,7 +113,7 @@ export default class MongodbInstance {
 
   async kill(): Promise<MongodbInstance> {
     if (this.childProcess && !this.childProcess.killed) {
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         if (this.childProcess) {
           this.childProcess.once(`exit`, resolve);
           this.childProcess.kill();
@@ -121,7 +121,7 @@ export default class MongodbInstance {
       });
     }
     if (this.killerProcess && !this.killerProcess.killed) {
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         if (this.killerProcess) {
           this.killerProcess.once(`exit`, resolve);
           this.killerProcess.kill();
@@ -139,8 +139,12 @@ export default class MongodbInstance {
     const spawnOpts = this.opts.spawn || {};
     if (!spawnOpts.stdio) spawnOpts.stdio = 'pipe';
     const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), spawnOpts);
-    childProcess.stderr.on('data', this.stderrHandler.bind(this));
-    childProcess.stdout.on('data', this.stdoutHandler.bind(this));
+    if (childProcess.stderr) {
+      childProcess.stderr.on('data', this.stderrHandler.bind(this));
+    }
+    if (childProcess.stdout) {
+      childProcess.stdout.on('data', this.stdoutHandler.bind(this));
+    }
     childProcess.on('close', this.closeHandler.bind(this));
     childProcess.on('error', this.errorHandler.bind(this));
 

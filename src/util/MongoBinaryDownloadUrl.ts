@@ -1,12 +1,11 @@
-
 import getos from 'getos';
 
-export type MongoBinaryDownloadUrlOpts = {
-  version: string,
-  platform: string,
-  arch: string,
-  os?: getos.Os,
-};
+export interface MongoBinaryDownloadUrlOpts {
+  version: string;
+  platform: string;
+  arch: string;
+  os?: getos.Os;
+}
 
 export default class MongoBinaryDownloadUrl {
   platform: string;
@@ -25,7 +24,7 @@ export default class MongoBinaryDownloadUrl {
     const archive = await this.getArchiveName();
     return `${process.env.MONGOMS_DOWNLOAD_MIRROR || 'https://fastdl.mongodb.org'}/${
       this.platform
-      }/${archive}`;
+    }/${archive}`;
   }
 
   async getArchiveName(): Promise<string> {
@@ -115,7 +114,7 @@ export default class MongoBinaryDownloadUrl {
   }
 
   getDebianVersionString(os: getos.Os): string {
-    let name: string = 'debian';
+    let name = 'debian';
     const release: number = parseFloat((os as getos.LinuxOs).release);
     if (release >= 9 || (os as getos.LinuxOs).release === 'unstable') {
       name += '92';
@@ -128,7 +127,7 @@ export default class MongoBinaryDownloadUrl {
   }
 
   getFedoraVersionString(os: getos.Os): string {
-    let name: string = 'rhel';
+    let name = 'rhel';
     const fedoraVer: number = parseInt((os as getos.LinuxOs).release, 10);
     if (fedoraVer > 18) {
       name += '70';
@@ -141,8 +140,8 @@ export default class MongoBinaryDownloadUrl {
   }
 
   getRhelVersionString(os: getos.Os): string {
-    let name: string = 'rhel';
-    const { release } = (os as getos.LinuxOs);
+    let name = 'rhel';
+    const { release } = os as getos.LinuxOs;
     if (release) {
       if (/^7/.test(release)) {
         name += '70';
@@ -155,18 +154,18 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getElementaryOSVersionString(os: getos.Os): string {
     return 'ubuntu1404';
   }
 
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getMintVersionString(os: getos.Os): string {
     // unfortunately getos doesn't return version for Mint
     return 'ubuntu1404';
   }
 
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getLegacyVersionString(os: getos.Os): string {
     return '';
   }
@@ -181,7 +180,7 @@ export default class MongoBinaryDownloadUrl {
   }
 
   getUbuntuVersionString(os: getos.LinuxOs): string {
-    let name: string = 'ubuntu';
+    let name = 'ubuntu';
     const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
     const majorVer: number = parseInt(ubuntuVer[0], 10);
     // const minorVer: string = ubuntuVer[1];
