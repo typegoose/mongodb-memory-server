@@ -85,11 +85,6 @@
     "semantic-release": "semantic-release",
     "postinstall": "node ./postinstall.js"
   },
-  "jest": {
-    "roots": [
-      "<rootDir>/src"
-    ]
-  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
