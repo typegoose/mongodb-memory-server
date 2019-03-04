@@ -1,4 +1,3 @@
-
 export type DebugFn = (...args: any[]) => any;
 export type DebugPropT = boolean | DebugFn;
 

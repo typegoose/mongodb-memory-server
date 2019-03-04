@@ -1,4 +1,3 @@
-
 import MongoMemoryReplSet, { MongoMemoryReplSetOptsT } from '../MongoMemoryReplSet';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -8,7 +7,6 @@ describe('single server replset', () => {
   afterEach(async () => {
     if (!(replSet && replSet._state === 'running')) return;
     await replSet.stop();
-    // replSet = (null: any); // TODO : why do we need this ?
   });
 
   it('should enter running state', async () => {
@@ -35,8 +33,10 @@ describe('single server replset', () => {
     expect(dbName).toEqual('static');
   });
 
-  // TODO : This test provoke an unfinished async operation if MongoMemoryReplSet starts regardless of the autostart option
-  // Maybe should we re think how this functionality is tested by just mocking MongoMemoryReplSet.start function
+  // TODO: This test provoke an unfinished async operation if MongoMemoryReplSet
+  // starts regardless of the autostart option
+  // Maybe should we re think how this functionality is tested by just mocking
+  // MongoMemoryReplSet.start function
   it('should not autostart if autostart: false', async () => {
     replSet = new MongoMemoryReplSet({ autoStart: false } as MongoMemoryReplSetOptsT);
     await new Promise((resolve, reject) => {
@@ -51,7 +51,6 @@ describe('multi-member replica set', () => {
   afterEach(async () => {
     if (!replSet) return;
     await replSet.stop();
-    // replSet = (null: any); // TODO : why do we need this ?
   });
 
   it('should enter running state', async () => {

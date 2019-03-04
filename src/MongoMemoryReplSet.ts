@@ -1,8 +1,8 @@
 import events from 'events';
-import { Db, MongoClient } from 'mongodb';
+import { Admin, MongoClient } from 'mongodb';
 import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOptsT } from './MongoMemoryServer';
-import { generateDbName, getHost, getReplStatus } from './util/db_util';
+import { generateDbName, getHost } from './util/db_util';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import {
   DebugFn,
@@ -10,6 +10,7 @@ import {
   MongoMemoryInstancePropBaseT,
   SpawnOptions,
   StorageEngineT,
+  ReplStatusResultT,
 } from './types';
 
 /**
@@ -45,12 +46,13 @@ export interface MongoMemoryReplSetOptsT {
 }
 
 export default class MongoMemoryReplSet extends events.EventEmitter {
-  servers: MongoMemoryServer[];
+  servers: MongoMemoryServer[] = [];
   opts: MongoMemoryReplSetOptsT;
   debug: DebugFn;
   _state: 'init' | 'running' | 'stopped';
+  admin?: Admin;
 
-  constructor(opts?: MongoMemoryReplSetOptsT) {
+  constructor(opts: Partial<MongoMemoryReplSetOptsT> = {}) {
     super();
     const replSetDefaults: ReplSetOpts = {
       auth: false,
@@ -63,29 +65,20 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
       spawn: {},
       storageEngine: 'ephemeralForTest',
     };
-    this.servers = []; // TODO : added this to fix tslint error about not initializing a member variable
     this._state = 'stopped';
-    if (opts) {
-      this.opts = {
-        binary: opts.binary || {},
-        debug: !!opts.debug,
-        instanceOpts: opts.instanceOpts || [],
-        replSet: {...replSetDefaults, ...opts.replSet},
-      };
-    } else {
-      this.opts = {
-        binary: {},
-        debug: false,
-        instanceOpts: [],
-        replSet: replSetDefaults,
-      };
-    }
+    this.opts = {
+      binary: opts.binary || {},
+      debug: !!opts.debug,
+      instanceOpts: opts.instanceOpts || [],
+      replSet: { ...replSetDefaults, ...opts.replSet },
+    };
+
     this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
     this.debug = (...args: any[]) => {
       if (!this.opts.debug) return;
       console.log(...args);
     };
-    if (!(opts && opts.autoStart === false) ) {
+    if (!(opts && opts.autoStart === false)) {
       this.debug('Autostarting MongoMemoryReplSet.');
       setTimeout(() => this.start(), 0);
     }
@@ -103,7 +96,6 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     // this function is only async for consistency with MongoMemoryServer
     // I don't see much point to either of them being async but don't
     // care enough to change it and introduce a breaking change.
-    // TODO : I pretty much agree on this
     return this.opts.replSet.dbName;
   }
 
@@ -133,10 +125,9 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
    * Returns a mongodb: URI to connect to a given database.
    */
   async getUri(otherDb?: string | boolean): Promise<string> {
-    // TODO : Does this case exists ? this should give an undefined access in this function if we pass nothing
-    /* if (this._state === 'init') {
+    if (this._state === 'init') {
       await this._waitForPrimary();
-    } */
+    }
     if (this._state !== 'running') {
       throw new Error('Replica Set is not running. Use opts.debug for more info.');
     }
@@ -222,17 +213,15 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
     );
     try {
       const db = await conn.db(this.opts.replSet.dbName);
-      const admin = db.admin();
+      this.admin = db.admin();
       const members = uris.map((uri, idx) => ({ _id: idx, host: getHost(uri) }));
       const rsConfig = {
         _id: this.opts.replSet.name,
         members,
       };
-      await admin.command({ replSetInitiate: rsConfig });
+      await this.admin.command({ replSetInitiate: rsConfig });
       this.debug('Waiting for replica set to have a PRIMARY member.');
-      // @ts-ignore : why do we passe an Admin instance instead of an Db instance, shoud we have a more specific function
-      // for an Admin instance ?
-      await this._waitForPrimary(admin);
+      await this._waitForPrimary();
       this.emit((this._state = 'running'));
       this.debug('running');
     } finally {
@@ -246,19 +235,22 @@ export default class MongoMemoryReplSet extends events.EventEmitter {
       debug: this.opts.debug,
       binary: this.opts.binary,
       instance: instanceOpts,
-      spawn: this.opts.replSet.spawn
+      spawn: this.opts.replSet.spawn,
     };
     const server = new MongoMemoryServer(serverOpts);
     return server;
   }
 
-  async _waitForPrimary(db: Db): Promise<boolean> {
-    const replStatus = await getReplStatus(db);
+  async _waitForPrimary(): Promise<boolean> {
+    if (!this.admin) {
+      return false;
+    }
+    const replStatus: ReplStatusResultT = await this.admin.command({ replSetGetStatus: 1 });
     this.debug('   replStatus:', replStatus);
     const hasPrimary = replStatus.members.some(m => m.stateStr === 'PRIMARY');
     if (!hasPrimary) {
       this.debug('No PRIMARY yet. Waiting...');
-      return new Promise(resolve => setTimeout(() => resolve(this._waitForPrimary(db)), 1000));
+      return new Promise(resolve => setTimeout(() => resolve(this._waitForPrimary()), 1000));
     }
     return true;
   }
