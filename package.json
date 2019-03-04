@@ -5,7 +5,6 @@
   "main": "lib/index",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/nodkz/mongodb-memory-server",
-  "author": "Nodkz (pavel.chertorogov@gmail.com)",
   "files": [
     "lib",
     "postinstall.js"

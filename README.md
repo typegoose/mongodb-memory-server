@@ -362,3 +362,8 @@ Inspired by alternative runners for [mongodb-prebuilt](https://github.com/winfin
 ## License
 
 MIT
+
+## Maintainers
+
+- [@nodkz](https://github.com/nodkz) Pavel Chertorogov
+- [@AJRdev](https://github.com/AJRdev) Andre Ranarivelo
