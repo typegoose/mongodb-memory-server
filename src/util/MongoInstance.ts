@@ -54,7 +54,14 @@ export default class MongodbInstance {
       this.opts.binary.debug = this.opts.debug;
     }
 
-    if (this.opts.instance && this.opts.instance.debug) {
+
+    this.debug = (msg: string) : void => {
+      if (this.opts.instance && this.opts.instance.debug) {
+        console.log(`Mongo[${this.opts.instance && this.opts.instance.port}]: ${msg}`);
+      }
+    };
+
+    /*if (this.opts.instance && this.opts.instance.debug) {
       if (
         typeof this.opts.instance.debug === 'function' &&
         this.opts.instance.debug.apply &&
@@ -66,7 +73,7 @@ export default class MongodbInstance {
       }
     } else {
       this.debug = () => {};
-    }
+    }*/
   }
 
   static run(opts: MongodOps): Promise<MongodbInstance> {

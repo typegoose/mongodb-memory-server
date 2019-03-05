@@ -39,7 +39,8 @@ export interface MongoInstanceDataT {
   replSet?: string;
 }
 
-async function generateConnectionString(port: number, dbName: string): Promise<string> {
+// TODO: do we need to keep this function async ?
+const generateConnectionString = async (port: number, dbName: string): Promise<string> => {
   return `mongodb://127.0.0.1:${port}/${dbName}`;
 }
 
@@ -104,7 +105,6 @@ export default class MongoMemoryServer {
       this.debug = Debug(`Mongo[${data.port}]`); // TODO: Why do we dont just use this.debug here ?
       this.debug.enabled = !!this.opts.debug; // Useful ?
     */
-    this.debug(`Mongo[${data.port}]`);
     data.dbName = generateDbName(instOpts && instOpts.dbName);
     data.uri = await generateConnectionString(data.port, data.dbName);
     data.storageEngine = (instOpts && instOpts.storageEngine) || 'ephemeralForTest';

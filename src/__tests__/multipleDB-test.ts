@@ -33,15 +33,15 @@ describe('Multiple mongoServers', () => {
   it('should start several servers', async () => {
     expect(db1).toBeDefined();
     const col1 = db1.collection('test');
-    const result1 = await col1.insert([{ a: 1 }, { b: 1 }]);
+    const result1 = await col1.insertMany([{ a: 1 }, { b: 1 }]);
     expect(result1.result).toMatchSnapshot();
-    expect(await col1.count({})).toBe(2);
+    expect(await col1.countDocuments({})).toBe(2);
 
     expect(db2).toBeDefined();
     const col2 = db2.collection('test');
-    const result2 = await col2.insert([{ a: 2 }, { b: 2 }]);
+    const result2 = await col2.insertMany([{ a: 2 }, { b: 2 }]);
     expect(result2.result).toMatchSnapshot();
-    expect(await col2.count({})).toBe(2);
+    expect(await col2.countDocuments({})).toBe(2);
   });
 
   it('should have different uri', async () => {
