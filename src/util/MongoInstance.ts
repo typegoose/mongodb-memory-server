@@ -54,8 +54,7 @@ export default class MongodbInstance {
       this.opts.binary.debug = this.opts.debug;
     }
 
-
-    this.debug = (msg: string) : void => {
+    this.debug = (msg: string): void => {
       if (this.opts.instance && this.opts.instance.debug) {
         console.log(`Mongo[${this.opts.instance && this.opts.instance.port}]: ${msg}`);
       }

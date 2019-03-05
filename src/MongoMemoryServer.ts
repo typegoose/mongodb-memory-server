@@ -42,7 +42,7 @@ export interface MongoInstanceDataT {
 // TODO: do we need to keep this function async ?
 const generateConnectionString = async (port: number, dbName: string): Promise<string> => {
   return `mongodb://127.0.0.1:${port}/${dbName}`;
-}
+};
 
 export default class MongoMemoryServer {
   runningInstance: Promise<MongoInstanceDataT> | null;
