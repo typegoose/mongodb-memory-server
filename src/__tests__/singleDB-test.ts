@@ -14,9 +14,9 @@ beforeAll(async () => {
   db = con.db(await mongoServer.getDbName());
 });
 
-afterAll(() => {
+afterAll(async () => {
   if (con) con.close();
-  if (mongoServer) mongoServer.stop();
+  if (mongoServer) await mongoServer.stop();
 });
 
 describe('Single mongoServer', () => {
