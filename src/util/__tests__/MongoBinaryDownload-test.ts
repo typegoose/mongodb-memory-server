@@ -86,7 +86,6 @@ the same as in the reference result`, () => {
     );
   });
 
-  // TODO : weird test fail error TypeError: jasmine.Spec.isPendingSpecException is not a function
   it('false value of checkMD5 attribute disables makeMD5check validation', async () => {
     expect.assertions(1);
     (fs.readFileSync as jest.Mock).mockImplementationOnce(() => 'someMd5 fileName');
