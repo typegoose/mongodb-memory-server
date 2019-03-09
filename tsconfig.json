@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es2018",
+    "noEmit": true,
+    "target": "es5",
     "module": "commonjs",
-    "outDir": "./lib",
     "strict": true,
     "rootDir": "./src",
-    "declaration": true,
-    "lib": ["es2018"],
+    "outDir": "./lib",
+    "lib": ["es2017"],
+    "moduleResolution": "node",
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node", "jest"]
   },
-
-  "include": [ "src/**/*" ]
+  "include": ["src/**/*"]
 }
