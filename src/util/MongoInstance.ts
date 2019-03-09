@@ -28,7 +28,7 @@ export interface MongodOps {
   debug?: DebugPropT;
 }
 
-export default class MongodbInstance {
+export default class MongoInstance {
   static childProcessList: ChildProcess[] = [];
   opts: MongodOps;
   debug: Function;
@@ -54,13 +54,7 @@ export default class MongodbInstance {
       this.opts.binary.debug = this.opts.debug;
     }
 
-    this.debug = (msg: string): void => {
-      if (this.opts.instance && this.opts.instance.debug) {
-        console.log(`Mongo[${this.opts.instance && this.opts.instance.port}]: ${msg}`);
-      }
-    };
-
-    /*if (this.opts.instance && this.opts.instance.debug) {
+    if (this.opts.instance && this.opts.instance.debug) {
       if (
         typeof this.opts.instance.debug === 'function' &&
         this.opts.instance.debug.apply &&
@@ -72,10 +66,17 @@ export default class MongodbInstance {
       }
     } else {
       this.debug = () => {};
-    }*/
+    }
+
+    // add instance's port to debug output
+    const debugFn = this.debug;
+    const port = this.opts.instance && this.opts.instance.port;
+    this.debug = (msg: string): void => {
+      debugFn(`Mongo[${port}]: ${msg}`);
+    };
   }
 
-  static run(opts: MongodOps): Promise<MongodbInstance> {
+  static run(opts: MongodOps): Promise<MongoInstance> {
     const instance = new this(opts);
     return instance.run();
   }
@@ -95,7 +96,7 @@ export default class MongodbInstance {
     return result.concat(args || []);
   }
 
-  async run(): Promise<MongodbInstance> {
+  async run(): Promise<MongoInstance> {
     const launch = new Promise((resolve, reject) => {
       this.instanceReady = () => {
         this.isInstanceReady = true;
@@ -117,7 +118,7 @@ export default class MongodbInstance {
     return this;
   }
 
-  async kill(): Promise<MongodbInstance> {
+  async kill(): Promise<MongoInstance> {
     if (this.childProcess && !this.childProcess.killed) {
       await new Promise((resolve) => {
         if (this.childProcess) {
