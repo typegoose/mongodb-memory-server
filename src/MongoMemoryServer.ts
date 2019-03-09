@@ -134,6 +134,7 @@ export default class MongoMemoryServer {
         replSet: data.replSet,
         args: this.opts.instance && this.opts.instance.args,
         auth: this.opts.instance && this.opts.instance.auth,
+        ip: this.opts.instance && this.opts.instance.ip,
       },
       binary: this.opts.binary,
       spawn: this.opts.spawn,
