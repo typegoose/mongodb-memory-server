@@ -123,7 +123,7 @@ describe('MongodbInstance', () => {
       binary: { version: LATEST_VERSION },
     });
     const pid: any = mongod.getPid();
-    const killerPid: any = mongod.killerProcess && mongod.killerProcess.pid; // TODO: need to type this var but has a problem of null value in the class
+    const killerPid: any = mongod.killerProcess && mongod.killerProcess.pid;
     expect(pid).toBeGreaterThan(0);
     expect(killerPid).toBeGreaterThan(0);
 

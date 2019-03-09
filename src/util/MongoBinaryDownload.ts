@@ -24,7 +24,7 @@ interface HttpDownloadOptions {
   port: string;
   path: string;
   method: 'GET' | 'POST';
-  agent: any | undefined; // TODO: fix type by adding declaration file for http-proxy module
+  agent: HttpsProxyAgent | undefined;
 }
 
 export default class MongoBinaryDownload {
@@ -106,9 +106,12 @@ export default class MongoBinaryDownload {
     return mongoDBArchive;
   }
 
-  async makeMD5check(urlForReferenceMD5: string, mongoDBArchive: string): Promise<boolean> {
+  async makeMD5check(
+    urlForReferenceMD5: string,
+    mongoDBArchive: string
+  ): Promise<boolean | undefined> {
     if (!this.checkMD5) {
-      return false; // TODO : why was it return undefined; ?
+      return undefined;
     }
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
     const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('UTF-8');
@@ -246,7 +249,6 @@ export default class MongoBinaryDownload {
   }
 
   printDownloadProgress(chunk: any): void {
-    // TODO : chunk type ?
     this.dlProgress.current += chunk.length;
 
     const now = Date.now();

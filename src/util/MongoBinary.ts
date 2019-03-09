@@ -115,7 +115,7 @@ export default class MongoBinary {
                 cwd: new RegExp(`node_modules${path.sep}mongodb-memory-server$`).test(process.cwd())
                   ? path.resolve(process.cwd(), '..', '..')
                   : process.cwd(),
-              }) || '', // TODO : path resolve doesnt accept string | null
+              }) || '',
               'mongodb-binaries'
             )),
       platform: process.env.MONGOMS_PLATFORM || os.platform(),

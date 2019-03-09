@@ -11,7 +11,6 @@ describe('MongoBinaryDownload', () => {
   });
 
   it('checkMD5 attribute can be set via constructor parameter', () => {
-    // TODO: need to add all these as MongoBinaryDownloadOpts becausing the type is only defined with mandatory fields
     expect(new MongoBinaryDownload({ checkMD5: true }).checkMD5).toBe(true);
     expect(new MongoBinaryDownload({ checkMD5: false }).checkMD5).toBe(false);
   });
@@ -93,6 +92,6 @@ the same as in the reference result`, () => {
     const du = new MongoBinaryDownload({});
     du.checkMD5 = false;
     const result = await du.makeMD5check('', '');
-    expect(result).toBe(false); // TODO: changed to false
+    expect(result).toBe(undefined);
   });
 });

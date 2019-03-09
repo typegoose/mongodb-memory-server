@@ -1,7 +1,6 @@
 import { ChildProcess } from 'child_process';
 import tmp from 'tmp';
 import getPort from 'get-port';
-// import Debug from 'debug';  // TODO : Do we really need this package ?
 import { generateDbName } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -39,7 +38,6 @@ export interface MongoInstanceDataT {
   replSet?: string;
 }
 
-// TODO: do we need to keep this function async ?
 const generateConnectionString = async (port: number, dbName: string): Promise<string> => {
   return `mongodb://127.0.0.1:${port}/${dbName}`;
 };
@@ -101,10 +99,6 @@ export default class MongoMemoryServer {
 
     const instOpts = this.opts.instance;
     data.port = await getPort({ port: (instOpts && instOpts.port) || undefined });
-    /*
-      this.debug = Debug(`Mongo[${data.port}]`); // TODO: Why do we dont just use this.debug here ?
-      this.debug.enabled = !!this.opts.debug; // Useful ?
-    */
     data.dbName = generateDbName(instOpts && instOpts.dbName);
     data.uri = await generateConnectionString(data.port, data.dbName);
     data.storageEngine = (instOpts && instOpts.storageEngine) || 'ephemeralForTest';
@@ -119,6 +113,7 @@ export default class MongoMemoryServer {
         unsafeCleanup: true,
       });
       data.dbPath = tmpDir.name;
+      data.tmpDir = tmpDir;
     }
 
     this.debug(`Starting MongoDB instance with following options: ${JSON.stringify(data)}`);
@@ -142,7 +137,6 @@ export default class MongoMemoryServer {
     });
     data.instance = instance;
     data.childProcess = instance.childProcess;
-    // data.tmpDir = tmpDir;
 
     return data;
   }

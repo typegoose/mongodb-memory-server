@@ -39,7 +39,7 @@ describe('MongoBinary', () => {
       expect(accessSpy).toHaveBeenCalledWith('/usr/local/bin/mongod', expect.any(Function));
 
       accessSpy.mockClear();
-      delete process.env.MONGOMS_SYSTEM_BINARY; // TODO : needed to add this because it was affecting the rest of the tests
+      delete process.env.MONGOMS_SYSTEM_BINARY;
     });
   });
 

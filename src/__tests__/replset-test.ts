@@ -33,10 +33,6 @@ describe('single server replset', () => {
     expect(dbName).toEqual('static');
   });
 
-  // TODO: This test provoke an unfinished async operation if MongoMemoryReplSet
-  // starts regardless of the autostart option
-  // Maybe should we re think how this functionality is tested by just mocking
-  // MongoMemoryReplSet.start function
   it('should not autostart if autostart: false', async () => {
     replSet = new MongoMemoryReplSet({ autoStart: false });
     await new Promise((resolve, reject) => {
