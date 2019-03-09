@@ -15,7 +15,8 @@ Every `MongoMemoryServer` instance creates and starts fresh MongoDB server on so
 Perfectly [works with Travis CI](https://github.com/nodkz/graphql-compose-mongoose/commit/7a6ac2de747d14281f9965f418065e97a57cfb37) without additional `services` and `addons` options in `.travis.yml`.
 
 ## Installation
-```
+
+```bash
 yarn add mongodb-memory-server --dev
 OR
 npm install mongodb-memory-server --save-dev
@@ -24,6 +25,7 @@ npm install mongodb-memory-server --save-dev
 ## Usage
 
 ### Simple server start:
+
 ```js
 import MongoMemoryServer from 'mongodb-memory-server';
 
@@ -42,7 +44,9 @@ mongod.stop();
 ```
 
 ### Available options
+
 All options are optional.
+
 ```js
 const mongod = new MongoMemoryServer({
   instance: {
@@ -104,8 +108,10 @@ replSet.stop();
 // or it should be stopped automatically when you exit from script
 ```
 
-### Available options
+### Available options for Replica Set
+
 All options are optional.
+
 ```js
 const replSet = new MongoMemoryReplSet({
   autoStart, // same as for MongoMemoryServer
@@ -113,34 +119,34 @@ const replSet = new MongoMemoryReplSet({
   debug, // same as for MongoMemoryServer
   instanceOpts: [
     {
-      args,  // any additional instance specific args
-      port,  // port number for the instance
+      args, // any additional instance specific args
+      port, // port number for the instance
       dbPath, // path to database files for this instance
-      storageEngine,  // same storage engine options
+      storageEngine, // same storage engine options
     },
     // each entry will result in a MongoMemoryServer
   ],
   // unless otherwise noted below these values will be in common with all instances spawned.
   replSet: {
-    name,  // replica set name (default: 'testset')
-    auth,  //  enable auth support? (default: false)
-    args,  // any args specified here will be combined with any per instance args from `instanceOpts`
-    count,  // number of `mongod` processes to start; (default: 1)
-    dbName,  // default database for db URI strings. (default: uuid.v4())
-    ip,  // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`
-    oplogSize,  // size (in MB) for the oplog; (default: 1)
-    spawn,  // spawn options when creating the child processes
-    storageEngine,  // default storage engine for instance. (Can be overridden per instance)
-  }
+    name, // replica set name (default: 'testset')
+    auth, //  enable auth support? (default: false)
+    args, // any args specified here will be combined with any per instance args from `instanceOpts`
+    count, // number of `mongod` processes to start; (default: 1)
+    dbName, // default database for db URI strings. (default: uuid.v4())
+    ip, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`
+    oplogSize, // size (in MB) for the oplog; (default: 1)
+    spawn, // spawn options when creating the child processes
+    storageEngine, // default storage engine for instance. (Can be overridden per instance)
+  },
 });
 ```
-
 
 ### Simple test with MongoClient
 
 Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/singleDB-test.js).
 
 ### Provide connection string to mongoose
+
 ```js
 import mongoose from 'mongoose';
 import MongoMemoryServer from 'mongodb-memory-server';
@@ -149,7 +155,8 @@ const mongoServer = new MongoMemoryServer();
 
 mongoose.Promise = Promise;
 mongoServer.getConnectionString().then((mongoUri) => {
-  const mongooseOpts = { // options for mongoose 4.11.3 and above
+  const mongooseOpts = {
+    // options for mongoose 4.11.3 and above
     autoReconnect: true,
     reconnectTries: Number.MAX_VALUE,
     reconnectInterval: 1000,
@@ -171,10 +178,11 @@ mongoServer.getConnectionString().then((mongoUri) => {
   });
 });
 ```
+
 For additional information I recommend you to read this article [Testing a GraphQL Server using Jest with Mongoose](https://medium.com/entria/testing-a-graphql-server-using-jest-4e00d0e4980e)
 
-
 ### Several mongoose connections simultaneously
+
 ```js
 import mongoose from 'mongoose';
 import MongoMemoryServer from 'mongodb-memory-server';
@@ -245,6 +253,7 @@ export default {
 ```
 
 Note: When you create mongoose connection manually, you should do:
+
 ```js
 import mongoose from 'mongoose';
 
@@ -253,7 +262,9 @@ const conn = mongoose.createConnection(); // just create connection instance
 const User = conn.model('User', new mongoose.Schema({ name: String })); // define model
 conn.open(uri, opts); // open connection to database (NOT `connect` method!)
 ```
+
 With default connection:
+
 ```js
 import mongoose from 'mongoose';
 
@@ -261,8 +272,6 @@ const opts = { useMongoClient: true }; // remove this option if you use mongoose
 mongoose.connect(uri, opts);
 const User = mongoose.model('User', new mongoose.Schema({ name: String })); // define model
 ```
-
-
 
 ### Simple Mocha/Chai test example
 
@@ -277,11 +286,14 @@ const opts = { useMongoClient: true }; // remove this option if you use mongoose
 
 before((done) => {
   mongoServer = new MongoMemoryServer();
-  mongoServer.getConnectionString().then((mongoUri) => {
-    return mongoose.connect(mongoUri, opts, (err) => {
-      if (err) done(err);
-    });
-  }).then(() => done());
+  mongoServer
+    .getConnectionString()
+    .then((mongoUri) => {
+      return mongoose.connect(mongoUri, opts, (err) => {
+        if (err) done(err);
+      });
+    })
+    .then(() => done());
 });
 
 after(() => {
@@ -290,7 +302,7 @@ after(() => {
 });
 
 describe('...', () => {
-  it("...", async () => {
+  it('...', async () => {
     const User = mongoose.model('User', new mongoose.Schema({ name: String }));
     const cnt = await User.count();
     expect(cnt).to.equal(0);
@@ -299,6 +311,7 @@ describe('...', () => {
 ```
 
 ### Simple Jest test example
+
 ```js
 import mongoose from 'mongoose';
 import MongoMemoryServer from 'mongodb-memory-server';
@@ -317,13 +330,13 @@ beforeAll(async () => {
   });
 });
 
-afterAll(() => {
+afterAll(async () => {
   mongoose.disconnect();
-  mongoServer.stop();
+  await mongoServer.stop();
 });
 
 describe('...', () => {
-  it("...", async () => {
+  it('...', async () => {
     const User = mongoose.model('User', new mongoose.Schema({ name: String }));
     const cnt = await User.count();
     expect(cnt).toEqual(0);
@@ -332,14 +345,17 @@ describe('...', () => {
 ```
 
 Additional examples of Jest tests:
+
 - simple example with `mongodb` in [tests in current package](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/)
 - more complex example with `mongoose` in [graphql-compose-mongoose](https://github.com/nodkz/graphql-compose-mongoose/blob/master/src/__mocks__/mongooseCommon.js)
 
 ### AVA test runner
+
 For AVA written [detailed tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) how to test mongoose models by @zellwk.
 
 ### Docker Alpine
-There isn't currently an official MongoDB release for alpine linux.  This means that we can't pull binaries for Alpine
+
+There isn't currently an official MongoDB release for alpine linux. This means that we can't pull binaries for Alpine
 (or any other platform that isn't officially supported by MongoDB), but you can use a Docker image that already has mongod
 built in and then set the MONGOMS_SYSTEM_BINARY variable to point at that binary. This should allow you to use
 mongodb-memory-server on any system on which you can install mongod.
@@ -348,6 +364,7 @@ mongodb-memory-server on any system on which you can install mongod.
 
 **It is very important** to limit spawned number of Jest workers for avoiding race condition. Cause Jest spawn huge amount of workers for every node environment on same machine. [More details](https://github.com/facebook/jest/issues/3765)
 Use `--maxWorkers 4` or `--runInBand` option.
+
 ```diff
 script:
 -  - yarn run coverage
@@ -355,10 +372,17 @@ script:
 ```
 
 ## Credits
+
 Inspired by alternative runners for [mongodb-prebuilt](https://github.com/winfinit/mongodb-prebuilt):
+
 - [mockgoose](https://github.com/mockgoose/Mockgoose)
 - [mongomem](https://github.com/CImrie/mongomem)
 
 ## License
 
 MIT
+
+## Maintainers
+
+- [@nodkz](https://github.com/nodkz) Pavel Chertorogov
+- [@AJRdev](https://github.com/AJRdev) Andre Ranarivelo

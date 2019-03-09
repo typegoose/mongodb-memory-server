@@ -1,9 +1,16 @@
 {
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
   "extends": [
-    "airbnb-base",
-    "prettier"
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended"
   ],
-  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "useJSXTextNode": true,
+    "project": "./tsconfig.json"
+  },
   "rules": {
     "no-underscore-dangle": 0,
     "arrow-body-style": 0,
@@ -11,22 +18,23 @@
     "no-plusplus": 0,
     "no-console": 0,
     "func-names": 0,
-    "comma-dangle": ["error", {
-      "arrays": "always-multiline",
-      "objects": "always-multiline",
-      "imports": "always-multiline",
-      "exports": "always-multiline",
-      "functions": "ignore",
-    }],
-    "prettier/prettier": ["error", {
-      "printWidth": 100,
-      "singleQuote": true,
-      "trailingComma": "es5",
-    }],
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "ignore"
+      }
+    ],
     "no-prototype-builtins": 0,
     "prefer-destructuring": 0,
     "no-else-return": 0,
-    "lines-between-class-members": ["error", "always", { exceptAfterSingleLine: true }],
+    "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
+    "@typescript-eslint/explicit-member-accessibility": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-inferrable-types": 0
   },
   "env": {
     "jasmine": true,
@@ -34,11 +42,6 @@
   },
   "globals": {
     "Class": true,
-    "Iterator": true,
-    "$Shape": true,
-  },
-  "plugins": [
-    "flowtype",
-    "prettier"
-  ]
+    "Iterator": true
+  }
 }
