@@ -63,6 +63,7 @@ export default class MongoMemoryServer {
   }
 
   async start(): Promise<boolean> {
+    this.debug('Called MongoMemoryServer.start() method:');
     if (this.runningInstance) {
       throw new Error(
         'MongoDB instance already in status startup/running/error. Use opts.debug = true for more info.'
@@ -142,6 +143,8 @@ export default class MongoMemoryServer {
   }
 
   async stop(): Promise<boolean> {
+    this.debug('Called MongoMemoryServer.stop() method');
+
     const { instance, port, tmpDir }: MongoInstanceDataT = await this.getInstanceData();
 
     this.debug(`Shutdown MongoDB server on port ${port} with pid ${instance.getPid() || ''}`);
@@ -157,8 +160,11 @@ export default class MongoMemoryServer {
   }
 
   async getInstanceData(): Promise<MongoInstanceDataT> {
+    this.debug('Called MongoMemoryServer.getInstanceData() method:');
     if (!this.runningInstance) {
+      this.debug(' - no running instance, call `start()` command');
       await this.start();
+      this.debug(' - `start()` command was succesfully resolved');
     }
     if (this.runningInstance) {
       return this.runningInstance;

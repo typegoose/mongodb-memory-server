@@ -1,6 +1,3 @@
-/* @flow */
-/* eslint-disable class-methods-use-this */
-
 import { ChildProcess, spawn as spawnChild } from 'child_process';
 import path from 'path';
 import MongoBinary from './MongoBinary';
@@ -119,21 +116,34 @@ export default class MongoInstance {
   }
 
   async kill(): Promise<MongoInstance> {
+    this.debug('Called MongoInstance.kill():');
     if (this.childProcess && !this.childProcess.killed) {
       await new Promise((resolve) => {
         if (this.childProcess) {
-          this.childProcess.once(`exit`, resolve);
+          this.childProcess.once(`exit`, () => {
+            this.debug(' - childProcess: got exit signal. Ok!');
+            resolve();
+          });
           this.childProcess.kill();
+          this.debug(' - childProcess: send kill cmd...');
         }
       });
+    } else {
+      this.debug(' - childProcess: nothing to kill, skipping.');
     }
     if (this.killerProcess && !this.killerProcess.killed) {
       await new Promise((resolve) => {
         if (this.killerProcess) {
-          this.killerProcess.once(`exit`, resolve);
+          this.killerProcess.once(`exit`, () => {
+            this.debug(' - killerProcess: got exit signal. Ok!');
+            resolve();
+          });
           this.killerProcess.kill();
+          this.debug(' - killerProcess: send kill cmd...');
         }
       });
+    } else {
+      this.debug(' - killerProcess: nothing to kill, skipping.');
     }
     return this;
   }
