@@ -37,10 +37,19 @@ const dbPath = await mongod.getDbPath();
 const dbName = await mongod.getDbName();
 
 // some code
+//   ... where you may use `uri` for as a connection string for mongodb or mongoose
+
+// you may check instance status, after you got `uri` it must be `true`
+mongod.isRunning(); // return true
 
 // you may stop mongod manually
-mongod.stop();
-// or it will be stopped automatically when you exit from script
+await mongod.stop();
+
+// when mongod killed, it's running status should be `false`
+mongod.isRunning();
+
+// even you forget to stop `mongod` when you exit from script
+// special childProcess killer will shutdown it for you
 ```
 
 ### Available options

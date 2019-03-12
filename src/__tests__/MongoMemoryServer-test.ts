@@ -9,7 +9,7 @@ describe('MongoMemoryServer', () => {
     MongoMemoryServer = jest.requireActual('../MongoMemoryServer').default;
   });
 
-  describe('start', () => {
+  describe('start()', () => {
     it('should resolve to true if an MongoInstanceData is resolved by _startUpInstance', async () => {
       MongoMemoryServer.prototype._startUpInstance = jest.fn(() => Promise.resolve({} as any));
 
@@ -65,7 +65,7 @@ describe('MongoMemoryServer', () => {
     });
   });
 
-  describe('getInstanceData', () => {
+  describe('getInstanceData()', () => {
     it('should throw an error if not instance is running after calling start', async () => {
       MongoMemoryServer.prototype.start = jest.fn(() => Promise.resolve(true));
 
@@ -79,18 +79,18 @@ describe('MongoMemoryServer', () => {
     });
   });
 
-  describe('stop', () => {
-    it.only('should stop mongod', async () => {
-      console.log(MongoMemoryServer.prototype._startUpInstance);
+  describe('stop()', () => {
+    it('should stop mongod and answer on isRunning() method', async () => {
       const mongod = new MongoMemoryServer({
         autoStart: true,
-        debug: true,
+        debug: false,
       });
 
       await mongod.getInstanceData();
 
+      expect(mongod.isRunning()).toBeTruthy();
       await mongod.stop();
-      expect(mongod.runningInstance).toBe(null);
+      expect(mongod.isRunning()).toBeFalsy();
     });
   });
 });

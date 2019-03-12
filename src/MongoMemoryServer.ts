@@ -62,6 +62,10 @@ export default class MongoMemoryServer {
     }
   }
 
+  isRunning(): boolean {
+    return !!this.runningInstance;
+  }
+
   async start(): Promise<boolean> {
     this.debug('Called MongoMemoryServer.start() method:');
     if (this.runningInstance) {
