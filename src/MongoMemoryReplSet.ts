@@ -1,4 +1,4 @@
-import events from 'events';
+import EventEmitter from 'events';
 import { Admin, MongoClient } from 'mongodb';
 import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOptsT } from './MongoMemoryServer';
@@ -45,7 +45,7 @@ export interface MongoMemoryReplSetOptsT {
   debug?: boolean;
 }
 
-export default class MongoMemoryReplSet extends events.EventEmitter {
+export default class MongoMemoryReplSet extends EventEmitter {
   servers: MongoMemoryServer[] = [];
   opts: MongoMemoryReplSetOptsT;
   debug: DebugFn;
