@@ -6,8 +6,8 @@
     wont leave mongod around
 */
 
-var parentPid = parseInt(process.argv[2], 10);
-var childPid = parseInt(process.argv[3], 10);
+const parentPid = parseInt(process.argv[2], 10);
+const childPid = parseInt(process.argv[3], 10);
 
 if (parentPid && childPid) {
   setInterval(() => {
