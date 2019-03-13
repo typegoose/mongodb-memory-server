@@ -35,6 +35,15 @@ export interface ReplSetOpts {
   oplogSize: number;
   spawn: SpawnOptions;
   storageEngine: StorageEngineT;
+  configSettings?: MongoMemoryReplSetConfigSettingsT;
+}
+
+export interface MongoMemoryReplSetConfigSettingsT {
+  chainingAllowed?: boolean;
+  heartbeatTimeoutSecs?: number;
+  heartbeatIntervalMillis?: number;
+  electionTimeoutMillis?: number;
+  catchUpTimeoutMillis?: number;
 }
 
 export interface MongoMemoryReplSetOptsT {
@@ -215,6 +224,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
       const rsConfig = {
         _id: this.opts.replSet.name,
         members,
+        settings: this.opts.replSet.configSettings,
       };
       await this.admin.command({ replSetInitiate: rsConfig });
       this.debug('Waiting for replica set to have a PRIMARY member.');
