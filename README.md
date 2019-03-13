@@ -157,24 +157,6 @@ const replSet = new MongoMemoryReplSet({
 });
 ```
 
-The `replSet.configSettings` can be used to tune the initialization of the replica set. By default one of the nodes has 
-to be promoted to Primary before the replica set can be successfully used but that happens only after a timeout of 10 seconds
-(see [electionTimeoutMillis](https://docs.mongodb.com/manual/reference/replica-configuration/#rsconf.settings.electionTimeoutMillis)).
-
-It is possible to force the replica set to elect a node as Primary before the default 10 seconds by changing the `electionTimeoutMillis`
-parameter as shown below:
-
-```js
-const replSet = new MongoMemoryReplSet({
-    replSet: {
-        configSettings: {
-            electionTimeoutMillis: 100,
-        },
-    },
-})
-await replSet.waitUntilRunning()
-``` 
-
 ### Simple test with MongoClient
 
 Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/singleDB-test.ts).

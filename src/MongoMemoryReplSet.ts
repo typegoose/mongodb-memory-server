@@ -224,7 +224,9 @@ export default class MongoMemoryReplSet extends EventEmitter {
       const rsConfig = {
         _id: this.opts.replSet.name,
         members,
-        settings: this.opts.replSet.configSettings || {},
+        settings: this.opts.replSet.configSettings || {
+          electionTimeoutMillis: 500,
+        },
       };
       await this.admin.command({ replSetInitiate: rsConfig });
       this.debug('Waiting for replica set to have a PRIMARY member.');
