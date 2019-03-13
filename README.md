@@ -146,13 +146,14 @@ const replSet = new MongoMemoryReplSet({
     oplogSize, // size (in MB) for the oplog; (default: 1)
     spawn, // spawn options when creating the child processes
     storageEngine, // default storage engine for instance. (Can be overridden per instance)
-    configSettings: { // Optional settings for replSetInitiate command. See https://docs.mongodb.com/manual/reference/command/replSetInitiate/
-        chainingAllowed: boolean, // When true it allows secondary members to replicate from other secondary members. When false, secondaries can replicate only from the primary.
-        heartbeatTimeoutSecs: number, // Number of seconds that the replica set members wait for a successful heartbeat from each other. If a member does not respond in time, other members mark the delinquent member as inaccessible.
-        heartbeatIntervalMillis: number, // The frequency in milliseconds of the heartbeats.
-        electionTimeoutMillis: number, // The time limit in milliseconds for detecting when a replica set’s primary is unreachable.
-        catchUpTimeoutMillis: number, // Time limit for a newly elected primary to sync (catch up) with the other replica set members that may have more recent writes.
-    }
+    configSettings: {
+      // Optional settings for replSetInitiate command. See https://docs.mongodb.com/manual/reference/command/replSetInitiate/
+      chainingAllowed: boolean, // When true it allows secondary members to replicate from other secondary members. When false, secondaries can replicate only from the primary.
+      heartbeatTimeoutSecs: number, // Number of seconds that the replica set members wait for a successful heartbeat from each other. If a member does not respond in time, other members mark the delinquent member as inaccessible.
+      heartbeatIntervalMillis: number, // The frequency in milliseconds of the heartbeats.
+      electionTimeoutMillis: number, // The time limit in milliseconds for detecting when a replica set’s primary is unreachable.
+      catchUpTimeoutMillis: number, // Time limit for a newly elected primary to sync (catch up) with the other replica set members that may have more recent writes.
+    },
   },
 });
 ```

@@ -73,7 +73,7 @@
   "scripts": {
     "build": "npm-run-all build:*",
     "build:ts": "rimraf ./lib && tsc -p ./tsconfig.build.json",
-    "build:flow": "find ./lib -name \"*.d.ts\" -exec bash -c './node_modules/.bin/flowgen --add-flow-header \"$1\" -o \"${1%.d.ts}\".js.flow' - '{}' \\;",
+    "disabled-build:flow": "find ./lib -name \"*.d.ts\" -exec bash -c './node_modules/.bin/flowgen --add-flow-header \"$1\" -o \"${1%.d.ts}\".js.flow' - '{}' \\;",
     "watch": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --watch",
     "coverage": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --coverage",
     "lint": "eslint 'src/**/*.{js,ts}'",
