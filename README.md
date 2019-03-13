@@ -162,7 +162,7 @@ to be promoted to Primary before the replica set can be successfully used but th
 (see [electionTimeoutMillis](https://docs.mongodb.com/manual/reference/replica-configuration/#rsconf.settings.electionTimeoutMillis)).
 
 It is possible to force the replica set to elect a node as Primary before the default 10 seconds by changing the `electionTimeoutMillis`
-parameters like shown below:
+parameter as shown below:
 
 ```js
 const replSet = new MongoMemoryReplSet({
