@@ -65,13 +65,13 @@ describe('MongoMemoryServer', () => {
     });
   });
 
-  describe('getInstanceData()', () => {
+  describe('ensureInstance()', () => {
     it('should throw an error if not instance is running after calling start', async () => {
       MongoMemoryServer.prototype.start = jest.fn(() => Promise.resolve(true));
 
       const mongoServer = new MongoMemoryServer({ autoStart: false });
 
-      await expect(mongoServer.getInstanceData()).rejects.toThrow(
+      await expect(mongoServer.ensureInstance()).rejects.toThrow(
         'Database instance is not running. You should start database by calling start() method. BTW it should start automatically if opts.autoStart!=false. Also you may provide opts.debug=true for more info.'
       );
 
@@ -82,15 +82,22 @@ describe('MongoMemoryServer', () => {
   describe('stop()', () => {
     it('should stop mongod and answer on isRunning() method', async () => {
       const mongod = new MongoMemoryServer({
-        autoStart: true,
+        autoStart: false,
         debug: false,
       });
 
-      await mongod.getInstanceData();
+      expect(mongod.getInstanceInfo()).toBeFalsy();
+      mongod.start();
+      // while mongod launching `getInstanceInfo` is false
+      expect(mongod.getInstanceInfo()).toBeFalsy();
 
-      expect(mongod.isRunning()).toBeTruthy();
+      // when instance launched then data became avaliable
+      await mongod.ensureInstance();
+      expect(mongod.getInstanceInfo()).toBeDefined();
+
+      // after stop, instance data should be empty
       await mongod.stop();
-      expect(mongod.isRunning()).toBeFalsy();
+      expect(mongod.getInstanceInfo()).toBeFalsy();
     });
   });
 });

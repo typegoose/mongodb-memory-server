@@ -12,6 +12,7 @@ import {
   SpawnOptions,
 } from './types';
 import { SynchrounousResult } from 'tmp';
+import { deprecate } from './util/deprecate';
 
 tmp.setGracefulCleanup();
 
@@ -43,13 +44,13 @@ const generateConnectionString = async (port: number, dbName: string): Promise<s
 };
 
 export default class MongoMemoryServer {
-  runningInstance: Promise<MongoInstanceDataT> | null;
+  runningInstance: Promise<MongoInstanceDataT> | null = null;
+  instanceInfoSync: MongoInstanceDataT | null = null;
   opts: MongoMemoryServerOptsT;
   debug: DebugFn;
 
   constructor(opts?: MongoMemoryServerOptsT) {
     this.opts = { ...opts };
-    this.runningInstance = null;
 
     this.debug = (msg: string) => {
       if (this.opts.debug) {
@@ -60,10 +61,6 @@ export default class MongoMemoryServer {
       this.debug('Autostarting MongoDB instance...');
       this.start();
     }
-  }
-
-  isRunning(): boolean {
-    return !!this.runningInstance;
   }
 
   async start(): Promise<boolean> {
@@ -95,7 +92,10 @@ export default class MongoMemoryServer {
         throw err;
       });
 
-    return this.runningInstance.then(() => true);
+    return this.runningInstance.then((data) => {
+      this.instanceInfoSync = data;
+      return true;
+    });
   }
 
   async _startUpInstance(): Promise<MongoInstanceDataT> {
@@ -149,22 +149,36 @@ export default class MongoMemoryServer {
   async stop(): Promise<boolean> {
     this.debug('Called MongoMemoryServer.stop() method');
 
-    const { instance, port, tmpDir }: MongoInstanceDataT = await this.getInstanceData();
+    const { instance, port, tmpDir }: MongoInstanceDataT = await this.ensureInstance();
 
     this.debug(`Shutdown MongoDB server on port ${port} with pid ${instance.getPid() || ''}`);
     await instance.kill();
+
+    this.runningInstance = null;
+    this.instanceInfoSync = null;
 
     if (tmpDir) {
       this.debug(`Removing tmpDir ${tmpDir.name}`);
       tmpDir.removeCallback();
     }
 
-    this.runningInstance = null;
     return true;
   }
 
+  getInstanceInfo(): MongoInstanceDataT | false {
+    return this.instanceInfoSync || false;
+  }
+
+  /* @deprecated 5.0.0 */
   async getInstanceData(): Promise<MongoInstanceDataT> {
-    this.debug('Called MongoMemoryServer.getInstanceData() method:');
+    deprecate(
+      `method MongoMemoryServer.getInstanceData() will be deprecated. Please use 'MongoMemoryServer.ensureInstance()' method instead.`
+    );
+    return this.ensureInstance();
+  }
+
+  async ensureInstance(): Promise<MongoInstanceDataT> {
+    this.debug('Called MongoMemoryServer.ensureInstance() method:');
     if (!this.runningInstance) {
       this.debug(' - no running instance, call `start()` command');
       await this.start();
@@ -179,7 +193,7 @@ export default class MongoMemoryServer {
   }
 
   async getUri(otherDbName: string | boolean = false): Promise<string> {
-    const { uri, port }: MongoInstanceDataT = await this.getInstanceData();
+    const { uri, port }: MongoInstanceDataT = await this.ensureInstance();
 
     // IF true OR string
     if (otherDbName) {
@@ -199,17 +213,17 @@ export default class MongoMemoryServer {
   }
 
   async getPort(): Promise<number> {
-    const { port }: MongoInstanceDataT = await this.getInstanceData();
+    const { port }: MongoInstanceDataT = await this.ensureInstance();
     return port;
   }
 
   async getDbPath(): Promise<string> {
-    const { dbPath }: MongoInstanceDataT = await this.getInstanceData();
+    const { dbPath }: MongoInstanceDataT = await this.ensureInstance();
     return dbPath;
   }
 
   async getDbName(): Promise<string> {
-    const { dbName }: MongoInstanceDataT = await this.getInstanceData();
+    const { dbName }: MongoInstanceDataT = await this.ensureInstance();
     return dbName;
   }
 }
