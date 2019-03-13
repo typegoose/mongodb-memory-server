@@ -7,7 +7,7 @@
   "repository": "https://github.com/nodkz/mongodb-memory-server",
   "files": [
     "lib",
-    "postinstall.js"
+    "scripts"
   ],
   "keywords": [
     "mongodb",
@@ -80,7 +80,7 @@
     "test": "npm run lint && npm run tscheck && npm run coverage",
     "tscheck": "tsc --noEmit",
     "semantic-release": "semantic-release",
-    "postinstall": "node ./postinstall.js"
+    "postinstall": "node ./scripts/postinstall.js"
   },
   "config": {
     "commitizen": {
