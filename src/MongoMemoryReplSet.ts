@@ -226,7 +226,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
         members,
         settings: {
           electionTimeoutMillis: 500,
-          ...this.opts.replSet.configSettings,
+          ...(this.opts.replSet.configSettings || {}),
         },
       };
       await this.admin.command({ replSetInitiate: rsConfig });
