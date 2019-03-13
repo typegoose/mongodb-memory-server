@@ -1,9 +1,10 @@
-/* eslint-disable */
 /*
-    make sure every few seconds that parent is still alive
-    and if it is dead, we will kill child too.
-    this is to ensure that exits done via kill
-    wont leave mongod around
+  Make sure every few seconds that `parent` and `child` are alive:
+  - if `parent` is dead:
+    - kill child
+    - kill itself
+  - if `child` is dead:
+    - kill itself
 */
 
 const parentPid = parseInt(process.argv[2], 10);

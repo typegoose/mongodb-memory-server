@@ -25,15 +25,15 @@ if (skipDownload) {
   process.exit(0);
 }
 
-if (isModuleExists('./lib/util/MongoBinary')) {
-  const MongoBinary = require('./lib/util/MongoBinary').default;
+if (isModuleExists('../lib/util/MongoBinary')) {
+  const MongoBinary = require('../lib/util/MongoBinary').default;
 
   console.log('mongodb-memory-server: checking MongoDB binaries cache...');
   MongoBinary.getPath({})
-    .then(binPath => {
+    .then((binPath) => {
       console.log(`mongodb-memory-server: binary path is ${binPath}`);
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(`failed to download/install MongoDB binaries. The error:
 ${err}`);
       process.exit(0);
