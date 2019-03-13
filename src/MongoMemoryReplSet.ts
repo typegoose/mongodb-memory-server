@@ -73,9 +73,6 @@ export default class MongoMemoryReplSet extends EventEmitter {
       oplogSize: 1,
       spawn: {},
       storageEngine: 'ephemeralForTest',
-      configSettings: {
-        electionTimeoutMillis: 500,
-      },
     };
     this._state = 'stopped';
     this.opts = {
@@ -227,7 +224,10 @@ export default class MongoMemoryReplSet extends EventEmitter {
       const rsConfig = {
         _id: this.opts.replSet.name,
         members,
-        settings: this.opts.replSet.configSettings,
+        settings: {
+          electionTimeoutMillis: 500,
+          ...this.opts.replSet.configSettings,
+        },
       };
       await this.admin.command({ replSetInitiate: rsConfig });
       this.debug('Waiting for replica set to have a PRIMARY member.');
