@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { Admin, MongoClient } from 'mongodb';
+import * as mongodb from 'mongodb';
 import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOptsT } from './MongoMemoryServer';
 import { generateDbName, getHost } from './util/db_util';
@@ -59,7 +59,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
   opts: MongoMemoryReplSetOptsT;
   debug: DebugFn;
   _state: 'init' | 'running' | 'stopped';
-  admin?: Admin;
+  admin?: mongodb.Admin;
 
   constructor(opts: Partial<MongoMemoryReplSetOptsT> = {}) {
     super();
@@ -216,7 +216,17 @@ export default class MongoMemoryReplSet extends EventEmitter {
       throw new Error('One or more server is required.');
     }
     const uris = await Promise.all(this.servers.map((server) => server.getUri()));
-    const conn: MongoClient = await MongoClient.connect(uris[0], { useNewUrlParser: true });
+
+    let MongoClient: typeof mongodb.MongoClient;
+    try {
+      MongoClient = require('mongodb').MongoClient;
+    } catch (e) {
+      throw new Error(
+        `You need to install "mongodb" package. It's required for checking ReplicaSet state.`
+      );
+    }
+
+    const conn: mongodb.MongoClient = await MongoClient.connect(uris[0], { useNewUrlParser: true });
     try {
       const db = await conn.db(this.opts.replSet.dbName);
       this.admin = db.admin();
