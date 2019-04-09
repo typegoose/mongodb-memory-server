@@ -9,6 +9,7 @@ import dedent from 'dedent';
 import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import { DebugFn } from '../types';
+import resolveConfig from './resolve-config';
 
 // TODO: return back `latest` version when it will be fixed in MongoDB distro (for now use 4.0.3 😂)
 // More details in https://github.com/nodkz/mongodb-memory-server/issues/131
@@ -103,9 +104,10 @@ export default class MongoBinary {
 
   static async getPath(opts: MongoBinaryOpts = {}): Promise<string> {
     const legacyDLDir = path.resolve(os.homedir(), '.mongodb-binaries');
+    const envDebug = resolveConfig('DEBUG');
     const defaultOptions = {
       downloadDir:
-        process.env.MONGOMS_DOWNLOAD_DIR ||
+        resolveConfig('DOWNLOAD_DIR') ||
         (fs.existsSync(legacyDLDir)
           ? legacyDLDir
           : path.resolve(
@@ -118,13 +120,13 @@ export default class MongoBinary {
               }) || '',
               'mongodb-binaries'
             )),
-      platform: process.env.MONGOMS_PLATFORM || os.platform(),
-      arch: process.env.MONGOMS_ARCH || os.arch(),
-      version: process.env.MONGOMS_VERSION || LATEST_VERSION,
-      systemBinary: process.env.MONGOMS_SYSTEM_BINARY,
+      platform: resolveConfig('PLATFORM') || os.platform(),
+      arch: resolveConfig('ARCH') || os.arch(),
+      version: resolveConfig('VERSION') || LATEST_VERSION,
+      systemBinary: resolveConfig('SYSTEM_BINARY'),
       debug:
-        typeof process.env.MONGOMS_DEBUG === 'string'
-          ? ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_DEBUG.toLowerCase()) !== -1
+        typeof envDebug === 'string'
+          ? ['1', 'on', 'yes', 'true'].indexOf(envDebug.toLowerCase()) !== -1
           : false,
     };
 

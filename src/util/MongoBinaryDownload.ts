@@ -9,6 +9,7 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { DebugFn, DebugPropT, DownloadProgressT } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
 import HttpsProxyAgent from 'https-proxy-agent';
+import resolveConfig from './resolve-config';
 
 export interface MongoBinaryDownloadOpts {
   version?: string;
@@ -43,10 +44,11 @@ export default class MongoBinaryDownload {
     this.arch = arch || os.arch();
     this.version = version || LATEST_VERSION;
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
+    const envMd5Check = resolveConfig('MD5_CHECK');
     if (checkMD5 === undefined) {
       this.checkMD5 =
-        typeof process.env.MONGOMS_MD5_CHECK === 'string' &&
-        ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_MD5_CHECK.toLowerCase()) !== -1;
+        typeof envMd5Check === 'string' &&
+        ['1', 'on', 'yes', 'true'].indexOf(envMd5Check.toLowerCase()) !== -1;
     } else {
       this.checkMD5 = checkMD5;
     }

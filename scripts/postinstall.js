@@ -16,9 +16,16 @@ function isModuleExists(name) {
   }
 }
 
+if (!isModuleExists('../lib/util/resolve-config')) {
+  console.log('Could not resolve postinstall configuration');
+  return;
+}
+const resolveConfig = require('../lib/util/resolve-config').default;
+
+const envDisablePostinstall = resolveConfig('DISABLE_POSTINSTALL');
 const skipDownload =
-  typeof process.env.MONGOMS_DISABLE_POSTINSTALL === 'string' &&
-  ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_DISABLE_POSTINSTALL.toLowerCase()) !== -1;
+  typeof envDisablePostinstall === 'string' &&
+  ['1', 'on', 'yes', 'true'].indexOf(envDisablePostinstall.toLowerCase()) !== -1;
 
 if (skipDownload) {
   console.log('Download is skipped by MONGOMS_DISABLE_POSTINSTALL variable');
