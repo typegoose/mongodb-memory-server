@@ -58,6 +58,8 @@
     "test": "jest --projects packages/*",
     "watch": "npm test -- --watchAll",
     "coverage": "npm test -- --coverage",
-    "compile": "tsc --build tsconfig.build.json"
+    "build": "tsc --build tsconfig.build.json",
+    "publish": "lerna publish",
+    "postinstall": "lerna run prepare && npm run build"
   }
 }

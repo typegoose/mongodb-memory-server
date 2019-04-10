@@ -7,8 +7,8 @@ cache:
 notifications:
   email: true
 node_js:
-  - "10"
-  - "8"
+  - '10'
+  - '8'
 script:
   - yarn run test
   - yarn run build
@@ -17,7 +17,7 @@ after_success:
   - python travis_after_all.py
   - export $(cat .to_export_back) &> /dev/null
   - if [[ "$TRAVIS_JOB_NUMBER" == *.1 && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then bash <(curl -s https://codecov.io/bash); fi
-  - if [[ "$TRAVIS_JOB_NUMBER" == *.1 && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then npm run semantic-release; fi
+  - if [[ "$TRAVIS_JOB_NUMBER" == *.1 && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then npm run publish; fi
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/

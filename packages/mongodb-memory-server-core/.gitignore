@@ -40,7 +40,6 @@ node_modules
 
 # Transpiled code
 lib
-packages/mongodb-memory-server-core/lib
 
 coverage
 .nyc_output

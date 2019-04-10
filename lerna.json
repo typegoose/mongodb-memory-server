@@ -4,6 +4,7 @@
   "command": {
     "publish": {
       "allowBranch": ["master", "lerna"],
+      "exact": true,
       "conventionalCommits": true,
       "githubRelease": true
     }

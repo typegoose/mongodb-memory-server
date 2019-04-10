@@ -1,7 +1,7 @@
 {
   "name": "mongodb-memory-server-core",
   "version": "4.2.2",
-  "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
+  "description": "MongoDB Server for testing (core package, without autodownload). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "lib/index",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/nodkz/mongodb-memory-server",
@@ -42,7 +42,7 @@
   },
   "scripts": {
     "build": "npm-run-all build:*",
-    "build:ts": "rimraf ./lib && tsc -p ../../tsconfig.build.json",
+    "build:ts": "rimraf ./lib && tsc -p ./tsconfig.json",
     "disabled-build:flow": "find ./lib -name \"*.d.ts\" -exec bash -c './node_modules/.bin/flowgen --add-flow-header \"$1\" -o \"${1%.d.ts}\".js.flow' - '{}' \\;",
     "watch": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --watch",
     "coverage": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --coverage",

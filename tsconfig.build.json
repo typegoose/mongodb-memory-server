@@ -4,5 +4,9 @@
   },
   "files": [],
   "include": [],
-  "references": [{ "path": "./packages/mongodb-memory-server" }]
+  "references": [
+    {
+      "path": "./packages/mongodb-memory-server-core"
+    }
+  ]
 }
