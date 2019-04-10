@@ -48,8 +48,7 @@ jobs:
           key: yarn-packages-{{ checksum "node_version" }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
-      - run:
-        command: |
+      - run: |
           git config --global user.email deploy@travis-ci.org
           git config --global user.name Deployment Bot
           git remote set-url origin "https://github.com/nodkz/mongodb-memory-server.git" > /dev/null 2>&1
