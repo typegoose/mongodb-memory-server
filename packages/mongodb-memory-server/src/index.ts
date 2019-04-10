@@ -1,7 +1,1 @@
-import MongoBinary from './util/MongoBinary';
-import MongoInstance from './util/MongoInstance';
-import MongoMemoryServer from './MongoMemoryServer';
-import MongoMemoryReplSet from './MongoMemoryReplSet';
-
-export default MongoMemoryServer;
-export { MongoBinary, MongoInstance, MongoMemoryServer, MongoMemoryReplSet };
+export * from 'mongodb-memory-server-core';

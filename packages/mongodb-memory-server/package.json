@@ -24,37 +24,11 @@
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "dependencies": {
-    "debug": "^4.1.1",
-    "decompress": "^4.2.0",
-    "dedent": "^0.7.0",
-    "find-cache-dir": "^2.0.0",
-    "get-port": "^4.2.0",
-    "getos": "^3.1.1",
-    "https-proxy-agent": "^2.2.1",
-    "lockfile": "^1.0.4",
-    "md5-file": "^4.0.0",
-    "mkdirp": "^0.5.1",
-    "tmp": "^0.0.33",
-    "uuid": "^3.2.1"
-  },
-  "optionalDependencies": {
-    "mongodb": ">=3.0.0"
+    "mongodb-memory-server-core": "^4.2.2"
   },
   "scripts": {
     "build": "npm-run-all build:*",
-    "build:ts": "rimraf ./lib && tsc -p ./tsconfig.build.json",
-    "disabled-build:flow": "find ./lib -name \"*.d.ts\" -exec bash -c './node_modules/.bin/flowgen --add-flow-header \"$1\" -o \"${1%.d.ts}\".js.flow' - '{}' \\;",
-    "watch": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --watch",
-    "coverage": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --coverage",
-    "lint": "eslint 'src/**/*.{js,ts}'",
-    "test": "npm run lint && npm run tscheck && npm run coverage",
-    "tscheck": "tsc --noEmit",
-    "semantic-release": "semantic-release",
+    "build:ts": "rimraf ./lib && tsc -p ../../tsconfig.build.json",
     "postinstall": "node ./scripts/postinstall.js"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
   }
 }

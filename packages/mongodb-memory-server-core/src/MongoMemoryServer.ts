@@ -12,7 +12,7 @@ import {
   SpawnOptions,
 } from './types';
 import { SynchrounousResult } from 'tmp';
-import { deprecate } from './util/deprecate';
+// import { deprecate } from './util/deprecate';
 
 tmp.setGracefulCleanup();
 
@@ -167,14 +167,6 @@ export default class MongoMemoryServer {
 
   getInstanceInfo(): MongoInstanceDataT | false {
     return this.instanceInfoSync || false;
-  }
-
-  /* @deprecated 5.0.0 */
-  async getInstanceData(): Promise<MongoInstanceDataT> {
-    deprecate(
-      `method MongoMemoryServer.getInstanceData() will be deprecated. Please use 'MongoMemoryServer.ensureInstance()' method instead.`
-    );
-    return this.ensureInstance();
   }
 
   async ensureInstance(): Promise<MongoInstanceDataT> {
