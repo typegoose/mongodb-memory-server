@@ -25,8 +25,9 @@ if (skipDownload) {
   process.exit(0);
 }
 
-if (isModuleExists('../lib/util/MongoBinary')) {
-  const MongoBinary = require('../lib/util/MongoBinary').default;
+const mongoBinaryModule = '../mongodb-memory-server-core/lib/util/MongoBinary';
+if (isModuleExists(mongoBinaryModule)) {
+  const MongoBinary = require(mongoBinaryModule).default;
 
   console.log('mongodb-memory-server: checking MongoDB binaries cache...');
   MongoBinary.getPath({})

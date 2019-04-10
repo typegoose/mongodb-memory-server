@@ -39,8 +39,8 @@ node_modules
 .node_repl_history
 
 # Transpiled code
-/es
-/lib
+lib
+packages/mongodb-memory-server-core/lib
 
 coverage
 .nyc_output

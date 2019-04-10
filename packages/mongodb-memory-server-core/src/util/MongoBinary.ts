@@ -102,7 +102,7 @@ export default class MongoBinary {
   }
 
   static async getPath(opts: MongoBinaryOpts = {}): Promise<string> {
-    const legacyDLDir = path.resolve(os.homedir(), '.mongodb-binaries');
+    const legacyDLDir = path.resolve(os.homedir(), '.cache/mongodb-binaries');
     const defaultOptions = {
       downloadDir:
         process.env.MONGOMS_DOWNLOAD_DIR ||

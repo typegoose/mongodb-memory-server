@@ -1,28 +1,9 @@
 {
-  "name": "mongodb-memory-server",
+  "name": "lerna-monorepo",
+  "private": true,
   "version": "0.0.0-development",
   "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
-  "main": "lib/index",
-  "types": "lib/index.d.ts",
   "repository": "https://github.com/nodkz/mongodb-memory-server",
-  "files": [
-    "lib",
-    "scripts"
-  ],
-  "keywords": [
-    "mongodb",
-    "mongoose",
-    "mock",
-    "stub",
-    "mockgoose",
-    "mongodb-prebuilt",
-    "mongomem"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nodkz/mongodb-memory-server/issues"
-  },
-  "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "devDependencies": {
     "@types/decompress": "^4.2.3",
     "@types/dedent": "^0.7.0",
@@ -45,6 +26,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "flowgen": "^1.7.0",
     "jest": "^24.3.1",
+    "lerna": "^3.13.1",
     "mongodb": ">=3.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.16.4",
@@ -67,24 +49,17 @@
     "tmp": "^0.0.33",
     "uuid": "^3.2.1"
   },
-  "optionalDependencies": {
-    "mongodb": ">=3.0.0"
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
   },
   "scripts": {
-    "build": "npm-run-all build:*",
-    "build:ts": "rimraf ./lib && tsc -p ./tsconfig.build.json",
-    "disabled-build:flow": "find ./lib -name \"*.d.ts\" -exec bash -c './node_modules/.bin/flowgen --add-flow-header \"$1\" -o \"${1%.d.ts}\".js.flow' - '{}' \\;",
-    "watch": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --watch",
-    "coverage": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --coverage",
-    "lint": "eslint 'src/**/*.{js,ts}'",
-    "test": "npm run lint && npm run tscheck && npm run coverage",
-    "tscheck": "tsc --noEmit",
-    "semantic-release": "semantic-release",
-    "postinstall": "node ./scripts/postinstall.js"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+    "test": "jest --projects packages/*",
+    "watch": "npm test -- --watchAll",
+    "coverage": "npm test -- --coverage",
+    "build": "tsc --build tsconfig.build.json",
+    "release": "lerna publish",
+    "postinstall": "lerna run prepare && npm run build"
   }
 }
