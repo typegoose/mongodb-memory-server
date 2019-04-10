@@ -1,6 +1,5 @@
 import uuid from 'uuid/v4';
-import { ReplStatusResultT } from '../types';
-import { Db } from 'mongodb';
+
 /**
  * Returns a database name string.
  * @param {string} dbName
@@ -15,15 +14,6 @@ export function generateDbName(dbName?: string): string {
  */
 export function getHost(uri: string): string {
   return uri.replace('mongodb://', '').replace(/\/.*/, '');
-}
-
-/**
- * Returns replica set status result.
- * @param {any} db db instance
- */
-export async function getReplStatus(db: Db): Promise<ReplStatusResultT> {
-  const status = await db.command({ replSetGetStatus: 1 });
-  return status;
 }
 
 export default generateDbName;

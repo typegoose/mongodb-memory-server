@@ -23,36 +23,6 @@
     "url": "https://github.com/nodkz/mongodb-memory-server/issues"
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
-  "devDependencies": {
-    "@types/decompress": "^4.2.3",
-    "@types/dedent": "^0.7.0",
-    "@types/find-cache-dir": "^2.0.0",
-    "@types/get-port": "^4.0.1",
-    "@types/getos": "^3.0.0",
-    "@types/jest": "^24.0.11",
-    "@types/lockfile": "^1.0.1",
-    "@types/md5-file": "^4.0.0",
-    "@types/mkdirp": "^0.5.2",
-    "@types/mongodb": "^3.1.22",
-    "@types/node": "^11.11.0",
-    "@types/tmp": "0.0.34",
-    "@types/uuid": "^3.4.4",
-    "@typescript-eslint/eslint-plugin": "^1.4.2",
-    "cross-env": "^5.2.0",
-    "cz-conventional-changelog": "^2.1.0",
-    "eslint": "^5.15.1",
-    "eslint-config-prettier": "^4.1.0",
-    "eslint-plugin-prettier": "^3.0.1",
-    "flowgen": "^1.7.0",
-    "jest": "^24.3.1",
-    "mongodb": "^3.1.13",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^1.16.4",
-    "rimraf": "^2.6.3",
-    "semantic-release": "^15.13.3",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.3.3333"
-  },
   "dependencies": {
     "debug": "^4.1.1",
     "decompress": "^4.2.0",
@@ -67,8 +37,8 @@
     "tmp": "^0.0.33",
     "uuid": "^3.2.1"
   },
-  "peerDependencies": {
-    "mongodb": ">= 3.0"
+  "optionalDependencies": {
+    "mongodb": ">=3.0.0"
   },
   "scripts": {
     "build": "npm-run-all build:*",
