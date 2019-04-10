@@ -56,8 +56,8 @@
   },
   "scripts": {
     "test": "jest --projects packages/*",
-    "watch": "yarn test -- --watchAll",
-    "coverage": "yarn test -- --coverage",
+    "watch": "yarn test --watchAll",
+    "coverage": "yarn test --coverage",
     "build": "tsc --build tsconfig.build.json",
     "release": "yarn build && lerna publish",
     "postinstall": "yarn build"

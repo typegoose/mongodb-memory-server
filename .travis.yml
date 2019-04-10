@@ -2,8 +2,6 @@ sudo: false
 language: node_js
 cache:
   yarn: true
-  directories:
-    - node_modules
 notifications:
   email: true
 node_js:
@@ -14,6 +12,7 @@ before_install:
   - export PATH="$HOME/.yarn/bin:$PATH"
 script:
   - yarn install
+  - export PATH="./node_modules/.bin:$PATH"
   - yarn coverage
   - yarn build
 after_success:
