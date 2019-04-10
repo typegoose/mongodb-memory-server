@@ -1,12 +1,9 @@
 {
   "lerna": "2.11.0",
-  "version": "5.0.0",
+  "version": "4.2.2",
   "command": {
     "publish": {
-      "allowBranch": [
-        "master",
-        "lerna"
-      ],
+      "allowBranch": ["master"],
       "exact": true,
       "conventionalCommits": true,
       "githubRelease": true
