@@ -1,17 +1,17 @@
 version: 2
 
 aliases:
-  - &dependencies
-    - checkout
-    - run: node --version > node_version
-    - restore_cache:
-        keys:
-          - yarn-packages-{{ checksum "node_version" }}-{{ checksum "yarn.lock" }}
-    - run: yarn install --frozen-lockfile
-    - save_cache:
-        key: yarn-packages-{{ checksum "node_version" }}-{{ checksum "yarn.lock" }}
-        paths:
-          - ~/.cache/yarn
+  - dependencies: &dependencies
+      - checkout
+      - run: node --version > node_version
+      - restore_cache:
+          keys:
+            - yarn-packages-{{ checksum "node_version" }}-{{ checksum "yarn.lock" }}
+      - run: yarn install --frozen-lockfile
+      - save_cache:
+          key: yarn-packages-{{ checksum "node_version" }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
 
 jobs:
   Tests under Node.js 8:
@@ -36,7 +36,7 @@ jobs:
         command: |
           git config --global user.email deploy@travis-ci.org
           git config --global user.name Deployment Bot
-          git remote set-url origin "https://${GH_TOKEN}@github.com/nodkz/mongodb-memory-server.git" > /dev/null 2>&1
+          git remote set-url origin "https://github.com/nodkz/mongodb-memory-server.git" > /dev/null 2>&1
           git checkout master
           echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
       - run: yarn release
