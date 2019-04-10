@@ -41,6 +41,7 @@ node_modules
 # Transpiled code
 lib
 packages/mongodb-memory-server-core/lib
+*.tsbuildinfo
 
 coverage
 .nyc_output
