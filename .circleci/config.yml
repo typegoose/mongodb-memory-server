@@ -54,7 +54,7 @@ jobs:
           git remote set-url origin "https://github.com/nodkz/mongodb-memory-server.git" > /dev/null 2>&1
           git checkout master
           echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
-      - run: yarn release
+      - run: yarn release --yes
 
 workflows:
   version: 2
