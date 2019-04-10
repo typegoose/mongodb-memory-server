@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server",
-  "version": "4.2.2",
+  "version": "5.0.0",
   "description": "MongoDB Server for testing (auto-download latest version). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -17,7 +17,7 @@
     "mongomem"
   ],
   "dependencies": {
-    "mongodb-memory-server-core": "4.2.2"
+    "mongodb-memory-server-core": "5.0.0"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js"
