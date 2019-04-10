@@ -8,7 +8,7 @@
 
 This package spins up a actual/real MongoDB Server programmatically from node for testing or mocking during development. By default it holds the data in memory. Fresh spinned up `mongod` process takes about 7Mb of memory. The server will allow you to connect your favorite ODM or client library to the MongoDB Server and run integration tests isolated from each other.
 
-This package on first start downloads the latest MongoDB binaries and save it to `node_modules/.cache/mongodb-memory-server/mongodb-binaries` folder. So first run may take a time. All further runs will fast, because use already downloaded binaries.
+This package on install downloads the latest MongoDB binaries and save it to cache folder. So first run may take a time. All further runs will fast, because use already downloaded binaries.
 
 This package automatically downloads binaries from [https://fastdl.mongodb.org/](https://fastdl.mongodb.org/) according to your operation system. You can see all available versions by the following links [Linux](https://www.mongodb.org/dl/linux) (Ubuntu, RHEL, Debian, SUSE, Amazon), [OSX](https://www.mongodb.org/dl/osx), [Win](https://www.mongodb.org/dl/win32).
 
@@ -33,7 +33,7 @@ OR
 npm install mongodb-memory-server --save-dev
 ```
 
-### With auto-download `latest` Mongod binary on npm install to `%HOMEDIR`
+### With auto-download `latest` Mongod binary on npm install to `%HOME/.cache`
 
 ```bash
 yarn add mongodb-memory-server-global --dev
@@ -41,7 +41,7 @@ OR
 npm install mongodb-memory-server-global --save-dev
 ```
 
-### With auto-download `v4.0` Mongod binary on npm install to `%HOMEDIR`
+### With auto-download `v4.0` Mongod binary on npm install to `%HOME/.cache`
 
 ```bash
 yarn add mongodb-memory-server-global-4.0 --dev
@@ -49,7 +49,7 @@ OR
 npm install mongodb-memory-server-global-4.0 --save-dev
 ```
 
-### With auto-download `v3.6` Mongod binary on npm install to `%HOMEDIR`
+### With auto-download `v3.6` Mongod binary on npm install to `%HOME/.cache`
 
 ```bash
 yarn add mongodb-memory-server-global-3.6 --dev
@@ -57,7 +57,7 @@ OR
 npm install mongodb-memory-server-global-3.6 --save-dev
 ```
 
-### With auto-download `v3.4` Mongod binary on npm install to `%HOMEDIR`
+### With auto-download `v3.4` Mongod binary on npm install to `%HOME/.cache`
 
 ```bash
 yarn add mongodb-memory-server-global-3.4 --dev
