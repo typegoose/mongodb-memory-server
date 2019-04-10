@@ -59,7 +59,7 @@
     "watch": "npm test -- --watchAll",
     "coverage": "npm test -- --coverage",
     "build": "tsc --build tsconfig.build.json",
-    "publish": "lerna publish",
+    "release": "lerna publish",
     "postinstall": "lerna run prepare && npm run build"
   }
 }
