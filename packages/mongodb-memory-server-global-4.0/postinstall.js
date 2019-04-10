@@ -1,5 +1,5 @@
-if (!process.env.MONGOMS_DISABLE_POSTINSTALL) {
-  process.env.MONGOMS_DISABLE_POSTINSTALL = require('path').resolve(
+if (!process.env.MONGOMS_DOWNLOAD_DIR) {
+  process.env.MONGOMS_DOWNLOAD_DIR = require('path').resolve(
     require('os').homedir(),
     '.cache',
     'mongodb-binaries'
