@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  Tests under Node.js 8:
+  Node8 tests:
     docker:
       - image: circleci/node:8
     steps:
@@ -17,7 +17,7 @@ jobs:
             - ~/.cache/yarn
       - run: yarn coverage
 
-  Tests under Node.js 10:
+  Node10 tests:
     docker:
       - image: circleci/node:10
     steps:
@@ -60,12 +60,12 @@ workflows:
   version: 2
   build:
     jobs:
-      - Tests under Node.js 8
-      - Tests under Node.js 10
+      - Node8 tests
+      - Node10 tests
       - Release:
           requires:
-            - Tests under Node.js 8
-            - Tests under Node.js 10
+            - Node8 tests
+            - Node10 tests
           filters:
             branches:
               only: master
