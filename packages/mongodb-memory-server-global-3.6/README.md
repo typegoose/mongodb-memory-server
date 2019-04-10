@@ -6,6 +6,6 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 ![TypeScript compatible](https://img.shields.io/badge/typescript-compatible-brightgreen.svg)
 
-Main default package which downloads `v3.6` mongod binary to `%HOME/.mongodb-binaries` directory on package install.
+Main default package which downloads `v3.6` mongod binary to `%HOME/.cache/mongodb-binaries` directory on package install.
 
 ## [Full README with avaliable options and examples](../../README.md)

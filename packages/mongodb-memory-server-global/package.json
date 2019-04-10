@@ -1,7 +1,7 @@
 {
   "name": "mongodb-memory-server-global",
   "version": "4.2.2",
-  "description": "MongoDB Server for testing (auto-download latest version to %HOME/.mongodb-binaries).",
+  "description": "MongoDB Server for testing (auto-download latest version to %HOME/.cache/mongodb-binaries).",
   "main": "index.js",
   "types": "index.d.ts",
   "license": "MIT",

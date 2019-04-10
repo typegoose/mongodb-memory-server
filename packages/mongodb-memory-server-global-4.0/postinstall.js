@@ -1,7 +1,8 @@
 if (!process.env.MONGOMS_DISABLE_POSTINSTALL) {
   process.env.MONGOMS_DISABLE_POSTINSTALL = require('path').resolve(
     require('os').homedir(),
-    '.mongodb-binaries'
+    '.cache',
+    'mongodb-binaries'
   );
 }
 if (!process.env.MONGOMS_VERSION) {
