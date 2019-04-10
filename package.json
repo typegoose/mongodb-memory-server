@@ -56,10 +56,10 @@
   },
   "scripts": {
     "test": "jest --projects packages/*",
-    "watch": "npm test -- --watchAll",
-    "coverage": "npm test -- --coverage",
+    "watch": "yarn test -- --watchAll",
+    "coverage": "yarn test -- --coverage",
     "build": "tsc --build tsconfig.build.json",
-    "release": "lerna publish",
-    "postinstall": "lerna run prepare && npm run build"
+    "release": "yarn build && lerna publish",
+    "postinstall": "yarn build"
   }
 }
