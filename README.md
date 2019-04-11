@@ -1,6 +1,6 @@
 # mongodb-memory-server
 
-[![Travis](https://img.shields.io/travis/nodkz/mongodb-memory-server.svg)](https://travis-ci.org/nodkz/mongodb-memory-server)
+[![CircleCI](https://img.shields.io/circleci/project/github/nodkz/mongodb-memory-server/master.svg)](https://circleci.com/gh/nodkz/workflows/mongodb-memory-server)
 [![NPM version](https://img.shields.io/npm/v/mongodb-memory-server.svg)](https://www.npmjs.com/package/mongodb-memory-server)
 [![Downloads stat](https://img.shields.io/npm/dt/mongodb-memory-server.svg)](http://www.npmtrends.com/mongodb-memory-server)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
@@ -39,30 +39,6 @@ npm install mongodb-memory-server --save-dev
 yarn add mongodb-memory-server-global --dev
 OR
 npm install mongodb-memory-server-global --save-dev
-```
-
-### With auto-download `v4.0` Mongod binary on npm install to `%HOME/.cache`
-
-```bash
-yarn add mongodb-memory-server-global-4.0 --dev
-OR
-npm install mongodb-memory-server-global-4.0 --save-dev
-```
-
-### With auto-download `v3.6` Mongod binary on npm install to `%HOME/.cache`
-
-```bash
-yarn add mongodb-memory-server-global-3.6 --dev
-OR
-npm install mongodb-memory-server-global-3.6 --save-dev
-```
-
-### With auto-download `v3.4` Mongod binary on npm install to `%HOME/.cache`
-
-```bash
-yarn add mongodb-memory-server-global-3.4 --dev
-OR
-npm install mongodb-memory-server-global-3.4 --save-dev
 ```
 
 ### Without auto-download
