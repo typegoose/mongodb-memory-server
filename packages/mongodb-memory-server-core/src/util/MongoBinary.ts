@@ -103,6 +103,13 @@ export default class MongoBinary {
 
   static async getPath(opts: MongoBinaryOpts = {}): Promise<string> {
     const legacyDLDir = path.resolve(os.homedir(), '.cache/mongodb-binaries');
+
+    // if we're in postinstall script, npm will set the cwd too deep
+    let nodeModulesDLDir = process.cwd();
+    while (new RegExp(`node_modules${path.sep}mongodb-memory-server`).test(nodeModulesDLDir)) {
+      nodeModulesDLDir = path.resolve(nodeModulesDLDir, '..', '..');
+    }
+
     const defaultOptions = {
       downloadDir:
         process.env.MONGOMS_DOWNLOAD_DIR ||
@@ -111,10 +118,7 @@ export default class MongoBinary {
           : path.resolve(
               findCacheDir({
                 name: 'mongodb-memory-server',
-                // if we're in postinstall script, npm will set the cwd too deep
-                cwd: new RegExp(`node_modules${path.sep}mongodb-memory-server$`).test(process.cwd())
-                  ? path.resolve(process.cwd(), '..', '..')
-                  : process.cwd(),
+                cwd: nodeModulesDLDir,
               }) || '',
               'mongodb-binaries'
             )),
