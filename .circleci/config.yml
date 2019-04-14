@@ -53,7 +53,7 @@ jobs:
           git config --global user.name Deployment Bot
           git remote set-url origin "https://${GH_TOKEN}@github.com/nodkz/mongodb-memory-server.git" > /dev/null 2>&1
           git checkout master
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
+      - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ${HOME}/.npmrc 2> /dev/null
       - run: yarn release --yes
 
 workflows:
