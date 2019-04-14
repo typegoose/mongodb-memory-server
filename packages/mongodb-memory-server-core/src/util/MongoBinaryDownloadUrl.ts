@@ -158,7 +158,10 @@ export default class MongoBinaryDownloadUrl {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getElementaryOSVersionString(os: getos.Os): string {
     const ubuntuVersion = execSync('/usr/bin/lsb_release -u -rs');
-    return `ubuntu${ubuntuVersion.toString().replace('.', '')}`;
+    return `ubuntu${ubuntuVersion
+      .toString()
+      .replace('.', '')
+      .trim()}`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
