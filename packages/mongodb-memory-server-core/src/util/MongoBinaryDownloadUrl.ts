@@ -1,4 +1,5 @@
 import getos from 'getos';
+import { execSync } from 'child_process';
 
 export interface MongoBinaryDownloadUrlOpts {
   version: string;
@@ -156,7 +157,8 @@ export default class MongoBinaryDownloadUrl {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getElementaryOSVersionString(os: getos.Os): string {
-    return 'ubuntu1404';
+    const ubuntuVersion = execSync('/usr/bin/lsb_release -u -rs');
+    return `ubuntu${ubuntuVersion.toString().replace('.', '')}`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
