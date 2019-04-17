@@ -187,7 +187,7 @@ const replSet = new MongoMemoryReplSet({
 
 ### Simple test with MongoClient
 
-Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/singleDB-test.ts).
+Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB-test.ts).
 
 ### Provide connection string to mongoose
 
