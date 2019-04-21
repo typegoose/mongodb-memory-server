@@ -1,5 +1,6 @@
 import getos from 'getos';
 import { execSync } from 'child_process';
+import resolveConfig from './resolve-config';
 
 export interface MongoBinaryDownloadUrlOpts {
   version: string;
@@ -23,7 +24,7 @@ export default class MongoBinaryDownloadUrl {
 
   async getDownloadUrl(): Promise<string> {
     const archive = await this.getArchiveName();
-    return `${process.env.MONGOMS_DOWNLOAD_MIRROR || 'https://fastdl.mongodb.org'}/${
+    return `${resolveConfig('DOWNLOAD_MIRROR') || 'https://fastdl.mongodb.org'}/${
       this.platform
     }/${archive}`;
   }

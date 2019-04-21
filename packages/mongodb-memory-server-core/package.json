@@ -24,10 +24,12 @@
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "dependencies": {
+    "camelcase": "^5.3.1",
     "debug": "^4.1.1",
     "decompress": "^4.2.0",
     "dedent": "^0.7.0",
     "find-cache-dir": "^2.0.0",
+    "find-package-json": "^1.2.0",
     "get-port": "^4.2.0",
     "getos": "^3.1.1",
     "https-proxy-agent": "^2.2.1",
