@@ -15,7 +15,7 @@ jobs:
           key: yarn-packages-{{ checksum "node_version" }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
-      - run: yarn coverage
+      - run: yarn test
 
   Node10 tests:
     docker:
@@ -31,7 +31,7 @@ jobs:
           key: yarn-packages-{{ checksum "node_version" }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
-      - run: yarn coverage
+      - run: yarn test
       - run: curl -s https://codecov.io/bash | bash
 
   Release:
