@@ -10,18 +10,15 @@ if (!isModuleExists('../mongodb-memory-server-core/lib/util/resolve-config')) {
   console.log('Could not resolve postinstall configuration');
   return;
 }
-const resolveConfig = require('../mongodb-memory-server-core/lib/util/resolve-config').default;
+const setDefaultValue = require('../mongodb-memory-server-core/lib/util/resolve-config')
+  .setDefaultValue;
 
-if (!resolveConfig('DOWNLOAD_DIR')) {
-  process.env.MONGOMS_DOWNLOAD_DIR = require('path').resolve(
-    require('os').homedir(),
-    '.cache',
-    'mongodb-binaries'
-  );
-}
-if (!resolveConfig('VERSION')) {
-  process.env.MONGOMS_VERSION = '3.4.20'; // don't use `latest` it's nightly build
-}
+setDefaultValue(
+  'DOWNLOAD_DIR',
+  require('path').resolve(require('os').homedir(), '.cache', 'mongodb-binaries')
+);
+
+setDefaultValue('VERSION', '3.4.20'); // don't use `latest` it's nightly build
 
 const script = '../mongodb-memory-server/postinstall.js';
 if (isModuleExists(script)) {

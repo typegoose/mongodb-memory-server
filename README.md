@@ -128,7 +128,7 @@ MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
 
 ```json
 "config": {
-  "mongoDbMemoryServer": {
+  "mongodbMemoryServer": {
     "downloadDir": "/path/to/mongodb/binaries",
     "platform": "linux",
     "arch": "x64",
