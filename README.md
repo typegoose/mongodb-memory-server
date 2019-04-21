@@ -110,8 +110,7 @@ const mongod = new MongoMemoryServer({
 });
 ```
 
-You can also use the environment variables or package.json's `config` section to configure installation process.
-Environment variables have higher priority than contents of package.json.
+#### Options which can be set via ENVIRONMENT variables
 
 ```txt
 MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
@@ -126,18 +125,25 @@ MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
 # Passed constructor parameter `binary.checkMD5` has higher priority.
 ```
 
+#### Options which can be set via package.json's `config` section
+
+You can also use package.json's `config` section to configure installation process.
+Environment variables have higher priority than contents of package.json.
+
 ```json
-"config": {
-  "mongodbMemoryServer": {
-    "downloadDir": "/path/to/mongodb/binaries",
-    "platform": "linux",
-    "arch": "x64",
-    "version": "3",
-    "debug": "1",
-    "downloadMirror": "url",
-    "disablePostinstall": "1",
-    "systemBinary": "/usr/local/bin/mongod",
-    "md5Check": "1"
+{
+  "config": {
+    "mongodbMemoryServer": {
+      "downloadDir": "/path/to/mongodb/binaries",
+      "platform": "linux",
+      "arch": "x64",
+      "version": "3",
+      "debug": "1",
+      "downloadMirror": "url",
+      "disablePostinstall": "1",
+      "systemBinary": "/usr/local/bin/mongod",
+      "md5Check": "1"
+    }
   }
 }
 ```
