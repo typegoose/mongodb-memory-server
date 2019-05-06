@@ -54,7 +54,7 @@ npm install mongodb-memory-server-core --save-dev
 ### Simple server start:
 
 ```js
-import MongoMemoryServer from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const mongod = new MongoMemoryServer();
 
@@ -216,7 +216,7 @@ Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/b
 
 ```js
 import mongoose from 'mongoose';
-import MongoMemoryServer from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const mongoServer = new MongoMemoryServer();
 
@@ -252,7 +252,7 @@ For additional information I recommend you to read this article [Testing a Graph
 
 ```js
 import mongoose from 'mongoose';
-import MongoMemoryServer from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 mongoose.Promise = Promise;
 
@@ -346,7 +346,7 @@ Start Mocha with `--timeout 60000` cause first download of MongoDB binaries may 
 
 ```js
 import mongoose from 'mongoose';
-import MongoMemoryServer from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 let mongoServer;
 const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
@@ -381,7 +381,7 @@ describe('...', () => {
 
 ```js
 import mongoose from 'mongoose';
-import MongoMemoryServer from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 // May require additional time for downloading MongoDB binaries
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
