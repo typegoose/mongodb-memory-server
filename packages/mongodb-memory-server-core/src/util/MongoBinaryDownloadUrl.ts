@@ -203,7 +203,7 @@ export default class MongoBinaryDownloadUrl {
       name += '1604';
     } else if (majorVer === 16) {
       name += '1604';
-    } else if (majorVer === 18) {
+    } else if (majorVer >= 18) {
       if (this.version && this.version.indexOf('3.') === 0) {
         // For MongoDB 3.x using 1604 binaries, download distro does not have builds for Ubuntu 1804
         // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
