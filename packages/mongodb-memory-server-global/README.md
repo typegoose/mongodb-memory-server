@@ -8,4 +8,4 @@
 
 Main default package which downloads latest mongod binary to `%HOME/.cache/mongodb-binaries` directory on package install.
 
-## [Full README with avaliable options and examples](../../README.md)
+[Full README with avaliable options and examples](https://github.com/nodkz/mongodb-memory-server)
