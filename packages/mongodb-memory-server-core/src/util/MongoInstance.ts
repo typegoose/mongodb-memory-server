@@ -1,4 +1,5 @@
-import { ChildProcess, spawn as spawnChild } from 'child_process';
+import { ChildProcess } from 'child_process';
+import { default as spawnChild } from 'cross-spawn';
 import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
@@ -62,7 +63,7 @@ export default class MongoInstance {
         this.debug = console.log.bind(null);
       }
     } else {
-      this.debug = () => {};
+      this.debug = () => { };
     }
 
     // add instance's port to debug output
