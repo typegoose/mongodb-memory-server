@@ -63,7 +63,7 @@ export default class MongoInstance {
         this.debug = console.log.bind(null);
       }
     } else {
-      this.debug = () => { };
+      this.debug = () => {};
     }
 
     // add instance's port to debug output
