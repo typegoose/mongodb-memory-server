@@ -5,20 +5,19 @@ const ENV_CONFIG_PREFIX = 'MONGOMS_';
 const defaultValues = new Map<string, string>();
 
 function getPackageJson(): Package | undefined {
-  const pjIterator = finder(__dirname);
-  let next = pjIterator.next();
-  let packageJson = next.value;
-  while (!next.done) {
-    packageJson = next.value;
-    next = pjIterator.next();
-  }
-  return packageJson;
+  const pjIterator = finder(process.cwd());
+  return pjIterator.next().value;
 }
-const packageJson = getPackageJson();
 
 export function setDefaultValue(key: string, value: string): void {
   defaultValues.set(key, value);
 }
+
+let packageJson: Package | undefined;
+export function reInitializePackageJson(): void {
+  packageJson = getPackageJson();
+}
+reInitializePackageJson();
 
 export default function resolveConfig(variableName: string): string | undefined {
   return (
