@@ -11,7 +11,7 @@ import {
   StorageEngineT,
   SpawnOptions,
 } from './types';
-import { SynchrounousResult } from 'tmp';
+import { DirResult } from 'tmp';
 // import { deprecate } from './util/deprecate';
 
 tmp.setGracefulCleanup();
@@ -100,7 +100,7 @@ export default class MongoMemoryServer {
 
   async _startUpInstance(): Promise<MongoInstanceDataT> {
     const data: any = {};
-    let tmpDir: SynchrounousResult;
+    let tmpDir: DirResult;
 
     const instOpts = this.opts.instance;
     data.port = await getPort({ port: (instOpts && instOpts.port) || undefined });
@@ -112,7 +112,6 @@ export default class MongoMemoryServer {
       data.dbPath = instOpts.dbPath;
     } else {
       tmpDir = tmp.dirSync({
-        discardDescriptor: true,
         mode: 0o755,
         prefix: 'mongo-mem-',
         unsafeCleanup: true,
