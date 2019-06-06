@@ -25,6 +25,7 @@
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "dependencies": {
     "camelcase": "^5.3.1",
+    "cross-spawn": "^6.0.5",
     "debug": "^4.1.1",
     "decompress": "^4.2.0",
     "dedent": "^0.7.0",
