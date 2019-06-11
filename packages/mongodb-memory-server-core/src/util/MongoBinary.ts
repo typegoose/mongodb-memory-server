@@ -108,7 +108,7 @@ export default class MongoBinary {
 
     // if we're in postinstall script, npm will set the cwd too deep
     let nodeModulesDLDir = process.cwd();
-    while (new RegExp(`node_modules${path.sep}mongodb-memory-server`).test(nodeModulesDLDir)) {
+    while (nodeModulesDLDir.endsWith(`node_modules${path.sep}mongodb-memory-server`)) {
       nodeModulesDLDir = path.resolve(nodeModulesDLDir, '..', '..');
     }
 
