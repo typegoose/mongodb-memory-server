@@ -4,8 +4,8 @@ import finder, { Package } from 'find-package-json';
 const ENV_CONFIG_PREFIX = 'MONGOMS_';
 const defaultValues = new Map<string, string>();
 
-function getPackageJson(): Package | undefined {
-  const pjIterator = finder(process.cwd());
+function getPackageJson(directory: string): Package | undefined {
+  const pjIterator = finder(directory);
   return pjIterator.next().value;
 }
 
@@ -14,8 +14,8 @@ export function setDefaultValue(key: string, value: string): void {
 }
 
 let packageJson: Package | undefined;
-export function reInitializePackageJson(): void {
-  packageJson = getPackageJson();
+export function reInitializePackageJson(directory?: string): void {
+  packageJson = getPackageJson(directory || process.cwd());
 }
 reInitializePackageJson();
 

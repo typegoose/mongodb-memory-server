@@ -71,5 +71,12 @@ describe('resolveConfig', () => {
       const got = resolveConfig('VERSION');
       expect(got).toBe('4.0.0');
     });
+
+    test('with explicit directory in reInitializePackageJson', () => {
+      process.chdir(`${tmpObj.name}/project`);
+      reInitializePackageJson(`${tmpObj.name}/project/subproject`);
+      const got = resolveConfig('VERSION');
+      expect(got).toBe('4.0.0');
+    });
   });
 });

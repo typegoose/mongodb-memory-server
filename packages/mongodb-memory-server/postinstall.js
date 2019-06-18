@@ -20,9 +20,10 @@ if (!isModuleExists('../mongodb-memory-server-core/lib/util/resolve-config')) {
   console.log('Could not resolve postinstall configuration');
   return;
 }
-const resolveConfig = require('../mongodb-memory-server-core/lib/util/resolve-config').default;
+const rc = require('../mongodb-memory-server-core/lib/util/resolve-config');
+rc.reInitializePackageJson(process.env.INIT_CWD);
 
-const envDisablePostinstall = resolveConfig('DISABLE_POSTINSTALL');
+const envDisablePostinstall = rc.default('DISABLE_POSTINSTALL');
 const skipDownload =
   typeof envDisablePostinstall === 'string' &&
   ['1', 'on', 'yes', 'true'].indexOf(envDisablePostinstall.toLowerCase()) !== -1;
