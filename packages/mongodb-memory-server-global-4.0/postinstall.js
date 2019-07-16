@@ -18,7 +18,8 @@ setDefaultValue(
   require('path').resolve(require('os').homedir(), '.cache', 'mongodb-binaries')
 );
 
-setDefaultValue('VERSION', '4.0.8'); // don't use `latest` it's nightly build
+var version = require('./package.json').mongodb_version;
+setDefaultValue('VERSION', version);
 
 const script = '../mongodb-memory-server/postinstall.js';
 if (isModuleExists(script)) {
