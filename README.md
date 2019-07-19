@@ -363,9 +363,9 @@ before((done) => {
     .then(() => done());
 });
 
-after(() => {
-  mongoose.disconnect();
-  mongoServer.stop();
+after(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
 });
 
 describe('...', () => {
@@ -398,7 +398,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  mongoose.disconnect();
+  await mongoose.disconnect();
   await mongoServer.stop();
 });
 
