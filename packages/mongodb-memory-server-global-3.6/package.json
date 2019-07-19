@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-global-3.6",
-  "version": "5.1.6",
+  "version": "5.1.7",
   "mongodb_version": "3.6.12",
   "description": "MongoDB Server for testing (auto-download 3.6 version to %HOME/.cache/mongodb-binaries).",
   "main": "index.js",
