@@ -1,4 +1,5 @@
 import MongoMemoryReplSet from '../MongoMemoryReplSet';
+import { MongoClient } from 'mongodb';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
@@ -40,6 +41,16 @@ describe('single server replset', () => {
       setTimeout(resolve, 500);
     });
   });
+
+  it('should be possible to connect replicaset after waitUntilRunning resolveds', async () => {
+    replSet = new MongoMemoryReplSet();
+    await replSet.waitUntilRunning();
+    const uri = await replSet.getUri();
+
+    await MongoClient.connect(`${uri}?replicaSet=testset`, {
+      useNewUrlParser: true,
+    });
+  });
 });
 
 describe('multi-member replica set', () => {
@@ -57,4 +68,15 @@ describe('multi-member replica set', () => {
     const uri = await replSet.getUri();
     expect(uri.split(',').length).toEqual(3);
   }, 40000);
+
+  it('should be possible to connect replicaset after waitUntilRunning resolveds', async () => {
+    const opts: any = { replSet: { count: 3 } };
+    replSet = new MongoMemoryReplSet(opts);
+    await replSet.waitUntilRunning();
+    const uri = await replSet.getUri();
+
+    await MongoClient.connect(`${uri}?replicaSet=testset`, {
+      useNewUrlParser: true,
+    });
+  });
 });

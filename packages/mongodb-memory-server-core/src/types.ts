@@ -30,16 +30,10 @@ export interface MongoMemoryInstancePropT extends MongoMemoryInstancePropBaseT {
   storageEngine?: StorageEngineT;
 }
 
-export interface ReplStatusMemberT {
-  _id: number;
-  name: string;
-  health: number;
-  state: number;
-  stateStr: string;
-  uptime: number;
+export interface ReplStatusReplT {
+  ismaster: boolean;
 }
 
 export interface ReplStatusResultT {
-  set: string;
-  members: ReplStatusMemberT[];
+  repl: ReplStatusReplT;
 }
