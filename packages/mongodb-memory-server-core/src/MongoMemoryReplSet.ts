@@ -173,9 +173,9 @@ export default class MongoMemoryReplSet extends EventEmitter {
       const server = this._startServer(this.getInstanceOpts({}));
       servers.push(server);
     }
+    // ensures all servers are listening for connection
+    await Promise.all(servers.map((s) => s.start()));
     this.servers = servers;
-    // Brief delay to wait for servers to start up.
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     await this._initReplSet();
   }
 
@@ -251,7 +251,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
 
   _startServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOptsT = {
-      autoStart: true,
+      autoStart: false,
       debug: this.opts.debug,
       binary: this.opts.binary,
       instance: instanceOpts,
@@ -265,13 +265,18 @@ export default class MongoMemoryReplSet extends EventEmitter {
     if (!this.admin) {
       return false;
     }
-    const replStatus: ReplStatusResultT = await this.admin.command({ replSetGetStatus: 1 });
+    const replStatus: ReplStatusResultT = await this.admin.command({
+      serverStatus: 1,
+      metrics: 0,
+      locks: 0,
+    });
     this.debug('   replStatus:', replStatus);
-    const hasPrimary = replStatus.members.some((m) => m.stateStr === 'PRIMARY');
+    const hasPrimary = replStatus.repl.ismaster;
     if (!hasPrimary) {
       this.debug('No PRIMARY yet. Waiting...');
-      return new Promise((resolve) => setTimeout(() => resolve(this._waitForPrimary()), 1000));
+      return new Promise((resolve) => setTimeout(() => resolve(this._waitForPrimary()), 500));
     }
+
     return true;
   }
 }
