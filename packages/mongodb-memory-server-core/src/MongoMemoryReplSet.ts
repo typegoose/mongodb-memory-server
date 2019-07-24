@@ -261,7 +261,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     return server;
   }
 
-  async _waitForPrimary(): Promise<boolean> {
+  async _waitForPrimary(timeout: number = 30000): Promise<boolean> {
     if (!this.admin) {
       return false;
     }
@@ -273,8 +273,14 @@ export default class MongoMemoryReplSet extends EventEmitter {
     this.debug('   replStatus:', replStatus);
     const hasPrimary = replStatus.repl.ismaster;
     if (!hasPrimary) {
-      this.debug('No PRIMARY yet. Waiting...');
-      return new Promise((resolve) => setTimeout(() => resolve(this._waitForPrimary()), 500));
+      const restTimeout = timeout - 500;
+      if (restTimeout <= 0) {
+        throw new Error(`No PRIMARY elected yet. Timeout expired. Exiting...`);
+      }
+      this.debug(`No PRIMARY yet. Waiting... ${restTimeout}ms`);
+      return new Promise((resolve) =>
+        setTimeout(() => resolve(this._waitForPrimary(restTimeout)), 500)
+      );
     }
 
     return true;
