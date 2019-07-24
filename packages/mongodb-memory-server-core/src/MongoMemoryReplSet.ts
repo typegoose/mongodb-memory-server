@@ -262,21 +262,11 @@ export default class MongoMemoryReplSet extends EventEmitter {
   }
 
   async _waitForPrimary(): Promise<boolean> {
-    if (!this.admin) {
-      return false;
-    }
-    const replStatus: ReplStatusResultT = await this.admin.command({
-      serverStatus: 1,
-      metrics: 0,
-      locks: 0,
-    });
-    this.debug('   replStatus:', replStatus);
-    const hasPrimary = replStatus.repl.ismaster;
-    if (!hasPrimary) {
-      this.debug('No PRIMARY yet. Waiting...');
-      return new Promise((resolve) => setTimeout(() => resolve(this._waitForPrimary()), 500));
-    }
-
-    return true;
+    return Promise.race(
+      this.servers.map((server) => {
+        const instanceInfo: any = server.getInstanceInfo();
+        return instanceInfo.instance.waitPrimaryReady();
+      })
+    );
   }
 }

@@ -36,6 +36,8 @@ export default class MongoInstance {
   // @ts-ignore: Need to initialize this function
   instanceReady: Function;
   // @ts-ignore: Need to initialize this function
+  primaryReady: Function;
+  // @ts-ignore: Need to initialize this function
   instanceFailed: Function;
   isInstanceReady: boolean;
 
@@ -90,7 +92,6 @@ export default class MongoInstance {
     if (!auth) result.push('--noauth');
     else if (auth) result.push('--auth');
     if (replSet) result.push('--replSet', replSet);
-
     return result.concat(args || []);
   }
 
@@ -114,6 +115,14 @@ export default class MongoInstance {
 
     await launch;
     return this;
+  }
+
+  async waitPrimaryReady(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.primaryReady = () => {
+        resolve(true);
+      };
+    });
   }
 
   async kill(): Promise<MongoInstance> {
@@ -224,6 +233,10 @@ export default class MongoInstance {
       }
     } else if (/\*\*\*aborting after/i.test(log)) {
       this.instanceFailed('Mongod internal error');
+    } else if (/transition to primary complete; database writes are now permitted/.test(log)) {
+      if (this.primaryReady) {
+        this.primaryReady();
+      }
     }
   }
 }
