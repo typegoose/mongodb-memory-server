@@ -26,15 +26,15 @@ import {
  * @property {StorageEngineT} storageEngine `mongod` storage engine type; (default: 'ephemeralForTest')
  */
 export interface ReplSetOpts {
-  auth: boolean;
-  args: string[];
-  count: number;
+  auth?: boolean;
+  args?: string[];
+  count?: number;
   dbName: string;
-  ip: string;
-  name: string;
-  oplogSize: number;
-  spawn: SpawnOptions;
-  storageEngine: StorageEngineT;
+  ip?: string;
+  name?: string;
+  oplogSize?: number;
+  spawn?: SpawnOptions;
+  storageEngine?: StorageEngineT;
   configSettings?: MongoMemoryReplSetConfigSettingsT;
 }
 
