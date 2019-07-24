@@ -217,6 +217,10 @@ export default class MongoInstance {
       this.instanceFailed('Mongod permission denied');
     } else if (/Data directory .*? not found/i.test(log)) {
       this.instanceFailed('Data directory not found');
+    } else if (/CURL_OPENSSL_3.*not found/i.test(log)) {
+      this.instanceFailed(
+        'libcurl3 is not available on your system. Mongod requires it and cannot be started without it. You should manually install libcurl3 or try to use older Mongodb version eg. 3.6.12'
+      );
     } else if (/shutting down with code/i.test(log)) {
       // if mongod started succesfully then no error on shutdown!
       if (!this.isInstanceReady) {
