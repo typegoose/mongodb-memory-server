@@ -264,7 +264,10 @@ export default class MongoMemoryReplSet extends EventEmitter {
   async _waitForPrimary(): Promise<void> {
     await Promise.race(
       this.servers.map((server) => {
-        const instanceInfo: any = server.getInstanceInfo();
+        const instanceInfo = server.getInstanceInfo();
+        if (!instanceInfo) {
+          throw new Error('_waitForPrimary - instanceInfo not present ');
+        }
         return instanceInfo.instance.waitPrimaryReady();
       })
     );
