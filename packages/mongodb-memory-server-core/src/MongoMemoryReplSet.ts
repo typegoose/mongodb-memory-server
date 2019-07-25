@@ -261,16 +261,24 @@ export default class MongoMemoryReplSet extends EventEmitter {
     return server;
   }
 
-  async _waitForPrimary(): Promise<void> {
-    await Promise.race(
-      this.servers.map((server) => {
+  async _waitForPrimary(timeout: number = 30000): Promise<void> {
+    const timeoutPromise = new Promise((resolve, reject) => {
+      let id = setTimeout(() => {
+        clearTimeout(id);
+        reject('Timed out in ' + timeout + 'ms. When waiting for primary.');
+      }, timeout);
+    });
+
+    await Promise.race([
+      ...this.servers.map((server) => {
         const instanceInfo = server.getInstanceInfo();
         if (!instanceInfo) {
           throw new Error('_waitForPrimary - instanceInfo not present ');
         }
         return instanceInfo.instance.waitPrimaryReady();
-      })
-    );
+      }),
+      timeoutPromise,
+    ]);
 
     this.debug('_waitForPrimary detected one primary instance ');
   }
