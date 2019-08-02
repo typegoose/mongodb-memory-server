@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-global",
-  "version": "5.1.9",
+  "version": "5.1.10",
   "description": "MongoDB Server for testing (auto-download latest version to %HOME/.cache/mongodb-binaries).",
   "main": "index.js",
   "types": "index.d.ts",
@@ -17,7 +17,7 @@
     "mongomem"
   ],
   "dependencies": {
-    "mongodb-memory-server": "5.1.9",
+    "mongodb-memory-server": "5.1.10",
     "os": "^0.1.1"
   },
   "scripts": {
