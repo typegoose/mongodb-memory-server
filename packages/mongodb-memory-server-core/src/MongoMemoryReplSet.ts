@@ -261,28 +261,25 @@ export default class MongoMemoryReplSet extends EventEmitter {
     return server;
   }
 
-  async _waitForPrimary(timeout: number = 30000): Promise<boolean> {
-    if (!this.admin) {
-      return false;
-    }
-    const replStatus: ReplStatusResultT = await this.admin.command({
-      serverStatus: 1,
-      metrics: 0,
-      locks: 0,
+  async _waitForPrimary(timeout: number = 30000): Promise<void> {
+    const timeoutPromise = new Promise((resolve, reject) => {
+      let id = setTimeout(() => {
+        clearTimeout(id);
+        reject('Timed out in ' + timeout + 'ms. When waiting for primary.');
+      }, timeout);
     });
-    this.debug('   replStatus:', replStatus);
-    const hasPrimary = replStatus.repl.ismaster;
-    if (!hasPrimary) {
-      const restTimeout = timeout - 500;
-      if (restTimeout <= 0) {
-        throw new Error(`No PRIMARY elected yet. Timeout expired. Exiting...`);
-      }
-      this.debug(`No PRIMARY yet. Waiting... ${restTimeout}ms`);
-      return new Promise((resolve) =>
-        setTimeout(() => resolve(this._waitForPrimary(restTimeout)), 500)
-      );
-    }
 
-    return true;
+    await Promise.race([
+      ...this.servers.map((server) => {
+        const instanceInfo = server.getInstanceInfo();
+        if (!instanceInfo) {
+          throw new Error('_waitForPrimary - instanceInfo not present ');
+        }
+        return instanceInfo.instance.waitPrimaryReady();
+      }),
+      timeoutPromise,
+    ]);
+
+    this.debug('_waitForPrimary detected one primary instance ');
   }
 }

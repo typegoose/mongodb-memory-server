@@ -36,6 +36,10 @@ export default class MongoInstance {
   // @ts-ignore: Need to initialize this function
   instanceReady: Function;
   // @ts-ignore: Need to initialize this function
+  waitForPrimaryResolveFns: Function[];
+  // @ts-ignore: Need to initialize this function
+  isInstancePrimary: boolean;
+  // @ts-ignore: Need to initialize this function
   instanceFailed: Function;
   isInstanceReady: boolean;
 
@@ -44,6 +48,8 @@ export default class MongoInstance {
     this.isInstanceReady = false;
     this.childProcess = null;
     this.killerProcess = null;
+    this.waitForPrimaryResolveFns = [];
+    this.isInstancePrimary = false;
 
     if (this.opts.debug) {
       if (!this.opts.instance) this.opts.instance = {};
@@ -153,6 +159,15 @@ export default class MongoInstance {
     return this.childProcess ? this.childProcess.pid : undefined;
   }
 
+  async waitPrimaryReady(): Promise<boolean> {
+    if (this.isInstancePrimary) {
+      return true;
+    }
+    return new Promise((resolve) => {
+      this.waitForPrimaryResolveFns.push(resolve);
+    });
+  }
+
   _launchMongod(mongoBin: string): ChildProcess {
     const spawnOpts = this.opts.spawn || {};
     if (!spawnOpts.stdio) spawnOpts.stdio = 'pipe';
@@ -228,6 +243,12 @@ export default class MongoInstance {
       }
     } else if (/\*\*\*aborting after/i.test(log)) {
       this.instanceFailed('Mongod internal error');
+    } else if (/transition to primary complete; database writes are now permitted/.test(log)) {
+      this.isInstancePrimary = true;
+      this.waitForPrimaryResolveFns.forEach((resolveFn) => {
+        this.debug('Calling waitForPrimary resolve function');
+        resolveFn(true);
+      });
     }
   }
 }
