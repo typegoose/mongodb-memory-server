@@ -10,7 +10,6 @@ import {
   MongoMemoryInstancePropBaseT,
   SpawnOptions,
   StorageEngineT,
-  ReplStatusResultT,
 } from './types';
 
 /**
@@ -82,6 +81,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
       replSet: { ...replSetDefaults, ...opts.replSet },
     };
 
+    if (!this.opts.replSet.args) this.opts.replSet.args = [];
     this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
     this.debug = (...args: any[]) => {
       if (!this.opts.debug) return;
@@ -122,7 +122,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
       replSet: rsOpts.name,
       storageEngine: rsOpts.storageEngine,
     };
-    if (baseOpts.args) opts.args = rsOpts.args.concat(baseOpts.args);
+    if (baseOpts.args) opts.args = (rsOpts.args || []).concat(baseOpts.args);
     if (baseOpts.port) opts.port = baseOpts.port;
     if (baseOpts.dbPath) opts.dbPath = baseOpts.dbPath;
     if (baseOpts.storageEngine) opts.storageEngine = baseOpts.storageEngine;
@@ -168,7 +168,8 @@ export default class MongoMemoryReplSet extends EventEmitter {
       this.debug('  starting server from instanceOpts:', opts, '...');
       return this._startServer(this.getInstanceOpts(opts));
     });
-    while (servers.length < this.opts.replSet.count) {
+    const cnt = this.opts.replSet.count || 1;
+    while (servers.length < cnt) {
       this.debug('  starting a server due to count...');
       const server = this._startServer(this.getInstanceOpts({}));
       servers.push(server);
