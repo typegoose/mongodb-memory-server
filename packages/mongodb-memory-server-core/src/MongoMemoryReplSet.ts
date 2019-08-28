@@ -11,6 +11,7 @@ import {
   SpawnOptions,
   StorageEngineT,
 } from './types';
+import { getDebugger } from '@microgamma/loggator';
 
 /**
  * Replica set specific options.
@@ -83,10 +84,9 @@ export default class MongoMemoryReplSet extends EventEmitter {
 
     if (!this.opts.replSet.args) this.opts.replSet.args = [];
     this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
-    this.debug = (...args: any[]) => {
-      if (!this.opts.debug) return;
-      console.log(...args);
-    };
+
+    this.debug = getDebugger(`mongodb-memory-server:core:${this.constructor.name}`);
+
     if (!(opts && opts.autoStart === false)) {
       this.debug('Autostarting MongoMemoryReplSet.');
       setTimeout(() => this.start(), 0);

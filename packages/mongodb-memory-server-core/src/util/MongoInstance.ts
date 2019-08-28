@@ -4,6 +4,7 @@ import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { DebugPropT, StorageEngineT, SpawnOptions } from '../types';
+import { getDebugger } from '@microgamma/loggator';
 
 export interface MongodOps {
   // instance options
@@ -51,33 +52,9 @@ export default class MongoInstance {
     this.waitForPrimaryResolveFns = [];
     this.isInstancePrimary = false;
 
-    if (this.opts.debug) {
-      if (!this.opts.instance) this.opts.instance = {};
-      if (!this.opts.binary) this.opts.binary = {};
-      this.opts.instance.debug = this.opts.debug;
-      this.opts.binary.debug = this.opts.debug;
-    }
-
-    if (this.opts.instance && this.opts.instance.debug) {
-      if (
-        typeof this.opts.instance.debug === 'function' &&
-        this.opts.instance.debug.apply &&
-        this.opts.instance.debug.call
-      ) {
-        this.debug = this.opts.instance.debug;
-      } else {
-        this.debug = console.log.bind(null);
-      }
-    } else {
-      this.debug = () => {};
-    }
-
     // add instance's port to debug output
-    const debugFn = this.debug;
     const port = this.opts.instance && this.opts.instance.port;
-    this.debug = (msg: string): void => {
-      debugFn(`Mongo[${port}]: ${msg}`);
-    };
+    this.debug = getDebugger(`mongodb-memory-server:core:${this.constructor.name}:Mongo[${port}]`);
   }
 
   static run(opts: MongodOps): Promise<MongoInstance> {

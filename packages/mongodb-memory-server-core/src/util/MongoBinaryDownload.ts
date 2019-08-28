@@ -9,6 +9,7 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { DebugFn, DebugPropT, DownloadProgressT } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
 import HttpsProxyAgent from 'https-proxy-agent';
+import { getDebugger } from '@microgamma/loggator';
 
 export interface MongoBinaryDownloadOpts {
   version?: string;
@@ -38,7 +39,7 @@ export default class MongoBinaryDownload {
   version: string;
   platform: string;
 
-  constructor({ platform, arch, downloadDir, version, checkMD5, debug }: MongoBinaryDownloadOpts) {
+  constructor({ platform, arch, downloadDir, version, checkMD5 }: MongoBinaryDownloadOpts) {
     this.platform = platform || os.platform();
     this.arch = arch || os.arch();
     this.version = version || LATEST_VERSION;
@@ -57,15 +58,7 @@ export default class MongoBinaryDownload {
       lastPrintedAt: 0,
     };
 
-    if (debug) {
-      if (typeof debug === 'function' && debug.apply && debug.call) {
-        this.debug = debug;
-      } else {
-        this.debug = console.log.bind(null);
-      }
-    } else {
-      this.debug = () => {};
-    }
+    this.debug = getDebugger(`mongodb-memory-server:core:${this.constructor.name}`);
   }
 
   async getMongodPath(): Promise<string> {

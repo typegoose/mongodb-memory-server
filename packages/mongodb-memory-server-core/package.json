@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "dependencies": {
+    "@microgamma/loggator": "^1.10.18",
     "camelcase": "^5.3.1",
     "cross-spawn": "^6.0.5",
     "debug": "^4.1.1",

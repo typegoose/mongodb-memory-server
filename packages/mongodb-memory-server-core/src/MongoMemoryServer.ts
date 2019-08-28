@@ -12,6 +12,7 @@ import {
   SpawnOptions,
 } from './types';
 import { DirResult } from 'tmp';
+import { getDebugger } from '@microgamma/loggator';
 // import { deprecate } from './util/deprecate';
 
 tmp.setGracefulCleanup();
@@ -52,11 +53,8 @@ export default class MongoMemoryServer {
   constructor(opts?: MongoMemoryServerOptsT) {
     this.opts = { ...opts };
 
-    this.debug = (msg: string) => {
-      if (this.opts.debug) {
-        console.log(msg);
-      }
-    };
+    this.debug = getDebugger(`mongodb-memory-server:core:${this.constructor.name}`);
+
     if (!(opts && opts.autoStart === false)) {
       this.debug('Autostarting MongoDB instance...');
       this.start();

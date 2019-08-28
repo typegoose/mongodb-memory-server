@@ -10,6 +10,8 @@ import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import { DebugFn } from '../types';
 import resolveConfig from './resolve-config';
+import { getDebugger } from '@microgamma/loggator';
+
 
 // TODO: return back `latest` version when it will be fixed in MongoDB distro (for now use 4.0.3 😂)
 // More details in https://github.com/nodkz/mongodb-memory-server/issues/131
@@ -132,15 +134,7 @@ export default class MongoBinary {
         typeof envDebug === 'string' ? ['1', 'on', 'yes', 'true'].indexOf(envDebug) !== -1 : false,
     };
 
-    if (opts.debug) {
-      if (typeof opts.debug === 'function' && opts.debug.apply && opts.debug.call) {
-        this.debug = opts.debug as DebugFn;
-      } else {
-        this.debug = console.log.bind(null);
-      }
-    } else {
-      this.debug = (msg: string) => {}; // eslint-disable-line
-    }
+    this.debug = getDebugger(`mongodb-memory-server:core:${this.constructor.name}`);
 
     const options = { ...defaultOptions, ...opts };
     this.debug(`MongoBinary options: ${JSON.stringify(options)}`);
