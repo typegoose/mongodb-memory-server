@@ -13,7 +13,6 @@ import {
 } from './types';
 import { DirResult } from 'tmp';
 import { getDebugger } from '@microgamma/loggator';
-// import { deprecate } from './util/deprecate';
 
 tmp.setGracefulCleanup();
 
