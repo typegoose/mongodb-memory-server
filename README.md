@@ -91,7 +91,6 @@ const mongod = new MongoMemoryServer({
     dbName?: string, // by default generate random dbName
     dbPath?: string, // by default create in temp directory
     storageEngine?: string, // by default `ephemeralForTest`, available engines: [ 'devnull', 'ephemeralForTest', 'mmapv1', 'wiredTiger' ]
-    debug?: boolean, // by default false
     replSet?: string, // by default no replica set, replica set name
     auth?: boolean, // by default `mongod` is started with '--noauth', start `mongod` with '--auth'
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
@@ -101,11 +100,9 @@ const mongod = new MongoMemoryServer({
     downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
-    debug?: boolean, // by default false
     checkMD5?: boolean, // by default false OR process.env.MONGOMS_MD5_CHECK
     systemBinary?: string, // by default undefined or process.env.MONGOMS_SYSTEM_BINARY
   },
-  debug?: boolean, // by default false
   autoStart?: boolean, // by default true
 });
 ```
@@ -117,7 +114,6 @@ MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
 MONGOMS_PLATFORM=linux
 MONGOMS_ARCH=x64
 MONGOMS_VERSION=3
-MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
 MONGOMS_DOWNLOAD_MIRROR=host # your mirror host to download the mongodb binary
 MONGOMS_DOWNLOAD_URL=url # full URL to download the mongodb binary
 MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
@@ -139,7 +135,6 @@ Environment variables have higher priority than contents of package.json.
       "platform": "linux",
       "arch": "x64",
       "version": "3",
-      "debug": "1",
       "downloadMirror": "url",
       "disablePostinstall": "1",
       "systemBinary": "/usr/local/bin/mongod",
@@ -176,7 +171,6 @@ All options are optional.
 const replSet = new MongoMemoryReplSet({
   autoStart, // same as for MongoMemoryServer
   binary: binaryOpts, // same as for MongoMemoryServer
-  debug, // same as for MongoMemoryServer
   instanceOpts: [
     {
       args, // any additional instance specific args
