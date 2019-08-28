@@ -16,7 +16,6 @@ export interface MongoBinaryDownloadOpts {
   downloadDir?: string;
   platform?: string;
   arch?: string;
-  debug?: DebugPropT;
   checkMD5?: boolean;
 }
 
@@ -29,7 +28,6 @@ interface HttpDownloadOptions {
 }
 
 export default class MongoBinaryDownload {
-  debug: DebugFn;
   dlProgress: DownloadProgressT;
   _downloadingUrl?: string;
 

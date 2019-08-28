@@ -27,7 +27,6 @@ export interface MongoBinaryOpts {
   downloadDir?: string;
   platform?: string;
   arch?: string;
-  debug?: boolean | Function;
 }
 
 export default class MongoBinary {

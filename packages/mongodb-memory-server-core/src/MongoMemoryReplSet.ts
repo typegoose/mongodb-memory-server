@@ -51,7 +51,6 @@ export interface MongoMemoryReplSetOptsT {
   binary: MongoBinaryOpts;
   replSet: ReplSetOpts;
   autoStart?: boolean;
-  debug?: boolean;
 }
 
 export default class MongoMemoryReplSet extends EventEmitter {
@@ -77,7 +76,6 @@ export default class MongoMemoryReplSet extends EventEmitter {
     this._state = 'stopped';
     this.opts = {
       binary: opts.binary || {},
-      debug: !!opts.debug,
       instanceOpts: opts.instanceOpts || [],
       replSet: { ...replSetDefaults, ...opts.replSet },
     };
@@ -253,7 +251,6 @@ export default class MongoMemoryReplSet extends EventEmitter {
   _startServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOptsT = {
       autoStart: false,
-      debug: this.opts.debug,
       binary: this.opts.binary,
       instance: instanceOpts,
       spawn: this.opts.replSet.spawn,

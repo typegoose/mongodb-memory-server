@@ -124,7 +124,6 @@ export default class MongoMemoryServer {
     const instance = await MongoInstance.run({
       instance: {
         dbPath: data.dbPath,
-        debug: this.opts.instance && this.opts.instance.debug,
         port: data.port,
         storageEngine: data.storageEngine,
         replSet: data.replSet,
@@ -133,8 +132,7 @@ export default class MongoMemoryServer {
         ip: this.opts.instance && this.opts.instance.ip,
       },
       binary: this.opts.binary,
-      spawn: this.opts.spawn,
-      debug: this.debug,
+      spawn: this.opts.spawn
     });
     data.instance = instance;
     data.childProcess = instance.childProcess;

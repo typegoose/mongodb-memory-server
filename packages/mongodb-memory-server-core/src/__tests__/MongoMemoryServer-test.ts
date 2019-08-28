@@ -82,8 +82,7 @@ describe('MongoMemoryServer', () => {
   describe('stop()', () => {
     it('should stop mongod and answer on isRunning() method', async () => {
       const mongod = new MongoMemoryServer({
-        autoStart: false,
-        debug: false,
+        autoStart: false
       });
 
       expect(mongod.getInstanceInfo()).toBeFalsy();

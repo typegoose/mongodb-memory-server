@@ -146,8 +146,7 @@ describe('MongodbInstance', () => {
   it('should work with mongodb 4.0.3', async () => {
     const mongod = await MongodbInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
-      binary: { version: '4.0.3' },
-      debug: true,
+      binary: { version: '4.0.3' }
     });
     const pid: any = mongod.getPid();
     expect(pid).toBeGreaterThan(0);
