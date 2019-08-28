@@ -58,7 +58,7 @@
   },
   "scripts": {
     "test": "lerna run test --stream",
-    "watch": "yarn test --watchAll",
+    "watch": "lerna run watch --stream",
     "build": "tsc --build tsconfig.build.json",
     "release": "yarn build && lerna publish",
     "postinstall": "yarn build"
