@@ -66,6 +66,9 @@ export default class MongoBinaryDownloadUrl {
     ) {
       name += '-ssl';
     }
+    if (this.version.indexOf('4.2') === 0) {
+      name = `mongodb-macos`;
+    }
     name += `-${this.arch}`;
     name += `-${this.version}.tgz`;
     return name;
