@@ -49,7 +49,12 @@ export default class MongoBinaryDownloadUrl {
   async getArchiveNameWin(): Promise<string> {
     let name = `mongodb-${this.platform}`;
     name += `-${this.arch}`;
-    name += '-2008plus-ssl';
+    if (this.version.indexOf('4.2') === 0) {
+      name += '-2012plus';
+    }
+    else {
+      name += '-2008plus-ssl';
+    }
     name += `-${this.version}.zip`;
     return name;
   }
