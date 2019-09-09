@@ -51,8 +51,7 @@ export default class MongoBinaryDownloadUrl {
     name += `-${this.arch}`;
     if (this.version.indexOf('4.2') === 0) {
       name += '-2012plus';
-    }
-    else {
+    } else {
       name += '-2008plus-ssl';
     }
     name += `-${this.version}.zip`;

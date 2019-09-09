@@ -6,7 +6,11 @@
   "main": "index.js",
   "types": "index.d.ts",
   "license": "MIT",
-  "repository": "https://github.com/nodkz/mongodb-memory-server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nodkz/mongodb-memory-server.git",
+    "directory": "packages/mongodb-memory-server-global-3.4"
+  },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "keywords": [
     "mongodb",
