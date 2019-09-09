@@ -80,6 +80,17 @@ describe('MongoBinaryDownloadUrl', () => {
       );
     });
 
+    it('4.2 for win32', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'win32',
+        arch: 'x64',
+        version: '4.2.0',
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2012plus-4.2.0.zip'
+      );
+    });
+
     it('fallback', async () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
