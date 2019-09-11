@@ -263,9 +263,9 @@ export default class MongoMemoryReplSet extends EventEmitter {
   }
 
   async _waitForPrimary(timeout: number = 30000): Promise<void> {
+    let timeoutId: NodeJS.Timeout | undefined;
     const timeoutPromise = new Promise((resolve, reject) => {
-      let id = setTimeout(() => {
-        clearTimeout(id);
+      timeoutId = setTimeout(() => {
         reject('Timed out in ' + timeout + 'ms. When waiting for primary.');
       }, timeout);
     });
@@ -280,6 +280,10 @@ export default class MongoMemoryReplSet extends EventEmitter {
       }),
       timeoutPromise,
     ]);
+
+    if (timeoutId != null) {
+      clearTimeout(timeoutId);
+    }
 
     this.debug('_waitForPrimary detected one primary instance ');
   }
