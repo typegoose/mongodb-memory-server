@@ -105,7 +105,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     // this function is only async for consistency with MongoMemoryServer
     // I don't see much point to either of them being async but don't
     // care enough to change it and introduce a breaking change.
-    return this.opts.replSet.dbName;
+    return this.opts.replSet.dbName!;
   }
 
   /**
@@ -144,7 +144,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     if (otherDb) {
       dbName = typeof otherDb === 'string' ? otherDb : generateDbName();
     } else {
-      dbName = this.opts.replSet.dbName;
+      dbName = this.opts.replSet.dbName!;
     }
     const ports = await Promise.all(this.servers.map((s) => s.getPort()));
     const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
