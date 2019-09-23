@@ -58,6 +58,7 @@
   },
   "scripts": {
     "test": "lerna run test --stream",
+    "lint": "lerna run lint --stream",
     "watch": "yarn test --watchAll",
     "build": "tsc --build tsconfig.build.json",
     "release": "yarn build && lerna publish",

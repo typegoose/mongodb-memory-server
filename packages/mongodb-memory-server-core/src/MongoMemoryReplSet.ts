@@ -18,7 +18,7 @@ import {
  * @property {boolean} auth enable auth; (default: false)
  * @property {string[]} args additional command line args passed to `mongod`
  * @property {number} count number of `mongod` servers to start (default: 1)
- * @property {string} dbName database name used in connection string
+ * @property {string} dbName database name used in connection string (default: uuid)
  * @property {string} ip bind to all IP addresses specify `::,0.0.0.0`; (default '127.0.0.1')
  * @property {string} name replSet name (default: 'testset')
  * @property {number} oplogSize oplog size (in MB); (default: 1)
@@ -28,7 +28,7 @@ export interface ReplSetOpts {
   auth?: boolean;
   args?: string[];
   count?: number;
-  dbName: string;
+  dbName?: string;
   ip?: string;
   name?: string;
   oplogSize?: number;
@@ -46,23 +46,30 @@ export interface MongoMemoryReplSetConfigSettingsT {
 }
 
 export interface MongoMemoryReplSetOptsT {
-  instanceOpts: MongoMemoryInstancePropBaseT[];
-  binary: MongoBinaryOpts;
-  replSet: ReplSetOpts;
+  instanceOpts?: MongoMemoryInstancePropBaseT[];
+  binary?: MongoBinaryOpts;
+  replSet?: ReplSetOpts;
   autoStart?: boolean;
   debug?: boolean;
 }
 
 export default class MongoMemoryReplSet extends EventEmitter {
   servers: MongoMemoryServer[] = [];
-  opts: MongoMemoryReplSetOptsT;
+  opts: {
+    instanceOpts: MongoMemoryInstancePropBaseT[];
+    binary: MongoBinaryOpts;
+    replSet: Required<ReplSetOpts>;
+    debug: boolean;
+    autoStart?: boolean;
+  };
+
   debug: DebugFn;
   _state: 'init' | 'running' | 'stopped';
   admin?: mongodb.Admin;
 
-  constructor(opts: Partial<MongoMemoryReplSetOptsT> = {}) {
+  constructor(opts: MongoMemoryReplSetOptsT = {}) {
     super();
-    const replSetDefaults: ReplSetOpts = {
+    const replSetDefaults: Required<ReplSetOpts> = {
       auth: false,
       args: [],
       name: 'testset',
@@ -72,6 +79,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
       oplogSize: 1,
       spawn: {},
       storageEngine: 'ephemeralForTest',
+      configSettings: {},
     };
     this._state = 'stopped';
     this.opts = {
