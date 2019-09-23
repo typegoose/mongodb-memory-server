@@ -46,23 +46,30 @@ export interface MongoMemoryReplSetConfigSettingsT {
 }
 
 export interface MongoMemoryReplSetOptsT {
-  instanceOpts: MongoMemoryInstancePropBaseT[];
-  binary: MongoBinaryOpts;
-  replSet: ReplSetOpts;
+  instanceOpts?: MongoMemoryInstancePropBaseT[];
+  binary?: MongoBinaryOpts;
+  replSet?: ReplSetOpts;
   autoStart?: boolean;
   debug?: boolean;
 }
 
 export default class MongoMemoryReplSet extends EventEmitter {
   servers: MongoMemoryServer[] = [];
-  opts: MongoMemoryReplSetOptsT;
+  opts: {
+    instanceOpts: MongoMemoryInstancePropBaseT[];
+    binary: MongoBinaryOpts;
+    replSet: Required<ReplSetOpts>;
+    debug: boolean;
+    autoStart?: boolean;
+  };
+
   debug: DebugFn;
   _state: 'init' | 'running' | 'stopped';
   admin?: mongodb.Admin;
 
-  constructor(opts: Partial<MongoMemoryReplSetOptsT> = {}) {
+  constructor(opts: MongoMemoryReplSetOptsT = {}) {
     super();
-    const replSetDefaults: ReplSetOpts = {
+    const replSetDefaults: Required<ReplSetOpts> = {
       auth: false,
       args: [],
       name: 'testset',
@@ -72,6 +79,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
       oplogSize: 1,
       spawn: {},
       storageEngine: 'ephemeralForTest',
+      configSettings: {},
     };
     this._state = 'stopped';
     this.opts = {
@@ -105,7 +113,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     // this function is only async for consistency with MongoMemoryServer
     // I don't see much point to either of them being async but don't
     // care enough to change it and introduce a breaking change.
-    return this.opts.replSet.dbName!;
+    return this.opts.replSet.dbName;
   }
 
   /**
@@ -144,7 +152,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     if (otherDb) {
       dbName = typeof otherDb === 'string' ? otherDb : generateDbName();
     } else {
-      dbName = this.opts.replSet.dbName!;
+      dbName = this.opts.replSet.dbName;
     }
     const ports = await Promise.all(this.servers.map((s) => s.getPort()));
     const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
