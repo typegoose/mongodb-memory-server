@@ -235,7 +235,11 @@ export default class MongoMemoryReplSet extends EventEmitter {
       );
     }
 
-    const conn: mongodb.MongoClient = await MongoClient.connect(uris[0], { useNewUrlParser: true });
+    const conn: mongodb.MongoClient = await MongoClient.connect(uris[0], {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
     try {
       const db = await conn.db(this.opts.replSet.dbName);
       this.admin = db.admin();

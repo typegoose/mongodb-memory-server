@@ -49,6 +49,7 @@ describe('single server replset', () => {
 
     await MongoClient.connect(`${uri}?replicaSet=testset`, {
       useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
   });
 });
@@ -77,6 +78,7 @@ describe('multi-member replica set', () => {
 
     await MongoClient.connect(`${uri}?replicaSet=testset`, {
       useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
   });
 });
