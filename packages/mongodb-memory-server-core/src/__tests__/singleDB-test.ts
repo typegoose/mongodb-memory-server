@@ -9,7 +9,11 @@ let mongoServer: MongoMemoryServer;
 beforeAll(async () => {
   mongoServer = new MongoMemoryServer();
   const mongoUri = await mongoServer.getConnectionString();
-  con = await MongoClient.connect(mongoUri, { useNewUrlParser: true });
+  con = await MongoClient.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+
   db = con.db(await mongoServer.getDbName());
 });
 
