@@ -30,7 +30,7 @@ export default class MongoBinaryDownloadUrl {
 
     return `${resolveConfig('DOWNLOAD_MIRROR') || 'https://fastdl.mongodb.org'}/${
       this.platform
-      }/${archive}`;
+    }/${archive}`;
   }
 
   async getArchiveName(): Promise<string> {
@@ -130,7 +130,7 @@ export default class MongoBinaryDownloadUrl {
     let name = 'debian';
     const release: number = parseFloat((os as getos.LinuxOs).release);
     if (release >= 10 || (os as getos.LinuxOs).release === 'unstable') {
-      name += '10'
+      name += '10';
     } else if (release >= 9.2) {
       name += '92';
     } else if (release >= 8.1) {
