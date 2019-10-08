@@ -164,14 +164,26 @@ Environment variables have higher priority than contents of package.json.
 ```js
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
-const replSet = new MongoMemoryReplSet();
+const replSet = new MongoMemoryReplSet({
+  debug: false,
+  replSet: { storageEngine: 'wiredTiger' },
+});
 await replSet.waitUntilRunning();
 const uri = await mongod.getConnectionString();
-const port = await mongod.getPort();
-const dbPath = await mongod.getDbPath();
-const dbName = await mongod.getDbName();
+// or you may obtain the connection config parts:
+// const port = await mongod.getPort();
+// const dbPath = await mongod.getDbPath();
+// const dbName = await mongod.getDbName();
 
-// some code
+// some code, eg. for mongoose
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+// after some useful code don't forget to disconnect
+mongoose.disconnect();
 
 // stop replica set manually
 replSet.stop();
