@@ -8,9 +8,11 @@
 
 This package spins up a actual/real MongoDB Server programmatically from node for testing or mocking during development. By default it holds the data in memory. Fresh spinned up `mongod` process takes about 7Mb of memory. The server will allow you to connect your favorite ODM or client library to the MongoDB Server and run integration tests isolated from each other.
 
-This package on install downloads the latest MongoDB binaries and save it to cache folder. So first run may take a time. All further runs will fast, because use already downloaded binaries.
+On install, this package downloads the latest MongoDB binaries and saves it to a cache folder.
 
-This package automatically downloads binaries from [https://fastdl.mongodb.org/](https://fastdl.mongodb.org/) according to your operation system. You can see all available versions by the following links [Linux](https://www.mongodb.org/dl/linux) (Ubuntu, RHEL, Debian, SUSE, Amazon), [OSX](https://www.mongodb.org/dl/osx), [Win](https://www.mongodb.org/dl/win32).
+On starting a new instance of the memory server, if the binary cannot be found, it will be auto-downloaded. So the first run may take some time. All further runs will be fast, because they will use the downloaded binaries.
+
+This package automatically downloads binaries from [https://fastdl.mongodb.org/](https://fastdl.mongodb.org/) according to your operating system. You can see all available versions by the following links [Linux](https://www.mongodb.org/dl/linux) (Ubuntu, RHEL, Debian, SUSE, Amazon), [OSX](https://www.mongodb.org/dl/osx), [Win](https://www.mongodb.org/dl/win32).
 
 Every `MongoMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
 
@@ -18,14 +20,16 @@ Perfectly [works with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
 
 ## Installation
 
-This tool provides several packages for different purposes:
+This tool provides three packages for different purposes:
 
-- with auto-download mongod binary on npm install (5 different ways)
-- without auto-download (core package)
+- With auto-download mongod binary on npm install
+- Without auto-download on npm install
 
 Choose any package, because they are the same. Differs only by default configuration, which you may override (see section [Available options](#available-options)).
 
-### With auto-download `latest` Mongod binary on npm install to `node_modules/.cache`
+### `mongodb-memory-server`
+
+Auto-downloads the latest `mongod` binary on npm install to: `node_modules/.cache`.
 
 ```bash
 yarn add mongodb-memory-server --dev
@@ -33,7 +37,9 @@ OR
 npm install mongodb-memory-server --save-dev
 ```
 
-### With auto-download `latest` Mongod binary on npm install to `%HOME/.cache`
+### `mongodb-memory-server-global`
+
+Auto-downloads the latest `mongod` binary on npm install to: `%HOME/.cache`.
 
 ```bash
 yarn add mongodb-memory-server-global --dev
@@ -41,13 +47,17 @@ OR
 npm install mongodb-memory-server-global --save-dev
 ```
 
-### Without auto-download
+### `mongodb-memory-server-core`
+
+Does NOT auto-download `mongod` on npm install.
 
 ```bash
 yarn add mongodb-memory-server-core --dev
 OR
 npm install mongodb-memory-server-core --save-dev
 ```
+
+_Note: the package does try to download `mongod` upon server start if it cannot find the binary._
 
 ## Usage
 
