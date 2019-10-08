@@ -232,6 +232,16 @@ describe('MongoBinaryDownloadUrl', () => {
         })
       ).toBe('debian92');
     });
+
+    it('should return a archive name for debian 10.0', () => {
+      expect(
+        downloadUrl.getDebianVersionString({
+          os: 'linux',
+          dist: 'debian',
+          release: '10.0',
+        })
+      ).toBe('debian10');
+    });
   });
 
   describe('getMintVersionString', () => {
