@@ -156,7 +156,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     }
     const ports = await Promise.all(this.servers.map((s) => s.getPort()));
     const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
-    return `mongodb://${hosts}/${dbName}`;
+    return `mongodb://${hosts}/${dbName}?replicaSet=${this.opts.replSet.name}`;
   }
 
   /**

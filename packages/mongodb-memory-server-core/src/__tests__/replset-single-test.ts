@@ -19,7 +19,8 @@ describe('single server replset', () => {
     const uri = await replSet.getUri('other');
     const str = await replSet.getConnectionString('other');
     expect(uri.split(',').length).toEqual(1);
-    expect(uri.endsWith('/other')).toBeTruthy();
+    expect(uri.includes('/other')).toBeTruthy();
+    expect(uri.includes('replicaSet=testset')).toBeTruthy();
     expect(str).toEqual(uri);
 
     await replSet.stop();

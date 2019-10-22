@@ -4,7 +4,7 @@ import { MongoClient } from 'mongodb';
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 describe('multi-member replica set', () => {
-  it.only('should enter running state', async () => {
+  it('should enter running state', async () => {
     const opts: any = { replSet: { count: 3 } };
     const replSet = new MongoMemoryReplSet(opts);
     await replSet.waitUntilRunning();
@@ -21,10 +21,16 @@ describe('multi-member replica set', () => {
     await replSet.waitUntilRunning();
     const uri = await replSet.getUri();
 
-    await MongoClient.connect(`${uri}?replicaSet=testset`, {
+    const conn = await MongoClient.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+
+    const db = await conn.db(await replSet.getDbName());
+    const admin = db.admin();
+    const status = await admin.replSetGetStatus();
+    expect(status.members.filter((m: any) => m.stateStr === 'PRIMARY')).toHaveLength(1);
+    expect(status.members.filter((m: any) => m.stateStr === 'SECONDARY')).toHaveLength(2);
 
     await replSet.stop();
   });
