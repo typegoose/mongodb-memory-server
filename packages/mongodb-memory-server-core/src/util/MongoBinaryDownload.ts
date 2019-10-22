@@ -223,9 +223,7 @@ export default class MongoBinaryDownload {
               this._downloadingUrl || `https://${httpOptions.hostname}/${httpOptions.path}`;
             reject(
               new Error(
-                `Too small (${
-                  this.dlProgress.current
-                } bytes) mongod binary downloaded from ${downloadUrl}`
+                `Too small (${this.dlProgress.current} bytes) mongod binary downloaded from ${downloadUrl}`
               )
             );
             return;
