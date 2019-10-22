@@ -8,8 +8,7 @@
   ],
   "parserOptions": {
     "sourceType": "module",
-    "useJSXTextNode": true,
-    "project": "./tsconfig.json"
+    "useJSXTextNode": true
   },
   "rules": {
     "no-underscore-dangle": 0,

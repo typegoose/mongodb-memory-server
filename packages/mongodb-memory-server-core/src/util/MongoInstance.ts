@@ -33,23 +33,17 @@ export default class MongoInstance {
 
   childProcess: ChildProcess | null;
   killerProcess: ChildProcess | null;
-  // @ts-ignore: Need to initialize this function
-  instanceReady: Function;
-  // @ts-ignore: Need to initialize this function
   waitForPrimaryResolveFns: Function[];
-  // @ts-ignore: Need to initialize this function
-  isInstancePrimary: boolean;
-  // @ts-ignore: Need to initialize this function
-  instanceFailed: Function;
-  isInstanceReady: boolean;
+  isInstancePrimary: boolean = false;
+  isInstanceReady: boolean = false;
+  instanceReady: () => void = () => {};
+  instanceFailed: (err: any) => void = () => {};
 
   constructor(opts: MongodOps) {
     this.opts = opts;
-    this.isInstanceReady = false;
     this.childProcess = null;
     this.killerProcess = null;
     this.waitForPrimaryResolveFns = [];
-    this.isInstancePrimary = false;
 
     if (this.opts.debug) {
       if (!this.opts.instance) this.opts.instance = {};
