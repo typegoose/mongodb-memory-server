@@ -174,12 +174,12 @@ export default class MongoMemoryReplSet extends EventEmitter {
     // the `replSetInitiate` command against that server.
     const servers = this.opts.instanceOpts.map((opts) => {
       this.debug('  starting server from instanceOpts:', opts, '...');
-      return this._startServer(this.getInstanceOpts(opts));
+      return this._initServer(this.getInstanceOpts(opts));
     });
     const cnt = this.opts.replSet.count || 1;
     while (servers.length < cnt) {
-      this.debug('  starting a server due to count...');
-      const server = this._startServer(this.getInstanceOpts({}));
+      this.debug(`  starting ${cnt} servers...`);
+      const server = this._initServer(this.getInstanceOpts({}));
       servers.push(server);
     }
     // ensures all servers are listening for connection
@@ -262,7 +262,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     }
   }
 
-  _startServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
+  _initServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOptsT = {
       autoStart: false,
       debug: this.opts.debug,
