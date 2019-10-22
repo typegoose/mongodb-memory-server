@@ -26,6 +26,9 @@ describe('multi-member replica set', () => {
       useUnifiedTopology: true,
     });
 
+    // await while all SECONDARIES will be ready
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     const db = await conn.db(await replSet.getDbName());
     const admin = db.admin();
     const status = await admin.replSetGetStatus();
