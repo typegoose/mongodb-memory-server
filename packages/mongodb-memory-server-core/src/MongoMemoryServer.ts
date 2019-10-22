@@ -28,6 +28,7 @@ export interface MongoInstanceDataT {
   port: number;
   dbPath: string;
   dbName: string;
+  ip: string;
   uri: string;
   storageEngine: StorageEngineT;
   instance: MongoInstance;
@@ -38,10 +39,6 @@ export interface MongoInstanceDataT {
   };
   replSet?: string;
 }
-
-const generateConnectionString = async (port: number, dbName: string): Promise<string> => {
-  return `mongodb://127.0.0.1:${port}/${dbName}`;
-};
 
 export default class MongoMemoryServer {
   runningInstance: Promise<MongoInstanceDataT> | null = null;
@@ -102,13 +99,14 @@ export default class MongoMemoryServer {
     const data: any = {};
     let tmpDir: DirResult;
 
-    const instOpts = this.opts.instance;
-    data.port = await getPort({ port: (instOpts && instOpts.port) || undefined });
-    data.dbName = generateDbName(instOpts && instOpts.dbName);
-    data.uri = await generateConnectionString(data.port, data.dbName);
-    data.storageEngine = (instOpts && instOpts.storageEngine) || 'ephemeralForTest';
-    data.replSet = instOpts && instOpts.replSet;
-    if (instOpts && instOpts.dbPath) {
+    const instOpts = this.opts.instance || {};
+    data.port = await getPort({ port: instOpts.port || undefined });
+    data.dbName = generateDbName(instOpts.dbName);
+    data.ip = instOpts.ip || '127.0.0.1';
+    data.uri = await this._getUriBase(data.ip, data.port, data.dbName);
+    data.storageEngine = instOpts.storageEngine || 'ephemeralForTest';
+    data.replSet = instOpts.replSet;
+    if (instOpts.dbPath) {
       data.dbPath = instOpts.dbPath;
     } else {
       tmpDir = tmp.dirSync({
@@ -127,13 +125,13 @@ export default class MongoMemoryServer {
     const instance = await MongoInstance.run({
       instance: {
         dbPath: data.dbPath,
-        debug: this.opts.instance && this.opts.instance.debug,
+        ip: data.ip,
         port: data.port,
         storageEngine: data.storageEngine,
         replSet: data.replSet,
-        args: this.opts.instance && this.opts.instance.args,
-        auth: this.opts.instance && this.opts.instance.auth,
-        ip: this.opts.instance && this.opts.instance.ip,
+        debug: instOpts.debug,
+        args: instOpts.args,
+        auth: instOpts.auth,
       },
       binary: this.opts.binary,
       spawn: this.opts.spawn,
@@ -183,17 +181,21 @@ export default class MongoMemoryServer {
     );
   }
 
+  _getUriBase(host: string, port: number, dbName: string) {
+    return `mongodb://${host}:${port}/${dbName}?`;
+  }
+
   async getUri(otherDbName: string | boolean = false): Promise<string> {
-    const { uri, port }: MongoInstanceDataT = await this.ensureInstance();
+    const { uri, port, ip }: MongoInstanceDataT = await this.ensureInstance();
 
     // IF true OR string
     if (otherDbName) {
       if (typeof otherDbName === 'string') {
         // generate uri with provided DB name on existed DB instance
-        return generateConnectionString(port, otherDbName);
+        return this._getUriBase(ip, port, otherDbName);
       }
       // generate new random db name
-      return generateConnectionString(port, generateDbName());
+      return this._getUriBase(ip, port, generateDbName());
     }
 
     return uri;

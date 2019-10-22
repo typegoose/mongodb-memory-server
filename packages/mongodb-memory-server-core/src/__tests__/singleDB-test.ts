@@ -33,7 +33,7 @@ describe('Single mongoServer', () => {
 
   it('should get URI of specified DB name', async () => {
     const port: number = await mongoServer.getPort();
-    expect(await mongoServer.getUri('dumb')).toBe(`mongodb://127.0.0.1:${port}/dumb`);
+    expect(await mongoServer.getUri('dumb')).toBe(`mongodb://127.0.0.1:${port}/dumb?`);
   });
 
   it('should throw error on start if there is already a running instance', async () => {

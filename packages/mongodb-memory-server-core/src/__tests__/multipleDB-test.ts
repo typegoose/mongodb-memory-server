@@ -55,7 +55,11 @@ describe('Multiple mongoServers', () => {
   it('should have different uri', async () => {
     const uri1 = await mongoServer1.getConnectionString();
     const uri2 = await mongoServer2.getConnectionString();
-
     expect(uri1).not.toEqual(uri2);
+  });
+
+  it('v6.0.0 adds "?" to the connection string (uri)', async () => {
+    const uri1 = await mongoServer1.getConnectionString();
+    expect(uri1.includes('?')).toBeTruthy();
   });
 });
