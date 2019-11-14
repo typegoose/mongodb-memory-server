@@ -171,11 +171,11 @@ const replSet = new MongoMemoryReplSet({
   replSet: { storageEngine: 'wiredTiger' },
 });
 await replSet.waitUntilRunning();
-const uri = await mongod.getConnectionString();
+const uri = await replSet.getConnectionString();
 // or you may obtain the connection config parts:
-// const port = await mongod.getPort();
-// const dbPath = await mongod.getDbPath();
-// const dbName = await mongod.getDbName();
+// const port = await replSet.getPort();
+// const dbPath = await replSet.getDbPath();
+// const dbName = await replSet.getDbName();
 
 // some code, eg. for mongoose
 mongoose.set('useFindAndModify', false);
