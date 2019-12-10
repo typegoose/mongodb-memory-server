@@ -172,10 +172,28 @@ export default class MongoBinaryDownloadUrl {
       .trim()}`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getMintVersionString(os: getos.Os): string {
-    // unfortunately getos doesn't return version for Mint
-    return 'ubuntu1404';
+  getMintVersionString(os: getos.LinuxOs): string {
+    let name = 'ubuntu';
+    const mintMajorVer = parseInt(os.release ? os.release.split('.')[0] : os.release);
+    if (mintMajorVer < 17) {
+      throw new Error('Mint Versions under 17 are not supported!');
+    }
+
+    switch (mintMajorVer) {
+      case 17:
+        name += '1404';
+        break;
+      case 18:
+        name += '1604';
+        break;
+      case 19:
+      default:
+        // a default to support versions > 19
+        name += '1804';
+        break;
+    }
+
+    return name;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
