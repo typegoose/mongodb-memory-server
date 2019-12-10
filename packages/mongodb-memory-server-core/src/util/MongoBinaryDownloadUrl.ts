@@ -1,6 +1,7 @@
 import getos from 'getos';
 import { execSync } from 'child_process';
 import resolveConfig from './resolve-config';
+import { promisify } from 'util';
 
 export interface MongoBinaryDownloadUrlOpts {
   version: string;
@@ -85,7 +86,9 @@ export default class MongoBinaryDownloadUrl {
 
     let osString;
     if (this.arch !== 'i686') {
-      if (!this.os) this.os = await this.getos();
+      if (!this.os) {
+        this.os = await promisify(getos)();
+      }
       osString = this.getLinuxOSVersionString(this.os as getos.LinuxOs);
     }
     if (osString) {
@@ -95,15 +98,6 @@ export default class MongoBinaryDownloadUrl {
     name += `-${this.version}.tgz`;
 
     return name;
-  }
-
-  async getos(): Promise<getos.Os> {
-    return new Promise((resolve, reject) => {
-      getos((e: any, os: any) => {
-        if (e) reject(e);
-        resolve(os);
-      });
-    });
   }
 
   getLinuxOSVersionString(os: getos.LinuxOs): string {
