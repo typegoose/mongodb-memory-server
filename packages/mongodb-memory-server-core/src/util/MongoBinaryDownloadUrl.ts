@@ -1,4 +1,4 @@
-import getos from 'getos';
+import getOS, { AnyOS, LinuxOS } from './getos';
 import { execSync } from 'child_process';
 import resolveConfig from './resolve-config';
 import { promisify } from 'util';
@@ -7,14 +7,14 @@ export interface MongoBinaryDownloadUrlOpts {
   version: string;
   platform: string;
   arch: string;
-  os?: getos.Os;
+  os?: AnyOS;
 }
 
 export default class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
   version: string;
-  os: getos.Os | undefined;
+  os: AnyOS | undefined;
 
   constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
     this.version = version;
@@ -87,9 +87,11 @@ export default class MongoBinaryDownloadUrl {
     let osString;
     if (this.arch !== 'i686') {
       if (!this.os) {
-        this.os = await promisify(getos)();
+        // this.os = await promisify(getOS)();
+        this.os = await getOS();
+        console.log("got back:", this.os)
       }
-      osString = this.getLinuxOSVersionString(this.os as getos.LinuxOs);
+      osString = this.getLinuxOSVersionString(this.os as LinuxOS);
     }
     if (osString) {
       name += `-${osString}`;
@@ -100,7 +102,7 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  getLinuxOSVersionString(os: getos.LinuxOs): string {
+  getLinuxOSVersionString(os: LinuxOS): string {
     if (/ubuntu/i.test(os.dist)) {
       return this.getUbuntuVersionString(os);
     } else if (/elementary OS/i.test(os.dist)) {
@@ -120,10 +122,10 @@ export default class MongoBinaryDownloadUrl {
     return this.getLegacyVersionString(os);
   }
 
-  getDebianVersionString(os: getos.Os): string {
+  getDebianVersionString(os: AnyOS): string {
     let name = 'debian';
-    const release: number = parseFloat((os as getos.LinuxOs).release);
-    if (release >= 10 || (os as getos.LinuxOs).release === 'unstable') {
+    const release: number = parseFloat((os as LinuxOS).release);
+    if (release >= 10 || (os as LinuxOS).release === 'unstable') {
       name += '10';
     } else if (release >= 9) {
       name += '92';
@@ -135,9 +137,9 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  getFedoraVersionString(os: getos.Os): string {
+  getFedoraVersionString(os: AnyOS): string {
     let name = 'rhel';
-    const fedoraVer: number = parseInt((os as getos.LinuxOs).release, 10);
+    const fedoraVer: number = parseInt((os as LinuxOS).release, 10);
     if (fedoraVer > 18) {
       name += '70';
     } else if (fedoraVer < 19 && fedoraVer >= 12) {
@@ -148,9 +150,9 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  getRhelVersionString(os: getos.Os): string {
+  getRhelVersionString(os: AnyOS): string {
     let name = 'rhel';
-    const { release } = os as getos.LinuxOs;
+    const { release } = os as LinuxOS;
     if (release) {
       if (/^7/.test(release)) {
         name += '70';
@@ -164,7 +166,7 @@ export default class MongoBinaryDownloadUrl {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getElementaryOSVersionString(os: getos.Os): string {
+  getElementaryOSVersionString(os: AnyOS): string {
     const ubuntuVersion = execSync('/usr/bin/lsb_release -u -rs');
     return `ubuntu${ubuntuVersion
       .toString()
@@ -172,7 +174,7 @@ export default class MongoBinaryDownloadUrl {
       .trim()}`;
   }
 
-  getMintVersionString(os: getos.LinuxOs): string {
+  getMintVersionString(os: LinuxOS): string {
     let name = 'ubuntu';
     const mintMajorVer = parseInt(os.release ? os.release.split('.')[0] : os.release);
     if (mintMajorVer < 17) {
@@ -197,12 +199,12 @@ export default class MongoBinaryDownloadUrl {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getLegacyVersionString(os: getos.Os): string {
+  getLegacyVersionString(os: AnyOS): string {
     return '';
   }
 
-  getSuseVersionString(os: getos.Os): string {
-    const releaseMatch: RegExpMatchArray | null = (os as getos.LinuxOs).release.match(/(^11|^12)/);
+  getSuseVersionString(os: AnyOS): string {
+    const releaseMatch: RegExpMatchArray | null = (os as LinuxOS).release.match(/(^11|^12)/);
 
     if (releaseMatch) {
       return `suse${releaseMatch[0]}`;
@@ -210,7 +212,7 @@ export default class MongoBinaryDownloadUrl {
     return '';
   }
 
-  getUbuntuVersionString(os: getos.LinuxOs): string {
+  getUbuntuVersionString(os: LinuxOS): string {
     let name = 'ubuntu';
     const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
     const majorVer: number = parseInt(ubuntuVer[0], 10);
