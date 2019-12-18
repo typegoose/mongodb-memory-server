@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "devDependencies": {
-    "@types/async": "^3.0.3",
     "@types/cross-spawn": "^6.0.1",
     "@types/decompress": "^4.2.3",
     "@types/dedent": "^0.7.0",
@@ -43,7 +42,6 @@
     "rimraf": "^3.0.0"
   },
   "dependencies": {
-    "async": "^3.1.0",
     "camelcase": "^5.3.1",
     "cross-spawn": "^7.0.1",
     "debug": "^4.1.1",
