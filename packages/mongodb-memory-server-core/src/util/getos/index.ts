@@ -1,25 +1,22 @@
-// @ts-nocheck
-// import * as async from "async";
-import * as fs from "fs";
-import * as os from "os";
-import { join } from "path";
+import { readFile, read, stat, readdir } from "fs";
+import { platform } from "os";
 
 import { exec } from "child_process";
-import { promisify } from "util";
+import { promisify, isNullOrUndefined } from "util";
 
-// const distros = fs.readFileSync(join(__dirname, "os.json"));
-
+/** Collection of Regexes for "lsb_release -a" parsing */
 const LSBRegex = {
-  name: /^distributor id:[\s]*(.*)$/mi,
-  codename: /^codename:[\s]*(.*)$/mi,
-  release: /^release:[\s]*(.*)$/mi
+  name: /^distributor id:\s*(.*)$/mi,
+  codename: /^codename:\s*(.*)$/mi,
+  release: /^release:\s*(.*)$/mi
 }
 
+/** Collection of Regexes for "/etc/os-release" parsing */
 const OSRegex = {
-  name: /^id="?(.*)"?$/mi,
+  name: /^id\s*=\s*"?(.*)"?$/mi,
   /** uses VERSION_CODENAME */
-  codename: /^version_codename=(.*)$/mi,
-  release: /^version_id="?(.*)"?$/mi
+  codename: /^version_codename\s*=\s*(.*)$/mi,
+  release: /^version_id\s*=\s*"?(.*)"?$/mi
 }
 
 export interface OtherOS {
@@ -44,39 +41,64 @@ export interface LinuxOS extends OtherOS {
 export type AnyOS = OtherOS | LinuxOS;
 
 /**
- * Module definition.
+ * Check if the OS is a LinuxOS Typeguard
+ * @param os The OS object to check for
  */
+export function isLinuxOS(os: AnyOS): os is LinuxOS {
+  return os.os === "linux";
+}
+
+/** Get an OS object */
 export default async function getOS(): Promise<AnyOS> {
   /** Node builtin function for first determinations */
-  let osName = os.platform();
+  let osName = platform();
 
   // Linux is a special case.
-  if (osName === 'linux') return await getInfomation();
+  if (osName === 'linux') return await getLinuxInfomation();
 
   return { os: osName };
 }
 
-async function getInfomation() {
-  const lsb = await promisify(exec)("lsb_release -a"); // exec this for safety, because "/etc/lsb-release" could be changed to another file
-  if (lsb.stdout.length <= 0) {
-    try {
-      const os = await promisify(fs.readFile)("/etc/os-release");
+/** Function to outsource Linux Infomation Parsing */
+async function getLinuxInfomation(): Promise<AnyOS> {
+  // Structure of this function:
+  // 1. try lsb_release
+  // (if not 1) 2. try /etc/os-release
+  // (if not 2) 3. try read dir /etc and filter any file "-release" and try to parse the first file found
 
-      return parseOS(os.toString());
-    } catch (err) {
-      if (err?.code === "ENOENT") {
-        throw new Error("No Appropiate file was found!\nSupported are: \"lsb_release -a\"(command) and \"/etc/os-release\"")
+  try {
+    const lsb = await promisify(exec)("lsb_release -a"); // exec this for safety, because "/etc/lsb-release" could be changed to another file
+
+    return parseLSB(lsb.stdout);
+  } catch (err) {
+    if ((err as Error).message.match(/: not found/mi)) {
+      try {
+        const os = await promisify(readFile)("/etc/os-release");
+
+        return parseOS(os.toString());
+      } catch (err) {
+        if (err?.code === "ENOENT") {
+          // last resort testing (for something like archlinux)
+          const file = (await promisify(readdir)("/etc")).filter((v) => v.match(/.*-release$/mi))[0];
+          if (isNullOrUndefined(file) || file.length <= 0) {
+            throw new Error("No release file found!");
+          }
+          const os = await promisify(exec)("cat /etc/" + file);
+
+          return parseOS(os.stdout);
+        }
+
+        throw err;
       }
-
+    } else {
+      // throw the error in case it is not a "not found" error
       throw err;
     }
-  }
-
-  return parseLSB(lsb.stdout);
+  }  
 }
 
+/** Function to outsource "lsb_release -a" parsing */
 function parseLSB(input: string): LinuxOS {
-  console.log("parseLSB")
   return {
     os: "linux",
     dist: input.match(LSBRegex.name)?.[1] ?? "unkown",
@@ -85,8 +107,8 @@ function parseLSB(input: string): LinuxOS {
   }
 }
 
+/** Function to outsource "/etc/os-release" parsing */
 function parseOS(input: string): LinuxOS {
-  console.log("parseOS")
   return {
     os: "linux",
     dist: input.match(OSRegex.name)?.[1] ?? "unkown",

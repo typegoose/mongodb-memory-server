@@ -84,10 +84,9 @@ export default class MongoBinaryDownloadUrl {
     let name = `mongodb-linux`;
     name += `-${this.arch}`;
 
-    let osString;
+    let osString: string | undefined;
     if (this.arch !== 'i686') {
       if (!this.os) {
-        // this.os = await promisify(getOS)();
         this.os = await getOS();
         console.log("got back:", this.os)
       }
@@ -117,15 +116,20 @@ export default class MongoBinaryDownloadUrl {
       return this.getDebianVersionString(os);
     } else if (/mint/i.test(os.dist)) {
       return this.getMintVersionString(os);
+    } else if (/unkown/i.test(os.dist)) {
+      // in some cases this is redundant, but this is here to notify users to report if their Distro couldnt be parsed
+      console.warn("Couldnt parse dist infomation, please report this to https://github.com/nodkz/mongodb-memory-server/issues");
     }
+    // this is when the os.dist couldnt be handled by MongoBinaryDownloadUrl
     console.warn(`Unknown linux distro ${os.dist}, falling back to legacy MongoDB build`);
+
     return this.getLegacyVersionString(os);
   }
 
-  getDebianVersionString(os: AnyOS): string {
+  getDebianVersionString(os: LinuxOS): string {
     let name = 'debian';
-    const release: number = parseFloat((os as LinuxOS).release);
-    if (release >= 10 || (os as LinuxOS).release === 'unstable') {
+    const release: number = parseFloat(os.release);
+    if (release >= 10 || os.release === 'unstable') {
       name += '10';
     } else if (release >= 9) {
       name += '92';
@@ -137,9 +141,9 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  getFedoraVersionString(os: AnyOS): string {
+  getFedoraVersionString(os: LinuxOS): string {
     let name = 'rhel';
-    const fedoraVer: number = parseInt((os as LinuxOS).release, 10);
+    const fedoraVer: number = parseInt(os.release, 10);
     if (fedoraVer > 18) {
       name += '70';
     } else if (fedoraVer < 19 && fedoraVer >= 12) {
@@ -150,9 +154,9 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  getRhelVersionString(os: AnyOS): string {
+  getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
-    const { release } = os as LinuxOS;
+    const { release } = os;
     if (release) {
       if (/^7/.test(release)) {
         name += '70';
@@ -166,7 +170,7 @@ export default class MongoBinaryDownloadUrl {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getElementaryOSVersionString(os: AnyOS): string {
+  getElementaryOSVersionString(os: LinuxOS): string {
     const ubuntuVersion = execSync('/usr/bin/lsb_release -u -rs');
     return `ubuntu${ubuntuVersion
       .toString()
@@ -203,8 +207,8 @@ export default class MongoBinaryDownloadUrl {
     return '';
   }
 
-  getSuseVersionString(os: AnyOS): string {
-    const releaseMatch: RegExpMatchArray | null = (os as LinuxOS).release.match(/(^11|^12)/);
+  getSuseVersionString(os: LinuxOS): string {
+    const releaseMatch: RegExpMatchArray | null = os.release.match(/(^11|^12)/);
 
     if (releaseMatch) {
       return `suse${releaseMatch[0]}`;
