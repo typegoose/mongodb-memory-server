@@ -38,7 +38,7 @@
     "@types/md5-file": "^4.0.0",
     "@types/mkdirp": "^0.5.2",
     "@types/tmp": "0.1.0",
-    "@types/uuid": "^3.4.5",
+    "@types/uuid": "3.4.6",
     "rimraf": "^3.0.0"
   },
   "dependencies": {
@@ -47,10 +47,10 @@
     "debug": "^4.1.1",
     "decompress": "^4.2.0",
     "dedent": "^0.7.0",
-    "find-cache-dir": "^3.0.0",
+    "find-cache-dir": "3.2.0",
     "find-package-json": "^1.2.0",
-    "get-port": "^5.0.0",
-    "https-proxy-agent": "^3.0.0",
+    "get-port": "5.0.0",
+    "https-proxy-agent": "4.0.0",
     "lockfile": "^1.0.4",
     "md5-file": "^4.0.0",
     "mkdirp": "^0.5.1",
