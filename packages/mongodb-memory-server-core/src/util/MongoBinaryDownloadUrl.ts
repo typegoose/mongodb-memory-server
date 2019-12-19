@@ -1,7 +1,6 @@
 import getOS, { AnyOS, LinuxOS } from './getos';
 import { execSync } from 'child_process';
 import resolveConfig from './resolve-config';
-import { promisify } from 'util';
 
 export interface MongoBinaryDownloadUrlOpts {
   version: string;
@@ -88,7 +87,7 @@ export default class MongoBinaryDownloadUrl {
     if (this.arch !== 'i686') {
       if (!this.os) {
         this.os = await getOS();
-        console.log("got back:", this.os)
+        console.log('got back:', this.os);
       }
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
     }
@@ -118,7 +117,9 @@ export default class MongoBinaryDownloadUrl {
       return this.getMintVersionString(os);
     } else if (/unkown/i.test(os.dist)) {
       // in some cases this is redundant, but this is here to notify users to report if their Distro couldnt be parsed
-      console.warn("Couldnt parse dist infomation, please report this to https://github.com/nodkz/mongodb-memory-server/issues");
+      console.warn(
+        'Couldnt parse dist infomation, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
+      );
     }
     // this is when the os.dist couldnt be handled by MongoBinaryDownloadUrl
     console.warn(`Unknown linux distro ${os.dist}, falling back to legacy MongoDB build`);
