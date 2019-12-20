@@ -70,7 +70,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const mongod = new MongoMemoryServer();
 
-const uri = await mongod.getConnectionString();
+const uri = await mongod.getUri();
 const port = await mongod.getPort();
 const dbPath = await mongod.getDbPath();
 const dbName = await mongod.getDbName();
@@ -171,7 +171,7 @@ const replSet = new MongoMemoryReplSet({
   replSet: { storageEngine: 'wiredTiger' },
 });
 await replSet.waitUntilRunning();
-const uri = await replSet.getConnectionString();
+const uri = await replSet.getUri();
 // or you may obtain the connection config parts:
 // const port = await replSet.getPort();
 // const dbPath = await replSet.getDbPath();
@@ -246,7 +246,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 const mongoServer = new MongoMemoryServer();
 
 mongoose.Promise = Promise;
-mongoServer.getConnectionString().then((mongoUri) => {
+mongoServer.getUri().then((mongoUri) => {
   const mongooseOpts = {
     // options for mongoose 4.11.3 and above
     autoReconnect: true,
@@ -300,21 +300,21 @@ const mongooseOpts = { // options for mongoose 4.11.3 and above
   useMongoClient: true, // remove this line if you use mongoose 5 and above
 };
 
-mongoServer1.getConnectionString('server1_db1').then((mongoUri) => {
+mongoServer1.getUri('server1_db1').then((mongoUri) => {
   connections.conn1.open(mongoUri, mongooseOpts);
   connection.once('open', () => {
     console.log(`MongoDB successfully connected to ${mongoUri}`);
   });
 });
 
-mongoServer1.getConnectionString('server1_db2').then((mongoUri) => {
+mongoServer1.getUri('server1_db2').then((mongoUri) => {
   connections.conn2.open(mongoUri, mongooseOpts);
   connection.once('open', () => {
     console.log(`MongoDB successfully connected to ${mongoUri}`);
   });
 });
 
-mongoServer2.getConnectionString('server2_db').then((mongoUri) => {
+mongoServer2.getUri('server2_db').then((mongoUri) => {
   connections.conn3.open(mongoUri, mongooseOpts);
   connection.once('open', () => {
     console.log(`MongoDB successfully connected to ${mongoUri}`);
@@ -378,7 +378,7 @@ const opts = { useMongoClient: true }; // remove this option if you use mongoose
 
 before(async () => {
   mongoServer = new MongoMemoryServer();
-  const mongoUri = await mongoServer.getConnectionString();
+  const mongoUri = await mongoServer.getUri();
   await mongoose.connect(mongouri, opts);
 });
 
@@ -410,7 +410,7 @@ const opts = { useMongoClient: true }; // remove this option if you use mongoose
 
 beforeAll(async () => {
   mongoServer = new MongoMemoryServer();
-  const mongoUri = await mongoServer.getConnectionString();
+  const mongoUri = await mongoServer.getUri();
   await mongoose.connect(mongoUri, opts, (err) => {
     if (err) console.error(err);
   });
