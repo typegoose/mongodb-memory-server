@@ -61,6 +61,7 @@
     "mongodb": "^3.2.7"
   },
   "scripts": {
+    "cleanup": "rimraf tmp lib coverage node_modules/.cache",
     "build": "npm-run-all build:*",
     "build:ts": "rimraf ./lib && tsc -p ./tsconfig.json",
     "disabled-build:flow": "find ./lib -name \"*.d.ts\" -exec bash -c './node_modules/.bin/flowgen --add-flow-header \"$1\" -o \"${1%.d.ts}\".js.flow' - '{}' \\;",
