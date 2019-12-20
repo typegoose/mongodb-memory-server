@@ -31,21 +31,21 @@ Choose any package, because they are the same. Differs only by default configura
 
 ### `mongodb-memory-server`
 
-Auto-downloads the latest `mongod` binary on npm install to: `node_modules/.cache`.
+Auto-downloads the latest `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.
 
 ```bash
 yarn add mongodb-memory-server --dev
-OR
+# OR
 npm install mongodb-memory-server --save-dev
 ```
 
 ### `mongodb-memory-server-global`
 
-Auto-downloads the latest `mongod` binary on npm install to: `%HOME/.cache`.
+Auto-downloads the latest `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
 
 ```bash
 yarn add mongodb-memory-server-global --dev
-OR
+# OR
 npm install mongodb-memory-server-global --save-dev
 ```
 
@@ -55,7 +55,7 @@ Does NOT auto-download `mongod` on npm install.
 
 ```bash
 yarn add mongodb-memory-server-core --dev
-OR
+# OR
 npm install mongodb-memory-server-core --save-dev
 ```
 
@@ -98,7 +98,7 @@ All options are optional.
 ```js
 const mongod = new MongoMemoryServer({
   instance: {
-    port?: ?number, // by default choose any free port
+    port?: number, // by default choose any free port
     ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`,
     dbName?: string, // by default generate random dbName
     dbPath?: string, // by default create in temp directory
@@ -124,7 +124,7 @@ const mongod = new MongoMemoryServer({
 
 #### Options which can be set via ENVIRONMENT variables
 
-```txt
+```sh
 MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
 MONGOMS_PLATFORM=linux
 MONGOMS_ARCH=x64
@@ -376,16 +376,10 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 let mongoServer;
 const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 
-before((done) => {
+before(async () => {
   mongoServer = new MongoMemoryServer();
-  mongoServer
-    .getConnectionString()
-    .then((mongoUri) => {
-      return mongoose.connect(mongoUri, opts, (err) => {
-        if (err) done(err);
-      });
-    })
-    .then(() => done());
+  const mongoUri = await mongoServer.getConnectionString();
+  await mongoose.connect(mongouri, opts);
 });
 
 after(async () => {
@@ -430,8 +424,8 @@ afterAll(async () => {
 describe('...', () => {
   it('...', async () => {
     const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-    const cnt = await User.count();
-    expect(cnt).toEqual(0);
+    const count = await User.count();
+    expect(count).toEqual(0);
   });
 });
 ```
@@ -457,10 +451,11 @@ mongodb-memory-server on any system on which you can install mongod.
 **It is very important** to limit spawned number of Jest workers for avoiding race condition. Cause Jest spawn huge amount of workers for every node environment on same machine. [More details](https://github.com/facebook/jest/issues/3765)
 Use `--maxWorkers 4` or `--runInBand` option.
 
-```diff
 script:
--  - yarn run coverage
-+  - yarn run coverage -- --maxWorkers 4
+
+```diff
+-  yarn run coverage
++  yarn run coverage -- --maxWorkers 4
 ```
 
 ## Credits
