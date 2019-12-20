@@ -1,4 +1,4 @@
-import tmp, { SynchrounousResult } from 'tmp';
+import tmp, { DirResult } from 'tmp';
 import fs from 'fs';
 import os from 'os';
 import MongoBinary, { LATEST_VERSION } from '../MongoBinary';
@@ -16,7 +16,7 @@ jest.mock('../MongoBinaryDownload', () => {
 });
 
 describe('MongoBinary', () => {
-  let tmpDir: SynchrounousResult;
+  let tmpDir: DirResult;
 
   beforeEach(() => {
     tmpDir = tmp.dirSync({ prefix: 'mongo-mem-bin-', unsafeCleanup: true });

@@ -16,5 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["**/__tests__"]
 }
