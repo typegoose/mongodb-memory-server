@@ -147,7 +147,6 @@ describe('MongodbInstance', () => {
     const mongod = await MongodbInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version: '4.0.3' },
-      debug: true,
     });
     const pid: any = mongod.getPid();
     expect(pid).toBeGreaterThan(0);
