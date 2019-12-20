@@ -2,9 +2,7 @@
   "version": "6.1.1",
   "command": {
     "publish": {
-      "allowBranch": [
-        "master"
-      ],
+      "allowBranch": ["master", "fix-lerna"],
       "exact": true,
       "conventionalCommits": true
     },
