@@ -72,7 +72,7 @@ describe('MongoMemoryServer', () => {
       const mongoServer = new MongoMemoryServer({ autoStart: false });
 
       await expect(mongoServer.ensureInstance()).rejects.toThrow(
-        'Database instance is not running. You should start database by calling start() method. BTW it should start automatically if opts.autoStart!=false. Also you may provide opts.debug=true for more info.'
+        'Ensure Instace failed to start an instance!'
       );
 
       expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
