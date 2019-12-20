@@ -1,9 +1,9 @@
 version: 2
 
 jobs:
-  Node8 tests:
+  Node10 tests:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:10
     steps:
       - checkout
       - run: node --version > node_version
@@ -17,9 +17,9 @@ jobs:
             - ~/.cache/yarn
       - run: yarn test
 
-  Node10 tests:
+  Node12 tests:
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:12
     steps:
       - checkout
       - run: node --version > node_version
@@ -36,7 +36,7 @@ jobs:
 
   Release:
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:12
     steps:
       - checkout
       - run: node --version > node_version
@@ -54,18 +54,19 @@ jobs:
           git remote set-url origin "https://${GH_TOKEN}@github.com/nodkz/mongodb-memory-server.git" > /dev/null 2>&1
           git checkout master
       - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ${HOME}/.npmrc 2> /dev/null
+      - run: yarn build
       - run: yarn release --yes
 
 workflows:
   version: 2
   build:
     jobs:
-      - Node8 tests
       - Node10 tests
+      - Node12 tests
       - Release:
           requires:
-            - Node8 tests
             - Node10 tests
+            - Node12 tests
           filters:
             branches:
               only: master
