@@ -86,7 +86,9 @@ describe('MongodbInstance', () => {
       },
     });
     expect(inst.prepareCommandArgs()).toEqual(
-      ['--bind_ip', '127.0.0.1', '--port', '27555', '--dbpath', tmpDir.name, '--noauth'].concat(args)
+      ['--bind_ip', '127.0.0.1', '--port', '27555', '--dbpath', tmpDir.name, '--noauth'].concat(
+        args
+      )
     );
   });
 
