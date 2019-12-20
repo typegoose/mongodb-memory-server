@@ -29,6 +29,11 @@ This tool provides three packages for different purposes:
 
 Choose any package, because they are the same. Differs only by default configuration, which you may override (see section [Available options](#available-options)).
 
+### Requirements
+
+NodeJS: 8+
+Typescript: 3.7+ (if used)
+
 ### `mongodb-memory-server`
 
 Auto-downloads the latest `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.

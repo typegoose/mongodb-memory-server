@@ -9,6 +9,9 @@
     "url": "https://github.com/nodkz/mongodb-memory-server.git",
     "directory": "packages/mongodb-memory-server-core"
   },
+  "engines": {
+    "node": ">=8.10.0"
+  },
   "files": [
     "lib",
     "scripts"
