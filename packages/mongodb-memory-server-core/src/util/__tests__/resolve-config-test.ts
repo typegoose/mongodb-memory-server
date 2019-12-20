@@ -3,6 +3,7 @@ import tmp from 'tmp';
 import { promisify } from 'util';
 import resolveConfig, { reInitializePackageJson } from '../resolve-config';
 
+tmp.setGracefulCleanup();
 const mkdirAsync = promisify(fs.mkdir);
 const writeFileAsync = promisify(fs.writeFile);
 

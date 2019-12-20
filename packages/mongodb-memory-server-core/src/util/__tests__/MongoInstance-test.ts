@@ -3,10 +3,10 @@ import { LATEST_VERSION } from '../MongoBinary';
 import MongodbInstance from '../MongoInstance';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
+tmp.setGracefulCleanup();
 
 let tmpDir: SynchrounousResult;
 beforeEach(() => {
-  tmp.setGracefulCleanup();
   tmpDir = tmp.dirSync({ prefix: 'mongo-mem-', unsafeCleanup: true });
 });
 
@@ -19,7 +19,7 @@ describe('MongodbInstance', () => {
     const inst = new MongodbInstance({
       instance: {
         port: 27333,
-        dbPath: '/data',
+        dbPath: tmpDir.name,
         storageEngine: 'ephemeralForTest',
       },
     });
@@ -31,7 +31,7 @@ describe('MongodbInstance', () => {
       '--storageEngine',
       'ephemeralForTest',
       '--dbpath',
-      '/data',
+      tmpDir.name,
       '--noauth',
     ]);
   });
@@ -40,7 +40,7 @@ describe('MongodbInstance', () => {
     const inst = new MongodbInstance({
       instance: {
         port: 27555,
-        dbPath: '/data',
+        dbPath: tmpDir.name,
         replSet: 'testset',
       },
     });
@@ -50,7 +50,7 @@ describe('MongodbInstance', () => {
       '--port',
       '27555',
       '--dbpath',
-      '/data',
+      tmpDir.name,
       '--noauth',
       '--replSet',
       'testset',
@@ -61,7 +61,7 @@ describe('MongodbInstance', () => {
     const inst = new MongodbInstance({
       instance: {
         port: 27555,
-        dbPath: '/data',
+        dbPath: tmpDir.name,
         auth: true,
       },
     });
@@ -71,7 +71,7 @@ describe('MongodbInstance', () => {
       '--port',
       '27555',
       '--dbpath',
-      '/data',
+      tmpDir.name,
       '--auth',
     ]);
   });
@@ -81,12 +81,14 @@ describe('MongodbInstance', () => {
     const inst = new MongodbInstance({
       instance: {
         port: 27555,
-        dbPath: '/data',
+        dbPath: tmpDir.name,
         args,
       },
     });
     expect(inst.prepareCommandArgs()).toEqual(
-      ['--bind_ip', '127.0.0.1', '--port', '27555', '--dbpath', '/data', '--noauth'].concat(args)
+      ['--bind_ip', '127.0.0.1', '--port', '27555', '--dbpath', tmpDir.name, '--noauth'].concat(
+        args
+      )
     );
   });
 
@@ -147,7 +149,6 @@ describe('MongodbInstance', () => {
     const mongod = await MongodbInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version: '4.0.3' },
-      debug: true,
     });
     const pid: any = mongod.getPid();
     expect(pid).toBeGreaterThan(0);

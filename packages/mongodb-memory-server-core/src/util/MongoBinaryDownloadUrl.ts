@@ -1,4 +1,4 @@
-import getos from 'getos';
+import getOS, { AnyOS, LinuxOS } from './getos';
 import { execSync } from 'child_process';
 import resolveConfig from './resolve-config';
 
@@ -6,14 +6,14 @@ export interface MongoBinaryDownloadUrlOpts {
   version: string;
   platform: string;
   arch: string;
-  os?: getos.Os;
+  os?: AnyOS;
 }
 
 export default class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
   version: string;
-  os: getos.Os | undefined;
+  os: AnyOS | undefined;
 
   constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
     this.version = version;
@@ -83,10 +83,13 @@ export default class MongoBinaryDownloadUrl {
     let name = `mongodb-linux`;
     name += `-${this.arch}`;
 
-    let osString;
+    let osString: string | undefined;
     if (this.arch !== 'i686') {
-      if (!this.os) this.os = await this.getos();
-      osString = this.getLinuxOSVersionString(this.os as getos.LinuxOs);
+      if (!this.os) {
+        this.os = await getOS();
+        console.log('got back:', this.os);
+      }
+      osString = this.getLinuxOSVersionString(this.os as LinuxOS);
     }
     if (osString) {
       name += `-${osString}`;
@@ -97,16 +100,7 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  async getos(): Promise<getos.Os> {
-    return new Promise((resolve, reject) => {
-      getos((e: any, os: any) => {
-        if (e) reject(e);
-        resolve(os);
-      });
-    });
-  }
-
-  getLinuxOSVersionString(os: getos.LinuxOs): string {
+  getLinuxOSVersionString(os: LinuxOS): string {
     if (/ubuntu/i.test(os.dist)) {
       return this.getUbuntuVersionString(os);
     } else if (/elementary OS/i.test(os.dist)) {
@@ -121,15 +115,22 @@ export default class MongoBinaryDownloadUrl {
       return this.getDebianVersionString(os);
     } else if (/mint/i.test(os.dist)) {
       return this.getMintVersionString(os);
+    } else if (/unkown/i.test(os.dist)) {
+      // in some cases this is redundant, but this is here to notify users to report if their Distro couldnt be parsed
+      console.warn(
+        'Couldnt parse dist infomation, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
+      );
     }
+    // this is when the os.dist couldnt be handled by MongoBinaryDownloadUrl
     console.warn(`Unknown linux distro ${os.dist}, falling back to legacy MongoDB build`);
+
     return this.getLegacyVersionString(os);
   }
 
-  getDebianVersionString(os: getos.Os): string {
+  getDebianVersionString(os: LinuxOS): string {
     let name = 'debian';
-    const release: number = parseFloat((os as getos.LinuxOs).release);
-    if (release >= 10 || (os as getos.LinuxOs).release === 'unstable') {
+    const release: number = parseFloat(os.release);
+    if (release >= 10 || os.release === 'unstable') {
       name += '10';
     } else if (release >= 9) {
       name += '92';
@@ -141,9 +142,9 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  getFedoraVersionString(os: getos.Os): string {
+  getFedoraVersionString(os: LinuxOS): string {
     let name = 'rhel';
-    const fedoraVer: number = parseInt((os as getos.LinuxOs).release, 10);
+    const fedoraVer: number = parseInt(os.release, 10);
     if (fedoraVer > 18) {
       name += '70';
     } else if (fedoraVer < 19 && fedoraVer >= 12) {
@@ -154,9 +155,9 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  getRhelVersionString(os: getos.Os): string {
+  getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
-    const { release } = os as getos.LinuxOs;
+    const { release } = os;
     if (release) {
       if (/^7/.test(release)) {
         name += '70';
@@ -170,7 +171,7 @@ export default class MongoBinaryDownloadUrl {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getElementaryOSVersionString(os: getos.Os): string {
+  getElementaryOSVersionString(os: LinuxOS): string {
     const ubuntuVersion = execSync('/usr/bin/lsb_release -u -rs');
     return `ubuntu${ubuntuVersion
       .toString()
@@ -178,19 +179,37 @@ export default class MongoBinaryDownloadUrl {
       .trim()}`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getMintVersionString(os: getos.Os): string {
-    // unfortunately getos doesn't return version for Mint
-    return 'ubuntu1404';
+  getMintVersionString(os: LinuxOS): string {
+    let name = 'ubuntu';
+    const mintMajorVer = parseInt(os.release ? os.release.split('.')[0] : os.release);
+    if (mintMajorVer < 17) {
+      throw new Error('Mint Versions under 17 are not supported!');
+    }
+
+    switch (mintMajorVer) {
+      case 17:
+        name += '1404';
+        break;
+      case 18:
+        name += '1604';
+        break;
+      case 19:
+      default:
+        // a default to support versions > 19
+        name += '1804';
+        break;
+    }
+
+    return name;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getLegacyVersionString(os: getos.Os): string {
+  getLegacyVersionString(os: AnyOS): string {
     return '';
   }
 
-  getSuseVersionString(os: getos.Os): string {
-    const releaseMatch: RegExpMatchArray | null = (os as getos.LinuxOs).release.match(/(^11|^12)/);
+  getSuseVersionString(os: LinuxOS): string {
+    const releaseMatch: RegExpMatchArray | null = os.release.match(/(^11|^12)/);
 
     if (releaseMatch) {
       return `suse${releaseMatch[0]}`;
@@ -198,7 +217,7 @@ export default class MongoBinaryDownloadUrl {
     return '';
   }
 
-  getUbuntuVersionString(os: getos.LinuxOs): string {
+  getUbuntuVersionString(os: LinuxOS): string {
     let name = 'ubuntu';
     const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
     const majorVer: number = parseInt(ubuntuVer[0], 10);

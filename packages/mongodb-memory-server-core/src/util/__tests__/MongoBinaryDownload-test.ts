@@ -50,7 +50,7 @@ MONGOMS_MD5_CHECK environment variable`, () => {
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (du.httpDownload as jest.Mock).mock.calls[0][0];
     expect(callArg1.agent).toBeDefined();
-    expect(callArg1.agent.options.href).toBe('http://user:pass@proxy:8080/');
+    expect(callArg1.agent.proxy.href).toBe('http://user:pass@proxy:8080/');
   });
 
   it(`makeMD5check returns true if md5 of downloaded mongoDBArchive is

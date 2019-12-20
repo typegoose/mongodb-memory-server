@@ -241,10 +241,34 @@ describe('MongoBinaryDownloadUrl', () => {
       version: '3.6.3',
     });
 
-    it('should return an archive name for Linux Mint', () => {
+    it('should return a archive name for Linux Mint 17', () => {
       expect(
-        downloadUrl.getMintVersionString({ os: 'linux', dist: 'Linux Mint', release: '' })
+        downloadUrl.getMintVersionString({
+          os: 'linux',
+          dist: 'Linux Mint',
+          release: '17',
+        })
       ).toBe('ubuntu1404');
+    });
+
+    it('should return a archive name for Linux Mint 18', () => {
+      expect(
+        downloadUrl.getMintVersionString({
+          os: 'linux',
+          dist: 'Linux Mint',
+          release: '18',
+        })
+      ).toBe('ubuntu1604');
+    });
+
+    it('should return a archive name for Linux Mint 19', () => {
+      expect(
+        downloadUrl.getMintVersionString({
+          os: 'linux',
+          dist: 'Linux Mint',
+          release: '19',
+        })
+      ).toBe('ubuntu1804');
     });
   });
 
