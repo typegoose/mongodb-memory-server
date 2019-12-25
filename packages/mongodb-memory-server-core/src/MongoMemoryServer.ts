@@ -12,7 +12,7 @@ import {
   SpawnOptions,
 } from './types';
 import { DirResult } from 'tmp';
-import { isNullOrUndefined } from "util";
+import { isNullOrUndefined } from 'util';
 // import { deprecate } from './util/deprecate';
 
 tmp.setGracefulCleanup();
