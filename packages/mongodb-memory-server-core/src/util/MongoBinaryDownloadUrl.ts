@@ -87,7 +87,6 @@ export default class MongoBinaryDownloadUrl {
     if (this.arch !== 'i686') {
       if (!this.os) {
         this.os = await getOS();
-        console.log('got back:', this.os);
       }
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
     }

@@ -72,7 +72,7 @@ describe('MongoMemoryServer', () => {
       const mongoServer = new MongoMemoryServer({ autoStart: false });
 
       await expect(mongoServer.ensureInstance()).rejects.toThrow(
-        'Database instance is not running. You should start database by calling start() method. BTW it should start automatically if opts.autoStart!=false. Also you may provide opts.debug=true for more info.'
+        'Ensure-Instance failed to start an instance!'
       );
 
       expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
@@ -98,6 +98,26 @@ describe('MongoMemoryServer', () => {
       // after stop, instance data should be empty
       await mongod.stop();
       expect(mongod.getInstanceInfo()).toBeFalsy();
+    });
+  });
+
+  describe('create()', () => {
+    // before each for sanity (overwrite protection)
+    beforeEach(() => {
+      // de-duplicate code
+      MongoMemoryServer.prototype.start = jest.fn(() => Promise.resolve(true));
+    });
+
+    it('should create an instance but not autostart', async () => {
+      await MongoMemoryServer.create();
+
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(0);
+    });
+
+    it('should autostart and be awaitable', async () => {
+      await MongoMemoryServer.create({ autoStart: true });
+
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -29,23 +29,28 @@ This tool provides three packages for different purposes:
 
 Choose any package, because they are the same. Differs only by default configuration, which you may override (see section [Available options](#available-options)).
 
+### Requirements
+
+NodeJS: 8+
+Typescript: 3.7+ (if used)
+
 ### `mongodb-memory-server`
 
-Auto-downloads the latest `mongod` binary on npm install to: `node_modules/.cache`.
+Auto-downloads the latest `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.
 
 ```bash
 yarn add mongodb-memory-server --dev
-OR
+# OR
 npm install mongodb-memory-server --save-dev
 ```
 
 ### `mongodb-memory-server-global`
 
-Auto-downloads the latest `mongod` binary on npm install to: `%HOME/.cache`.
+Auto-downloads the latest `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
 
 ```bash
 yarn add mongodb-memory-server-global --dev
-OR
+# OR
 npm install mongodb-memory-server-global --save-dev
 ```
 
@@ -55,7 +60,7 @@ Does NOT auto-download `mongod` on npm install.
 
 ```bash
 yarn add mongodb-memory-server-core --dev
-OR
+# OR
 npm install mongodb-memory-server-core --save-dev
 ```
 
@@ -70,7 +75,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const mongod = new MongoMemoryServer();
 
-const uri = await mongod.getConnectionString();
+const uri = await mongod.getUri();
 const port = await mongod.getPort();
 const dbPath = await mongod.getDbPath();
 const dbName = await mongod.getDbName();
@@ -98,7 +103,7 @@ All options are optional.
 ```js
 const mongod = new MongoMemoryServer({
   instance: {
-    port?: ?number, // by default choose any free port
+    port?: number, // by default choose any free port
     ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`,
     dbName?: string, // by default generate random dbName
     dbPath?: string, // by default create in temp directory
@@ -124,7 +129,7 @@ const mongod = new MongoMemoryServer({
 
 #### Options which can be set via ENVIRONMENT variables
 
-```txt
+```sh
 MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
 MONGOMS_PLATFORM=linux
 MONGOMS_ARCH=x64
@@ -136,6 +141,11 @@ MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i`
 MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
 MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
 # Passed constructor parameter `binary.checkMD5` has higher priority.
+
+# GetOS specific ones (for linux only)
+MONGOMS_USE_LINUX_LSB_RELEASE # Only try "lsb_release -a"
+MONGOMS_USE_LINUX_OS_RELEASE # Only try to read "/etc/os-release"
+MONGOMS_USE_LINUX_ANYFILE_RELEASE # Only try to read the first file found "/etc/*-release"
 ```
 
 #### Options which can be set via package.json's `config` section
@@ -171,7 +181,7 @@ const replSet = new MongoMemoryReplSet({
   replSet: { storageEngine: 'wiredTiger' },
 });
 await replSet.waitUntilRunning();
-const uri = await replSet.getConnectionString();
+const uri = await replSet.getUri();
 // or you may obtain the connection config parts:
 // const port = await replSet.getPort();
 // const dbPath = await replSet.getDbPath();
@@ -246,7 +256,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 const mongoServer = new MongoMemoryServer();
 
 mongoose.Promise = Promise;
-mongoServer.getConnectionString().then((mongoUri) => {
+mongoServer.getUri().then((mongoUri) => {
   const mongooseOpts = {
     // options for mongoose 4.11.3 and above
     autoReconnect: true,
@@ -300,21 +310,21 @@ const mongooseOpts = { // options for mongoose 4.11.3 and above
   useMongoClient: true, // remove this line if you use mongoose 5 and above
 };
 
-mongoServer1.getConnectionString('server1_db1').then((mongoUri) => {
+mongoServer1.getUri('server1_db1').then((mongoUri) => {
   connections.conn1.open(mongoUri, mongooseOpts);
   connection.once('open', () => {
     console.log(`MongoDB successfully connected to ${mongoUri}`);
   });
 });
 
-mongoServer1.getConnectionString('server1_db2').then((mongoUri) => {
+mongoServer1.getUri('server1_db2').then((mongoUri) => {
   connections.conn2.open(mongoUri, mongooseOpts);
   connection.once('open', () => {
     console.log(`MongoDB successfully connected to ${mongoUri}`);
   });
 });
 
-mongoServer2.getConnectionString('server2_db').then((mongoUri) => {
+mongoServer2.getUri('server2_db').then((mongoUri) => {
   connections.conn3.open(mongoUri, mongooseOpts);
   connection.once('open', () => {
     console.log(`MongoDB successfully connected to ${mongoUri}`);
@@ -376,16 +386,10 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 let mongoServer;
 const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 
-before((done) => {
+before(async () => {
   mongoServer = new MongoMemoryServer();
-  mongoServer
-    .getConnectionString()
-    .then((mongoUri) => {
-      return mongoose.connect(mongoUri, opts, (err) => {
-        if (err) done(err);
-      });
-    })
-    .then(() => done());
+  const mongoUri = await mongoServer.getUri();
+  await mongoose.connect(mongouri, opts);
 });
 
 after(async () => {
@@ -416,7 +420,7 @@ const opts = { useMongoClient: true }; // remove this option if you use mongoose
 
 beforeAll(async () => {
   mongoServer = new MongoMemoryServer();
-  const mongoUri = await mongoServer.getConnectionString();
+  const mongoUri = await mongoServer.getUri();
   await mongoose.connect(mongoUri, opts, (err) => {
     if (err) console.error(err);
   });
@@ -430,8 +434,8 @@ afterAll(async () => {
 describe('...', () => {
   it('...', async () => {
     const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-    const cnt = await User.count();
-    expect(cnt).toEqual(0);
+    const count = await User.count();
+    expect(count).toEqual(0);
   });
 });
 ```
@@ -457,10 +461,11 @@ mongodb-memory-server on any system on which you can install mongod.
 **It is very important** to limit spawned number of Jest workers for avoiding race condition. Cause Jest spawn huge amount of workers for every node environment on same machine. [More details](https://github.com/facebook/jest/issues/3765)
 Use `--maxWorkers 4` or `--runInBand` option.
 
-```diff
 script:
--  - yarn run coverage
-+  - yarn run coverage -- --maxWorkers 4
+
+```diff
+-  yarn run coverage
++  yarn run coverage -- --maxWorkers 4
 ```
 
 ## Credits
@@ -478,3 +483,4 @@ MIT
 
 - [@nodkz](https://github.com/nodkz) Pavel Chertorogov
 - [@AJRdev](https://github.com/AJRdev) Andre Ranarivelo
+- [@hasezoey](https://github.com/hasezoey)

@@ -3,6 +3,8 @@ import { platform } from 'os';
 
 import { exec } from 'child_process';
 import { promisify, isNullOrUndefined } from 'util';
+import { join } from 'path';
+import resolveConfig from '../resolve-config';
 
 /** Collection of Regexes for "lsb_release -a" parsing */
 const LSBRegex = {
@@ -52,42 +54,122 @@ export default async function getOS(): Promise<AnyOS> {
 }
 
 /** Function to outsource Linux Infomation Parsing */
-async function getLinuxInfomation(): Promise<AnyOS> {
+async function getLinuxInfomation(): Promise<LinuxOS> {
   // Structure of this function:
   // 1. try lsb_release
   // (if not 1) 2. try /etc/os-release
   // (if not 2) 3. try read dir /etc and filter any file "-release" and try to parse the first file found
 
+  // Force "lsb_release" to be used
+  if (!isNullOrUndefined(resolveConfig('USE_LINUX_LSB_RELEASE'))) {
+    return (await tryLSBRelease()) as LinuxOS;
+  }
+  // Force /etc/os-release to be used
+  if (!isNullOrUndefined(resolveConfig('USE_LINUX_OS_RELEASE'))) {
+    return (await tryOSRelease()) as LinuxOS;
+  }
+  // Force the first /etc/*-release file to be used
+  if (!isNullOrUndefined(resolveConfig('USE_LINUX_ANYFILE_RELEASE'))) {
+    return (await tryFirstReleaseFile()) as LinuxOS;
+  }
+
+  // Try everything
+  // Note: these values are stored, because this code should not use "inline value assignment"
+
+  const lsbOut = await tryLSBRelease();
+  if (!isNullOrUndefined(lsbOut)) {
+    return lsbOut;
+  }
+
+  const osOut = await tryOSRelease();
+  if (!isNullOrUndefined(osOut)) {
+    return osOut;
+  }
+
+  const releaseOut = await tryFirstReleaseFile();
+  if (!isNullOrUndefined(releaseOut)) {
+    return releaseOut;
+  }
+
+  // if none has worked, return unkown
+  return {
+    os: 'linux',
+    dist: 'unkown',
+    release: '',
+  };
+}
+
+/**
+ * Try the "lsb_release" command, and if it works, parse it
+ */
+async function tryLSBRelease(): Promise<LinuxOS | undefined> {
   try {
     const lsb = await promisify(exec)('lsb_release -a'); // exec this for safety, because "/etc/lsb-release" could be changed to another file
 
     return parseLSB(lsb.stdout);
   } catch (err) {
-    if ((err as Error).message.match(/: not found/im)) {
-      try {
-        const os = await promisify(readFile)('/etc/os-release');
-
-        return parseOS(os.toString());
-      } catch (err) {
-        if (err?.code === 'ENOENT') {
-          // last resort testing (for something like archlinux)
-          const file = (await promisify(readdir)('/etc')).filter((v) =>
-            v.match(/.*-release$/im)
-          )[0];
-          if (isNullOrUndefined(file) || file.length <= 0) {
-            throw new Error('No release file found!');
-          }
-          const os = await promisify(exec)('cat /etc/' + file);
-
-          return parseOS(os.stdout);
-        }
-
-        throw err;
-      }
-    } else {
-      // throw the error in case it is not a "not found" error
-      throw err;
+    // check if "USE_LINUX_LSB_RELEASE" is unset, when yes - just return to start the next try
+    if (isNullOrUndefined(resolveConfig('USE_LINUX_LSB_RELEASE'))) {
+      return;
     }
+
+    // otherwise throw the error
+    throw err;
+  }
+}
+
+/**
+ * Try to read the /etc/os-release file, and if it works, parse it
+ */
+async function tryOSRelease(): Promise<LinuxOS | undefined> {
+  try {
+    const os = await promisify(readFile)('/etc/os-release');
+
+    return parseOS(os.toString());
+  } catch (err) {
+    // check if the error is an "ENOENT" OR "SKIP_OS_RELEASE" is set
+    // AND "USE_LINUX_OS_RELEASE" is unset
+    // and just return
+    if (
+      (err?.code === 'ENOENT' || !isNullOrUndefined(resolveConfig('SKIP_OS_RELEASE'))) &&
+      isNullOrUndefined(resolveConfig('USE_LINUX_OS_RELEASE'))
+    ) {
+      return;
+    }
+
+    // otherwise throw the error
+    throw err;
+  }
+}
+
+/**
+ * Try to read any /etc/*-release file, take the first, and if it works, parse it
+ */
+async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
+  try {
+    const file = (await promisify(readdir)('/etc')).filter(
+      (v) =>
+        // match if file ends with "-release"
+        v.match(/.*-release$/im) &&
+        // check if the file does NOT contain "lsb"
+        !v.match(/lsb/im)
+    )[0];
+    if (isNullOrUndefined(file) || file.length <= 0) {
+      throw new Error('No release file found!');
+    }
+    const os = await promisify(readFile)(join('/etc/', file));
+
+    return parseOS(os.toString());
+  } catch (err) {
+    // check if the error is an "ENOENT" OR "SKIP_RELEASE" is set
+    // AND "USE_LINUX_RELEASE" is unset
+    // and just return
+    if (err?.code === 'ENOENT' && isNullOrUndefined(resolveConfig('USE_LINUX_ANYFILE_RELEASE'))) {
+      return;
+    }
+
+    // otherwise throw the error
+    throw err;
   }
 }
 
