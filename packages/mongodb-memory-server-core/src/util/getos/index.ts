@@ -61,15 +61,15 @@ async function getLinuxInfomation(): Promise<LinuxOS> {
   // (if not 2) 3. try read dir /etc and filter any file "-release" and try to parse the first file found
 
   // Force "lsb_release" to be used
-  if (!isNullOrUndefined(resolveConfig('FORCE_LSB_RELEASE'))) {
+  if (!isNullOrUndefined(resolveConfig('USE_LINUX_LSB_RELEASE'))) {
     return (await tryLSBRelease()) as LinuxOS;
   }
   // Force /etc/os-release to be used
-  if (!isNullOrUndefined(resolveConfig('FORCE_OS_RELEASE'))) {
+  if (!isNullOrUndefined(resolveConfig('USE_LINUX_OS_RELEASE'))) {
     return (await tryOSRelease()) as LinuxOS;
   }
   // Force the first /etc/*-release file to be used
-  if (!isNullOrUndefined(resolveConfig('FORCE_RELEASE'))) {
+  if (!isNullOrUndefined(resolveConfig('USE_LINUX_ANYFILE_RELEASE'))) {
     return (await tryFirstReleaseFile()) as LinuxOS;
   }
 
@@ -103,17 +103,13 @@ async function getLinuxInfomation(): Promise<LinuxOS> {
  * Try the "lsb_release" command, and if it works, parse it
  */
 async function tryLSBRelease(): Promise<LinuxOS | undefined> {
-  if (!isNullOrUndefined(resolveConfig('SKIP_LSB_RELEASE'))) {
-    return;
-  }
-
   try {
     const lsb = await promisify(exec)('lsb_release -a'); // exec this for safety, because "/etc/lsb-release" could be changed to another file
 
     return parseLSB(lsb.stdout);
   } catch (err) {
-    // check if "FORCE_LSB_RELEASE" is unset, when yes - just return to start the next try
-    if (isNullOrUndefined(resolveConfig('FORCE_LSB_RELEASE'))) {
+    // check if "USE_LINUX_LSB_RELEASE" is unset, when yes - just return to start the next try
+    if (isNullOrUndefined(resolveConfig('USE_LINUX_LSB_RELEASE'))) {
       return;
     }
 
@@ -126,21 +122,17 @@ async function tryLSBRelease(): Promise<LinuxOS | undefined> {
  * Try to read the /etc/os-release file, and if it works, parse it
  */
 async function tryOSRelease(): Promise<LinuxOS | undefined> {
-  if (!isNullOrUndefined(resolveConfig('SKIP_OS_RELEASE'))) {
-    return;
-  }
-
   try {
     const os = await promisify(readFile)('/etc/os-release');
 
     return parseOS(os.toString());
   } catch (err) {
     // check if the error is an "ENOENT" OR "SKIP_OS_RELEASE" is set
-    // AND "FORCE_OS_RELEASE" is unset
+    // AND "USE_LINUX_OS_RELEASE" is unset
     // and just return
     if (
       (err?.code === 'ENOENT' || !isNullOrUndefined(resolveConfig('SKIP_OS_RELEASE'))) &&
-      isNullOrUndefined(resolveConfig('FORCE_OS_RELEASE'))
+      isNullOrUndefined(resolveConfig('USE_LINUX_OS_RELEASE'))
     ) {
       return;
     }
@@ -154,10 +146,6 @@ async function tryOSRelease(): Promise<LinuxOS | undefined> {
  * Try to read any /etc/*-release file, take the first, and if it works, parse it
  */
 async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
-  if (!isNullOrUndefined(resolveConfig('SKIP_RELEASE'))) {
-    return;
-  }
-
   try {
     const file = (await promisify(readdir)('/etc')).filter(
       (v) =>
@@ -171,18 +159,13 @@ async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
       throw new Error('No release file found!');
     }
     const os = await promisify(readFile)(join('/etc/', file));
-    // const os = await promisify(exec)('cat /etc/' + file);
 
-    // return parseOS(os.stdout);
     return parseOS(os.toString());
   } catch (err) {
     // check if the error is an "ENOENT" OR "SKIP_RELEASE" is set
-    // AND "FORCE_RELEASE" is unset
+    // AND "USE_LINUX_RELEASE" is unset
     // and just return
-    if (
-      (err?.code === 'ENOENT' || !isNullOrUndefined(resolveConfig('SKIP_RELEASE'))) &&
-      isNullOrUndefined(resolveConfig('FORCE_RELEASE'))
-    ) {
+    if (err?.code === 'ENOENT' && isNullOrUndefined(resolveConfig('USE_LINUX_ANYFILE_RELEASE'))) {
       return;
     }
 

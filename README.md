@@ -141,6 +141,11 @@ MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i`
 MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
 MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
 # Passed constructor parameter `binary.checkMD5` has higher priority.
+
+# GetOS specific ones (for linux only)
+MONGOMS_USE_LINUX_LSB_RELEASE # Only try "lsb_release -a"
+MONGOMS_USE_LINUX_OS_RELEASE # Only try to read "/etc/os-release"
+MONGOMS_USE_LINUX_ANYFILE_RELEASE # Only try to read the first file found "/etc/*-release"
 ```
 
 #### Options which can be set via package.json's `config` section
