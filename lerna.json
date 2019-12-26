@@ -1,11 +1,18 @@
 {
-  "version": "6.1.1",
+  "version": "6.2.0",
   "command": {
     "publish": {
-      "allowBranch": ["master", "fix-lerna"],
+      "allowBranch": [
+        "master",
+        "fix-lerna"
+      ],
       "exact": true,
       "conventionalCommits": true,
-      "ignoreChanges": ["**/__fixtures__/**", "**/__tests__/**", "**/*.md"]
+      "ignoreChanges": [
+        "**/__fixtures__/**",
+        "**/__tests__/**",
+        "**/*.md"
+      ]
     },
     "version": {
       "createRelease": "github"
