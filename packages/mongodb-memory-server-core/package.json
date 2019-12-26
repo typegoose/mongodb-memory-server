@@ -70,9 +70,9 @@
     "disabled-build:flow": "find ./lib -name \"*.d.ts\" -exec bash -c './node_modules/.bin/flowgen --add-flow-header \"$1\" -o \"${1%.d.ts}\".js.flow' - '{}' \\;",
     "watch": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --watch",
     "coverage": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --coverage",
-    "lint": "yarn eslint && yarn tscheck",
+    "lint": "npm run eslint && npm run tscheck",
     "eslint": "eslint -c ../../.eslintrc.js 'src/**/*.{js,ts}'",
-    "test": "npm run lint && npm run tscheck && npm run coverage",
+    "test": "npm run lint && npm run coverage",
     "tscheck": "tsc --noEmit"
   }
 }
