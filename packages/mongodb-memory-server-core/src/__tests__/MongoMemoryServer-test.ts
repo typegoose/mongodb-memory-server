@@ -72,7 +72,7 @@ describe('MongoMemoryServer', () => {
       const mongoServer = new MongoMemoryServer({ autoStart: false });
 
       await expect(mongoServer.ensureInstance()).rejects.toThrow(
-        'Ensure Instace failed to start an instance!'
+        'Ensure-Instance failed to start an instance!'
       );
 
       expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);

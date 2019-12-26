@@ -223,7 +223,7 @@ export default class MongoMemoryServer {
 
       // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
       if (!this.runningInstance) {
-        throw new Error('Ensure Instace failed to start an instance!');
+        throw new Error('Ensure-Instance failed to start an instance!');
       }
 
       return this.runningInstance;
