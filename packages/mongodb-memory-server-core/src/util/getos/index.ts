@@ -154,7 +154,6 @@ async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
         // check if the file does NOT contain "lsb"
         !v.match(/lsb/im)
     )[0];
-    console.log('file?', file);
     if (isNullOrUndefined(file) || file.length <= 0) {
       throw new Error('No release file found!');
     }
