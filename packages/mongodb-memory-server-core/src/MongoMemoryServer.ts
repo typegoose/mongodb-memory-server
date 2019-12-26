@@ -125,8 +125,9 @@ export default class MongoMemoryServer {
 
   /**
    * Internal Function to start an instance
+   * @private
    */
-  private async _startUpInstance(): Promise<MongoInstanceDataT> {
+  async _startUpInstance(): Promise<MongoInstanceDataT> {
     const data: any = {};
     let tmpDir: DirResult;
 
@@ -232,8 +233,9 @@ export default class MongoMemoryServer {
 
   /**
    * Basic MongoDB Connection string
+   * @private
    */
-  private _getUriBase(host: string, port: number, dbName: string) {
+  _getUriBase(host: string, port: number, dbName: string) {
     return `mongodb://${host}:${port}/${dbName}?`;
   }
 
