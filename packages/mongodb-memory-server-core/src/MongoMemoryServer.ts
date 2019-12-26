@@ -71,14 +71,14 @@ export default class MongoMemoryServer {
    * Create an Mongo-Memory-Sever Instance that can be awaited
    * @param opts Mongo-Memory-Sever Options
    */
-  static async create(opts?: MongoMemoryServerOptsT) {
+  static async create(opts?: MongoMemoryServerOptsT): Promise<MongoMemoryServer> {
     // create an instance WITHOUT autoStart so that the user can await it
     const instance = new MongoMemoryServer(
       // the "as" type-assertion is made for ease-of-development
       Object.assign({}, opts, { autoStart: false } as MongoMemoryServerOptsT)
     );
     if (opts?.autoStart) {
-      return instance.start();
+      await instance.start();
     }
 
     return instance;

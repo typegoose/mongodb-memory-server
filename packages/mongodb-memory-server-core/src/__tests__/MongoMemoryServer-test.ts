@@ -100,4 +100,24 @@ describe('MongoMemoryServer', () => {
       expect(mongod.getInstanceInfo()).toBeFalsy();
     });
   });
+
+  describe('create()', () => {
+    // before each for sanity (overwrite protection)
+    beforeEach(() => {
+      // de-duplicate code
+      MongoMemoryServer.prototype.start = jest.fn(() => Promise.resolve(true));
+    });
+
+    it('should create an instance but not autostart', async () => {
+      await MongoMemoryServer.create();
+
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(0);
+    });
+
+    it('should autostart and be awaitable', async () => {
+      await MongoMemoryServer.create({ autoStart: true });
+
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
+    });
+  });
 });
