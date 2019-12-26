@@ -111,14 +111,8 @@ async function tryLSBRelease(): Promise<LinuxOS | undefined> {
 
     return parseLSB(lsb.stdout);
   } catch (err) {
-    // check if the error message contains "command not found" OR "SKIP_LSB_RELEASE" is set
-    // AND "FORCE_LSB_RELEASE" is unset
-    // and just return
-    if (
-      ((err as Error).message.match(/command not found/im) ||
-        !isNullOrUndefined(process.env.SKIP_LSB_RELEASE)) &&
-      isNullOrUndefined(process.env.FORCE_LSB_RELEASE)
-    ) {
+    // check if "FORCE_LSB_RELEASE" is unset, when yes - just return to start the next try
+    if (isNullOrUndefined(process.env.FORCE_LSB_RELEASE)) {
       return;
     }
 
