@@ -483,3 +483,4 @@ MIT
 
 - [@nodkz](https://github.com/nodkz) Pavel Chertorogov
 - [@AJRdev](https://github.com/AJRdev) Andre Ranarivelo
+- [@hasezoey](https://github.com/hasezoey)
