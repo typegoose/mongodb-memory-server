@@ -13,7 +13,6 @@ import {
 } from './types';
 import { DirResult } from 'tmp';
 import { isNullOrUndefined } from 'util';
-// import { deprecate } from './util/deprecate';
 
 tmp.setGracefulCleanup();
 
@@ -181,7 +180,7 @@ export default class MongoMemoryServer {
   async stop(): Promise<boolean> {
     this.debug('Called MongoMemoryServer.stop() method');
 
-    // just return "true" if the instance is already exited
+    // just return "true" if the instance is already running / defined
     if (isNullOrUndefined(this.runningInstance)) {
       return true;
     }
