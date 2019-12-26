@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-core",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "MongoDB Server for testing (core package, without autodownload). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "lib/index",
   "types": "lib/index.d.ts",
@@ -66,11 +66,12 @@
   "scripts": {
     "cleanup": "rimraf tmp lib coverage node_modules/.cache",
     "build": "npm-run-all build:*",
-    "build:ts": "rimraf ./lib && tsc -p ./tsconfig.json",
+    "build:ts": "rimraf ./lib && tsc -p ./tsconfig.build.json",
     "disabled-build:flow": "find ./lib -name \"*.d.ts\" -exec bash -c './node_modules/.bin/flowgen --add-flow-header \"$1\" -o \"${1%.d.ts}\".js.flow' - '{}' \\;",
     "watch": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --watch",
     "coverage": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --coverage",
-    "lint": "eslint -c ../../.eslintrc.js 'src/**/*.{js,ts}'",
+    "lint": "yarn eslint && yarn tscheck",
+    "eslint": "eslint -c ../../.eslintrc.js 'src/**/*.{js,ts}'",
     "test": "npm run lint && npm run tscheck && npm run coverage",
     "tscheck": "tsc --noEmit"
   }
