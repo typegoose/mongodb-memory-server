@@ -40,7 +40,7 @@ One of those:
 - having an `/etc/os-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html)
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
 
-Note: one of the above has to be done for Arch-Linux!
+Note: the ArchLinux Docker image does *not* have any of those!
 
 ### `mongodb-memory-server`
 
