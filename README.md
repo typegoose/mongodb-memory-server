@@ -40,7 +40,10 @@ One of those:
 - having an `/etc/os-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html)
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
 
-Note: the ArchLinux Docker image does *not* have any of those!
+#### Known Incompatibilities
+
+- ArchLinux & Alpine do not have an offical mongodb build
+- ArchLinux(Docker) does not have an `/etc/os-release` file by default
 
 ### `mongodb-memory-server`
 
