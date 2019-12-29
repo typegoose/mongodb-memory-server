@@ -9,6 +9,7 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { DebugFn, DebugPropT, DownloadProgressT } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
 import HttpsProxyAgent from 'https-proxy-agent';
+import { promisify } from 'util';
 
 export interface MongoBinaryDownloadOpts {
   version?: string;
@@ -71,7 +72,7 @@ export default class MongoBinaryDownload {
   async getMongodPath(): Promise<string> {
     const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
     const mongodPath = path.resolve(this.downloadDir, this.version, binaryName);
-    if (this.locationExists(mongodPath)) {
+    if (await this.locationExists(mongodPath)) {
       return mongodPath;
     }
 
@@ -79,7 +80,7 @@ export default class MongoBinaryDownload {
     await this.extract(mongoDBArchive);
     fs.unlinkSync(mongoDBArchive);
 
-    if (this.locationExists(mongodPath)) {
+    if (await this.locationExists(mongodPath)) {
       return mongodPath;
     }
 
@@ -193,7 +194,7 @@ export default class MongoBinaryDownload {
       },
     });
 
-    if (!this.locationExists(path.resolve(this.downloadDir, this.version, binaryName))) {
+    if (!(await this.locationExists(path.resolve(this.downloadDir, this.version, binaryName)))) {
       throw new Error(
         `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${this
           ._downloadingUrl || ''}). Broken package in MongoDB distro?`
@@ -264,9 +265,14 @@ export default class MongoBinaryDownload {
     );
   }
 
-  locationExists(location: string): boolean {
+  /**
+   * Test if the location given is already used
+   * Does *not* dereference links
+   * @param location The Path to test
+   */
+  async locationExists(location: string): Promise<boolean> {
     try {
-      fs.lstatSync(location);
+      await promisify(fs.lstat)(location);
       return true;
     } catch (e) {
       if (e.code !== 'ENOENT') throw e;
