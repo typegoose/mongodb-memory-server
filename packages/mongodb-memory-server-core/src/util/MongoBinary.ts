@@ -9,7 +9,7 @@ import dedent from 'dedent';
 import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import { DebugFn } from '../types';
-import resolveConfig from './resolve-config';
+import resolveConfig, { envToBool } from './resolve-config';
 
 // TODO: return back `latest` version when it will be fixed in MongoDB distro (for now use 4.0.3 😂)
 // More details in https://github.com/nodkz/mongodb-memory-server/issues/131
@@ -104,7 +104,6 @@ export default class MongoBinary {
 
   static async getPath(opts: MongoBinaryOpts = {}): Promise<string> {
     const legacyDLDir = path.resolve(os.homedir(), '.cache/mongodb-binaries');
-    const envDebug = resolveConfig('DEBUG');
 
     // if we're in postinstall script, npm will set the cwd too deep
     let nodeModulesDLDir = process.cwd();
@@ -128,8 +127,7 @@ export default class MongoBinary {
       arch: resolveConfig('ARCH') || os.arch(),
       version: resolveConfig('VERSION') || LATEST_VERSION,
       systemBinary: resolveConfig('SYSTEM_BINARY'),
-      debug:
-        typeof envDebug === 'string' ? ['1', 'on', 'yes', 'true'].indexOf(envDebug) !== -1 : false,
+      debug: envToBool(resolveConfig('DEBUG') ?? ''),
     };
 
     if (opts.debug) {

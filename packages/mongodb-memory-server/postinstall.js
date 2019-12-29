@@ -20,13 +20,13 @@ if (!isModuleExists('../mongodb-memory-server-core/lib/util/resolve-config')) {
   console.log('Could not resolve postinstall configuration');
   return;
 }
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const rc = require('../mongodb-memory-server-core/lib/util/resolve-config');
 rc.reInitializePackageJson(process.env.INIT_CWD);
 
 const envDisablePostinstall = rc.default('DISABLE_POSTINSTALL');
 const skipDownload =
-  typeof envDisablePostinstall === 'string' &&
-  ['1', 'on', 'yes', 'true'].indexOf(envDisablePostinstall.toLowerCase()) !== -1;
+  typeof envDisablePostinstall === 'string' && rc.envToBool(envDisablePostinstall);
 
 if (skipDownload) {
   console.log('Download is skipped by MONGOMS_DISABLE_POSTINSTALL variable');
@@ -43,8 +43,7 @@ if (isModuleExists(mongoBinaryModule)) {
       console.log(`mongodb-memory-server: binary path is ${binPath}`);
     })
     .catch((err) => {
-      console.log(`failed to download/install MongoDB binaries. The error:
-${err}`);
+      console.log(`failed to download/install MongoDB binaries. The error: ${err}`);
       process.exit(0);
     });
 } else {
