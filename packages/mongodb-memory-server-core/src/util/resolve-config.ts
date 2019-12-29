@@ -19,13 +19,22 @@ export function reInitializePackageJson(directory?: string): void {
 }
 reInitializePackageJson();
 
+/**
+ * Resolve "variableName" with a prefix of "ENV_CONFIG_PREFIX"
+ * @param variableName The variable to use
+ */
 export default function resolveConfig(variableName: string): string | undefined {
   return (
-    process.env[`${ENV_CONFIG_PREFIX}${variableName}`] ||
-    (packageJson &&
-      packageJson.config &&
-      packageJson.config.mongodbMemoryServer &&
-      packageJson.config.mongodbMemoryServer[camelCase(variableName)]) ||
+    process.env[`${ENV_CONFIG_PREFIX}${variableName}`] ??
+    packageJson?.config?.mongodbMemoryServer?.[camelCase(variableName)] ??
     defaultValues.get(variableName)
   );
+}
+
+/**
+ * Convert "1, on, yes, true" to true (otherwise false)
+ * @param env The String / Environment Variable to check
+ */
+export function envToBool(env: string) {
+  return ['1', 'on', 'yes', 'true'].indexOf(env.toLowerCase()) !== -1;
 }
