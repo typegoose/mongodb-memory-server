@@ -15,7 +15,7 @@ describe('MongoBinaryDownload', () => {
     expect(new MongoBinaryDownload({ checkMD5: false }).checkMD5).toBe(false);
   });
 
-  it(`if checkMD5 input parameter is missing, then it checks 
+  it(`if checkMD5 input parameter is missing, then it checks
 MONGOMS_MD5_CHECK environment variable`, () => {
     expect(new MongoBinaryDownload({}).checkMD5).toBe(false);
     process.env.MONGOMS_MD5_CHECK = '1';
@@ -81,7 +81,7 @@ the same as in the reference result`, () => {
     du.checkMD5 = true;
     du.download = jest.fn(() => Promise.resolve(''));
     expect(du.makeMD5check('', '')).rejects.toMatchInlineSnapshot(
-      `[Error: MongoBinaryDownload: md5 check is failed]`
+      `[Error: MongoBinaryDownload: md5 check failed]`
     );
   });
 
