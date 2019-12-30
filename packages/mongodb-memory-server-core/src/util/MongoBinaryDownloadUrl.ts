@@ -22,17 +22,25 @@ export default class MongoBinaryDownloadUrl {
     this.os = os;
   }
 
+  /**
+   * Assemble the URL to download
+   * Calls all the necessary functions to determine the URL
+   */
   async getDownloadUrl(): Promise<string> {
     const archive = await this.getArchiveName();
 
     const downloadUrl = resolveConfig('DOWNLOAD_URL');
     if (downloadUrl) return downloadUrl;
 
-    return `${resolveConfig('DOWNLOAD_MIRROR') || 'https://fastdl.mongodb.org'}/${
-      this.platform
-    }/${archive}`;
+    const mirror = resolveConfig('DOWNLOAD_MIRROR') ?? 'https://fastdl.mongodb.org';
+
+    return `${mirror}/${this.platform}/${archive}`;
   }
 
+  /**
+   * Get the archive
+   * Version independent
+   */
   async getArchiveName(): Promise<string> {
     switch (this.platform) {
       case 'osx':
@@ -45,7 +53,10 @@ export default class MongoBinaryDownloadUrl {
     }
   }
 
-  // https://www.mongodb.org/dl/win32
+  /**
+   * Get the archive for Windows
+   * (from: https://www.mongodb.org/dl/win32)
+   */
   async getArchiveNameWin(): Promise<string> {
     let name = `mongodb-${this.platform}`;
     name += `-${this.arch}`;
@@ -58,7 +69,10 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  // https://www.mongodb.org/dl/osx
+  /**
+   * Get the archive for OSX (Mac)
+   * (from: https://www.mongodb.org/dl/osx)
+   */
   async getArchiveNameOsx(): Promise<string> {
     let name = `mongodb-osx`;
     if (
@@ -78,7 +92,10 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
-  // https://www.mongodb.org/dl/linux
+  /**
+   * Get the archive for Linux
+   * (from: https://www.mongodb.org/dl/linux)
+   */
   async getArchiveNameLinux(): Promise<string> {
     let name = `mongodb-linux`;
     name += `-${this.arch}`;
@@ -99,6 +116,10 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
+  /**
+   * Get the version string (with distro)
+   * @param os LinuxOS Object
+   */
   getLinuxOSVersionString(os: LinuxOS): string {
     if (/ubuntu/i.test(os.dist)) {
       return this.getUbuntuVersionString(os);
@@ -114,18 +135,29 @@ export default class MongoBinaryDownloadUrl {
       return this.getDebianVersionString(os);
     } else if (/mint/i.test(os.dist)) {
       return this.getMintVersionString(os);
+    } else if (/arch/i.test(os.dist)) {
+      console.warn('There is no offical build of MongoDB for ArchLinux!');
+    } else if (/alpine/i.test(os.dist)) {
+      console.warn('There is no offical build of MongoDB for Alpine!');
     } else if (/unkown/i.test(os.dist)) {
-      // in some cases this is redundant, but this is here to notify users to report if their Distro couldnt be parsed
+      // "unkown" is likely to happen if no release file / command could be found
       console.warn(
         'Couldnt parse dist infomation, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
       );
+    } else {
+      // warn if no case for the *parsed* distro is found
+      console.warn(`Unknown linux distro ${os.dist}`);
     }
-    // this is when the os.dist couldnt be handled by MongoBinaryDownloadUrl
-    console.warn(`Unknown linux distro ${os.dist}, falling back to legacy MongoDB build`);
+    // warn for the fallback
+    console.warn(`Falling back to legacy MongoDB build!`);
 
     return this.getLegacyVersionString(os);
   }
 
+  /**
+   * Get the version string for Debain
+   * @param os LinuxOS Object
+   */
   getDebianVersionString(os: LinuxOS): string {
     let name = 'debian';
     const release: number = parseFloat(os.release);
@@ -141,6 +173,10 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
+  /**
+   * Get the version string for Fedora
+   * @param os LinuxOS Object
+   */
   getFedoraVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const fedoraVer: number = parseInt(os.release, 10);
@@ -154,6 +190,10 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
+  /**
+   * Get the version string for Red Hat Enterprise Linux
+   * @param os LinuxOS Object
+   */
   getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const { release } = os;
@@ -169,15 +209,32 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
+  /**
+   * Get the version string for ElementaryOS
+   * @param os LinuxOS Object
+   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getElementaryOSVersionString(os: LinuxOS): string {
+    // Elementary specific - get used ubuntu version
     const ubuntuVersion = execSync('/usr/bin/lsb_release -u -rs');
-    return `ubuntu${ubuntuVersion
-      .toString()
-      .replace('.', '')
-      .trim()}`;
+    try {
+      // confirm it is actually a version, otherwise throw an error
+      parseFloat(ubuntuVersion.toString());
+
+      return `ubuntu${ubuntuVersion
+        .toString()
+        .replace('.', '')
+        .trim()}`;
+    } catch (err) {
+      console.error('ElementaryOS "lsb_relese -u -rs" couldnt be executed!');
+      throw err;
+    }
   }
 
+  /**
+   * Get the version string for Linux Mint
+   * @param os LinuxOS Object
+   */
   getMintVersionString(os: LinuxOS): string {
     let name = 'ubuntu';
     const mintMajorVer = parseInt(os.release ? os.release.split('.')[0] : os.release);
@@ -202,20 +259,29 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
+  /**
+   * Linux Fallback
+   * @param os LinuxOS Object
+   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getLegacyVersionString(os: AnyOS): string {
     return '';
   }
 
+  /**
+   * Get the version string for Suse / OpenSuse
+   * @param os LinuxOS Object
+   */
   getSuseVersionString(os: LinuxOS): string {
     const releaseMatch: RegExpMatchArray | null = os.release.match(/(^11|^12)/);
 
-    if (releaseMatch) {
-      return `suse${releaseMatch[0]}`;
-    }
-    return '';
+    return releaseMatch ? `suse${releaseMatch[0]}` : '';
   }
 
+  /**
+   * Get the version string for Ubuntu
+   * @param os LinuxOS Object
+   */
   getUbuntuVersionString(os: LinuxOS): string {
     let name = 'ubuntu';
     const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
@@ -249,6 +315,12 @@ export default class MongoBinaryDownloadUrl {
     return name;
   }
 
+  /**
+   * Translate input platform to mongodb useable platfrom
+   * @example
+   * darwin -> osx
+   * @param platform The Platform to translate
+   */
   translatePlatform(platform: string): string {
     switch (platform) {
       case 'darwin':
@@ -256,7 +328,6 @@ export default class MongoBinaryDownloadUrl {
       case 'win32':
         return 'win32';
       case 'linux':
-        return 'linux';
       case 'elementary OS':
         return 'linux';
       case 'sunos':
@@ -266,6 +337,12 @@ export default class MongoBinaryDownloadUrl {
     }
   }
 
+  /**
+   * Translate input arch to mongodb useable arch
+   * @example
+   * x64 -> x86_64
+   * @param platform The Platform to translate
+   */
   translateArch(arch: string, mongoPlatform: string): string {
     if (arch === 'ia32') {
       if (mongoPlatform === 'linux') {

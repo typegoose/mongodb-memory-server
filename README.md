@@ -34,6 +34,17 @@ Choose any package, because they are the same. Differs only by default configura
 NodeJS: 8+
 Typescript: 3.7+ (if used)
 
+One of those:
+
+- having `lsb-core` installed (or any that provides the `lsb_release` command)
+- having an `/etc/os-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html)
+- having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
+
+#### Known Incompatibilities
+
+- ArchLinux & Alpine do not have an offical mongodb build
+- ArchLinux(Docker) does not have an `/etc/os-release` file by default
+
 ### `mongodb-memory-server`
 
 Auto-downloads the latest `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.

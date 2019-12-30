@@ -9,6 +9,8 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { DebugFn, DebugPropT, DownloadProgressT } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
 import HttpsProxyAgent from 'https-proxy-agent';
+import { promisify } from 'util';
+import resolveConfig, { envToBool } from './resolve-config';
 
 export interface MongoBinaryDownloadOpts {
   version?: string;
@@ -39,17 +41,11 @@ export default class MongoBinaryDownload {
   platform: string;
 
   constructor({ platform, arch, downloadDir, version, checkMD5, debug }: MongoBinaryDownloadOpts) {
-    this.platform = platform || os.platform();
-    this.arch = arch || os.arch();
-    this.version = version || LATEST_VERSION;
+    this.platform = platform ?? os.platform();
+    this.arch = arch ?? os.arch();
+    this.version = version ?? LATEST_VERSION;
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
-    if (checkMD5 === undefined) {
-      this.checkMD5 =
-        typeof process.env.MONGOMS_MD5_CHECK === 'string' &&
-        ['1', 'on', 'yes', 'true'].indexOf(process.env.MONGOMS_MD5_CHECK.toLowerCase()) !== -1;
-    } else {
-      this.checkMD5 = checkMD5;
-    }
+    this.checkMD5 = checkMD5 ?? envToBool(resolveConfig('MD5_CHECK') ?? '');
     this.dlProgress = {
       current: 0,
       length: 0,
@@ -68,10 +64,14 @@ export default class MongoBinaryDownload {
     }
   }
 
+  /**
+   * Get the path of the already downloaded "mongod" file
+   * otherwise download it and then return the path
+   */
   async getMongodPath(): Promise<string> {
     const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
     const mongodPath = path.resolve(this.downloadDir, this.version, binaryName);
-    if (this.locationExists(mongodPath)) {
+    if (await this.locationExists(mongodPath)) {
       return mongodPath;
     }
 
@@ -79,13 +79,17 @@ export default class MongoBinaryDownload {
     await this.extract(mongoDBArchive);
     fs.unlinkSync(mongoDBArchive);
 
-    if (this.locationExists(mongodPath)) {
+    if (await this.locationExists(mongodPath)) {
       return mongodPath;
     }
 
     throw new Error(`Cannot find downloaded mongod binary by path ${mongodPath}`);
   }
 
+  /**
+   * Download the MongoDB Archive and check it against an MD5
+   * @returns The MongoDB Archive location
+   */
   async startDownload(): Promise<string> {
     const mbdUrl = new MongoBinaryDownloadUrl({
       platform: this.platform,
@@ -106,6 +110,11 @@ export default class MongoBinaryDownload {
     return mongoDBArchive;
   }
 
+  /**
+   * Download MD5 file and check it against the MongoDB Archive
+   * @param urlForReferenceMD5 URL to download the MD5
+   * @param mongoDBArchive The MongoDB Archive file location
+   */
   async makeMD5check(
     urlForReferenceMD5: string,
     mongoDBArchive: string
@@ -119,11 +128,15 @@ export default class MongoBinaryDownload {
     const md5Remote = m ? m[1] : null;
     const md5Local = md5File.sync(mongoDBArchive);
     if (md5Remote !== md5Local) {
-      throw new Error('MongoBinaryDownload: md5 check is failed');
+      throw new Error('MongoBinaryDownload: md5 check failed');
     }
     return true;
   }
 
+  /**
+   * Download file from downloadUrl
+   * @param downloadUrl URL to download a File
+   */
   async download(downloadUrl: string): Promise<string> {
     const proxy =
       process.env['yarn_https-proxy'] ||
@@ -165,6 +178,11 @@ export default class MongoBinaryDownload {
     return downloadedFile;
   }
 
+  /**
+   * Extract given Archive
+   * @param mongoDBArchive Archive location
+   * @returns extracted directory location
+   */
   async extract(mongoDBArchive: string): Promise<string> {
     const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
     const extractDir = path.resolve(this.downloadDir, this.version);
@@ -188,20 +206,26 @@ export default class MongoBinaryDownload {
       filter,
       // extract to root folder
       map: (file) => {
-        file.path = path.basename(file.path); // eslint-disable-line
+        file.path = path.basename(file.path);
         return file;
       },
     });
 
-    if (!this.locationExists(path.resolve(this.downloadDir, this.version, binaryName))) {
+    if (!(await this.locationExists(path.resolve(this.downloadDir, this.version, binaryName)))) {
       throw new Error(
         `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${this
-          ._downloadingUrl || ''}). Broken package in MongoDB distro?`
+          ._downloadingUrl ?? 'unkown'}). Broken archive from MongoDB Provider?`
       );
     }
     return extractDir;
   }
 
+  /**
+   * Downlaod given httpOptions to tempDownloadLocation, then move it to downloadLocation
+   * @param httpOptions The httpOptions directly passed to https.get
+   * @param downloadLocation The location the File should be after the download
+   * @param tempDownloadLocation The location the File should be while downloading
+   */
   async httpDownload(
     httpOptions: HttpDownloadOptions,
     downloadLocation: string,
@@ -210,15 +234,18 @@ export default class MongoBinaryDownload {
     return new Promise((resolve, reject) => {
       const fileStream = fs.createWriteStream(tempDownloadLocation);
 
-      const req: any = https.get(httpOptions, (response: any) => {
+      const req = https.get(httpOptions, (response: any) => {
         this.dlProgress.current = 0;
         this.dlProgress.length = parseInt(response.headers['content-length'], 10);
         this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
 
         response.pipe(fileStream);
 
-        fileStream.on('finish', () => {
-          if (this.dlProgress.current < 1000000 && !httpOptions.path.endsWith('.md5')) {
+        fileStream.on('finish', async () => {
+          if (
+            this.dlProgress.current < this.dlProgress.length &&
+            !httpOptions.path.endsWith('.md5')
+          ) {
             const downloadUrl =
               this._downloadingUrl || `https://${httpOptions.hostname}/${httpOptions.path}`;
             reject(
@@ -228,9 +255,11 @@ export default class MongoBinaryDownload {
             );
             return;
           }
+
           fileStream.close();
-          fs.renameSync(tempDownloadLocation, downloadLocation);
+          await promisify(fs.rename)(tempDownloadLocation, downloadLocation);
           this.debug(`renamed ${tempDownloadLocation} to ${downloadLocation}`);
+
           resolve(downloadLocation);
         });
 
@@ -238,14 +267,19 @@ export default class MongoBinaryDownload {
           this.printDownloadProgress(chunk);
         });
 
-        req.on('error', (e: any) => {
-          this.debug('request error:', e);
+        req.on('error', (e: Error) => {
+          // log it without having debug enabled
+          console.error(`Couldnt download ${httpOptions.path}!`, e.message);
           reject(e);
         });
       });
     });
   }
 
+  /**
+   * Print the Download Progress to STDOUT
+   * @param chunk A chunk to get the length
+   */
   printDownloadProgress(chunk: any): void {
     this.dlProgress.current += chunk.length;
 
@@ -264,9 +298,14 @@ export default class MongoBinaryDownload {
     );
   }
 
-  locationExists(location: string): boolean {
+  /**
+   * Test if the location given is already used
+   * Does *not* dereference links
+   * @param location The Path to test
+   */
+  async locationExists(location: string): Promise<boolean> {
     try {
-      fs.lstatSync(location);
+      await promisify(fs.lstat)(location);
       return true;
     } catch (e) {
       if (e.code !== 'ENOENT') throw e;
