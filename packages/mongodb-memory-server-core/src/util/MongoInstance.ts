@@ -3,7 +3,14 @@ import { default as spawnChild } from 'cross-spawn';
 import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
-import { DebugPropT, StorageEngineT, SpawnOptions } from '../types';
+import {
+  DebugPropT,
+  StorageEngineT,
+  SpawnOptions,
+  DebugFn,
+  ErrorVoidCallback,
+  EmptyVoidCallback,
+} from '../types';
 
 export interface MongodOps {
   // instance options
@@ -26,18 +33,21 @@ export interface MongodOps {
   debug?: DebugPropT;
 }
 
+/**
+ * MongoDB Instance Handler Class
+ */
 export default class MongoInstance {
   static childProcessList: ChildProcess[] = [];
   opts: MongodOps;
-  debug: Function;
+  debug: DebugFn;
 
   childProcess: ChildProcess | null;
   killerProcess: ChildProcess | null;
   waitForPrimaryResolveFns: Function[];
   isInstancePrimary: boolean = false;
   isInstanceReady: boolean = false;
-  instanceReady: () => void = () => {};
-  instanceFailed: (err: any) => void = () => {};
+  instanceReady: EmptyVoidCallback = () => {};
+  instanceFailed: ErrorVoidCallback = () => {};
 
   constructor(opts: MongodOps) {
     this.opts = opts;
@@ -68,22 +78,29 @@ export default class MongoInstance {
 
     // add instance's port to debug output
     const debugFn = this.debug;
-    const port = this.opts.instance && this.opts.instance.port;
+    const port = this.opts.instance?.port;
     this.debug = (msg: string): void => {
       debugFn(`Mongo[${port}]: ${msg}`);
     };
   }
 
-  static run(opts: MongodOps): Promise<MongoInstance> {
+  /**
+   * Create an new instance an call method "run"
+   * @param opts Options passed to the new instance
+   */
+  static async run(opts: MongodOps): Promise<MongoInstance> {
     const instance = new this(opts);
     return instance.run();
   }
 
+  /**
+   * Create an array of arguments for the mongod instance
+   */
   prepareCommandArgs(): string[] {
     const { ip, port, storageEngine, dbPath, replSet, auth, args } = this.opts.instance;
 
-    const result = [];
-    result.push('--bind_ip', ip || '127.0.0.1');
+    const result: string[] = [];
+    result.push('--bind_ip', ip ?? '127.0.0.1');
     if (port) result.push('--port', port.toString());
     if (storageEngine) result.push('--storageEngine', storageEngine);
     if (dbPath) result.push('--dbpath', dbPath);
@@ -91,10 +108,13 @@ export default class MongoInstance {
     else if (auth) result.push('--auth');
     if (replSet) result.push('--replSet', replSet);
 
-    return result.concat(args || []);
+    return result.concat(args ?? []);
   }
 
-  async run(): Promise<MongoInstance> {
+  /**
+   * Create the mongod process
+   */
+  async run(): Promise<this> {
     const launch = new Promise((resolve, reject) => {
       this.instanceReady = () => {
         this.isInstanceReady = true;
@@ -149,10 +169,16 @@ export default class MongoInstance {
     return this;
   }
 
+  /**
+   * Get the PID of the mongod instance
+   */
   getPid(): number | undefined {
-    return this.childProcess ? this.childProcess.pid : undefined;
+    return this.childProcess?.pid;
   }
 
+  /**
+   * Wait until the Primary mongod is running
+   */
   async waitPrimaryReady(): Promise<boolean> {
     if (this.isInstancePrimary) {
       return true;
@@ -162,9 +188,14 @@ export default class MongoInstance {
     });
   }
 
+  /**
+   * Actually launch mongod
+   * @param mongoBin The binary to run
+   */
   _launchMongod(mongoBin: string): ChildProcess {
-    const spawnOpts = this.opts.spawn || {};
+    const spawnOpts = this.opts.spawn ?? {};
     if (!spawnOpts.stdio) spawnOpts.stdio = 'pipe';
+
     const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), spawnOpts);
     if (childProcess.stderr) {
       childProcess.stderr.on('data', this.stderrHandler.bind(this));
@@ -178,6 +209,11 @@ export default class MongoInstance {
     return childProcess;
   }
 
+  /**
+   * Spawn an child to kill the parent and the mongod instance if both are Dead
+   * @param parentPid Parent to kill
+   * @param childPid Mongod process to kill
+   */
   _launchKiller(parentPid: number, childPid: number): ChildProcess {
     this.debug(`Called MongoInstance._launchKiller(parent: ${parentPid}, child: ${childPid}):`);
     // spawn process which kills itself and mongo process if current process is dead
@@ -191,9 +227,9 @@ export default class MongoInstance {
       { stdio: 'pipe' }
     );
 
-    ['exit', 'message', 'disconnect', 'error'].forEach((e) => {
-      killer.on(e, (...args) => {
-        this.debug(`[MongoKiller]: ${e} - ${JSON.stringify(args)}`);
+    ['exit', 'message', 'disconnect', 'error'].forEach((type) => {
+      killer.on(type, (...args) => {
+        this.debug(`[MongoKiller]: ${type} - ${JSON.stringify(args)}`);
       });
     });
 
@@ -204,45 +240,56 @@ export default class MongoInstance {
     this.instanceFailed(err);
   }
 
+  /**
+   * Write the CLOSE event to the debug function
+   * @param code The Exit code
+   */
   closeHandler(code: number): void {
     this.debug(`CLOSE: ${code}`);
   }
 
+  /**
+   * Write STDERR to debug function
+   * @param message The STDERR line to write
+   */
   stderrHandler(message: string | Buffer): void {
     this.debug(`STDERR: ${message.toString()}`);
   }
 
+  /**
+   * Write STDOUT to debug function AND instanceReady/instanceFailed if inputs match
+   * @param message The STDOUT line to write/parse
+   */
   stdoutHandler(message: string | Buffer): void {
-    this.debug(`${message.toString()}`);
+    const line: string = message.toString();
+    this.debug(`STDOUT: ${line}`);
 
-    const log: string = message.toString();
-    if (/waiting for connections on port/i.test(log)) {
+    if (/waiting for connections on port/i.test(line)) {
       this.instanceReady();
-    } else if (/addr already in use/i.test(log)) {
+    } else if (/addr already in use/i.test(line)) {
       this.instanceFailed(`Port ${this.opts.instance.port} already in use`);
-    } else if (/mongod instance already running/i.test(log)) {
+    } else if (/mongod instance already running/i.test(line)) {
       this.instanceFailed('Mongod already running');
-    } else if (/permission denied/i.test(log)) {
+    } else if (/permission denied/i.test(line)) {
       this.instanceFailed('Mongod permission denied');
-    } else if (/Data directory .*? not found/i.test(log)) {
+    } else if (/Data directory .*? not found/i.test(line)) {
       this.instanceFailed('Data directory not found');
-    } else if (/CURL_OPENSSL_3.*not found/i.test(log)) {
+    } else if (/CURL_OPENSSL_3.*not found/i.test(line)) {
       this.instanceFailed(
-        'libcurl3 is not available on your system. Mongod requires it and cannot be started without it. You should manually install libcurl3 or try to use older Mongodb version eg. 3.6.12'
+        'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
+          'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
       );
-    } else if (/shutting down with code/i.test(log)) {
+    } else if (/shutting down with code/i.test(line)) {
       // if mongod started succesfully then no error on shutdown!
       if (!this.isInstanceReady) {
         this.instanceFailed('Mongod shutting down');
       }
-    } else if (/\*\*\*aborting after/i.test(log)) {
+    } else if (/\*\*\*aborting after/i.test(line)) {
       this.instanceFailed('Mongod internal error');
-    } else if (/transition to primary complete; database writes are now permitted/.test(log)) {
+    } else if (/transition to primary complete; database writes are now permitted/.test(line)) {
       this.isInstancePrimary = true;
-      this.waitForPrimaryResolveFns.forEach((resolveFn) => {
-        this.debug('Calling waitForPrimary resolve function');
-        resolveFn(true);
-      });
+      this.debug('Calling all waitForPrimary resolve functions');
+      this.waitForPrimaryResolveFns.forEach((resolveFn) => resolveFn(true));
     }
   }
 }

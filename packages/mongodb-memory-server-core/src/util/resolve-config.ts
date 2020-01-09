@@ -15,7 +15,7 @@ export function setDefaultValue(key: string, value: string): void {
 
 let packageJson: Package | undefined;
 export function reInitializePackageJson(directory?: string): void {
-  packageJson = getPackageJson(directory || process.cwd());
+  packageJson = getPackageJson(directory ?? process.cwd());
 }
 reInitializePackageJson();
 
