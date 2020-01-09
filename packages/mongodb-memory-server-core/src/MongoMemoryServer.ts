@@ -16,6 +16,9 @@ import { isNullOrUndefined } from 'util';
 
 tmp.setGracefulCleanup();
 
+/**
+ * Starting Options
+ */
 export interface MongoMemoryServerOptsT {
   instance?: MongoMemoryInstancePropT;
   binary?: MongoBinaryOpts;
@@ -24,6 +27,9 @@ export interface MongoMemoryServerOptsT {
   autoStart?: boolean;
 }
 
+/**
+ * Information about the currently running instance
+ */
 export interface MongoInstanceDataT {
   port: number;
   dbPath: string;
@@ -88,7 +94,7 @@ export default class MongoMemoryServer {
    * (when options.autoStart is true, this already got called)
    */
   async start(): Promise<boolean> {
-    this.debug('Called MongoMemoryServer.start() method:');
+    this.debug('Called MongoMemoryServer.start() method');
     if (this.runningInstance) {
       throw new Error(
         'MongoDB instance already in status startup/running/error. Use opts.debug = true for more info.'
@@ -108,6 +114,7 @@ export default class MongoMemoryServer {
       })
       .catch((err) => {
         if (!this.opts.debug) {
+          // TODO: ask question
           throw new Error(
             `${err.message}\n\nUse debug option for more info: ` +
               `new MongoMemoryServer({ debug: true })`
@@ -127,16 +134,19 @@ export default class MongoMemoryServer {
    * @private
    */
   async _startUpInstance(): Promise<MongoInstanceDataT> {
-    const data: any = {};
+    /** Shortcut to this.opts.instance */
+    const instOpts = this.opts.instance ?? {};
     let tmpDir: DirResult;
+    const data: any = {
+      // TODO: ask: is this really wanted to be any?
+      port: await getPort({ port: instOpts.port ?? undefined }), // do (null or undefined) to undefined
+      dbName: generateDbName(instOpts.dbName),
+      ip: instOpts.ip ?? '127.0.0.1',
+      storageEngine: instOpts.storageEngine ?? 'ephemeralForTest',
+      replSet: instOpts.replSet,
+    };
 
-    const instOpts = this.opts.instance || {};
-    data.port = await getPort({ port: instOpts.port || undefined });
-    data.dbName = generateDbName(instOpts.dbName);
-    data.ip = instOpts.ip || '127.0.0.1';
     data.uri = await this._getUriBase(data.ip, data.port, data.dbName);
-    data.storageEngine = instOpts.storageEngine || 'ephemeralForTest';
-    data.replSet = instOpts.replSet;
     if (instOpts.dbPath) {
       data.dbPath = instOpts.dbPath;
     } else {
@@ -182,6 +192,7 @@ export default class MongoMemoryServer {
 
     // just return "true" if the instance is already running / defined
     if (isNullOrUndefined(this.runningInstance)) {
+      this.debug('Instance is already stopped, returning true');
       return true;
     }
 
@@ -261,6 +272,7 @@ export default class MongoMemoryServer {
   /**
    * Get a mongodb-URI for a different DataBase
    * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
+   * @deprecated
    */
   async getConnectionString(otherDbName: string | boolean = false): Promise<string> {
     // should this function be marked deprecated? because it is just a pass-through to getUri
