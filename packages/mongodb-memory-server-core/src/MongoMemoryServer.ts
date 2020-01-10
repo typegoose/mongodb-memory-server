@@ -1,17 +1,10 @@
 import { ChildProcess } from 'child_process';
 import tmp from 'tmp';
 import getPort from 'get-port';
-import { generateDbName } from './util/db_util';
+import { generateDbName, getUriBase } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import {
-  CallbackFn,
-  DebugFn,
-  MongoMemoryInstancePropT,
-  StorageEngineT,
-  SpawnOptions,
-} from './types';
-import { DirResult } from 'tmp';
+import { DebugFn, MongoMemoryInstancePropT, StorageEngineT, SpawnOptions } from './types';
 import { isNullOrUndefined } from 'util';
 
 tmp.setGracefulCleanup();
@@ -28,22 +21,27 @@ export interface MongoMemoryServerOptsT {
 }
 
 /**
- * Information about the currently running instance
+ * Data used by _startUpInstance's "data" variable
  */
-export interface MongoInstanceDataT {
+export interface StartupInstanceData {
   port: number;
-  dbPath: string;
+  dbPath?: string;
   dbName: string;
   ip: string;
-  uri: string;
+  uri?: string;
   storageEngine: StorageEngineT;
-  instance: MongoInstance;
-  childProcess: ChildProcess;
-  tmpDir?: {
-    name: string;
-    removeCallback: CallbackFn;
-  };
   replSet?: string;
+  tmpDir?: tmp.DirResult;
+}
+
+/**
+ * Information about the currently running instance
+ */
+export interface MongoInstanceDataT extends StartupInstanceData {
+  dbPath: string; // re-declare, because in this interface it is *not* optional
+  uri: string; // same as above
+  instance: MongoInstance;
+  childProcess?: ChildProcess;
 }
 
 export default class MongoMemoryServer {
@@ -132,27 +130,24 @@ export default class MongoMemoryServer {
   async _startUpInstance(): Promise<MongoInstanceDataT> {
     /** Shortcut to this.opts.instance */
     const instOpts = this.opts.instance ?? {};
-    let tmpDir: DirResult;
-    const data: any = {
-      // TODO: ask: is this really wanted to be any?
+    const data: StartupInstanceData = {
       port: await getPort({ port: instOpts.port ?? undefined }), // do (null or undefined) to undefined
       dbName: generateDbName(instOpts.dbName),
       ip: instOpts.ip ?? '127.0.0.1',
       storageEngine: instOpts.storageEngine ?? 'ephemeralForTest',
       replSet: instOpts.replSet,
+      dbPath: instOpts.dbPath,
+      tmpDir: undefined,
     };
 
-    data.uri = await this._getUriBase(data.ip, data.port, data.dbName);
-    if (instOpts.dbPath) {
-      data.dbPath = instOpts.dbPath;
-    } else {
-      tmpDir = tmp.dirSync({
+    data.uri = await getUriBase(data.ip, data.port, data.dbName);
+    if (!data.dbPath) {
+      data.tmpDir = tmp.dirSync({
         mode: 0o755,
         prefix: 'mongo-mem-',
         unsafeCleanup: true,
       });
-      data.dbPath = tmpDir.name;
-      data.tmpDir = tmpDir;
+      data.dbPath = data.tmpDir.name;
     }
 
     this.debug(`Starting MongoDB instance with following options: ${JSON.stringify(data)}`);
@@ -174,10 +169,14 @@ export default class MongoMemoryServer {
       spawn: this.opts.spawn,
       debug: this.debug,
     });
-    data.instance = instance;
-    data.childProcess = instance.childProcess;
 
-    return data;
+    return {
+      ...data,
+      dbPath: data.dbPath as string, // because otherwise the types would be incompatible
+      uri: data.uri as string, // same as above
+      instance: instance,
+      childProcess: instance.childProcess ?? undefined, // convert null | undefined to undefined
+    };
   }
 
   /**
@@ -238,14 +237,6 @@ export default class MongoMemoryServer {
   }
 
   /**
-   * Basic MongoDB Connection string
-   * @private
-   */
-  _getUriBase(host: string, port: number, dbName: string) {
-    return `mongodb://${host}:${port}/${dbName}?`;
-  }
-
-  /**
    * Get a mongodb-URI for a different DataBase
    * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
    */
@@ -256,10 +247,10 @@ export default class MongoMemoryServer {
     if (otherDbName) {
       if (typeof otherDbName === 'string') {
         // generate uri with provided DB name on existed DB instance
-        return this._getUriBase(ip, port, otherDbName);
+        return getUriBase(ip, port, otherDbName);
       }
       // generate new random db name
-      return this._getUriBase(ip, port, generateDbName());
+      return getUriBase(ip, port, generateDbName());
     }
 
     return uri;

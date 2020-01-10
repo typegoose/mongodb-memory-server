@@ -16,4 +16,11 @@ export function getHost(uri: string): string {
   return uri.replace('mongodb://', '').replace(/\/.*/, '');
 }
 
+/**
+ * Basic MongoDB Connection string
+ */
+export function getUriBase(host: string, port: number, dbName: string) {
+  return `mongodb://${host}:${port}/${dbName}?`;
+}
+
 export default generateDbName;
