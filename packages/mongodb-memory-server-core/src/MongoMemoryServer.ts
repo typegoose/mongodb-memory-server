@@ -114,11 +114,7 @@ export default class MongoMemoryServer {
       })
       .catch((err) => {
         if (!this.opts.debug) {
-          // TODO: ask question
-          throw new Error(
-            `${err.message}\n\nUse debug option for more info: ` +
-              `new MongoMemoryServer({ debug: true })`
-          );
+          console.warn('Starting the instance failed, please enable "debug" for more infomation');
         }
         throw err;
       });
