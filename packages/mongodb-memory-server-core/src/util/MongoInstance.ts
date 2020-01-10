@@ -100,7 +100,7 @@ export default class MongoInstance {
     const { ip, port, storageEngine, dbPath, replSet, auth, args } = this.opts.instance;
 
     const result: string[] = [];
-    result.push('--bind_ip', ip ?? '127.0.0.1');
+    result.push('--bind_ip', ip || '127.0.0.1');
     if (port) result.push('--port', port.toString());
     if (storageEngine) result.push('--storageEngine', storageEngine);
     if (dbPath) result.push('--dbpath', dbPath);
