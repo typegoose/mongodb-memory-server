@@ -31,14 +31,15 @@ Choose any package, because they are the same. Differs only by default configura
 
 ### Requirements
 
-NodeJS: 8+
-Typescript: 3.7+ (if used)
+- NodeJS: 8+
+- Typescript: 3.7+ (if used)
 
-One of those:
+And one of those:
 
 - having `lsb-core` installed (or any that provides the `lsb_release` command)
 - having an `/etc/os-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html)
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
+- manually specify which version & system should be used
 
 #### Known Incompatibilities
 
