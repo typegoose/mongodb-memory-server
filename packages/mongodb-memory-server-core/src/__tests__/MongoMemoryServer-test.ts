@@ -47,6 +47,8 @@ describe('MongoMemoryServer', () => {
         .fn()
         .mockRejectedValueOnce(new Error('unknown error'));
 
+      console.warn = jest.fn(); // mock it to prevent writing to console
+
       const mongoServer = new MongoMemoryServer({
         autoStart: false,
         instance: {
@@ -56,10 +58,8 @@ describe('MongoMemoryServer', () => {
 
       expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(0);
 
-      await expect(mongoServer.start()).rejects.toThrow(
-        `unknown error\n\nUse debug option for more info: ` +
-          `new MongoMemoryServer({ debug: true })`
-      );
+      await expect(mongoServer.start()).rejects.toThrow('unknown error');
+      expect(console.warn).toHaveBeenCalled();
 
       expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(1);
     });

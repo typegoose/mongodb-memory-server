@@ -1,21 +1,17 @@
 import { ChildProcess } from 'child_process';
 import tmp from 'tmp';
 import getPort from 'get-port';
-import { generateDbName } from './util/db_util';
+import { generateDbName, getUriBase } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import {
-  CallbackFn,
-  DebugFn,
-  MongoMemoryInstancePropT,
-  StorageEngineT,
-  SpawnOptions,
-} from './types';
-import { DirResult } from 'tmp';
+import { DebugFn, MongoMemoryInstancePropT, StorageEngineT, SpawnOptions } from './types';
 import { isNullOrUndefined } from 'util';
 
 tmp.setGracefulCleanup();
 
+/**
+ * Starting Options
+ */
 export interface MongoMemoryServerOptsT {
   instance?: MongoMemoryInstancePropT;
   binary?: MongoBinaryOpts;
@@ -24,20 +20,28 @@ export interface MongoMemoryServerOptsT {
   autoStart?: boolean;
 }
 
-export interface MongoInstanceDataT {
+/**
+ * Data used by _startUpInstance's "data" variable
+ */
+export interface StartupInstanceData {
   port: number;
-  dbPath: string;
+  dbPath?: string;
   dbName: string;
   ip: string;
-  uri: string;
+  uri?: string;
   storageEngine: StorageEngineT;
-  instance: MongoInstance;
-  childProcess: ChildProcess;
-  tmpDir?: {
-    name: string;
-    removeCallback: CallbackFn;
-  };
   replSet?: string;
+  tmpDir?: tmp.DirResult;
+}
+
+/**
+ * Information about the currently running instance
+ */
+export interface MongoInstanceDataT extends StartupInstanceData {
+  dbPath: string; // re-declare, because in this interface it is *not* optional
+  uri: string; // same as above
+  instance: MongoInstance;
+  childProcess?: ChildProcess;
 }
 
 export default class MongoMemoryServer {
@@ -88,7 +92,7 @@ export default class MongoMemoryServer {
    * (when options.autoStart is true, this already got called)
    */
   async start(): Promise<boolean> {
-    this.debug('Called MongoMemoryServer.start() method:');
+    this.debug('Called MongoMemoryServer.start() method');
     if (this.runningInstance) {
       throw new Error(
         'MongoDB instance already in status startup/running/error. Use opts.debug = true for more info.'
@@ -108,10 +112,7 @@ export default class MongoMemoryServer {
       })
       .catch((err) => {
         if (!this.opts.debug) {
-          throw new Error(
-            `${err.message}\n\nUse debug option for more info: ` +
-              `new MongoMemoryServer({ debug: true })`
-          );
+          console.warn('Starting the instance failed, please enable "debug" for more infomation');
         }
         throw err;
       });
@@ -127,26 +128,26 @@ export default class MongoMemoryServer {
    * @private
    */
   async _startUpInstance(): Promise<MongoInstanceDataT> {
-    const data: any = {};
-    let tmpDir: DirResult;
+    /** Shortcut to this.opts.instance */
+    const instOpts = this.opts.instance ?? {};
+    const data: StartupInstanceData = {
+      port: await getPort({ port: instOpts.port ?? undefined }), // do (null or undefined) to undefined
+      dbName: generateDbName(instOpts.dbName),
+      ip: instOpts.ip ?? '127.0.0.1',
+      storageEngine: instOpts.storageEngine ?? 'ephemeralForTest',
+      replSet: instOpts.replSet,
+      dbPath: instOpts.dbPath,
+      tmpDir: undefined,
+    };
 
-    const instOpts = this.opts.instance || {};
-    data.port = await getPort({ port: instOpts.port || undefined });
-    data.dbName = generateDbName(instOpts.dbName);
-    data.ip = instOpts.ip || '127.0.0.1';
-    data.uri = await this._getUriBase(data.ip, data.port, data.dbName);
-    data.storageEngine = instOpts.storageEngine || 'ephemeralForTest';
-    data.replSet = instOpts.replSet;
-    if (instOpts.dbPath) {
-      data.dbPath = instOpts.dbPath;
-    } else {
-      tmpDir = tmp.dirSync({
+    data.uri = await getUriBase(data.ip, data.port, data.dbName);
+    if (!data.dbPath) {
+      data.tmpDir = tmp.dirSync({
         mode: 0o755,
         prefix: 'mongo-mem-',
         unsafeCleanup: true,
       });
-      data.dbPath = tmpDir.name;
-      data.tmpDir = tmpDir;
+      data.dbPath = data.tmpDir.name;
     }
 
     this.debug(`Starting MongoDB instance with following options: ${JSON.stringify(data)}`);
@@ -168,10 +169,14 @@ export default class MongoMemoryServer {
       spawn: this.opts.spawn,
       debug: this.debug,
     });
-    data.instance = instance;
-    data.childProcess = instance.childProcess;
 
-    return data;
+    return {
+      ...data,
+      dbPath: data.dbPath as string, // because otherwise the types would be incompatible
+      uri: data.uri as string, // same as above
+      instance: instance,
+      childProcess: instance.childProcess ?? undefined, // convert null | undefined to undefined
+    };
   }
 
   /**
@@ -182,6 +187,7 @@ export default class MongoMemoryServer {
 
     // just return "true" if the instance is already running / defined
     if (isNullOrUndefined(this.runningInstance)) {
+      this.debug('Instance is already stopped, returning true');
       return true;
     }
 
@@ -231,14 +237,6 @@ export default class MongoMemoryServer {
   }
 
   /**
-   * Basic MongoDB Connection string
-   * @private
-   */
-  _getUriBase(host: string, port: number, dbName: string) {
-    return `mongodb://${host}:${port}/${dbName}?`;
-  }
-
-  /**
    * Get a mongodb-URI for a different DataBase
    * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
    */
@@ -249,10 +247,10 @@ export default class MongoMemoryServer {
     if (otherDbName) {
       if (typeof otherDbName === 'string') {
         // generate uri with provided DB name on existed DB instance
-        return this._getUriBase(ip, port, otherDbName);
+        return getUriBase(ip, port, otherDbName);
       }
       // generate new random db name
-      return this._getUriBase(ip, port, generateDbName());
+      return getUriBase(ip, port, generateDbName());
     }
 
     return uri;
@@ -261,6 +259,7 @@ export default class MongoMemoryServer {
   /**
    * Get a mongodb-URI for a different DataBase
    * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
+   * @deprecated
    */
   async getConnectionString(otherDbName: string | boolean = false): Promise<string> {
     // should this function be marked deprecated? because it is just a pass-through to getUri

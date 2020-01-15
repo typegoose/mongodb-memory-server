@@ -8,6 +8,6 @@ export function deprecate(msg: string): void {
     stackStr = `\n    ${stack.slice(2, 7).join('\n    ')}`;
   }
 
-  // eslint-disable-next-line
+  // eslint-disable-next-line no-console
   console.log(`[mongodb-memory-server]: DEPRECATION MESSAGE: ${msg} ${stackStr}\n\n`);
 }
