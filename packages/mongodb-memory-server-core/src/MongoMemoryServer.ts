@@ -1,5 +1,5 @@
 import { ChildProcess } from 'child_process';
-import tmp from 'tmp';
+import * as tmp from 'tmp';
 import getPort from 'get-port';
 import { generateDbName, getUriBase } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
