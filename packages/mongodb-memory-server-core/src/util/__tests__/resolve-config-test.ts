@@ -1,5 +1,5 @@
 import fs from 'fs';
-import tmp, { DirResult } from 'tmp';
+import * as tmp from 'tmp';
 import { promisify } from 'util';
 import resolveConfig, { reInitializePackageJson } from '../resolve-config';
 
@@ -24,7 +24,7 @@ const innerPackageJson = {
 
 describe('resolveConfig', () => {
   const originalDir = process.cwd();
-  let tmpObj: DirResult;
+  let tmpObj: tmp.DirResult;
 
   describe('configuration from closest package.json', () => {
     beforeAll(async () => {

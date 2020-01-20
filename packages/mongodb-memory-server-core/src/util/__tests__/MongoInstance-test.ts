@@ -1,11 +1,11 @@
-import tmp, { DirResult } from 'tmp';
+import * as tmp from 'tmp';
 import { LATEST_VERSION } from '../MongoBinary';
 import MongodbInstance from '../MongoInstance';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 tmp.setGracefulCleanup();
 
-let tmpDir: DirResult;
+let tmpDir: tmp.DirResult;
 beforeEach(() => {
   tmpDir = tmp.dirSync({ prefix: 'mongo-mem-', unsafeCleanup: true });
 });
