@@ -40,7 +40,7 @@ describe('Single mongoServer', () => {
     const mongoServer2 = new MongoMemoryServer({ autoStart: false });
     mongoServer2.runningInstance = Promise.resolve({}) as Promise<MongoInstanceDataT>;
     await expect(mongoServer2.start()).rejects.toThrow(
-      'MongoDB instance already in status startup/running/error. Use opts.debug = true for more info.'
+      'MongoDB instance already in status startup/running/error. Use debug for more info.'
     );
   });
 });

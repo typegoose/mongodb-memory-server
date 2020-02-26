@@ -80,7 +80,7 @@ _Note: the package does try to download `mongod` upon server start if it cannot 
 
 ## Usage
 
-### Simple server start:
+### Simple server start
 
 ```js
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -108,7 +108,7 @@ mongod.getInstanceInfo();
 // special childProcess killer will shutdown it for you
 ```
 
-### Available options
+### Available options for MongoMemoryServer
 
 All options are optional.
 
@@ -120,7 +120,6 @@ const mongod = new MongoMemoryServer({
     dbName?: string, // by default generate random dbName
     dbPath?: string, // by default create in temp directory
     storageEngine?: string, // by default `ephemeralForTest`, available engines: [ 'devnull', 'ephemeralForTest', 'mmapv1', 'wiredTiger' ]
-    debug?: boolean, // by default false
     replSet?: string, // by default no replica set, replica set name
     auth?: boolean, // by default `mongod` is started with '--noauth', start `mongod` with '--auth'
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
@@ -130,66 +129,19 @@ const mongod = new MongoMemoryServer({
     downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
-    debug?: boolean, // by default false
     checkMD5?: boolean, // by default false OR process.env.MONGOMS_MD5_CHECK
     systemBinary?: string, // by default undefined or process.env.MONGOMS_SYSTEM_BINARY
   },
-  debug?: boolean, // by default false
   autoStart?: boolean, // by default true
 });
 ```
 
-#### Options which can be set via ENVIRONMENT variables
-
-```sh
-MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
-MONGOMS_PLATFORM=linux
-MONGOMS_ARCH=x64
-MONGOMS_VERSION=3
-MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
-MONGOMS_DOWNLOAD_MIRROR=host # your mirror host to download the mongodb binary
-MONGOMS_DOWNLOAD_URL=url # full URL to download the mongodb binary
-MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
-MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
-MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
-# Passed constructor parameter `binary.checkMD5` has higher priority.
-
-# GetOS specific ones (for linux only)
-MONGOMS_USE_LINUX_LSB_RELEASE # Only try "lsb_release -a"
-MONGOMS_USE_LINUX_OS_RELEASE # Only try to read "/etc/os-release"
-MONGOMS_USE_LINUX_ANYFILE_RELEASE # Only try to read the first file found "/etc/*-release"
-```
-
-#### Options which can be set via package.json's `config` section
-
-You can also use package.json's `config` section to configure installation process.
-Environment variables have higher priority than contents of package.json.
-
-```json
-{
-  "config": {
-    "mongodbMemoryServer": {
-      "downloadDir": "/path/to/mongodb/binaries",
-      "platform": "linux",
-      "arch": "x64",
-      "version": "3",
-      "debug": "1",
-      "downloadMirror": "url",
-      "disablePostinstall": "1",
-      "systemBinary": "/usr/local/bin/mongod",
-      "md5Check": "1"
-    }
-  }
-}
-```
-
-### Replica Set start:
+### Replica Set start
 
 ```js
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 const replSet = new MongoMemoryReplSet({
-  debug: false,
   replSet: { storageEngine: 'wiredTiger' },
 });
 await replSet.waitUntilRunning();
@@ -214,7 +166,7 @@ replSet.stop();
 // or it should be stopped automatically when you exit from script
 ```
 
-### Available options for Replica Set
+### Available options for MongoMemoryReplSet
 
 All options are optional.
 
@@ -222,7 +174,6 @@ All options are optional.
 const replSet = new MongoMemoryReplSet({
   autoStart, // same as for MongoMemoryServer
   binary: binaryOpts, // same as for MongoMemoryServer
-  debug, // same as for MongoMemoryServer
   instanceOpts: [
     {
       args, // any additional instance specific args
@@ -253,6 +204,50 @@ const replSet = new MongoMemoryReplSet({
     },
   },
 });
+```
+
+### Options which can be set via ENVIRONMENT variables
+
+```sh
+MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
+MONGOMS_PLATFORM=linux
+MONGOMS_ARCH=x64
+MONGOMS_VERSION=3
+MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
+MONGOMS_DOWNLOAD_MIRROR=host # your mirror host to download the mongodb binary
+MONGOMS_DOWNLOAD_URL=url # full URL to download the mongodb binary
+MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
+MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
+MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
+# Passed constructor parameter `binary.checkMD5` has higher priority.
+
+# GetOS specific ones (for linux only)
+MONGOMS_USE_LINUX_LSB_RELEASE # Only try "lsb_release -a"
+MONGOMS_USE_LINUX_OS_RELEASE # Only try to read "/etc/os-release"
+MONGOMS_USE_LINUX_ANYFILE_RELEASE # Only try to read the first file found "/etc/*-release"
+```
+
+### Options which can be set via package.json's `config` section
+
+You can also use package.json's `config` section to configure installation process.
+Environment variables have higher priority than contents of package.json.
+
+```json
+{
+  "config": {
+    "mongodbMemoryServer": {
+      "downloadDir": "/path/to/mongodb/binaries",
+      "platform": "linux",
+      "arch": "x64",
+      "version": "3",
+      "debug": "1",
+      "downloadMirror": "url",
+      "disablePostinstall": "1",
+      "systemBinary": "/usr/local/bin/mongod",
+      "md5Check": "1"
+    }
+  }
+}
 ```
 
 ### Simple test with MongoClient
@@ -467,6 +462,26 @@ There isn't currently an official MongoDB release for alpine linux. This means t
 (or any other platform that isn't officially supported by MongoDB), but you can use a Docker image that already has mongod
 built in and then set the MONGOMS_SYSTEM_BINARY variable to point at that binary. This should allow you to use
 mongodb-memory-server on any system on which you can install mongod.
+
+### Enable Debug Mode
+
+The Debug mode can be enabled with an Environment-Variable or in the package.json "config" section:
+
+```sh
+MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
+```
+
+or
+
+```json
+{
+  "config": {
+    "mongodbMemoryServer": {
+      "debug": "1", // also available case-insensitive values: "on" "yes" "true"
+    }
+  }
+}
+```
 
 ## Travis
 

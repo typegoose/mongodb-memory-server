@@ -4,13 +4,15 @@ import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import {
-  DebugPropT,
   StorageEngineT,
   SpawnOptions,
   DebugFn,
   ErrorVoidCallback,
   EmptyVoidCallback,
 } from '../types';
+import debug from 'debug';
+
+const log = debug('MongoMS:MongoInstance');
 
 export interface MongodOps {
   // instance options
@@ -19,7 +21,6 @@ export interface MongodOps {
     ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
     storageEngine?: StorageEngineT;
     dbPath?: string;
-    debug?: DebugPropT;
     replSet?: string;
     args?: string[];
     auth?: boolean;
@@ -30,7 +31,6 @@ export interface MongodOps {
 
   // child process spawn options
   spawn?: SpawnOptions;
-  debug?: DebugPropT;
 }
 
 /**
@@ -55,33 +55,18 @@ export default class MongoInstance {
     this.killerProcess = null;
     this.waitForPrimaryResolveFns = [];
 
-    if (this.opts.debug) {
-      if (!this.opts.instance) this.opts.instance = {};
-      if (!this.opts.binary) this.opts.binary = {};
-      this.opts.instance.debug = this.opts.debug;
-      this.opts.binary.debug = this.opts.debug;
-    }
+    if (!this.opts.instance) this.opts.instance = {};
+    if (!this.opts.binary) this.opts.binary = {};
 
-    if (this.opts.instance && this.opts.instance.debug) {
-      if (
-        typeof this.opts.instance.debug === 'function' &&
-        this.opts.instance.debug.apply &&
-        this.opts.instance.debug.call
-      ) {
-        this.debug = this.opts.instance.debug;
-      } else {
-        this.debug = console.log.bind(null);
-      }
+    if (debug.enabled('MongoMS:MongoInstance')) {
+      // add instance's port to debug output
+      const port = this.opts.instance?.port;
+      this.debug = (msg: string): void => {
+        log(`Mongo[${port}]: ${msg}`);
+      };
     } else {
       this.debug = () => {};
     }
-
-    // add instance's port to debug output
-    const debugFn = this.debug;
-    const port = this.opts.instance?.port;
-    this.debug = (msg: string): void => {
-      debugFn(`Mongo[${port}]: ${msg}`);
-    };
   }
 
   /**

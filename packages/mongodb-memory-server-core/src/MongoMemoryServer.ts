@@ -4,8 +4,11 @@ import getPort from 'get-port';
 import { generateDbName, getUriBase } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import { DebugFn, MongoMemoryInstancePropT, StorageEngineT, SpawnOptions } from './types';
+import { MongoMemoryInstancePropT, StorageEngineT, SpawnOptions } from './types';
 import { isNullOrUndefined } from 'util';
+import debug from 'debug';
+
+const log = debug('MongoMS:MongoMemoryServer');
 
 tmp.setGracefulCleanup();
 
@@ -15,7 +18,6 @@ tmp.setGracefulCleanup();
 export interface MongoMemoryServerOptsT {
   instance?: MongoMemoryInstancePropT;
   binary?: MongoBinaryOpts;
-  debug?: boolean;
   spawn?: SpawnOptions;
   autoStart?: boolean;
 }
@@ -48,7 +50,6 @@ export default class MongoMemoryServer {
   runningInstance: Promise<MongoInstanceDataT> | null = null;
   instanceInfoSync: MongoInstanceDataT | null = null;
   opts: MongoMemoryServerOptsT;
-  debug: DebugFn;
 
   /**
    * Create an Mongo-Memory-Sever Instance
@@ -59,13 +60,8 @@ export default class MongoMemoryServer {
   constructor(opts?: MongoMemoryServerOptsT) {
     this.opts = { ...opts };
 
-    this.debug = (msg: string) => {
-      if (this.opts.debug) {
-        console.log(msg);
-      }
-    };
     if (opts?.autoStart === true) {
-      this.debug('Autostarting MongoDB instance...');
+      log('Autostarting MongoDB instance...');
       this.start();
     }
   }
@@ -92,17 +88,17 @@ export default class MongoMemoryServer {
    * (when options.autoStart is true, this already got called)
    */
   async start(): Promise<boolean> {
-    this.debug('Called MongoMemoryServer.start() method');
+    log('Called MongoMemoryServer.start() method');
     if (this.runningInstance) {
       throw new Error(
-        'MongoDB instance already in status startup/running/error. Use opts.debug = true for more info.'
+        'MongoDB instance already in status startup/running/error. Use debug for more info.'
       );
     }
 
     this.runningInstance = this._startUpInstance()
       .catch((err) => {
         if (err.message === 'Mongod shutting down' || err === 'Mongod shutting down') {
-          this.debug(`Mongodb does not started. Trying to start on another port one more time...`);
+          log(`Mongodb does not started. Trying to start on another port one more time...`);
           if (this.opts.instance && this.opts.instance.port) {
             this.opts.instance.port = null;
           }
@@ -111,8 +107,8 @@ export default class MongoMemoryServer {
         throw err;
       })
       .catch((err) => {
-        if (!this.opts.debug) {
-          console.warn('Starting the instance failed, please enable "debug" for more infomation');
+        if (!debug.enabled('MongoMS:MongoMemoryServer')) {
+          console.warn('Starting the instance failed, please enable debug for more infomation');
         }
         throw err;
       });
@@ -150,7 +146,7 @@ export default class MongoMemoryServer {
       data.dbPath = data.tmpDir.name;
     }
 
-    this.debug(`Starting MongoDB instance with following options: ${JSON.stringify(data)}`);
+    log(`Starting MongoDB instance with following options: ${JSON.stringify(data)}`);
 
     // Download if not exists mongo binaries in ~/.mongodb-prebuilt
     // After that startup MongoDB instance
@@ -161,13 +157,11 @@ export default class MongoMemoryServer {
         port: data.port,
         storageEngine: data.storageEngine,
         replSet: data.replSet,
-        debug: instOpts.debug,
         args: instOpts.args,
         auth: instOpts.auth,
       },
       binary: this.opts.binary,
       spawn: this.opts.spawn,
-      debug: this.debug,
     });
 
     return {
@@ -183,24 +177,24 @@ export default class MongoMemoryServer {
    * Stop the current In-Memory Instance
    */
   async stop(): Promise<boolean> {
-    this.debug('Called MongoMemoryServer.stop() method');
+    log('Called MongoMemoryServer.stop() method');
 
     // just return "true" if the instance is already running / defined
     if (isNullOrUndefined(this.runningInstance)) {
-      this.debug('Instance is already stopped, returning true');
+      log('Instance is already stopped, returning true');
       return true;
     }
 
     const { instance, port, tmpDir }: MongoInstanceDataT = await this.ensureInstance();
 
-    this.debug(`Shutdown MongoDB server on port ${port} with pid ${instance.getPid() || ''}`);
+    log(`Shutdown MongoDB server on port ${port} with pid ${instance.getPid() || ''}`);
     await instance.kill();
 
     this.runningInstance = null;
     this.instanceInfoSync = null;
 
     if (tmpDir) {
-      this.debug(`Removing tmpDir ${tmpDir.name}`);
+      log(`Removing tmpDir ${tmpDir.name}`);
       tmpDir.removeCallback();
     }
 
@@ -219,13 +213,13 @@ export default class MongoMemoryServer {
    * -> throws if instance cannot be started
    */
   async ensureInstance(): Promise<MongoInstanceDataT> {
-    this.debug('Called MongoMemoryServer.ensureInstance() method:');
+    log('Called MongoMemoryServer.ensureInstance() method:');
     if (this.runningInstance) {
       return this.runningInstance;
     } else {
-      this.debug(' - no running instance, call `start()` command');
+      log(' - no running instance, call `start()` command');
       await this.start();
-      this.debug(' - `start()` command was succesfully resolved');
+      log(' - `start()` command was succesfully resolved');
 
       // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
       if (!this.runningInstance) {

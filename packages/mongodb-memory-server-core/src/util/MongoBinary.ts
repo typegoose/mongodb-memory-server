@@ -8,8 +8,10 @@ import { execSync } from 'child_process';
 import dedent from 'dedent';
 import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
-import { DebugFn } from '../types';
-import resolveConfig, { envToBool } from './resolve-config';
+import resolveConfig from './resolve-config';
+import debug from 'debug';
+
+const log = debug('MongoMS:MongoBinary');
 
 // TODO: return back `latest` version when it will be fixed in MongoDB distro (for now use 4.0.3 😂)
 // More details in https://github.com/nodkz/mongodb-memory-server/issues/131
@@ -25,12 +27,10 @@ export interface MongoBinaryOpts {
   downloadDir?: string;
   platform?: string;
   arch?: string;
-  debug?: boolean | Function;
 }
 
 export default class MongoBinary {
   static cache: MongoBinaryCache = {};
-  static debug: DebugFn;
 
   static async getSystemPath(systemBinary: string): Promise<string> {
     let binaryPath = '';
@@ -38,10 +38,10 @@ export default class MongoBinary {
     try {
       await promisify(fs.access)(systemBinary);
 
-      this.debug(`MongoBinary: found sytem binary path at ${systemBinary}`);
+      log(`MongoBinary: found sytem binary path at ${systemBinary}`);
       binaryPath = systemBinary;
     } catch (err) {
-      this.debug(`MongoBinary: can't find system binary at ${systemBinary}. ${err.message}`);
+      log(`MongoBinary: can't find system binary at ${systemBinary}. ${err.message}`);
     }
 
     return binaryPath;
@@ -88,12 +88,11 @@ export default class MongoBinary {
         arch,
         version,
       });
-      downloader.debug = this.debug;
       this.cache[version] = await downloader.getMongodPath();
     }
     // remove lock
     LockFile.unlock(lockfile, (err: any) => {
-      this.debug(
+      log(
         err
           ? `MongoBinary: Error when removing download lock ${err}`
           : `MongoBinary: Download lock removed`
@@ -127,21 +126,10 @@ export default class MongoBinary {
       arch: resolveConfig('ARCH') || os.arch(),
       version: resolveConfig('VERSION') || LATEST_VERSION,
       systemBinary: resolveConfig('SYSTEM_BINARY'),
-      debug: envToBool(resolveConfig('DEBUG') ?? ''),
     };
 
-    if (opts.debug) {
-      if (typeof opts.debug === 'function' && opts.debug.apply && opts.debug.call) {
-        this.debug = opts.debug as DebugFn;
-      } else {
-        this.debug = console.log.bind(null);
-      }
-    } else {
-      this.debug = (msg: string) => {}; // eslint-disable-line
-    }
-
     const options = { ...defaultOptions, ...opts };
-    this.debug(`MongoBinary options: ${JSON.stringify(options)}`);
+    log(`MongoBinary options: ${JSON.stringify(options)}`);
 
     const { version, systemBinary } = options;
 
@@ -161,7 +149,7 @@ export default class MongoBinary {
 
         if (version !== LATEST_VERSION && version !== binaryVersion) {
           // we will log the version number of the system binary and the version requested so the user can see the difference
-          this.debug(dedent`
+          log(dedent`
             MongoMemoryServer: Possible version conflict
               SystemBinary version: ${binaryVersion}
               Requested version:    ${version}
@@ -180,7 +168,7 @@ export default class MongoBinary {
       binaryPath = await this.getDownloadPath(options);
     }
 
-    this.debug(`MongoBinary: Mongod binary path: ${binaryPath}`);
+    log(`MongoBinary: Mongod binary path: ${binaryPath}`);
     return binaryPath;
   }
 

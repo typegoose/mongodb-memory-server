@@ -5,6 +5,9 @@ import { exec } from 'child_process';
 import { promisify, isNullOrUndefined } from 'util';
 import { join } from 'path';
 import resolveConfig from '../resolve-config';
+import debug from 'debug';
+
+const log = debug('MongoMS:getos');
 
 /** Collection of Regexes for "lsb_release -a" parsing */
 const LSBRegex = {
@@ -62,35 +65,42 @@ async function getLinuxInfomation(): Promise<LinuxOS> {
 
   // Force "lsb_release" to be used
   if (!isNullOrUndefined(resolveConfig('USE_LINUX_LSB_RELEASE'))) {
+    log('Forced LSB-Release file!');
     return (await tryLSBRelease()) as LinuxOS;
   }
   // Force /etc/os-release to be used
   if (!isNullOrUndefined(resolveConfig('USE_LINUX_OS_RELEASE'))) {
+    log('Forced OS-Release file!');
     return (await tryOSRelease()) as LinuxOS;
   }
   // Force the first /etc/*-release file to be used
   if (!isNullOrUndefined(resolveConfig('USE_LINUX_ANYFILE_RELEASE'))) {
+    log('Forced First *-Release file!');
     return (await tryFirstReleaseFile()) as LinuxOS;
   }
 
   // Try everything
   // Note: these values are stored, because this code should not use "inline value assignment"
 
+  log('Trying LSB-Release');
   const lsbOut = await tryLSBRelease();
   if (!isNullOrUndefined(lsbOut)) {
     return lsbOut;
   }
 
+  log('Trying OS-Release');
   const osOut = await tryOSRelease();
   if (!isNullOrUndefined(osOut)) {
     return osOut;
   }
 
+  log('Trying First *-Release file');
   const releaseOut = await tryFirstReleaseFile();
   if (!isNullOrUndefined(releaseOut)) {
     return releaseOut;
   }
 
+  log('Couldnt find an release file');
   // if none has worked, return unkown
   return {
     os: 'linux',
