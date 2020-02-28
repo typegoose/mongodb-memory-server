@@ -1,5 +1,5 @@
 export type DebugFn = (...args: any[]) => any;
-export type DebugPropT = boolean | DebugFn;
+export type DebugPropT = boolean;
 
 export interface DownloadProgressT {
   current: number;
@@ -24,7 +24,6 @@ export interface MongoMemoryInstancePropBaseT {
 export interface MongoMemoryInstancePropT extends MongoMemoryInstancePropBaseT {
   auth?: boolean;
   dbName?: string;
-  debug?: DebugPropT;
   ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
   replSet?: string;
   storageEngine?: StorageEngineT;

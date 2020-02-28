@@ -10,7 +10,7 @@
     "declarationMap": true,
     "skipLibCheck": false,
     "strict": true,
-    "lib": ["es2017"],
+    "lib": ["esnext"],
     "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

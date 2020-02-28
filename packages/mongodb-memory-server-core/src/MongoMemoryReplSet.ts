@@ -5,12 +5,14 @@ import { MongoMemoryServerOptsT } from './MongoMemoryServer';
 import { generateDbName, getHost } from './util/db_util';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import {
-  DebugFn,
   MongoMemoryInstancePropT,
   MongoMemoryInstancePropBaseT,
   SpawnOptions,
   StorageEngineT,
 } from './types';
+import debug from 'debug';
+
+const log = debug('MongoMS:MongoMemoryReplSet');
 
 /**
  * Replica set specific options.
@@ -50,7 +52,6 @@ export interface MongoMemoryReplSetOptsT {
   binary?: MongoBinaryOpts;
   replSet?: ReplSetOpts;
   autoStart?: boolean;
-  debug?: boolean;
 }
 
 export default class MongoMemoryReplSet extends EventEmitter {
@@ -59,11 +60,9 @@ export default class MongoMemoryReplSet extends EventEmitter {
     instanceOpts: MongoMemoryInstancePropBaseT[];
     binary: MongoBinaryOpts;
     replSet: Required<ReplSetOpts>;
-    debug: boolean;
     autoStart?: boolean;
   };
 
-  debug: DebugFn;
   _state: 'init' | 'running' | 'stopped';
   admin?: mongodb.Admin;
 
@@ -84,19 +83,14 @@ export default class MongoMemoryReplSet extends EventEmitter {
     this._state = 'stopped';
     this.opts = {
       binary: opts.binary || {},
-      debug: !!opts.debug,
       instanceOpts: opts.instanceOpts || [],
       replSet: { ...replSetDefaults, ...opts.replSet },
     };
 
     if (!this.opts.replSet.args) this.opts.replSet.args = [];
     this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
-    this.debug = (...args: any[]) => {
-      if (!this.opts.debug) return;
-      console.log(...args);
-    };
     if (!(opts && opts.autoStart === false)) {
-      this.debug('Autostarting MongoMemoryReplSet.');
+      log('Autostarting MongoMemoryReplSet.');
       setTimeout(() => this.start(), 0);
     }
     process.on('beforeExit', () => this.stop());
@@ -134,7 +128,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     if (baseOpts.port) opts.port = baseOpts.port;
     if (baseOpts.dbPath) opts.dbPath = baseOpts.dbPath;
     if (baseOpts.storageEngine) opts.storageEngine = baseOpts.storageEngine;
-    this.debug('   instance opts:', opts);
+    log('   instance opts:', opts);
     return opts;
   }
 
@@ -146,7 +140,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
       await this._waitForPrimary();
     }
     if (this._state !== 'running') {
-      throw new Error('Replica Set is not running. Use opts.debug for more info.');
+      throw new Error('Replica Set is not running. Use debug for more info.');
     }
     let dbName: string;
     if (otherDb) {
@@ -163,22 +157,22 @@ export default class MongoMemoryReplSet extends EventEmitter {
    * Start underlying `mongod` instances.
    */
   async start(): Promise<void> {
-    this.debug('start');
+    log('start');
     if (this._state !== 'stopped') {
-      throw new Error(`Already in 'init' or 'running' state. Use opts.debug = true for more info.`);
+      throw new Error(`Already in 'init' or 'running' state. Use debug for more info.`);
     }
     this.emit((this._state = 'init'));
-    this.debug('init');
+    log('init');
     // Any servers defined within `opts.instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
     // the `replSetInitiate` command against that server.
     const servers = this.opts.instanceOpts.map((opts) => {
-      this.debug('  starting server from instanceOpts:', opts, '...');
+      log('  starting server from instanceOpts:', opts, '...');
       return this._initServer(this.getInstanceOpts(opts));
     });
     const cnt = this.opts.replSet.count || 1;
     while (servers.length < cnt) {
-      this.debug(`  starting ${cnt} servers...`);
+      log(`  starting ${cnt} servers...`);
       const server = this._initServer(this.getInstanceOpts({}));
       servers.push(server);
     }
@@ -201,7 +195,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
         return true;
       })
       .catch((err) => {
-        this.debug(err);
+        log(err);
         this.emit((this._state = 'stopped'), err);
         return false;
       });
@@ -220,7 +214,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     if (this._state !== 'init') {
       throw new Error('Not in init phase.');
     }
-    this.debug('Initializing replica set.');
+    log('Initializing replica set.');
     if (!this.servers.length) {
       throw new Error('One or more server is required.');
     }
@@ -264,10 +258,10 @@ export default class MongoMemoryReplSet extends EventEmitter {
         },
       };
       await this.admin.command({ replSetInitiate: rsConfig });
-      this.debug('Waiting for replica set to have a PRIMARY member.');
+      log('Waiting for replica set to have a PRIMARY member.');
       await this._waitForPrimary();
       this.emit((this._state = 'running'));
-      this.debug('running');
+      log('running');
     } finally {
       await conn.close();
     }
@@ -276,7 +270,6 @@ export default class MongoMemoryReplSet extends EventEmitter {
   _initServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOptsT = {
       autoStart: false,
-      debug: this.opts.debug,
       binary: this.opts.binary,
       instance: instanceOpts,
       spawn: this.opts.replSet.spawn,
@@ -308,6 +301,6 @@ export default class MongoMemoryReplSet extends EventEmitter {
       clearTimeout(timeoutId);
     }
 
-    this.debug('_waitForPrimary detected one primary instance ');
+    log('_waitForPrimary detected one primary instance ');
   }
 }

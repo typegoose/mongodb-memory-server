@@ -6,18 +6,20 @@ import md5File from 'md5-file';
 import https from 'https';
 import decompress from 'decompress'; // 💩💩💩 this package does not work with Node@11+Jest+Babel
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
-import { DebugFn, DebugPropT, DownloadProgressT } from '../types';
+import { DownloadProgressT } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
 import HttpsProxyAgent from 'https-proxy-agent';
 import { promisify } from 'util';
 import resolveConfig, { envToBool } from './resolve-config';
+import debug from 'debug';
+
+const log = debug('MongoMS:MongoBinaryDownload');
 
 export interface MongoBinaryDownloadOpts {
   version?: string;
   downloadDir?: string;
   platform?: string;
   arch?: string;
-  debug?: DebugPropT;
   checkMD5?: boolean;
 }
 
@@ -30,7 +32,6 @@ interface HttpDownloadOptions {
 }
 
 export default class MongoBinaryDownload {
-  debug: DebugFn;
   dlProgress: DownloadProgressT;
   _downloadingUrl?: string;
 
@@ -40,7 +41,7 @@ export default class MongoBinaryDownload {
   version: string;
   platform: string;
 
-  constructor({ platform, arch, downloadDir, version, checkMD5, debug }: MongoBinaryDownloadOpts) {
+  constructor({ platform, arch, downloadDir, version, checkMD5 }: MongoBinaryDownloadOpts) {
     this.platform = platform ?? os.platform();
     this.arch = arch ?? os.arch();
     this.version = version ?? LATEST_VERSION;
@@ -52,16 +53,6 @@ export default class MongoBinaryDownload {
       totalMb: 0,
       lastPrintedAt: 0,
     };
-
-    if (debug) {
-      if (typeof debug === 'function' && debug.apply && debug.call) {
-        this.debug = debug;
-      } else {
-        this.debug = console.log.bind(null);
-      }
-    } else {
-      this.debug = () => {};
-    }
   }
 
   /**
@@ -169,7 +160,7 @@ export default class MongoBinaryDownload {
 
     const downloadLocation = path.resolve(this.downloadDir, filename);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
-    this.debug(`Downloading${proxy ? ` via proxy ${proxy}` : ''}:`, downloadUrl);
+    log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}:`, downloadUrl);
     const downloadedFile = await this.httpDownload(
       downloadOptions,
       downloadLocation,
@@ -186,7 +177,7 @@ export default class MongoBinaryDownload {
   async extract(mongoDBArchive: string): Promise<string> {
     const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
     const extractDir = path.resolve(this.downloadDir, this.version);
-    this.debug(`extract(): ${extractDir}`);
+    log(`extract(): ${extractDir}`);
 
     if (!fs.existsSync(extractDir)) {
       fs.mkdirSync(extractDir);
@@ -258,7 +249,7 @@ export default class MongoBinaryDownload {
 
           fileStream.close();
           await promisify(fs.rename)(tempDownloadLocation, downloadLocation);
-          this.debug(`renamed ${tempDownloadLocation} to ${downloadLocation}`);
+          log(`renamed ${tempDownloadLocation} to ${downloadLocation}`);
 
           resolve(downloadLocation);
         });

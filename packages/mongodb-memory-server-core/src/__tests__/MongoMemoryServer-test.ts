@@ -59,7 +59,6 @@ describe('MongoMemoryServer', () => {
       expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(0);
 
       await expect(mongoServer.start()).rejects.toThrow('unknown error');
-      expect(console.warn).toHaveBeenCalled();
 
       expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(1);
     });
@@ -83,7 +82,6 @@ describe('MongoMemoryServer', () => {
     it('should stop mongod and answer on isRunning() method', async () => {
       const mongod = new MongoMemoryServer({
         autoStart: false,
-        debug: false,
       });
 
       expect(mongod.getInstanceInfo()).toBeFalsy();

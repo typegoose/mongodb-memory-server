@@ -1,5 +1,6 @@
 import camelCase from 'camelcase';
 import finder, { Package } from 'find-package-json';
+import debug from 'debug';
 
 const ENV_CONFIG_PREFIX = 'MONGOMS_';
 const defaultValues = new Map<string, string>();
@@ -37,4 +38,9 @@ export default function resolveConfig(variableName: string): string | undefined 
  */
 export function envToBool(env: string) {
   return ['1', 'on', 'yes', 'true'].indexOf(env.toLowerCase()) !== -1;
+}
+
+// enable debug "MONGOMS_DEBUG" is true
+if (envToBool(resolveConfig('DEBUG') ?? '')) {
+  debug.enable('MongoMS:*');
 }
