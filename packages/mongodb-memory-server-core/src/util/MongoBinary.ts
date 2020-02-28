@@ -13,7 +13,10 @@ import debug from 'debug';
 
 const log = debug('MongoMS:MongoBinary');
 
-export const LATEST_VERSION = 'latest';
+// TODO: return back `latest` version when it will be fixed in MongoDB distro (for now use 4.0.3 😂)
+// More details in https://github.com/nodkz/mongodb-memory-server/issues/131
+// export const LATEST_VERSION = 'latest';
+export const LATEST_VERSION: string = '4.0.3';
 
 export interface MongoBinaryCache {
   [version: string]: string;
