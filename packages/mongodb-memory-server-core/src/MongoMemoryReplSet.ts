@@ -64,7 +64,6 @@ export default class MongoMemoryReplSet extends EventEmitter {
   };
 
   _state: 'init' | 'running' | 'stopped';
-  admin?: mongodb.Admin;
 
   constructor(opts: MongoMemoryReplSetOptsT = {}) {
     super();
@@ -171,8 +170,10 @@ export default class MongoMemoryReplSet extends EventEmitter {
       return this._initServer(this.getInstanceOpts(opts));
     });
     const cnt = this.opts.replSet.count || 1;
+    /** For extra logging */
+    const current = 0;
     while (servers.length < cnt) {
-      log(`  starting ${cnt} servers...`);
+      log(`  starting server ${current} of ${cnt}...`);
       const server = this._initServer(this.getInstanceOpts({}));
       servers.push(server);
     }
@@ -216,7 +217,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     }
     log('Initializing replica set.');
     if (!this.servers.length) {
-      throw new Error('One or more server is required.');
+      throw new Error('One or more servers are required.');
     }
     const uris = await Promise.all(this.servers.map((server) => server.getUri()));
 
@@ -247,7 +248,8 @@ export default class MongoMemoryReplSet extends EventEmitter {
       //   we just override shouldCheckForSessionSupport() method for current connection instance
       (db as any).topology.shouldCheckForSessionSupport = () => false;
 
-      this.admin = db.admin();
+      /** reference to "db.admin()" */
+      const admin = db.admin();
       const members = uris.map((uri, idx) => ({ _id: idx, host: getHost(uri) }));
       const rsConfig = {
         _id: this.opts.replSet.name,
@@ -257,7 +259,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
           ...(this.opts.replSet.configSettings || {}),
         },
       };
-      await this.admin.command({ replSetInitiate: rsConfig });
+      await admin.command({ replSetInitiate: rsConfig });
       log('Waiting for replica set to have a PRIMARY member.');
       await this._waitForPrimary();
       this.emit((this._state = 'running'));
