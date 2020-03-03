@@ -276,7 +276,6 @@ export default class MongoBinaryDownload {
           });
 
           response.on('data', (chunk: any) => {
-            log('DATA', chunk.toString());
             this.printDownloadProgress(chunk);
           });
         })
