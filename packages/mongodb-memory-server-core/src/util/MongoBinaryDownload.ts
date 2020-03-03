@@ -31,6 +31,9 @@ interface HttpDownloadOptions {
   agent: HttpsProxyAgent | undefined;
 }
 
+/**
+ * Download and extract the "mongod" binary
+ */
 export default class MongoBinaryDownload {
   dlProgress: DownloadProgressT;
   _downloadingUrl?: string;
@@ -160,7 +163,7 @@ export default class MongoBinaryDownload {
 
     const downloadLocation = path.resolve(this.downloadDir, filename);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
-    log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}:`, downloadUrl);
+    log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}: "${downloadUrl}"`);
     const downloadedFile = await this.httpDownload(
       downloadOptions,
       downloadLocation,
@@ -225,45 +228,62 @@ export default class MongoBinaryDownload {
     return new Promise((resolve, reject) => {
       const fileStream = fs.createWriteStream(tempDownloadLocation);
 
-      const req = https.get(httpOptions, (response: any) => {
-        this.dlProgress.current = 0;
-        this.dlProgress.length = parseInt(response.headers['content-length'], 10);
-        this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
-
-        response.pipe(fileStream);
-
-        fileStream.on('finish', async () => {
-          if (
-            this.dlProgress.current < this.dlProgress.length &&
-            !httpOptions.path.endsWith('.md5')
-          ) {
-            const downloadUrl =
-              this._downloadingUrl || `https://${httpOptions.hostname}/${httpOptions.path}`;
-            reject(
-              new Error(
-                `Too small (${this.dlProgress.current} bytes) mongod binary downloaded from ${downloadUrl}`
-              )
-            );
+      https
+        .get(httpOptions, (response) => {
+          if (response.statusCode != 200) {
+            if (response.statusCode === 403) {
+              reject(
+                new Error(
+                  "Status Code is 403 (MongoDB's 404)\n" +
+                    'This means that the requested version-platform combination dosnt exist'
+                )
+              );
+              return;
+            }
+            reject(new Error('Status Code isnt 200!'));
             return;
           }
+          if (typeof response.headers['content-length'] != 'string') {
+            reject(new Error('Response header "content-length" is empty!'));
+            return;
+          }
+          this.dlProgress.current = 0;
+          this.dlProgress.length = parseInt(response.headers['content-length'], 10);
+          this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
 
-          fileStream.close();
-          await promisify(fs.rename)(tempDownloadLocation, downloadLocation);
-          log(`renamed ${tempDownloadLocation} to ${downloadLocation}`);
+          response.pipe(fileStream);
 
-          resolve(downloadLocation);
-        });
+          fileStream.on('finish', async () => {
+            if (
+              this.dlProgress.current < this.dlProgress.length &&
+              !httpOptions.path.endsWith('.md5')
+            ) {
+              const downloadUrl =
+                this._downloadingUrl || `https://${httpOptions.hostname}/${httpOptions.path}`;
+              reject(
+                new Error(
+                  `Too small (${this.dlProgress.current} bytes) mongod binary downloaded from ${downloadUrl}`
+                )
+              );
+              return;
+            }
 
-        response.on('data', (chunk: any) => {
-          this.printDownloadProgress(chunk);
-        });
+            fileStream.close();
+            await promisify(fs.rename)(tempDownloadLocation, downloadLocation);
+            log(`moved ${tempDownloadLocation} to ${downloadLocation}`);
 
-        req.on('error', (e: Error) => {
+            resolve(downloadLocation);
+          });
+
+          response.on('data', (chunk: any) => {
+            this.printDownloadProgress(chunk);
+          });
+        })
+        .on('error', (e: Error) => {
           // log it without having debug enabled
           console.error(`Couldnt download ${httpOptions.path}!`, e.message);
           reject(e);
         });
-      });
     });
   }
 
