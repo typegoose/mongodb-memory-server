@@ -235,10 +235,10 @@ export default class MongoBinaryDownload {
     });
 
     return new Promise((resolve, reject) => {
+      extract.on('finish', () => resolve());
       fs.createReadStream(mongoDBArchive)
         .pipe(createUnzip())
         .pipe(extract)
-        .on('end', () => resolve())
         .on('error', (e) => reject(e));
     });
   }
