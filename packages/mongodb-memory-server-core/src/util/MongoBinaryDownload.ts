@@ -221,7 +221,7 @@ export default class MongoBinaryDownload {
    * Extract a .tar.gz archive
    * @param mongoDBArchive Archive location
    * @param extractDir Directory to extract to
-   * @param filter Method to determine which files to extract 
+   * @param filter Method to determine which files to extract
    */
   async extractTarGz(
     mongoDBArchive: string,
@@ -255,7 +255,7 @@ export default class MongoBinaryDownload {
    * Extract a .zip archive
    * @param mongoDBArchive Archive location
    * @param extractDir Directory to extract to
-   * @param filter Method to determine which files to extract 
+   * @param filter Method to determine which files to extract
    */
   async extractZip(
     mongoDBArchive: string,
