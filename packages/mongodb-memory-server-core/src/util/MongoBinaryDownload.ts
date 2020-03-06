@@ -197,15 +197,16 @@ export default class MongoBinaryDownload {
       filter = (file: string) => /bin\/mongod$/.test(file);
     }
 
-    if (/(.tar.gz|.tgz)$/.test(path.extname(mongoDBArchive)))
+    if (/(.tar.gz|.tgz)$/.test(path.extname(mongoDBArchive))) {
       await this.extractTarGz(mongoDBArchive, extractDir, filter);
-    else if (/.zip$/.test(path.extname(mongoDBArchive)))
+    } else if (/.zip$/.test(path.extname(mongoDBArchive))) {
       await this.extractZip(mongoDBArchive, extractDir, filter);
-    else
+    } else {
       throw new Error(
         `MongoBinaryDownload: unsupported archive ${mongoDBArchive} (downloaded from ${this
           ._downloadingUrl ?? 'unkown'}). Broken archive from MongoDB Provider?`
       );
+    }
 
     if (!(await this.locationExists(path.resolve(this.downloadDir, this.version, binaryName)))) {
       throw new Error(
@@ -236,10 +237,10 @@ export default class MongoBinaryDownload {
 
     return new Promise((resolve, reject) => {
       extract.on('finish', () => resolve());
+      extract.on('error', (e) => reject(e));
       fs.createReadStream(mongoDBArchive)
         .pipe(createUnzip())
-        .pipe(extract)
-        .on('error', (e) => reject(e));
+        .pipe(extract);
     });
   }
 
@@ -250,17 +251,17 @@ export default class MongoBinaryDownload {
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       yauzl.open(mongoDBArchive, { lazyEntries: true }, (e, zipfile) => {
-        if (e || !zipfile) reject(e);
-        zipfile?.readEntry();
+        if (e || !zipfile) return reject(e);
+        zipfile.readEntry();
 
-        zipfile?.on('end', () => resolve());
+        zipfile.on('end', () => resolve());
 
-        zipfile?.on('entry', (entry) => {
+        zipfile.on('entry', (entry) => {
           if (!filter(entry.fileName)) return zipfile.readEntry();
           zipfile.openReadStream(entry, (e, r) => {
-            if (e || !r) reject(e);
-            r?.on('end', () => zipfile.readEntry());
-            r?.pipe(
+            if (e || !r) return reject(e);
+            r.on('end', () => zipfile.readEntry());
+            r.pipe(
               fs.createWriteStream(path.resolve(extractDir, path.basename(entry.fileName)), {
                 mode: 0o775,
               })
