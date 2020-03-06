@@ -217,6 +217,12 @@ export default class MongoBinaryDownload {
     return extractDir;
   }
 
+  /**
+   * Extract a .tar.gz archive
+   * @param mongoDBArchive Archive location
+   * @param extractDir Directory to extract to
+   * @param filter Method to determine which files to extract 
+   */
   async extractTarGz(
     mongoDBArchive: string,
     extractDir: string,
@@ -224,12 +230,13 @@ export default class MongoBinaryDownload {
   ): Promise<void> {
     const extract = tar.extract();
     extract.on('entry', (header, stream, next) => {
-      if (filter(header.name))
+      if (filter(header.name)) {
         stream.pipe(
           fs.createWriteStream(path.resolve(extractDir, path.basename(header.name)), {
             mode: 0o775,
           })
         );
+      }
 
       stream.on('end', () => next());
       stream.resume();
@@ -244,6 +251,12 @@ export default class MongoBinaryDownload {
     });
   }
 
+  /**
+   * Extract a .zip archive
+   * @param mongoDBArchive Archive location
+   * @param extractDir Directory to extract to
+   * @param filter Method to determine which files to extract 
+   */
   async extractZip(
     mongoDBArchive: string,
     extractDir: string,
