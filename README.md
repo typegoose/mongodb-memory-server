@@ -396,7 +396,7 @@ const opts = { useMongoClient: true }; // remove this option if you use mongoose
 before(async () => {
   mongoServer = new MongoMemoryServer();
   const mongoUri = await mongoServer.getUri();
-  await mongoose.connect(mongouri, opts);
+  await mongoose.connect(mongoUri, opts);
 });
 
 after(async () => {
