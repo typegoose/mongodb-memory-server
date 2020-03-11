@@ -1,11 +1,11 @@
-import uuid from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Returns a database name string.
  * @param {string} dbName
  */
 export function generateDbName(dbName?: string): string {
-  return dbName || uuid();
+  return dbName || uuidv4();
 }
 
 /**
