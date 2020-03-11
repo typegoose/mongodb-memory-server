@@ -8,7 +8,7 @@ import decompress from 'decompress'; // 💩💩💩 this package does not work 
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { DownloadProgressT } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
-import HttpsProxyAgent from 'https-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { promisify } from 'util';
 import resolveConfig, { envToBool } from './resolve-config';
 import debug from 'debug';
