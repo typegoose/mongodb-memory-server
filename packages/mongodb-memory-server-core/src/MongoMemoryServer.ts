@@ -98,7 +98,7 @@ export default class MongoMemoryServer {
     this.runningInstance = this._startUpInstance()
       .catch((err) => {
         if (err.message === 'Mongod shutting down' || err === 'Mongod shutting down') {
-          log(`Mongodb does not started. Trying to start on another port one more time...`);
+          log(`Mongodb did not start. Trying to start on another port one more time...`);
           if (this.opts.instance && this.opts.instance.port) {
             this.opts.instance.port = null;
           }
@@ -135,6 +135,10 @@ export default class MongoMemoryServer {
       dbPath: instOpts.dbPath,
       tmpDir: undefined,
     };
+
+    if (instOpts.port && instOpts.port != data.port) {
+      log(`starting with port ${data.port}, since ${instOpts.port} was locked:`, data.port);
+    }
 
     data.uri = await getUriBase(data.ip, data.port, data.dbName);
     if (!data.dbPath) {

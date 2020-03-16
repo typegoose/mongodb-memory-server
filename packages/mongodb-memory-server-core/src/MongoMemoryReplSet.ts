@@ -11,6 +11,7 @@ import {
   StorageEngineT,
 } from './types';
 import debug from 'debug';
+import { MongoError } from 'mongodb';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
 
@@ -259,7 +260,21 @@ export default class MongoMemoryReplSet extends EventEmitter {
           ...(this.opts.replSet.configSettings || {}),
         },
       };
-      await admin.command({ replSetInitiate: rsConfig });
+      try {
+        await admin.command({ replSetInitiate: rsConfig });
+      } catch (e) {
+        if (e instanceof MongoError && e.errmsg == 'already initialized') {
+          log(`${e.errmsg}: trying to set old config`);
+          const { config: oldConfig } = await admin.command({ replSetGetConfig: 1 });
+          log('got old config:\n', oldConfig);
+          await admin.command({
+            replSetReconfig: oldConfig,
+            force: true,
+          });
+        } else {
+          throw e;
+        }
+      }
       log('Waiting for replica set to have a PRIMARY member.');
       await this._waitForPrimary();
       this.emit((this._state = 'running'));
