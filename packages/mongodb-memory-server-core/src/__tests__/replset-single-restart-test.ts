@@ -1,8 +1,6 @@
 import MongoMemoryReplSet from '../MongoMemoryReplSet';
 import * as tmp from 'tmp';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
-
 let tmpDir: tmp.DirResult;
 beforeEach(() => {
   tmpDir = tmp.dirSync({ prefix: 'reuse-mongo-mem-', unsafeCleanup: true });
@@ -43,5 +41,5 @@ describe('single-member replica set', () => {
     const replSetAfter = new MongoMemoryReplSet(opts);
     await replSetAfter.waitUntilRunning();
     await replSetAfter.stop();
-  });
+  }, 600000);
 });
