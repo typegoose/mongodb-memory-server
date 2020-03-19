@@ -4,7 +4,9 @@ import path from 'path';
 import fs from 'fs';
 import md5File from 'md5-file';
 import https from 'https';
-import decompress from 'decompress'; // 💩💩💩 this package does not work with Node@11+Jest+Babel
+import { createUnzip } from 'zlib';
+import tar from 'tar-stream';
+import yauzl from 'yauzl';
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { DownloadProgressT } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
@@ -12,6 +14,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import { promisify } from 'util';
 import resolveConfig, { envToBool } from './resolve-config';
 import debug from 'debug';
+import dedent from 'dedent';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -186,24 +189,25 @@ export default class MongoBinaryDownload {
       fs.mkdirSync(extractDir);
     }
 
-    let filter;
+    let filter: (file: string) => boolean;
     if (this.platform === 'win32') {
-      filter = (file: any) => {
-        return /bin\/mongod.exe$/.test(file.path) || /.dll$/.test(file.path);
+      filter = (file: string) => {
+        return /bin\/mongod.exe$/.test(file) || /.dll$/.test(file);
       };
     } else {
-      filter = (file: any) => /bin\/mongod$/.test(file.path);
+      filter = (file: string) => /bin\/mongod$/.test(file);
     }
 
-    await decompress(mongoDBArchive, extractDir, {
-      // extract only `bin/mongod` file
-      filter,
-      // extract to root folder
-      map: (file) => {
-        file.path = path.basename(file.path);
-        return file;
-      },
-    });
+    if (/(.tar.gz|.tgz)$/.test(path.extname(mongoDBArchive))) {
+      await this.extractTarGz(mongoDBArchive, extractDir, filter);
+    } else if (/.zip$/.test(path.extname(mongoDBArchive))) {
+      await this.extractZip(mongoDBArchive, extractDir, filter);
+    } else {
+      throw new Error(
+        `MongoBinaryDownload: unsupported archive ${mongoDBArchive} (downloaded from ${this
+          ._downloadingUrl ?? 'unkown'}). Broken archive from MongoDB Provider?`
+      );
+    }
 
     if (!(await this.locationExists(path.resolve(this.downloadDir, this.version, binaryName)))) {
       throw new Error(
@@ -212,6 +216,83 @@ export default class MongoBinaryDownload {
       );
     }
     return extractDir;
+  }
+
+  /**
+   * Extract a .tar.gz archive
+   * @param mongoDBArchive Archive location
+   * @param extractDir Directory to extract to
+   * @param filter Method to determine which files to extract
+   */
+  async extractTarGz(
+    mongoDBArchive: string,
+    extractDir: string,
+    filter: (file: string) => boolean
+  ): Promise<void> {
+    const extract = tar.extract();
+    extract.on('entry', (header, stream, next) => {
+      if (filter(header.name)) {
+        stream.pipe(
+          fs.createWriteStream(path.resolve(extractDir, path.basename(header.name)), {
+            mode: 0o775,
+          })
+        );
+      }
+      stream.on('end', () => next());
+      stream.resume();
+    });
+
+    return new Promise((resolve, reject) => {
+      fs.createReadStream(mongoDBArchive)
+        .on('error', (err) => {
+          reject('Unable to open tarball ' + mongoDBArchive + ': ' + err);
+        })
+        .pipe(createUnzip())
+        .on('error', (err) => {
+          reject('Error during unzip for ' + mongoDBArchive + ': ' + err);
+        })
+        .pipe(extract)
+        .on('error', (err) => {
+          reject('Error during untar for ' + mongoDBArchive + ': ' + err);
+        })
+        .on('finish', (result) => {
+          resolve(result);
+        });
+    });
+  }
+
+  /**
+   * Extract a .zip archive
+   * @param mongoDBArchive Archive location
+   * @param extractDir Directory to extract to
+   * @param filter Method to determine which files to extract
+   */
+  async extractZip(
+    mongoDBArchive: string,
+    extractDir: string,
+    filter: (file: string) => boolean
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      yauzl.open(mongoDBArchive, { lazyEntries: true }, (e, zipfile) => {
+        if (e || !zipfile) return reject(e);
+        zipfile.readEntry();
+
+        zipfile.on('end', () => resolve());
+
+        zipfile.on('entry', (entry) => {
+          if (!filter(entry.fileName)) return zipfile.readEntry();
+          zipfile.openReadStream(entry, (e, r) => {
+            if (e || !r) return reject(e);
+            r.on('end', () => zipfile.readEntry());
+            r.pipe(
+              fs.createWriteStream(path.resolve(extractDir, path.basename(entry.fileName)), {
+                mode: 0o775,
+              })
+            );
+          });
+        });
+      });
+    });
   }
 
   /**
@@ -233,10 +314,10 @@ export default class MongoBinaryDownload {
           if (response.statusCode != 200) {
             if (response.statusCode === 403) {
               reject(
-                new Error(
-                  "Status Code is 403 (MongoDB's 404)\n" +
-                    'This means that the requested version-platform combination dosnt exist'
-                )
+                new Error(dedent`
+                  Status Code is 403 (MongoDB's 404)\n
+                  This means that the requested version-platform combination dosnt exist
+                `)
               );
               return;
             }
@@ -304,8 +385,7 @@ export default class MongoBinaryDownload {
 
     const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
     process.stdout.write(
-      `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb ` +
-        `/ ${this.dlProgress.totalMb}mb)${crReturn}`
+      `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`
     );
   }
 

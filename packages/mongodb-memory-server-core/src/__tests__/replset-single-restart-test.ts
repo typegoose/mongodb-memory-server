@@ -1,5 +1,6 @@
-import MongoMemoryReplSet from '../MongoMemoryReplSet';
+import MongoMemoryReplSet, { MongoMemoryReplSetOptsT } from '../MongoMemoryReplSet';
 import * as tmp from 'tmp';
+import getPort from 'get-port';
 
 let tmpDir: tmp.DirResult;
 beforeEach(() => {
@@ -16,7 +17,7 @@ const sleep = (ms: number) => {
 
 describe('single-member replica set', () => {
   it('should start multiple times', async () => {
-    const opts: any = {
+    const opts = {
       replSet: {
         storageEngine: 'wiredTiger',
       },
@@ -26,11 +27,17 @@ describe('single-member replica set', () => {
           dbPath: tmpDir.name,
         },
       ],
-    };
+    } as MongoMemoryReplSetOptsT;
 
     const replSetBefore = new MongoMemoryReplSet(opts);
     await replSetBefore.waitUntilRunning();
+
+    // Write real port to config (because 27017 may be busy, we need to get real port)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    opts.instanceOpts![0].port = await replSetBefore.servers[0].getPort();
+
     await replSetBefore.stop();
+
     /**
      * get-port has a portlocking-feature that keeps ports locked for
      * "a minimum of 15 seconds and a maximum of 30 seconds before being released again"
