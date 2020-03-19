@@ -48,8 +48,4 @@ module.exports = {
     jasmine: true,
     jest: true,
   },
-  globals: {
-    Class: true,
-    Iterator: true,
-  },
 };

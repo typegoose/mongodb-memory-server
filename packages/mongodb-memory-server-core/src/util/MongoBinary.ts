@@ -54,12 +54,7 @@ export default class MongoBinary {
   static async getDownloadPath(options: any): Promise<string> {
     const { downloadDir, platform, arch, version } = options;
     // create downloadDir if not exists
-    await new Promise((resolve, reject) => {
-      mkdirp(downloadDir, (err: any) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
+    await mkdirp(downloadDir);
 
     const lockfile = path.resolve(downloadDir, `${version}.lock`);
     // wait lock

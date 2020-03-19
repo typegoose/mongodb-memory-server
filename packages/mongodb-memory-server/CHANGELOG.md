@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0](https://github.com/nodkz/mongodb-memory-server/compare/v6.3.3...v6.4.0) (2020-03-19)
+
+**Note:** Version bump only for package mongodb-memory-server
+
+
+
+
+
+## [6.3.3](https://github.com/nodkz/mongodb-memory-server/compare/v6.3.2...v6.3.3) (2020-03-11)
+
+**Note:** Version bump only for package mongodb-memory-server
+
+
+
+
+
 ## [6.3.2](https://github.com/nodkz/mongodb-memory-server/compare/v6.3.1...v6.3.2) (2020-03-03)
 
 **Note:** Version bump only for package mongodb-memory-server
