@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-core",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "description": "MongoDB Server for testing (core package, without autodownload). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "lib/index",
   "types": "lib/index.d.ts",
@@ -71,9 +71,9 @@
     "md5-file": "^4.0.0",
     "mkdirp": "^1.0.3",
     "tar-stream": "^2.1.1",
+    "tmp": "^0.1.0",
     "uuid": "^7.0.2",
-    "yauzl": "^2.10.0",
-    "tmp": "^0.1.0"
+    "yauzl": "^2.10.0"
   },
   "optionalDependencies": {
     "mongodb": "^3.5.4"
