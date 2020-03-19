@@ -14,6 +14,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import { promisify } from 'util';
 import resolveConfig, { envToBool } from './resolve-config';
 import debug from 'debug';
+import dedent from 'dedent';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -237,17 +238,26 @@ export default class MongoBinaryDownload {
           })
         );
       }
-
       stream.on('end', () => next());
       stream.resume();
     });
 
     return new Promise((resolve, reject) => {
-      extract.on('finish', () => resolve());
-      extract.on('error', (e) => reject(e));
       fs.createReadStream(mongoDBArchive)
+        .on('error', (err) => {
+          reject('Unable to open tarball ' + mongoDBArchive + ': ' + err);
+        })
         .pipe(createUnzip())
-        .pipe(extract);
+        .on('error', (err) => {
+          reject('Error during unzip for ' + mongoDBArchive + ': ' + err);
+        })
+        .pipe(extract)
+        .on('error', (err) => {
+          reject('Error during untar for ' + mongoDBArchive + ': ' + err);
+        })
+        .on('finish', (result) => {
+          resolve(result);
+        });
     });
   }
 
@@ -304,10 +314,10 @@ export default class MongoBinaryDownload {
           if (response.statusCode != 200) {
             if (response.statusCode === 403) {
               reject(
-                new Error(
-                  "Status Code is 403 (MongoDB's 404)\n" +
-                    'This means that the requested version-platform combination dosnt exist'
-                )
+                new Error(dedent`
+                  Status Code is 403 (MongoDB's 404)\n
+                  This means that the requested version-platform combination dosnt exist
+                `)
               );
               return;
             }
@@ -375,8 +385,7 @@ export default class MongoBinaryDownload {
 
     const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
     process.stdout.write(
-      `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb ` +
-        `/ ${this.dlProgress.totalMb}mb)${crReturn}`
+      `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`
     );
   }
 
