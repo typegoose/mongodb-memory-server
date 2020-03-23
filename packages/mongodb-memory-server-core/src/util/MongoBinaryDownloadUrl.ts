@@ -209,7 +209,9 @@ export default class MongoBinaryDownloadUrl {
     let name = 'rhel';
     const { release } = os;
     if (release) {
-      if (/^7/.test(release)) {
+      if (/^8/.test(release)) {
+        name += '80';
+      } else if (/^7/.test(release)) {
         name += '70';
       } else if (/^6/.test(release)) {
         name += '62';
