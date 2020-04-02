@@ -249,7 +249,7 @@ export default class MongoInstance {
     const line: string = message.toString();
     this.debug(`STDOUT: ${line}`);
 
-    if (/waiting for connections on port/i.test(line)) {
+    if (/waiting for connections/i.test(line)) {
       this.instanceReady();
     } else if (/addr already in use/i.test(line)) {
       this.instanceFailed(`Port ${this.opts.instance.port} already in use`);
