@@ -271,7 +271,7 @@ export default class MongoInstance {
       }
     } else if (/\*\*\*aborting after/i.test(line)) {
       this.instanceFailed('Mongod internal error');
-    } else if (/transition to primary complete; database writes are now permitted/.test(line)) {
+    } else if (/transition to primary complete; database writes are now permitted/i.test(line)) {
       this.isInstancePrimary = true;
       this.debug('Calling all waitForPrimary resolve functions');
       this.waitForPrimaryResolveFns.forEach((resolveFn) => resolveFn(true));
