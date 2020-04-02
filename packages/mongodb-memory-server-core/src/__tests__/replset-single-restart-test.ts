@@ -1,6 +1,5 @@
 import MongoMemoryReplSet, { MongoMemoryReplSetOptsT } from '../MongoMemoryReplSet';
 import * as tmp from 'tmp';
-import getPort from 'get-port';
 
 let tmpDir: tmp.DirResult;
 beforeEach(() => {
