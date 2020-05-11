@@ -53,6 +53,32 @@ MONGOMS_MD5_CHECK environment variable`, () => {
     expect(callArg1.agent.proxy.href).toBe('http://user:pass@proxy:8080/');
   });
 
+  it('should not reject unauthorized when strict-ssl is false in env vars', async () => {
+    process.env['npm_config_strict-ssl'] = 'false';
+
+    const du = new MongoBinaryDownload({});
+    du.httpDownload = jest.fn();
+
+    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    expect(du.httpDownload).toHaveBeenCalledTimes(1);
+    const callArg1 = (du.httpDownload as jest.Mock).mock.calls[0][0];
+    expect(callArg1.rejectUnauthorized).toBeDefined();
+    expect(callArg1.rejectUnauthorized).toBe(false);
+  });
+
+  it('should reject unauthorized when strict-ssl is not in env vars', async () => {
+    delete process.env['npm_config_strict-ssl'];
+
+    const du = new MongoBinaryDownload({});
+    du.httpDownload = jest.fn();
+
+    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    expect(du.httpDownload).toHaveBeenCalledTimes(1);
+    const callArg1 = (du.httpDownload as jest.Mock).mock.calls[0][0];
+    expect(callArg1.rejectUnauthorized).toBeDefined();
+    expect(callArg1.rejectUnauthorized).toBe(true);
+  });
+
   it(`makeMD5check returns true if md5 of downloaded mongoDBArchive is
 the same as in the reference result`, () => {
     const someMd5 = 'md5';
