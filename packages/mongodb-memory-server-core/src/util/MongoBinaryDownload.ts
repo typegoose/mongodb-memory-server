@@ -31,6 +31,7 @@ interface HttpDownloadOptions {
   port: string;
   path: string;
   method: 'GET' | 'POST';
+  rejectUnauthorized?: boolean;
   agent: HttpsProxyAgent | undefined;
 }
 
@@ -145,6 +146,8 @@ export default class MongoBinaryDownload {
       process.env.HTTPS_PROXY ||
       process.env.HTTP_PROXY;
 
+    const strictSsl = process.env['npm_config_strict-ssl'] === 'false' ? false : true;
+
     const urlObject = url.parse(downloadUrl);
 
     if (!urlObject.hostname || !urlObject.path) {
@@ -156,6 +159,7 @@ export default class MongoBinaryDownload {
       port: urlObject.port || '443',
       path: urlObject.path,
       method: 'GET',
+      rejectUnauthorized: strictSsl,
       agent: proxy ? new HttpsProxyAgent(proxy) : undefined,
     };
 
