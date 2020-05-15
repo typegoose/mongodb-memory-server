@@ -6,19 +6,19 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 ![TypeScript compatible](https://img.shields.io/badge/typescript-compatible-brightgreen.svg)
 
-This package spins up a actual/real MongoDB Server programmatically from node for testing or mocking during development. By default it holds the data in memory. Fresh spinned up `mongod` process takes about 7Mb of memory. The server will allow you to connect your favorite ODM or client library to the MongoDB Server and run integration tests isolated from each other.
+This package spins up an actual/real MongoDB server programmatically from node, for testing or mocking during development. By default it holds the data in memory. A fresh spun up `mongod` process takes about 7Mb of memory. The server will allow you to connect your favorite ODM or client library to the MongoDB server and run integration tests isolated from each other.
 
-On install, this package downloads the latest MongoDB binaries and saves it to a cache folder.
+On install, this package downloads the latest MongoDB binaries and saves them to a cache folder.
 
-On starting a new instance of the memory server, if the binary cannot be found, it will be auto-downloaded. So the first run may take some time. All further runs will be fast, because they will use the downloaded binaries.
+On starting a new instance of the memory server, if the binary cannot be found, it will be auto-downloaded, thus the first run may take some time. All further runs will be fast, because they will use the downloaded binaries.
 
-This package automatically downloads binaries from [https://fastdl.mongodb.org/](https://fastdl.mongodb.org/) according to your operating system. You can see all available versions by the following links [Linux](https://www.mongodb.org/dl/linux) (Ubuntu, RHEL, Debian, SUSE, Amazon), [OSX](https://www.mongodb.org/dl/osx), [Win](https://www.mongodb.org/dl/win32).
+This package automatically downloads binaries from [https://fastdl.mongodb.org/](https://fastdl.mongodb.org/) according to your operating system. You can see all available versions for [Linux](https://www.mongodb.org/dl/linux) (Ubuntu, RHEL, Debian, SUSE, Amazon), [OSX](https://www.mongodb.org/dl/osx), and [Windows](https://www.mongodb.org/dl/win32).
 
 > If your network is behind a proxy, make sure that it is configured through the `HTTPS_PROXY` or `HTTP_PROXY` environment variable.
 
-Every `MongoMemoryServer` instance creates and starts fresh MongoDB server on some free port. You may start up several mongod simultaneously. When you terminate your script or call `stop()` MongoDB server(s) will be automatically shutdown.
+Every `MongoMemoryServer` instance creates and starts a fresh MongoDB server on some free port. You may start up several `mongod` simultaneously. When you terminate your script or call `stop()`, the MongoDB server(s) will be automatically shutdown.
 
-Perfectly [works with Travis CI](https://github.com/nodkz/graphql-compose-mongoose/commit/7a6ac2de747d14281f9965f418065e97a57cfb37) without additional `services` and `addons` options in `.travis.yml`.
+Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoose/commit/7a6ac2de747d14281f9965f418065e97a57cfb37) without additional `services` and `addons` options in `.travis.yml`.
 
 ## Installation
 
@@ -27,7 +27,7 @@ This tool provides three packages for different purposes:
 - With auto-download mongod binary on npm install
 - Without auto-download on npm install
 
-Choose any package, because they are the same. Differs only by default configuration, which you may override (see section [Available options](#available-options)).
+Choose any package, because they are the same. They differ only in the default configuration, which you may override (see section [Available options](#available-options)).
 
 ### Requirements
 
