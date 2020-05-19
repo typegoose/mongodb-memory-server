@@ -146,7 +146,7 @@ export default class MongoBinaryDownload {
       process.env.HTTPS_PROXY ||
       process.env.HTTP_PROXY;
 
-    const strictSsl = process.env['npm_config_strict-ssl'] === 'false' ? false : true;
+    const strictSsl = process.env.npm_config_strict_ssl === 'true';
 
     const urlObject = url.parse(downloadUrl);
 
