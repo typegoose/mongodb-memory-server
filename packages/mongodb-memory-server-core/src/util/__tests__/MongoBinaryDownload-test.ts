@@ -53,8 +53,9 @@ MONGOMS_MD5_CHECK environment variable`, () => {
     expect(callArg1.agent.proxy.href).toBe('http://user:pass@proxy:8080/');
   });
 
-  it('should not reject unauthorized when strict-ssl is false in env vars', async () => {
-    process.env['npm_config_strict-ssl'] = 'false';
+  it('should not reject unauthorized when npm strict-ssl config is false', async () => {
+    // npm sets false config value as empty string in env vars
+    process.env['npm_config_strict_ssl'] = '';
 
     const du = new MongoBinaryDownload({});
     du.httpDownload = jest.fn();
@@ -66,8 +67,9 @@ MONGOMS_MD5_CHECK environment variable`, () => {
     expect(callArg1.rejectUnauthorized).toBe(false);
   });
 
-  it('should reject unauthorized when strict-ssl is not in env vars', async () => {
-    delete process.env['npm_config_strict-ssl'];
+  it('should reject unauthorized when npm strict-ssl config is true', async () => {
+    // npm sets true config value as string 'true' in env vars
+    process.env['npm_config_strict_ssl'] = 'true';
 
     const du = new MongoBinaryDownload({});
     du.httpDownload = jest.fn();
