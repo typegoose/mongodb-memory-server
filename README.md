@@ -27,7 +27,7 @@ This tool provides three packages for different purposes:
 - With auto-download mongod binary on npm install
 - Without auto-download on npm install
 
-Choose any package, because they are the same. They differ only in the default configuration, which you may override (see section [Available options](#available-options)).
+Choose any package, because they are the same. They differ only in the default configuration, which you may override (see section [Available options](#available-options-for-mongomemoryserver)).
 
 ### Requirements
 
