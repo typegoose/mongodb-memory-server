@@ -35,6 +35,7 @@
     "jest": "jest --env node",
     "build": "tsc --build tsconfig.build.json",
     "release": "lerna publish --conventional-commits",
+    "readme:toc": "npx doctoc ./README.md",
     "postinstall": "yarn build"
   }
 }
