@@ -8,7 +8,7 @@
 
 This package spins up an actual/real MongoDB server programmatically from node, for testing or mocking during development. By default it holds the data in memory. A fresh spun up `mongod` process takes about 7Mb of memory. The server will allow you to connect your favorite ODM or client library to the MongoDB server and run integration tests isolated from each other.
 
-On install, this package downloads the latest MongoDB binaries and saves them to a cache folder.
+On install, this [package downloads](#configuring-which-mongod-binary-to-use) the latest MongoDB binaries and saves them to a cache folder.
 
 On starting a new instance of the memory server, if the binary cannot be found, it will be auto-downloaded, thus the first run may take some time. All further runs will be fast, because they will use the downloaded binaries.
 
@@ -28,9 +28,9 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
   - [Requirements](#requirements)
     - [Known Incompatibilities](#known-incompatibilities)
   - [mongodb-memory-server](#mongodb-memory-server)
-    - [Installing with non-latest binary](#installing-with-non-latest-binary)
   - [mongodb-memory-server-global](#mongodb-memory-server-global)
   - [mongodb-memory-server-core](#mongodb-memory-server-core)
+  - [Configuring which mongod binary to use](#configuring-which-mongod-binary-to-use)
 - [Usage](#usage)
   - [Simple server start](#simple-server-start)
   - [Available options for MongoMemoryServer](#available-options-for-mongomemoryserver)
@@ -89,15 +89,6 @@ yarn add mongodb-memory-server --dev
 npm install mongodb-memory-server --save-dev
 ```
 
-#### Installing with non-latest binary
-By setting [ENVIRONMENT variable](#options-which-can-be-set-via-environment-variables) you are able to configure mongodb-memory-server to download a specific mongodb binary version:
-
-```bash
-export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
-export MONGOMS_VERSION=4.2.8
-```
-
-
 ### mongodb-memory-server-global
 
 Auto-downloads the latest `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
@@ -119,6 +110,14 @@ npm install mongodb-memory-server-core --save-dev
 ```
 
 _Note: the package does try to download `mongod` upon server start if it cannot find the binary._
+
+### Configuring which mongod binary to use
+The default behaviour is that the latest version for your OS will be downloaded. By setting [ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables) you are able to specify which version and binary will be downloaded:
+
+```bash
+export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
+export MONGOMS_VERSION=4.2.8
+```
 
 ## Usage
 
