@@ -43,7 +43,7 @@ export default class MongoInstance {
 
   childProcess: ChildProcess | null;
   killerProcess: ChildProcess | null;
-  waitForPrimaryResolveFns: Function[];
+  waitForPrimaryResolveFns: ((value: boolean) => void)[];
   isInstancePrimary: boolean = false;
   isInstanceReady: boolean = false;
   instanceReady: EmptyVoidCallback = () => {};

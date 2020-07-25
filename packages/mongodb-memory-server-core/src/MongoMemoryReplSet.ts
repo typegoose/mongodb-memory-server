@@ -224,7 +224,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
 
     let MongoClient: typeof mongodb.MongoClient;
     try {
-      MongoClient = require('mongodb').MongoClient;
+      MongoClient = (await import('mongodb')).MongoClient;
     } catch (e) {
       throw new Error(
         `You need to install "mongodb" package. It's required for checking ReplicaSet state.`
