@@ -30,7 +30,7 @@
   },
   "scripts": {
     "test": "lerna run test --stream",
-    "lint": "lerna run lint --stream",
+    "lint": "lerna run lint --stream --npm-client=yarn --no-prefix",
     "watch": "jest --env node --watch",
     "jest": "jest --env node",
     "build": "tsc --build tsconfig.build.json",

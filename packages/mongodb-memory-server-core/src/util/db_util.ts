@@ -19,7 +19,7 @@ export function getHost(uri: string): string {
 /**
  * Basic MongoDB Connection string
  */
-export function getUriBase(host: string, port: number, dbName: string) {
+export function getUriBase(host: string, port: number, dbName: string): string {
   return `mongodb://${host}:${port}/${dbName}?`;
 }
 

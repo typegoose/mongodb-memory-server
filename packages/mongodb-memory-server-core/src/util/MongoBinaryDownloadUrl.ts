@@ -234,10 +234,7 @@ export default class MongoBinaryDownloadUrl {
       // confirm it is actually a version, otherwise throw an error
       parseFloat(ubuntuVersion.toString());
 
-      return `ubuntu${ubuntuVersion
-        .toString()
-        .replace('.', '')
-        .trim()}`;
+      return `ubuntu${ubuntuVersion.toString().replace('.', '').trim()}`;
     } catch (err) {
       console.error('ElementaryOS "lsb_relese -u -rs" couldnt be executed!');
       throw err;

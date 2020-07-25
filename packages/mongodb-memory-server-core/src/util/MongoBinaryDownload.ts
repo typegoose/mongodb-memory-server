@@ -121,7 +121,7 @@ export default class MongoBinaryDownload {
       return undefined;
     }
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
-    const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('UTF-8');
+    const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('utf-8');
     const m = signatureContent.match(/(.*?)\s/);
     const md5Remote = m ? m[1] : null;
     const md5Local = md5File.sync(mongoDBArchive);
@@ -208,15 +208,17 @@ export default class MongoBinaryDownload {
       await this.extractZip(mongoDBArchive, extractDir, filter);
     } else {
       throw new Error(
-        `MongoBinaryDownload: unsupported archive ${mongoDBArchive} (downloaded from ${this
-          ._downloadingUrl ?? 'unkown'}). Broken archive from MongoDB Provider?`
+        `MongoBinaryDownload: unsupported archive ${mongoDBArchive} (downloaded from ${
+          this._downloadingUrl ?? 'unkown'
+        }). Broken archive from MongoDB Provider?`
       );
     }
 
     if (!(await this.locationExists(path.resolve(this.downloadDir, this.version, binaryName)))) {
       throw new Error(
-        `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${this
-          ._downloadingUrl ?? 'unkown'}). Broken archive from MongoDB Provider?`
+        `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${
+          this._downloadingUrl ?? 'unkown'
+        }). Broken archive from MongoDB Provider?`
       );
     }
     return extractDir;
@@ -314,7 +316,8 @@ export default class MongoBinaryDownload {
       const fileStream = fs.createWriteStream(tempDownloadLocation);
 
       https
-        .get(httpOptions, (response) => {
+        .get(httpOptions as any, (response) => {
+          // "as any" because otherwise the "agent" wouldnt match
           if (response.statusCode != 200) {
             if (response.statusCode === 403) {
               reject(
@@ -376,7 +379,7 @@ export default class MongoBinaryDownload {
    * Print the Download Progress to STDOUT
    * @param chunk A chunk to get the length
    */
-  printDownloadProgress(chunk: any): void {
+  printDownloadProgress(chunk: { length: number }): void {
     this.dlProgress.current += chunk.length;
 
     const now = Date.now();

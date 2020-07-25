@@ -36,7 +36,7 @@ export default function resolveConfig(variableName: string): string | undefined 
  * Convert "1, on, yes, true" to true (otherwise false)
  * @param env The String / Environment Variable to check
  */
-export function envToBool(env: string) {
+export function envToBool(env: string): boolean {
   return ['1', 'on', 'yes', 'true'].indexOf(env.toLowerCase()) !== -1;
 }
 
