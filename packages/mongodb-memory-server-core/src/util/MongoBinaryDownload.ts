@@ -315,6 +315,7 @@ export default class MongoBinaryDownload {
     return new Promise((resolve, reject) => {
       const fileStream = fs.createWriteStream(tempDownloadLocation);
 
+      log(`trying to download https://${httpOptions.hostname}${httpOptions.path}`);
       https
         .get(httpOptions as any, (response) => {
           // "as any" because otherwise the "agent" wouldnt match
@@ -391,9 +392,13 @@ export default class MongoBinaryDownload {
     const mbComplete = Math.round((this.dlProgress.current / 1048576) * 10) / 10;
 
     const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
-    process.stdout.write(
-      `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`
-    );
+    const message = `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`;
+    if (process.stdout.isTTY) {
+      // if TTY overwrite last line over and over until finished
+      process.stdout.write(message);
+    } else {
+      console.log(message);
+    }
   }
 
   /**

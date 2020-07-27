@@ -80,7 +80,7 @@
     "mongodb": "^3.5.4"
   },
   "scripts": {
-    "cleanup": "rimraf tmp lib coverage node_modules/.cache",
+    "clean": "rimraf tmp lib coverage node_modules/.cache",
     "build": "npm-run-all build:*",
     "build:ts": "rimraf ./lib && tsc -p ./tsconfig.build.json",
     "watch": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --watchAll",
