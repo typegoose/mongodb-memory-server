@@ -88,14 +88,14 @@ export default class MongoBinaryDownloadUrl {
     let name = `mongodb-osx`;
     if (
       !(
-        this.version.indexOf('3.0') === 0 ||
-        this.version.indexOf('2.') === 0 ||
-        this.version.indexOf('1.') === 0
+        this.version.startsWith('3.0') ||
+        this.version.startsWith('2.') ||
+        this.version.startsWith('1.')
       )
     ) {
       name += '-ssl';
     }
-    if (this.version.indexOf('4.2') === 0) {
+    if (this.version.startsWith('4.')) {
       name = `mongodb-macos`;
     }
     name += `-${this.arch}`;
