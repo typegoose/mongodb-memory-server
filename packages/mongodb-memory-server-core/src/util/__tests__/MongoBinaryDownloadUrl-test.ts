@@ -3,14 +3,14 @@ import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 describe('MongoBinaryDownloadUrl', () => {
   describe('getDownloadUrl()', () => {
     describe('for mac', () => {
-      it('4.2', async () => {
+      it('4.4', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
-          version: '4.2.0',
+          version: '4.4.0',
         });
         expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.2.0.tgz'
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.4.0.tgz'
         );
       });
 
