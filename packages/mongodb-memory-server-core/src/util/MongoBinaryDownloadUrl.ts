@@ -337,7 +337,7 @@ export default class MongoBinaryDownloadUrl {
       case 'darwin':
         return 'osx';
       case 'win32':
-        return /^[4-9]\.[4-9]/.test(this.version) ? 'windows' : 'win32';
+        return /^(4\.[4-9]|[5-9])/.test(this.version) ? 'windows' : 'win32';
       case 'linux':
       case 'elementary OS':
         return 'linux';
