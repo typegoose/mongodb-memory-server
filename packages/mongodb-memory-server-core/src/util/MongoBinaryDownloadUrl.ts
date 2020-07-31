@@ -57,6 +57,7 @@ export default class MongoBinaryDownloadUrl {
       case 'osx':
         return this.getArchiveNameOsx();
       case 'win32':
+      case 'windows':
         return this.getArchiveNameWin();
       case 'linux':
       default:
@@ -71,9 +72,9 @@ export default class MongoBinaryDownloadUrl {
   async getArchiveNameWin(): Promise<string> {
     let name = `mongodb-${this.platform}`;
     name += `-${this.arch}`;
-    if (this.version.indexOf('4.2') === 0) {
+    if (this.version.startsWith('4.2')) {
       name += '-2012plus';
-    } else {
+    } else if (/^[1-3]\./.test(this.version)) {
       name += '-2008plus-ssl';
     }
     name += `-${this.version}.zip`;
@@ -336,7 +337,7 @@ export default class MongoBinaryDownloadUrl {
       case 'darwin':
         return 'osx';
       case 'win32':
-        return 'win32';
+        return /^[4-9]\.[4-9]/.test(this.version) ? 'windows' : 'win32';
       case 'linux':
       case 'elementary OS':
         return 'linux';

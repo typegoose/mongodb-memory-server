@@ -91,6 +91,17 @@ describe('MongoBinaryDownloadUrl', () => {
       );
     });
 
+    it('4.4 for win32', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'win32',
+        arch: 'x64',
+        version: '4.4.0',
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-4.4.0.zip'
+      );
+    });
+
     it('fallback', async () => {
       console.warn = jest.fn(); // mock it to prevent writing to console
 
