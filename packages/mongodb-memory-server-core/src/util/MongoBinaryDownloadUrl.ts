@@ -2,6 +2,7 @@ import getOS, { AnyOS, LinuxOS } from './getos';
 import { execSync } from 'child_process';
 import resolveConfig from './resolve-config';
 import debug from 'debug';
+import * as semver from 'semver';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -72,9 +73,9 @@ export default class MongoBinaryDownloadUrl {
   async getArchiveNameWin(): Promise<string> {
     let name = `mongodb-${this.platform}`;
     name += `-${this.arch}`;
-    if (this.version.startsWith('4.2')) {
+    if (semver.satisfies(this.version, '4.2.x')) {
       name += '-2012plus';
-    } else if (/^[1-3]\./.test(this.version)) {
+    } else if (semver.lt(this.version, '4.0.0')) {
       name += '-2008plus-ssl';
     }
     name += `-${this.version}.zip`;
@@ -87,17 +88,11 @@ export default class MongoBinaryDownloadUrl {
    */
   async getArchiveNameOsx(): Promise<string> {
     let name = `mongodb-osx`;
-    if (
-      !(
-        this.version.startsWith('3.0') ||
-        this.version.startsWith('2.') ||
-        this.version.startsWith('1.')
-      )
-    ) {
+    if (semver.gte(this.version, '3.2.0')) {
       name += '-ssl';
     }
-    if (this.version.startsWith('4.')) {
-      name = `mongodb-macos`;
+    if (semver.gte(this.version, '4.2.0')) {
+      name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
     name += `-${this.arch}`;
     name += `-${this.version}.tgz`;
@@ -145,7 +140,7 @@ export default class MongoBinaryDownloadUrl {
       return this.getFedoraVersionString(os);
     } else if (/debian/i.test(os.dist)) {
       return this.getDebianVersionString(os);
-    } else if (/mint/i.test(os.dist)) {
+    } else if (/\s+mint\s*$/i.test(os.dist)) {
       return this.getMintVersionString(os);
     } else if (/arch/i.test(os.dist)) {
       console.warn('There is no offical build of MongoDB for ArchLinux!');
@@ -337,7 +332,7 @@ export default class MongoBinaryDownloadUrl {
       case 'darwin':
         return 'osx';
       case 'win32':
-        return /^(4\.[4-9]|[5-9])/.test(this.version) ? 'windows' : 'win32';
+        return semver.gte(this.version, '4.3.0') ? 'windows' : 'win32';
       case 'linux':
       case 'elementary OS':
         return 'linux';

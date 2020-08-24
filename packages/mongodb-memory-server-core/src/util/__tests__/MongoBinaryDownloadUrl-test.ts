@@ -69,37 +69,39 @@ describe('MongoBinaryDownloadUrl', () => {
       );
     });
 
-    it('for win32', async () => {
-      const du = new MongoBinaryDownloadUrl({
-        platform: 'win32',
-        arch: 'x64',
-        version: '3.6.3',
+    describe('for win32 & windows', () => {
+      it('3.6 (win32)', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'win32',
+          arch: 'x64',
+          version: '3.6.3',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-3.6.3.zip'
+        );
       });
-      expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-3.6.3.zip'
-      );
-    });
 
-    it('4.2 for win32', async () => {
-      const du = new MongoBinaryDownloadUrl({
-        platform: 'win32',
-        arch: 'x64',
-        version: '4.2.0',
+      it('4.2 (win32)', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'win32',
+          arch: 'x64',
+          version: '4.2.0',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2012plus-4.2.0.zip'
+        );
       });
-      expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2012plus-4.2.0.zip'
-      );
-    });
 
-    it('4.4 for win32', async () => {
-      const du = new MongoBinaryDownloadUrl({
-        platform: 'win32',
-        arch: 'x64',
-        version: '4.4.0',
+      it('4.4 (windows)', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'win32',
+          arch: 'x64',
+          version: '4.4.0',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-4.4.0.zip'
+        );
       });
-      expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-4.4.0.zip'
-      );
     });
 
     it('fallback', async () => {
@@ -285,6 +287,22 @@ describe('MongoBinaryDownloadUrl', () => {
         })
       ).toBe('ubuntu1804');
     });
+  });
+
+  it('shouldnt detect linux mint when using peppermint', () => {
+    const downloadUrl = new MongoBinaryDownloadUrl({
+      platform: 'linux',
+      arch: 'x64',
+      version: '3.6.3',
+    });
+
+    expect(
+      downloadUrl.getLinuxOSVersionString({
+        os: 'linux',
+        dist: 'Peppermint',
+        release: '10',
+      })
+    ).toBe('');
   });
 
   describe('getLegacyVersionString', () => {
