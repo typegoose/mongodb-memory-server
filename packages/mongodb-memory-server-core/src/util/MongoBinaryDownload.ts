@@ -120,6 +120,7 @@ export default class MongoBinaryDownload {
     if (!this.checkMD5) {
       return undefined;
     }
+    log(`checking against md5`);
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
     const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('utf-8');
     const m = signatureContent.match(/(.*?)\s/);
@@ -128,6 +129,7 @@ export default class MongoBinaryDownload {
     if (md5Remote !== md5Local) {
       throw new Error('MongoBinaryDownload: md5 check failed');
     }
+    log(`md5 local: ${md5Local}, md5 remote: ${md5Remote}`);
     return true;
   }
 
