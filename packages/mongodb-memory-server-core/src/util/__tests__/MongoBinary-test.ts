@@ -58,6 +58,7 @@ describe('MongoBinary', () => {
         platform: os.platform(),
         arch: os.arch(),
         version,
+        checkMD5: false,
       });
 
       expect(mockGetMongodPath).toHaveBeenCalledTimes(1);

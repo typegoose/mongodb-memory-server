@@ -8,7 +8,7 @@ import { execSync } from 'child_process';
 import dedent from 'dedent';
 import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
-import resolveConfig from './resolve-config';
+import resolveConfig, { envToBool } from './resolve-config';
 import debug from 'debug';
 
 const log = debug('MongoMS:MongoBinary');
@@ -27,6 +27,7 @@ export interface MongoBinaryOpts {
   downloadDir?: string;
   platform?: string;
   arch?: string;
+  checkMD5?: boolean;
 }
 
 export default class MongoBinary {
@@ -52,7 +53,7 @@ export default class MongoBinary {
   }
 
   static async getDownloadPath(options: Required<MongoBinaryOpts>): Promise<string> {
-    const { downloadDir, platform, arch, version } = options;
+    const { downloadDir, platform, arch, version, checkMD5 } = options;
     // create downloadDir if not exists
     await mkdirp(downloadDir);
 
@@ -82,6 +83,7 @@ export default class MongoBinary {
         platform,
         arch,
         version,
+        checkMD5,
       });
       this.cache[version] = await downloader.getMongodPath();
     }
@@ -121,6 +123,7 @@ export default class MongoBinary {
       arch: resolveConfig('ARCH') || os.arch(),
       version: resolveConfig('VERSION') || LATEST_VERSION,
       systemBinary: resolveConfig('SYSTEM_BINARY'),
+      checkMD5: envToBool(resolveConfig('MD5_CHECK') ?? ''),
     };
 
     const options = { ...defaultOptions, ...opts };
