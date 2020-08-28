@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import resolveConfig from './resolve-config';
 import debug from 'debug';
 import * as semver from 'semver';
+import { isNullOrUndefined } from 'util';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -73,10 +74,12 @@ export default class MongoBinaryDownloadUrl {
   async getArchiveNameWin(): Promise<string> {
     let name = `mongodb-${this.platform}`;
     name += `-${this.arch}`;
-    if (semver.satisfies(this.version, '4.2.x')) {
-      name += '-2012plus';
-    } else if (semver.lt(this.version, '4.0.0')) {
-      name += '-2008plus-ssl';
+    if (!isNullOrUndefined(semver.coerce(this.version))) {
+      if (semver.satisfies(this.version, '4.2.x')) {
+        name += '-2012plus';
+      } else if (semver.lt(this.version, '4.0.0')) {
+        name += '-2008plus-ssl';
+      }
     }
     name += `-${this.version}.zip`;
     return name;
@@ -88,10 +91,11 @@ export default class MongoBinaryDownloadUrl {
    */
   async getArchiveNameOsx(): Promise<string> {
     let name = `mongodb-osx`;
-    if (semver.gte(this.version, '3.2.0')) {
+    const version = semver.coerce(this.version);
+    if (!isNullOrUndefined(version) && semver.gte(version, '3.2.0')) {
       name += '-ssl';
     }
-    if (semver.gte(this.version, '4.2.0')) {
+    if (isNullOrUndefined(version) || semver.gte(version, '4.2.0')) {
       name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
     name += `-${this.arch}`;
@@ -332,7 +336,9 @@ export default class MongoBinaryDownloadUrl {
       case 'darwin':
         return 'osx';
       case 'win32':
-        return semver.gte(this.version, '4.3.0') ? 'windows' : 'win32';
+        const version = semver.coerce(this.version);
+        if (isNullOrUndefined(version)) return 'windows';
+        return semver.gte(version, '4.3.0') ? 'windows' : 'win32';
       case 'linux':
       case 'elementary OS':
         return 'linux';
