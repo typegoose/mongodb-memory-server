@@ -5,7 +5,6 @@ import LockFile from 'lockfile';
 import mkdirp from 'mkdirp';
 import findCacheDir from 'find-cache-dir';
 import { execSync } from 'child_process';
-import dedent from 'dedent';
 import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool } from './resolve-config';
@@ -147,13 +146,12 @@ export default class MongoBinary {
 
         if (version !== LATEST_VERSION && version !== binaryVersion) {
           // we will log the version number of the system binary and the version requested so the user can see the difference
-          log(dedent`
-            MongoMemoryServer: Possible version conflict
-              SystemBinary version: ${binaryVersion}
-              Requested version:    ${version}
-
-              Using SystemBinary!
-          `);
+          log(
+            'MongoMemoryServer: Possible version conflict\n' +
+              `  SystemBinary version: ${binaryVersion}\n` +
+              `  Requested version:    ${version}\n\n` +
+              '  Using SystemBinary!'
+          );
         }
       }
     }

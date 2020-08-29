@@ -14,7 +14,6 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import { promisify } from 'util';
 import resolveConfig, { envToBool } from './resolve-config';
 import debug from 'debug';
-import dedent from 'dedent';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -324,10 +323,10 @@ export default class MongoBinaryDownload {
           if (response.statusCode != 200) {
             if (response.statusCode === 403) {
               reject(
-                new Error(dedent`
-                  Status Code is 403 (MongoDB's 404)\n
-                  This means that the requested version-platform combination dosnt exist
-                `)
+                new Error(
+                  "Status Code is 403 (MongoDB's 404)\n" +
+                    "This means that the requested version-platform combination doesn't exist"
+                )
               );
               return;
             }

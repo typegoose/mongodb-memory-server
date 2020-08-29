@@ -3,6 +3,17 @@ import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 describe('MongoBinaryDownloadUrl', () => {
   describe('getDownloadUrl()', () => {
     describe('for mac', () => {
+      it('latest', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'x64',
+          version: 'latest',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-latest.tgz'
+        );
+      });
+
       it('4.4', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
@@ -100,6 +111,17 @@ describe('MongoBinaryDownloadUrl', () => {
         });
         expect(await du.getDownloadUrl()).toBe(
           'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-4.4.0.zip'
+        );
+      });
+
+      it('latest (windows)', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'win32',
+          arch: 'x64',
+          version: 'latest',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-latest.zip'
         );
       });
     });
