@@ -82,7 +82,7 @@ And one of those:
 
 ### mongodb-memory-server
 
-Auto-downloads the latest `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.
+Auto-downloads version ~~`latest`~~`4.0.14` `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.
 
 ```bash
 yarn add mongodb-memory-server --dev
@@ -92,7 +92,7 @@ npm install mongodb-memory-server --save-dev
 
 ### mongodb-memory-server-global
 
-Auto-downloads the latest `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
+Auto-downloads version ~~`latest`~~`4.0.14` `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
 
 ```bash
 yarn add mongodb-memory-server-global --dev
@@ -114,7 +114,7 @@ _Note: the package does try to download `mongod` upon server start if it cannot 
 
 ### Configuring which mongod binary to use
 
-The default behaviour is that the latest version for your OS will be downloaded. By setting [ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables) you are able to specify which version and binary will be downloaded:
+The default behaviour is that version ~~`latest`~~`4.0.14` for your OS will be downloaded. By setting [ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables) you are able to specify which version and binary will be downloaded:
 
 ```bash
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
@@ -168,7 +168,7 @@ const mongod = new MongoMemoryServer({
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },
   binary: {
-    version?: string, // by default 'latest'
+    version?: string, // by default '4.0.14'
     downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
