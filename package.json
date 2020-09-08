@@ -21,7 +21,7 @@
     "eslint-config-prettier": "6.11.0",
     "eslint-plugin-prettier": "3.1.4",
     "jest": "26.4.2",
-    "lerna": "3.22.1",
+    "lerna": "^3.22.1",
     "mongodb": "3.6.1",
     "prettier": "2.1.1",
     "semantic-release": "^17.1.1",
