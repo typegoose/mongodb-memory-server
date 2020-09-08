@@ -1,0 +1,31 @@
+{
+  "name": "mongodb-memory-server-global-4.2",
+  "version": "6.6.9",
+  "mongodb_version": "4.2.9",
+  "description": "MongoDB Server for testing (auto-download 4.2 version to %HOME/.cache/mongodb-binaries).",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nodkz/mongodb-memory-server.git",
+    "directory": "packages/mongodb-memory-server-global-4.2"
+  },
+  "homepage": "https://github.com/nodkz/mongodb-memory-server",
+  "keywords": [
+    "mongodb",
+    "mongoose",
+    "mock",
+    "stub",
+    "mockgoose",
+    "mongodb-prebuilt",
+    "mongomem"
+  ],
+  "dependencies": {
+    "mongodb-memory-server": "6.6.9",
+    "os": "^0.1.1"
+  },
+  "scripts": {
+    "postinstall": "node ./postinstall.js"
+  }
+}
