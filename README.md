@@ -65,8 +65,8 @@ Choose any package, because they are the same. They differ only in the default c
 
 ### Requirements
 
-- NodeJS: 8+
-- Typescript: 3.7+ (if used)
+- NodeJS: 10.15+
+- Typescript: 3.8+ (if used)
 
 And one of those:
 
@@ -77,7 +77,7 @@ And one of those:
 
 #### Known Incompatibilities
 
-- ArchLinux & Alpine do not have an offical mongodb build
+- [ArchLinux](https://github.com/nodkz/mongodb-memory-server/issues/302) & [Alpine](https://github.com/nodkz/mongodb-memory-server/issues/347) do not have an offical mongodb build
 - ArchLinux(Docker) does not have an `/etc/os-release` file by default
 
 ### mongodb-memory-server

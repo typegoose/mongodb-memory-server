@@ -10,8 +10,9 @@
     "directory": "packages/mongodb-memory-server-core"
   },
   "engines": {
-    "node": ">=8.10.0"
+    "node": ">=10.15.0"
   },
+  "cpu": ["x64"],
   "files": [
     "lib",
     "scripts"
