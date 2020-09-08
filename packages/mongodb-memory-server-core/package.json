@@ -88,6 +88,7 @@
     "lint": "npm run eslint && npm run tscheck",
     "eslint": "eslint -c ../../.eslintrc.js 'src/**/*.{js,ts}'",
     "test": "npm run lint && npm run coverage",
+    "test:watch": "npm run watch",
     "tscheck": "tsc --noEmit"
   }
 }
