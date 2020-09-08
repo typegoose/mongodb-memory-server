@@ -12,7 +12,6 @@
   "engines": {
     "node": ">=10.15.0"
   },
-  "cpu": ["x64"],
   "files": [
     "lib",
     "scripts"
