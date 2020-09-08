@@ -204,7 +204,7 @@ export default class MongoInstance {
     this.debug(`Called MongoInstance._launchKiller(parent: ${parentPid}, child: ${childPid}):`);
     // spawn process which kills itself and mongo process if current process is dead
     const killer = spawnChild(
-      process.argv[0],
+      process.env['NODE'] ?? process.argv[0], // try Environment variable "NODE" before using argv[0]
       [
         path.resolve(__dirname, '../../scripts/mongo_killer.js'),
         parentPid.toString(),
