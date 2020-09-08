@@ -22,7 +22,7 @@ module.exports = {
     ],
     "@semantic-release/changelog",
     ["@semantic-release/git", {
-      "assets": ["packages/*/package.json}", "CHANGELOG.md"],
+      "assets": ["packages/*/package.json", "CHANGELOG.md"],
       "message": "v${nextRelease.version}\n\n[skip ci]"
     }],
     [
