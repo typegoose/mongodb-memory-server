@@ -1,0 +1,8 @@
+{
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run test",
+      "commit-msg": "npx commitlint -- -E HUSKY_GIT_PARAMS"
+    }
+  }
+}
