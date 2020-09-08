@@ -11,6 +11,7 @@ import {
   EmptyVoidCallback,
 } from '../types';
 import debug from 'debug';
+import { isNullOrUndefined } from './db_util';
 
 const log = debug('MongoMS:MongoInstance');
 
@@ -123,31 +124,31 @@ export default class MongoInstance {
 
   async kill(): Promise<MongoInstance> {
     this.debug('Called MongoInstance.kill():');
-    if (this.childProcess && !this.childProcess.killed) {
+
+    /**
+     * Function to De-Duplicate Code
+     * @param process The Process to kill
+     * @param name the name used in the logs
+     * @param debug the debug function
+     */
+    async function kill_internal(process: ChildProcess, name: string, debug: DebugFn) {
       await new Promise((resolve) => {
-        if (this.childProcess) {
-          this.childProcess.once(`exit`, () => {
-            this.debug(' - childProcess: got exit signal. Ok!');
-            resolve();
-          });
-          this.childProcess.kill();
-          this.debug(' - childProcess: send kill cmd...');
-        }
+        process.once(`exit`, () => {
+          debug(` - ${name}: got exit signal. Ok!`);
+          resolve();
+        });
+        debug(` - ${name}: send kill cmd...`);
+        process.kill('SIGINT');
       });
+    }
+
+    if (this.childProcess && !this.childProcess.killed) {
+      await kill_internal(this.childProcess, 'childProcess', this.debug);
     } else {
       this.debug(' - childProcess: nothing to kill, skipping.');
     }
     if (this.killerProcess && !this.killerProcess.killed) {
-      await new Promise((resolve) => {
-        if (this.killerProcess) {
-          this.killerProcess.once(`exit`, () => {
-            this.debug(' - killerProcess: got exit signal. Ok!');
-            resolve();
-          });
-          this.killerProcess.kill();
-          this.debug(' - killerProcess: send kill cmd...');
-        }
-      });
+      await kill_internal(this.killerProcess, 'killerProcess', this.debug);
     } else {
       this.debug(' - killerProcess: nothing to kill, skipping.');
     }
@@ -182,14 +183,14 @@ export default class MongoInstance {
     if (!spawnOpts.stdio) spawnOpts.stdio = 'pipe';
 
     const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), spawnOpts);
-    if (childProcess.stderr) {
-      childProcess.stderr.on('data', this.stderrHandler.bind(this));
-    }
-    if (childProcess.stdout) {
-      childProcess.stdout.on('data', this.stdoutHandler.bind(this));
-    }
+    childProcess.stderr?.on('data', this.stderrHandler.bind(this));
+    childProcess.stdout?.on('data', this.stdoutHandler.bind(this));
     childProcess.on('close', this.closeHandler.bind(this));
     childProcess.on('error', this.errorHandler.bind(this));
+
+    if (isNullOrUndefined(childProcess.pid)) {
+      throw new Error('Spawned Mongo Instance PID is undefined');
+    }
 
     return childProcess;
   }
@@ -212,6 +213,14 @@ export default class MongoInstance {
       { stdio: 'pipe' }
     );
 
+    killer.stdout?.on('data', (data) => {
+      this.debug(`[MongoKiller]: ${data}`);
+    });
+
+    killer.stderr?.on('data', (data) => {
+      this.debug(`[MongoKiller]: ${data}`);
+    });
+
     ['exit', 'message', 'disconnect', 'error'].forEach((type) => {
       killer.on(type, (...args) => {
         this.debug(`[MongoKiller]: ${type} - ${JSON.stringify(args)}`);
@@ -230,6 +239,9 @@ export default class MongoInstance {
    * @param code The Exit code
    */
   closeHandler(code: number): void {
+    if (code != 0) {
+      this.debug('Mongod instance closed with an non-0 code!');
+    }
     this.debug(`CLOSE: ${code}`);
   }
 
@@ -263,6 +275,11 @@ export default class MongoInstance {
       this.instanceFailed(
         'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
           'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
+      );
+    } else if (/CURL_OPENSSL_4.*not found/i.test(line)) {
+      this.instanceFailed(
+        'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
+          'You need to manually install libcurl4\n'
       );
     } else if (/shutting down with code/i.test(line)) {
       // if mongod started succesfully then no error on shutdown!
