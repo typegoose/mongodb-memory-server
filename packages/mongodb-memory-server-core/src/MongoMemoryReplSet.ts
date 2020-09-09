@@ -171,10 +171,8 @@ export default class MongoMemoryReplSet extends EventEmitter {
       return this._initServer(this.getInstanceOpts(opts));
     });
     const cnt = this.opts.replSet.count || 1;
-    /** For extra logging */
-    const current = 0;
     while (servers.length < cnt) {
-      log(`  starting server ${current} of ${cnt}...`);
+      log(`  starting server ${servers.length + 1} of ${cnt}...`);
       const server = this._initServer(this.getInstanceOpts({}));
       servers.push(server);
     }
