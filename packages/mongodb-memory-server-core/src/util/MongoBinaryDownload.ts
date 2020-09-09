@@ -326,7 +326,12 @@ export default class MongoBinaryDownload {
                 new Error(
                   "Status Code is 403 (MongoDB's 404)\n" +
                     "This means that the requested version-platform combination doesn't exist\n" +
-                    `Used Url: "https://${httpOptions.hostname}${httpOptions.path}"`
+                    `  Used Url: "https://${httpOptions.hostname}${httpOptions.path}"\n` +
+                    "Try to use different version 'new MongoMemoryServer({ binary: { version: 'X.Y.Z' } })'\n" +
+                    'List of available versions can be found here:\n' +
+                    '  https://www.mongodb.org/dl/linux for Linux\n' +
+                    '  https://www.mongodb.org/dl/osx for OSX\n' +
+                    '  https://www.mongodb.org/dl/win32 for Windows'
                 )
               );
               return;
