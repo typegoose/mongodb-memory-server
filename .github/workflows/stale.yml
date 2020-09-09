@@ -16,8 +16,7 @@ jobs:
           stale-issue-message: 'Marking Issue as stale, will be closed in 7 days if no more activity is seen'
           close-issue-message: 'Closing Issue because it is marked as stale'
           stale-issue-label: stale
-          only-labels: question,can't reproduce,Needs More Information,needs repro script,stale
-          exempt-issue-labels: help wanted,docs,enhancement,feature,dependencies
+          exempt-issue-labels: help wanted,docs,enhancement,feature,dependencies,Distribution support,discussion
           days-before-stale: 60
           days-before-close: 7
           remove-stale-when-updated: true
