@@ -37,11 +37,12 @@ describe('single-member replica set', () => {
 
     await replSetBefore.stop();
 
-    /**
+    /*
      * get-port has a portlocking-feature that keeps ports locked for
      * "a minimum of 15 seconds and a maximum of 30 seconds before being released again"
      * https://github.com/sindresorhus/get-port#beware
      */
+    // this test needs to use the *exact same port* again, otherwise Mongod will throw an error "No host described in new configuration ${newPort} for replica set testset maps to this node"
     await sleep(30000);
 
     const replSetAfter = new MongoMemoryReplSet(opts);
