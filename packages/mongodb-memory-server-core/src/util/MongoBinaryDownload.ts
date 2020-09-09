@@ -325,7 +325,8 @@ export default class MongoBinaryDownload {
               reject(
                 new Error(
                   "Status Code is 403 (MongoDB's 404)\n" +
-                    "This means that the requested version-platform combination doesn't exist"
+                    "This means that the requested version-platform combination doesn't exist\n" +
+                    `Used Url: "https://${httpOptions.hostname}${httpOptions.path}"`
                 )
               );
               return;
