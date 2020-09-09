@@ -2,10 +2,11 @@ import { readFile, readdir } from 'fs';
 import { platform } from 'os';
 
 import { exec } from 'child_process';
-import { promisify, isNullOrUndefined } from 'util';
+import { promisify } from 'util';
 import { join } from 'path';
 import resolveConfig from '../resolve-config';
 import debug from 'debug';
+import { isNullOrUndefined } from '../db_util';
 
 const log = debug('MongoMS:getos');
 

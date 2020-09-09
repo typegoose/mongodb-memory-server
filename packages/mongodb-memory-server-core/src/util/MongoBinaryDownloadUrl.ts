@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import resolveConfig from './resolve-config';
 import debug from 'debug';
 import * as semver from 'semver';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from './db_util';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 

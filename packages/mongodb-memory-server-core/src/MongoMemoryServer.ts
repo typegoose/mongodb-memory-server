@@ -1,11 +1,10 @@
 import { ChildProcess } from 'child_process';
 import * as tmp from 'tmp';
 import getPort from 'get-port';
-import { generateDbName, getUriBase } from './util/db_util';
+import { generateDbName, getUriBase, isNullOrUndefined } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, StorageEngineT, SpawnOptions } from './types';
-import { isNullOrUndefined } from 'util';
 import debug from 'debug';
 
 const log = debug('MongoMS:MongoMemoryServer');
@@ -217,7 +216,7 @@ export default class MongoMemoryServer {
    * -> throws if instance cannot be started
    */
   async ensureInstance(): Promise<MongoInstanceDataT> {
-    log('Called MongoMemoryServer.ensureInstance() method:');
+    log('Called MongoMemoryServer.ensureInstance() method');
     if (this.runningInstance) {
       return this.runningInstance;
     } else {
