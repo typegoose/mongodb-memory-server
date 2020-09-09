@@ -133,11 +133,11 @@ export default class MongoInstance {
      */
     async function kill_internal(process: ChildProcess, name: string, debug: DebugFn) {
       await new Promise((resolve) => {
-        process.once(`exit`, () => {
-          debug(` - ${name}: got exit signal. Ok!`);
+        process.once(`exit`, (code, signal) => {
+          debug(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
           resolve();
         });
-        debug(` - ${name}: send kill cmd...`);
+        debug(`- ${name}: send "SIGINT"`);
         process.kill('SIGINT');
       });
     }
@@ -145,13 +145,16 @@ export default class MongoInstance {
     if (this.childProcess && !this.childProcess.killed) {
       await kill_internal(this.childProcess, 'childProcess', this.debug);
     } else {
-      this.debug(' - childProcess: nothing to kill, skipping.');
+      this.debug('- childProcess: nothing to shutdown, skipping.');
     }
     if (this.killerProcess && !this.killerProcess.killed) {
       await kill_internal(this.killerProcess, 'killerProcess', this.debug);
     } else {
-      this.debug(' - killerProcess: nothing to kill, skipping.');
+      this.debug('- killerProcess: nothing to shutdown, skipping.');
     }
+
+    this.debug('Instance Finished Shutdown');
+
     return this;
   }
 
