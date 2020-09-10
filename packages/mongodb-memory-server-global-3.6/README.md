@@ -1,7 +1,5 @@
 # mongodb-memory-server-global-3.6
 
-**Deprecated, please use an version above 4.2**
-
 [![Travis](https://img.shields.io/travis/nodkz/mongodb-memory-server-global-3.6.svg)](https://travis-ci.org/nodkz/mongodb-memory-server-global-3.6)
 [![NPM version](https://img.shields.io/npm/v/mongodb-memory-server-global-3.6.svg)](https://www.npmjs.com/package/mongodb-memory-server-global-3.6)
 [![Downloads stat](https://img.shields.io/npm/dt/mongodb-memory-server-global-3.6.svg)](http://www.npmtrends.com/mongodb-memory-server-global-3.6)
