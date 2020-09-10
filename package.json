@@ -5,6 +5,7 @@
   "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
   "repository": "https://github.com/nodkz/mongodb-memory-server",
   "devDependencies": {
+    "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^9.1.2",
     "@google/semantic-release-replace-plugin": "^1.0.0",
     "@semantic-release/changelog": "^5.0.1",
@@ -20,12 +21,14 @@
     "@typescript-eslint/parser": "4.1.0",
     "commitlint": "^9.1.2",
     "cross-env": "^7.0.2",
+    "doctoc": "^1.4.0",
     "eslint": "7.8.1",
     "eslint-config-prettier": "6.11.0",
     "eslint-plugin-prettier": "3.1.4",
     "husky": "^4.3.0",
     "jest": "26.4.2",
     "lerna": "^3.22.1",
+    "lint-staged": "^10.3.0",
     "mongodb": "3.6.1",
     "prettier": "2.1.1",
     "semantic-release": "^17.1.1",
@@ -37,6 +40,22 @@
       "packages/*"
     ]
   },
+  "lint-staged": {
+    "packages/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ],
+    "./README.md": [
+      "doctoc ./README.md",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
   "scripts": {
     "test": "lerna run test --stream",
     "lint": "lerna run lint --stream --npm-client=yarn --no-prefix",
@@ -44,7 +63,7 @@
     "jest": "jest --env node",
     "build": "tsc --build tsconfig.build.json",
     "semantic-release": "semantic-release",
-    "readme:toc": "npx doctoc ./README.md",
+    "readme:toc": "doctoc ./README.md",
     "postinstall": "yarn build"
   }
 }
