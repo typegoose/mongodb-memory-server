@@ -24,7 +24,7 @@ to read on GitHub as well as in various git tools.
 
 ### Revert
 
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header
+If the commit reverts a previous commit, it should begin with `revert:`, followed by the header
 of the reverted commit.
 In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit
 being reverted.
@@ -70,3 +70,19 @@ The footer should contain any information about **Breaking Changes** and is also
 
 **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines.
 The rest of the commit message is then used for this.
+
+## Branch Structure
+
+### master branch
+
+The `master` branch is the release branch.
+
+It has the following protection rules:
+
+* `linear-history`: Requires linear-history, meaning no merge-commits
+* `status-checks`: All required status checks must pass before being able to merge (Currently required: `tests (12.x)`)
+* `branches-up-to-date`: The Branches must be up-to-date before being able to merge into `master`
+
+### next branch
+
+The `next` branch is the development branch, to accumulate changes before releasing an version
