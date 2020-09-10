@@ -80,6 +80,7 @@ module.exports = {
         npmPublish: true,
         pkgRoot: './packages/mongodb-memory-server-global-4.4',
       },
-    ]
+    ],
+    "@semantic-release/github"
   ],
 };
