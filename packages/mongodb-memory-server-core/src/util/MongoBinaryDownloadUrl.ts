@@ -337,7 +337,9 @@ export default class MongoBinaryDownloadUrl {
         return 'osx';
       case 'win32':
         const version = semver.coerce(this.version);
-        if (isNullOrUndefined(version)) return 'windows';
+        if (isNullOrUndefined(version)) {
+          return 'windows';
+        }
         return semver.gte(version, '4.3.0') ? 'windows' : 'win32';
       case 'linux':
       case 'elementary OS':

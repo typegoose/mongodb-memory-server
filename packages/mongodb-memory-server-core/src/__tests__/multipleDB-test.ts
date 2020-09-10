@@ -31,10 +31,18 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  if (con1) con1.close();
-  if (con2) con2.close();
-  if (mongoServer1) await mongoServer1.stop();
-  if (mongoServer2) await mongoServer2.stop();
+  if (con1) {
+    con1.close();
+  }
+  if (con2) {
+    con2.close();
+  }
+  if (mongoServer1) {
+    await mongoServer1.stop();
+  }
+  if (mongoServer2) {
+    await mongoServer2.stop();
+  }
 });
 
 describe('Multiple mongoServers', () => {

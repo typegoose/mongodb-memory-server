@@ -52,7 +52,9 @@ export default async function getOS(): Promise<AnyOS> {
   const osName = platform();
 
   // Linux is a special case.
-  if (osName === 'linux') return await getLinuxInfomation();
+  if (osName === 'linux') {
+    return await getLinuxInfomation();
+  }
 
   return { os: osName };
 }

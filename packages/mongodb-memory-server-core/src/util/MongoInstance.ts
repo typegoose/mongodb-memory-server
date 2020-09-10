@@ -56,8 +56,12 @@ export default class MongoInstance {
     this.killerProcess = null;
     this.waitForPrimaryResolveFns = [];
 
-    if (!this.opts.instance) this.opts.instance = {};
-    if (!this.opts.binary) this.opts.binary = {};
+    if (!this.opts.instance) {
+      this.opts.instance = {};
+    }
+    if (!this.opts.binary) {
+      this.opts.binary = {};
+    }
 
     if (debug.enabled('MongoMS:MongoInstance')) {
       // add instance's port to debug output
@@ -87,12 +91,23 @@ export default class MongoInstance {
 
     const result: string[] = [];
     result.push('--bind_ip', ip || '127.0.0.1');
-    if (port) result.push('--port', port.toString());
-    if (storageEngine) result.push('--storageEngine', storageEngine);
-    if (dbPath) result.push('--dbpath', dbPath);
-    if (!auth) result.push('--noauth');
-    else if (auth) result.push('--auth');
-    if (replSet) result.push('--replSet', replSet);
+    if (port) {
+      result.push('--port', port.toString());
+    }
+    if (storageEngine) {
+      result.push('--storageEngine', storageEngine);
+    }
+    if (dbPath) {
+      result.push('--dbpath', dbPath);
+    }
+    if (!auth) {
+      result.push('--noauth');
+    } else if (auth) {
+      result.push('--auth');
+    }
+    if (replSet) {
+      result.push('--replSet', replSet);
+    }
 
     return result.concat(args ?? []);
   }
@@ -109,7 +124,9 @@ export default class MongoInstance {
       };
       this.instanceFailed = (err: any) => {
         this.debug(`MongodbInstance: is failed: ${err.toString()}`);
-        if (this.killerProcess) this.killerProcess.kill();
+        if (this.killerProcess) {
+          this.killerProcess.kill();
+        }
         reject(err);
       };
     });
@@ -183,7 +200,9 @@ export default class MongoInstance {
    */
   _launchMongod(mongoBin: string): ChildProcess {
     const spawnOpts = this.opts.spawn ?? {};
-    if (!spawnOpts.stdio) spawnOpts.stdio = 'pipe';
+    if (!spawnOpts.stdio) {
+      spawnOpts.stdio = 'pipe';
+    }
 
     const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), spawnOpts);
     childProcess.stderr?.on('data', this.stderrHandler.bind(this));
