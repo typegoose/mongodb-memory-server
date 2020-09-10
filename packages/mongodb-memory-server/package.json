@@ -21,7 +21,7 @@
     "mongomem"
   ],
   "dependencies": {
-    "mongodb-memory-server-core": "6.7.1"
+    "mongodb-memory-server-core": "6.7.2"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js"
