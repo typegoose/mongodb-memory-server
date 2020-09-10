@@ -1,10 +1,11 @@
 # MongoDB In-Memory Server
 
-[![CircleCI](https://img.shields.io/circleci/project/github/nodkz/mongodb-memory-server/master.svg)](https://circleci.com/gh/nodkz/workflows/mongodb-memory-server)
+![Node.js CI](https://github.com/nodkz/mongodb-memory-server/workflows/Node.js%20CI/badge.svg)
 [![NPM version](https://img.shields.io/npm/v/mongodb-memory-server.svg)](https://www.npmjs.com/package/mongodb-memory-server)
 [![Downloads stat](https://img.shields.io/npm/dt/mongodb-memory-server.svg)](http://www.npmtrends.com/mongodb-memory-server)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 ![TypeScript compatible](https://img.shields.io/badge/typescript-compatible-brightgreen.svg)
+[![codecov.io](https://codecov.io/github/nodkz/mongodb-memory-server/coverage.svg?branch=master)](https://codecov.io/github/nodkz/mongodb-memory-server?branch=master)
 
 This package spins up an actual/real MongoDB server programmatically from node, for testing or mocking during development. By default it holds the data in memory. A fresh spun up `mongod` process takes about 7Mb of memory. The server will allow you to connect your favorite ODM or client library to the MongoDB server and run integration tests isolated from each other.
 
