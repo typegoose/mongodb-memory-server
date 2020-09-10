@@ -29,6 +29,7 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
     - [Known Incompatibilities](#known-incompatibilities)
   - [mongodb-memory-server](#mongodb-memory-server)
   - [mongodb-memory-server-global](#mongodb-memory-server-global)
+    - [mongodb-memory-server-global-x.x](#mongodb-memory-server-global-xx)
   - [mongodb-memory-server-core](#mongodb-memory-server-core)
   - [Configuring which mongod binary to use](#configuring-which-mongod-binary-to-use)
 - [Usage](#usage)
@@ -99,6 +100,14 @@ yarn add mongodb-memory-server-global --dev
 # OR
 npm install mongodb-memory-server-global --save-dev
 ```
+
+#### mongodb-memory-server-global-x.x
+
+This Repository provides stub packages that set an MongoDB version, currently availabe are:
+
+`3.4, 3.6, 4.0, 4.2, 4.4`
+
+Note: **The packages below 4.2 have been deprecated**
 
 ### mongodb-memory-server-core
 
