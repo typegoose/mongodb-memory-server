@@ -253,13 +253,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
 
       // MongoClient HACK which helps to avoid the following error:
       //   "RangeError: Maximum call stack size exceeded"
-      //   in ./node_modules/mongodb/lib/core/sdam/topology_description.js:263:51
-      // Under the hood initiated server topology has type `RSGhost`
-      //   and this server does not support session
-      //   so for skipping the following code
-      //   https://github.com/mongodb/node-mongodb-native/blob/dc70c2de7d3dae2617708c45a1ea695d131e15f3/lib/operations/execute_operation.js#L33-L39
-      //   we just override shouldCheckForSessionSupport() method for current connection instance
-      (db as any).topology.shouldCheckForSessionSupport = () => false;
+      // (db as any).topology.shouldCheckForSessionSupport = () => false; // TODO: remove after 1.1.2021 if no issues arise
 
       /** reference to "db.admin()" */
       const admin = db.admin();
