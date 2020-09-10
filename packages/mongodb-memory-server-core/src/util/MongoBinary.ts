@@ -69,8 +69,11 @@ export default class MongoBinary {
           retryWait: 100,
         },
         (err: any) => {
-          if (err) reject(err);
-          else resolve();
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
         }
       );
     });

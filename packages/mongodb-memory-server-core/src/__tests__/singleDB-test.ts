@@ -18,8 +18,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  if (con) con.close();
-  if (mongoServer) await mongoServer.stop();
+  if (con) {
+    con.close();
+  }
+  if (mongoServer) {
+    await mongoServer.stop();
+  }
 });
 
 describe('Single mongoServer', () => {

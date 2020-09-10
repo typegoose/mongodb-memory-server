@@ -281,15 +281,21 @@ export default class MongoBinaryDownload {
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       yauzl.open(mongoDBArchive, { lazyEntries: true }, (e, zipfile) => {
-        if (e || !zipfile) return reject(e);
+        if (e || !zipfile) {
+          return reject(e);
+        }
         zipfile.readEntry();
 
         zipfile.on('end', () => resolve());
 
         zipfile.on('entry', (entry) => {
-          if (!filter(entry.fileName)) return zipfile.readEntry();
+          if (!filter(entry.fileName)) {
+            return zipfile.readEntry();
+          }
           zipfile.openReadStream(entry, (e, r) => {
-            if (e || !r) return reject(e);
+            if (e || !r) {
+              return reject(e);
+            }
             r.on('end', () => zipfile.readEntry());
             r.pipe(
               fs.createWriteStream(path.resolve(extractDir, path.basename(entry.fileName)), {
@@ -391,7 +397,9 @@ export default class MongoBinaryDownload {
     this.dlProgress.current += chunk.length;
 
     const now = Date.now();
-    if (now - this.dlProgress.lastPrintedAt < 2000) return;
+    if (now - this.dlProgress.lastPrintedAt < 2000) {
+      return;
+    }
     this.dlProgress.lastPrintedAt = now;
 
     const percentComplete =
@@ -418,7 +426,9 @@ export default class MongoBinaryDownload {
       await promisify(fs.lstat)(location);
       return true;
     } catch (e) {
-      if (e.code !== 'ENOENT') throw e;
+      if (e.code !== 'ENOENT') {
+        throw e;
+      }
       return false;
     }
   }

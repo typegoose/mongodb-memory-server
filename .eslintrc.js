@@ -43,9 +43,9 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-use-before-define': 0,
     '@typescript-eslint/no-empty-function': 0,
+    'curly': ['error', 'all']
   },
   env: {
-    jasmine: true,
     jest: true,
   },
 };

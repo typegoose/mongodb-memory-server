@@ -87,7 +87,9 @@ export default class MongoMemoryReplSet extends EventEmitter {
       replSet: { ...replSetDefaults, ...opts.replSet },
     };
 
-    if (!this.opts.replSet.args) this.opts.replSet.args = [];
+    if (!this.opts.replSet.args) {
+      this.opts.replSet.args = [];
+    }
     this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
     if (!(opts && opts.autoStart === false)) {
       log('Autostarting MongoMemoryReplSet.');
@@ -124,10 +126,18 @@ export default class MongoMemoryReplSet extends EventEmitter {
       replSet: rsOpts.name,
       storageEngine: rsOpts.storageEngine,
     };
-    if (baseOpts.args) opts.args = (rsOpts.args || []).concat(baseOpts.args);
-    if (baseOpts.port) opts.port = baseOpts.port;
-    if (baseOpts.dbPath) opts.dbPath = baseOpts.dbPath;
-    if (baseOpts.storageEngine) opts.storageEngine = baseOpts.storageEngine;
+    if (baseOpts.args) {
+      opts.args = (rsOpts.args || []).concat(baseOpts.args);
+    }
+    if (baseOpts.port) {
+      opts.port = baseOpts.port;
+    }
+    if (baseOpts.dbPath) {
+      opts.dbPath = baseOpts.dbPath;
+    }
+    if (baseOpts.storageEngine) {
+      opts.storageEngine = baseOpts.storageEngine;
+    }
     log('   instance opts:', opts);
     return opts;
   }
@@ -186,7 +196,9 @@ export default class MongoMemoryReplSet extends EventEmitter {
    * Stop the underlying `mongod` instance(s).
    */
   async stop(): Promise<boolean> {
-    if (this._state === 'stopped') return false;
+    if (this._state === 'stopped') {
+      return false;
+    }
     const servers = this.servers;
     this.servers = [];
     return Promise.all(servers.map((s) => s.stop()))
@@ -202,7 +214,9 @@ export default class MongoMemoryReplSet extends EventEmitter {
   }
 
   async waitUntilRunning(): Promise<void> {
-    if (this._state === 'running') return;
+    if (this._state === 'running') {
+      return;
+    }
     await new Promise((resolve) => this.once('running', () => resolve()));
   }
 
