@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-var-requires: 0 */
+
 /*
 This script is used as postinstall hook.
 
@@ -20,16 +22,21 @@ if (!isModuleExists('../mongodb-memory-server-core/lib/util/resolve-config')) {
   console.log('Could not resolve postinstall configuration');
   return;
 }
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+
 const rc = require('../mongodb-memory-server-core/lib/util/resolve-config');
 rc.reInitializePackageJson(process.env.INIT_CWD);
 
 const envDisablePostinstall = rc.default('DISABLE_POSTINSTALL');
-const skipDownload =
-  typeof envDisablePostinstall === 'string' && rc.envToBool(envDisablePostinstall);
 
-if (skipDownload) {
+if (typeof envDisablePostinstall === 'string' && rc.envToBool(envDisablePostinstall)) {
   console.log('Download is skipped by MONGOMS_DISABLE_POSTINSTALL variable');
+  process.exit(0);
+}
+
+const envSystemBinary = rc.default('SYSTEM_BINARY');
+
+if (typeof envSystemBinary === 'string') {
+  console.log('Download is skipped by MONGOMS_SYSTEM_BINARY variable');
   process.exit(0);
 }
 
