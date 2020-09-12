@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-var-requires: 0 */
+
 function isModuleExists(name) {
   try {
     return !!require.resolve(name);
