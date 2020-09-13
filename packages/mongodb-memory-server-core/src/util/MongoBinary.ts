@@ -125,7 +125,7 @@ export default class MongoBinary {
       arch: resolveConfig('ARCH') || os.arch(),
       version: resolveConfig('VERSION') || LATEST_VERSION,
       systemBinary: resolveConfig('SYSTEM_BINARY'),
-      checkMD5: envToBool(resolveConfig('MD5_CHECK') ?? ''),
+      checkMD5: envToBool(resolveConfig('MD5_CHECK')),
     };
 
     const options = { ...defaultOptions, ...opts };

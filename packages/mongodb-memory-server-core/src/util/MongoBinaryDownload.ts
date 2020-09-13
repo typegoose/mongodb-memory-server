@@ -52,7 +52,7 @@ export default class MongoBinaryDownload {
     this.arch = arch ?? os.arch();
     this.version = version ?? LATEST_VERSION;
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
-    this.checkMD5 = checkMD5 ?? envToBool(resolveConfig('MD5_CHECK') ?? '');
+    this.checkMD5 = checkMD5 ?? envToBool(resolveConfig('MD5_CHECK'));
     this.dlProgress = {
       current: 0,
       length: 0,
