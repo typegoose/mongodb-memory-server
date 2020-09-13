@@ -53,7 +53,7 @@
     "flowgen": "^1.10.0",
     "jest": "26.4.2",
     "lerna": "3.22.1",
-    "mongodb": "3.5.4",
+    "mongodb": "3.6.2",
     "rimraf": "^3.0.2",
     "ts-jest": "26.3.0",
     "typescript": "4.0.2"
