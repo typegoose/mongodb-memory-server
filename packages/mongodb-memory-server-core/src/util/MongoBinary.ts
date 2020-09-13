@@ -101,12 +101,15 @@ export default class MongoBinary {
       this.cache[version] = await downloader.getMongodPath();
     }
     // remove lock
-    LockFile.unlock(lockfile, (err) => {
-      log(
-        err
-          ? `MongoBinary: Error when removing download lock ${err}`
-          : `MongoBinary: Download lock removed`
-      );
+    await new Promise((res) => {
+      LockFile.unlock(lockfile, (err) => {
+        log(
+          err
+            ? `MongoBinary: Error when removing download lock ${err}`
+            : `MongoBinary: Download lock removed`
+        );
+        res(); // we dont care if it was successful or not
+      });
     });
     return this.getCachePath(version);
   }
