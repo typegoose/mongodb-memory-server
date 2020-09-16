@@ -73,13 +73,15 @@ export default class MongoBinary {
     /** Lockfile path */
     const lockfile = path.resolve(downloadDir, `${version}.lock`);
     // wait to get a lock
+    // downloading of binaries may be quite long procedure
+    // that's why we are using so big wait/stale periods
     await new Promise((resolve, reject) => {
       LockFile.lock(
         lockfile,
         {
-          wait: 1000 * 12, // 120 seconds
+          wait: 1000 * 120, // 120 seconds
           pollPeriod: 100,
-          stale: 1000 * 11, // 110 seconds
+          stale: 1000 * 110, // 110 seconds
           retries: 3,
           retryWait: 100,
         },
@@ -195,18 +197,5 @@ export default class MongoBinary {
 
     log(`MongoBinary: Mongod binary path: "${binaryPath}"`);
     return binaryPath;
-  }
-
-  /**
-   * Purpose unkown, not used anywhere
-   * @param files Array of Strings
-   */
-  static hasValidBinPath(files: string[]): boolean {
-    if (files.length === 1) {
-      return true;
-    } else if (files.length > 1) {
-      return false;
-    }
-    return false;
   }
 }
