@@ -25,34 +25,34 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [MongoDB In-Memory Server](#mongodb-in-memory-server)
-  - [Installation](#installation)
-    - [Requirements](#requirements)
-      - [Known Incompatibilities](#known-incompatibilities)
-    - [mongodb-memory-server](#mongodb-memory-server)
-    - [mongodb-memory-server-global](#mongodb-memory-server-global)
-    - [mongodb-memory-server-core](#mongodb-memory-server-core)
-    - [Configuring which mongod binary to use](#configuring-which-mongod-binary-to-use)
-  - [Usage](#usage)
-    - [Simple server start](#simple-server-start)
-    - [Available options for MongoMemoryServer](#available-options-for-mongomemoryserver)
-    - [Replica Set start](#replica-set-start)
-    - [Available options for MongoMemoryReplSet](#available-options-for-mongomemoryreplset)
-    - [Options which can be set via ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables)
-    - [Options which can be set via package.json's `config` section](#options-which-can-be-set-via-packagejsons-config-section)
-    - [Simple test with MongoClient](#simple-test-with-mongoclient)
-    - [Provide connection string to mongoose](#provide-connection-string-to-mongoose)
-    - [Several mongoose connections simultaneously](#several-mongoose-connections-simultaneously)
-    - [Simple Mocha/Chai test example](#simple-mochachai-test-example)
-    - [Simple Jest test example](#simple-jest-test-example)
-    - [AVA test runner](#ava-test-runner)
-    - [Docker Alpine](#docker-alpine)
-    - [Enable Debug Mode](#enable-debug-mode)
-  - [CI](#ci)
-  - [Contributing](#contributing)
-  - [Credits](#credits)
-  - [License](#license)
-  - [Maintainers](#maintainers)
+- [Installation](#installation)
+  - [Requirements](#requirements)
+    - [Known Incompatibilities](#known-incompatibilities)
+  - [mongodb-memory-server](#mongodb-memory-server)
+  - [mongodb-memory-server-global](#mongodb-memory-server-global)
+    - [mongodb-memory-server-global-x.x](#mongodb-memory-server-global-xx)
+  - [mongodb-memory-server-core](#mongodb-memory-server-core)
+  - [Configuring which mongod binary to use](#configuring-which-mongod-binary-to-use)
+- [Usage](#usage)
+  - [Simple server start](#simple-server-start)
+  - [Available options for MongoMemoryServer](#available-options-for-mongomemoryserver)
+  - [Replica Set start](#replica-set-start)
+  - [Available options for MongoMemoryReplSet](#available-options-for-mongomemoryreplset)
+  - [Options which can be set via ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables)
+  - [Options which can be set via package.json's `config` section](#options-which-can-be-set-via-packagejsons-config-section)
+  - [Simple test with MongoClient](#simple-test-with-mongoclient)
+  - [Provide connection string to mongoose](#provide-connection-string-to-mongoose)
+  - [Several mongoose connections simultaneously](#several-mongoose-connections-simultaneously)
+  - [Simple Mocha/Chai test example](#simple-mochachai-test-example)
+  - [Simple Jest test example](#simple-jest-test-example)
+  - [AVA test runner](#ava-test-runner)
+  - [Docker Alpine](#docker-alpine)
+  - [Enable Debug Mode](#enable-debug-mode)
+- [CI](#ci)
+- [Contributing](#contributing)
+- [Credits](#credits)
+- [License](#license)
+- [Maintainers](#maintainers)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -101,6 +101,14 @@ yarn add mongodb-memory-server-global --dev
 # OR
 npm install mongodb-memory-server-global --save-dev
 ```
+
+#### mongodb-memory-server-global-x.x
+
+This Repository provides stub packages that set an MongoDB version, currently availabe are:
+
+`3.4, 3.6, 4.0, 4.2, 4.4`
+
+Note: **The packages below 4.2 have been deprecated**
 
 ### mongodb-memory-server-core
 

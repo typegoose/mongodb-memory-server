@@ -50,21 +50,7 @@ module.exports = {
       '@semantic-release/npm',
       {
         npmPublish: true,
-        pkgRoot: './packages/mongodb-memory-server-global-3.4',
-      },
-    ],
-    [
-      '@semantic-release/npm',
-      {
-        npmPublish: true,
         pkgRoot: './packages/mongodb-memory-server-global-3.6',
-      },
-    ],
-    [
-      '@semantic-release/npm',
-      {
-        npmPublish: true,
-        pkgRoot: './packages/mongodb-memory-server-global-4.0',
       },
     ],
     [

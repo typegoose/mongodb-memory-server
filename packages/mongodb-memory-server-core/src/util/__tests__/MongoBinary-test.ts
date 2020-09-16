@@ -45,7 +45,6 @@ describe('MongoBinary', () => {
 
   describe('getDownloadPath', () => {
     it('should download binary and keep it in cache', async () => {
-      // download
       const version = LATEST_VERSION;
       const binPath = await MongoBinary.getPath({
         downloadDir: tmpDir.name,
@@ -71,14 +70,14 @@ describe('MongoBinary', () => {
   describe('getCachePath', () => {
     it('should get the cache', async () => {
       MongoBinary.cache['3.4.2'] = '/bin/mongod';
-      await expect(MongoBinary.getCachePath('3.4.2')).resolves.toEqual('/bin/mongod');
+      expect(MongoBinary.getCachePath('3.4.2')).toEqual('/bin/mongod');
     });
   });
 
   describe('getSystemPath', () => {
     it('should use system binary if option is passed.', async () => {
       const accessSpy = jest.spyOn(fs, 'access');
-      await MongoBinary.getSystemPath('/usr/bin/mongod');
+      await MongoBinary.getSystemPath('/usr/bin/mongod'); // ignoring return, because this depends on the host system
 
       expect(accessSpy).toHaveBeenCalledWith('/usr/bin/mongod', expect.any(Function));
 
