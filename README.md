@@ -79,7 +79,7 @@ And one of those:
 
 #### Known Incompatibilities
 
-- [ArchLinux](https://github.com/nodkz/mongodb-memory-server/issues/302) & [Alpine](https://github.com/nodkz/mongodb-memory-server/issues/347) do not have an offical mongodb build
+- [ArchLinux](https://github.com/nodkz/mongodb-memory-server/issues/302) & [Alpine](https://github.com/nodkz/mongodb-memory-server/issues/347) do not have an official mongodb build
 - ArchLinux(Docker) does not have an `/etc/os-release` file by default
 
 ### mongodb-memory-server
@@ -104,9 +104,9 @@ npm install mongodb-memory-server-global --save-dev
 
 #### mongodb-memory-server-global-x.x
 
-This Repository provides stub packages that set an MongoDB version, currently availabe are:
+This Repository provides stub packages that set an MongoDB version, currently available are:
 
-`3.4, 3.6, 4.0, 4.2, 4.4`
+`3.6, 4.2, 4.4`
 
 Note: **The packages below 4.2 have been deprecated**
 
