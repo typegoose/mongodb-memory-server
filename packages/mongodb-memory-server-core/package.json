@@ -43,8 +43,7 @@
     "@types/semver": "7.3.4",
     "@types/tar-stream": "^2.1.0",
     "@types/uuid": "^8.0.0",
-    "@types/yauzl": "^2.9.1",
-    "mongodb": "3.5.4"
+    "@types/yauzl": "^2.9.1"
   },
   "dependencies": {
     "@types/tmp": "^0.2.0",

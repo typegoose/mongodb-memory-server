@@ -6967,10 +6967,10 @@ modify-values@^1.0.0:
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
-mongodb-memory-server-core@6.7.4:
-  version "6.7.4"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-6.7.4.tgz#5870e92451433d5d47ed4510e97dca8b7507786b"
-  integrity sha512-jvlx5+OUpJOagSyQXHHH/HhT63cJtdN5yruvSrjQ5Ivfq1lITI7fq6vTxZe4USlGoygqQiJN+MX8b1JYX2sLnw==
+mongodb-memory-server-core@6.7.5:
+  version "6.7.5"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-6.7.5.tgz#f3fd1e517e8f798af8a93bb1d37a6cd0b04e7427"
+  integrity sha512-G4Wv1MAQg5B/aXpRwD5jy6Ubspcd7w4LsFl+rYJHhUgj8VMZGa4hX1pcEW26ghaw7gm24YsyXwDezHZPtxijKA==
   dependencies:
     "@types/tmp" "^0.2.0"
     camelcase "^6.0.0"
@@ -6991,12 +6991,12 @@ mongodb-memory-server-core@6.7.4:
   optionalDependencies:
     mongodb "3.6.2"
 
-mongodb-memory-server@6.7.4:
-  version "6.7.4"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-6.7.4.tgz#d34edbbd0fc8c9728260d4ae9d5178feab5f30df"
-  integrity sha512-VucLjrv6PBzmz36KlReBv62uPg4JkAywHvDHUXO/LXtAroWcH7HjECbCSTlwJIhGwpWcoeuZstlsrgu2btsn7A==
+mongodb-memory-server@6.7.5:
+  version "6.7.5"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-6.7.5.tgz#3eb4033bba56bd1822b73f581e0badc12af05401"
+  integrity sha512-Ws4IRrFqCEoD27jzFHfST9lXyrgDddpLXcoQ7B0S4Sc5v3N5tpchmvueuZ0BMj4bwwBJlWl64nXNgCoooYvupw==
   dependencies:
-    mongodb-memory-server-core "6.7.4"
+    mongodb-memory-server-core "6.7.5"
 
 mongodb@3.6.2:
   version "3.6.2"
