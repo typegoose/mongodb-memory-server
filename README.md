@@ -303,6 +303,19 @@ Environment variables have higher priority than contents of package.json.
 }
 ```
 
+By default it uses the nearest (upwards) `package.json` to `process.cwd()`.
+To change this:
+
+```ts
+import { findPackageJson } from "mongodb-memory-server-core/lib/util/resolve-config";
+
+findPackageJson('/custom/path');
+
+// OR
+
+process.chdir('/custom/path'); // not recommended
+```
+
 ### Simple test with MongoClient
 
 Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB-test.ts).
