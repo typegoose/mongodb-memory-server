@@ -1,14 +1,10 @@
 {
   "javascript.validate.enable": false,
-  "eslint.validate": [
-    { "language": "javascript", "autoFix": true },
-    { "language": "javascriptreact", "autoFix": true },
-    { "language": "typescript", "autoFix": true },
-    { "language": "typescriptreact", "autoFix": true }
-  ],
   "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.formatOnSave": false,
+  "javascript.format.enable": false,
+  "typescript.format.enable": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "eslint.autoFixOnSave": true,
 }
