@@ -43,7 +43,7 @@ export default class MongoBinary {
     try {
       await promisify(fs.access)(systemBinary);
 
-      log(`MongoBinary: found sytem binary path at "${systemBinary}"`);
+      log(`MongoBinary: found system binary path at "${systemBinary}"`);
       binaryPath = systemBinary;
     } catch (err) {
       log(`MongoBinary: can't find system binary at "${systemBinary}".\n${err.message}`);
@@ -110,7 +110,7 @@ export default class MongoBinary {
             ? `MongoBinary: Error when removing download lock ${err}`
             : `MongoBinary: Download lock removed`
         );
-        res(); // we dont care if it was successful or not
+        res(); // we don't care if it was successful or not
       });
     });
     return this.getCachePath(version);
