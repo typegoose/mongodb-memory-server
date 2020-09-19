@@ -563,7 +563,7 @@ script:
 
 ## Contributing
 
-Contributing Guidelines are setup in [CONTRIBUTING](./..github/CONTRIBUTING.md)
+Contributing Guidelines are setup in [CONTRIBUTING](./.github/CONTRIBUTING.md)
 
 ## Credits
 
