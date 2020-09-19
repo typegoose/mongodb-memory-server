@@ -32,11 +32,22 @@ MONGOMS_MD5_CHECK environment variable`, () => {
 
     const du = new MongoBinaryDownload({});
     du.httpDownload = jest.fn();
+    du.locationExists = jest.fn().mockReturnValue(false);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (du.httpDownload as jest.Mock).mock.calls[0][0];
     expect(callArg1.agent).toBeUndefined();
+  });
+
+  it('should skip download if binary tar exists', async () => {
+    const du = new MongoBinaryDownload({});
+    du.httpDownload = jest.fn();
+    du.locationExists = jest.fn().mockReturnValue(true);
+
+    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+
+    expect(du.httpDownload).not.toHaveBeenCalled();
   });
 
   it('should pick up proxy from env vars', async () => {
@@ -45,6 +56,7 @@ MONGOMS_MD5_CHECK environment variable`, () => {
     const du = new MongoBinaryDownload({});
     // $FlowFixMe
     du.httpDownload = jest.fn();
+    du.locationExists = jest.fn().mockReturnValue(false);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
@@ -59,6 +71,7 @@ MONGOMS_MD5_CHECK environment variable`, () => {
 
     const du = new MongoBinaryDownload({});
     du.httpDownload = jest.fn();
+    du.locationExists = jest.fn().mockReturnValue(false);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
@@ -73,6 +86,7 @@ MONGOMS_MD5_CHECK environment variable`, () => {
 
     const du = new MongoBinaryDownload({});
     du.httpDownload = jest.fn();
+    du.locationExists = jest.fn().mockReturnValue(false);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
