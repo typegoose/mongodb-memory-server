@@ -68,6 +68,7 @@ export default class MongoBinaryDownload {
   async getMongodPath(): Promise<string> {
     const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
     const mongodPath = path.resolve(this.downloadDir, this.version, binaryName);
+
     if (await this.locationExists(mongodPath)) {
       return mongodPath;
     }
@@ -99,7 +100,7 @@ export default class MongoBinaryDownload {
     }
 
     const downloadUrl = await mbdUrl.getDownloadUrl();
-    this._downloadingUrl = downloadUrl;
+
     const mongoDBArchive = await this.download(downloadUrl);
 
     await this.makeMD5check(`${downloadUrl}.md5`, mongoDBArchive);
@@ -172,6 +173,14 @@ export default class MongoBinaryDownload {
     const downloadLocation = path.resolve(this.downloadDir, filename);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
     log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}: "${downloadUrl}"`);
+
+    if (await this.locationExists(downloadLocation)) {
+      log('Already downloaded archive found, skipping download');
+      return downloadLocation;
+    }
+
+    this._downloadingUrl = downloadUrl;
+
     const downloadedFile = await this.httpDownload(
       downloadOptions,
       downloadLocation,
