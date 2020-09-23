@@ -6,6 +6,8 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![TypeScript compatible](https://img.shields.io/badge/typescript-compatible-brightgreen.svg)](https://www.typescriptlang.org)
 [![codecov.io](https://codecov.io/github/nodkz/mongodb-memory-server/coverage.svg?branch=master)](https://codecov.io/github/nodkz/mongodb-memory-server?branch=master)
+[![Backers on Open Collective](https://opencollective.com/mongodb-memory-server/backers/badge.svg)](#backers)
+[![Sponsors on Open Collective](https://opencollective.com/mongodb-memory-server/sponsors/badge.svg)](#sponsors)
 
 This package spins up an actual/real MongoDB server programmatically from node, for testing or mocking during development. By default it holds the data in memory. A fresh spun up `mongod` process takes about 7Mb of memory. The server will allow you to connect your favorite ODM or client library to the MongoDB server and run integration tests isolated from each other.
 
@@ -572,12 +574,38 @@ Inspired by alternative runners for [mongodb-prebuilt](https://github.com/winfin
 - [mockgoose](https://github.com/mockgoose/Mockgoose)
 - [mongomem](https://github.com/CImrie/mongomem)
 
-## License
-
-MIT
-
 ## Maintainers
 
 - [@nodkz](https://github.com/nodkz) Pavel Chertorogov
 - [@AJRdev](https://github.com/AJRdev) Andre Ranarivelo
 - [@hasezoey](https://github.com/hasezoey)
+
+## Contributors
+
+This project exists thanks to all the people who contribute.
+<a href="graphs/contributors"><img src="https://opencollective.com/mongodb-memory-server/contributors.svg?width=890&button=false" /></a>
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/mongodb-memory-server#backer)]
+
+<a href="https://opencollective.com/mongodb-memory-server#backers" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/backers.svg?width=890"></a>
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/mongodb-memory-server#sponsor)]
+
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/0/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/1/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/2/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/3/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/4/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/5/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/6/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/7/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/8/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/mongodb-memory-server/sponsor/9/website" target="_blank"><img src="https://opencollective.com/mongodb-memory-server/sponsor/9/avatar.svg"></a>
+
+## License
+
+MIT
