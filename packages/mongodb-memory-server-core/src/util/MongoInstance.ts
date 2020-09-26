@@ -43,7 +43,6 @@ export interface MongodOpts {
  * MongoDB Instance Handler Class
  */
 export default class MongoInstance {
-  static childProcessList: ChildProcess[] = [];
   opts: MongodOpts;
   debug: DebugFn;
 
