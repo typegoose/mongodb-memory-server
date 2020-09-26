@@ -114,7 +114,7 @@ describe('MongodbInstance', () => {
         instance: { port: 27444, dbPath: tmpDir.name },
         binary: { version: LATEST_VERSION },
       })
-    ).rejects.toBeDefined();
+    ).rejects.toEqual('Port 27444 already in use');
 
     await mongod.kill();
   });
