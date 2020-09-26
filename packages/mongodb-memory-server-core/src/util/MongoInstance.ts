@@ -7,12 +7,26 @@ import { StorageEngineT, SpawnOptions, ErrorVoidCallback, EmptyVoidCallback } fr
 import debug from 'debug';
 import { isNullOrUndefined } from './db_util';
 import { lt } from 'semver';
+import { EventEmitter } from 'events';
 
 if (lt(process.version, '10.15.0')) {
   console.warn('Using NodeJS below 10.15.0');
 }
 
 const log = debug('MongoMS:MongoInstance');
+
+export enum MongoInstanceEvents {
+  instanceState = 'instanceState',
+  instancePrimary = 'instancePrimary',
+  instanceReady = 'instanceReady',
+  instanceSTDOUT = 'instanceSTDOUT',
+  instanceSTDERR = 'instanceSTDERR',
+  instanceClosed = 'instanceClosed',
+  instanceError = 'instanceError',
+  killerLaunched = 'killerLaunched',
+  instanceLaunched = 'instanceLaunched',
+  instanceStarted = 'instanceStarted',
+}
 
 export interface MongoInstanceOpts {
   port?: number;
@@ -38,7 +52,7 @@ export interface MongodOpts {
 /**
  * MongoDB Instance Handler Class
  */
-export default class MongoInstance {
+export default class MongoInstance extends EventEmitter {
   instanceOpts: MongoInstanceOpts;
   binaryOpts: MongoBinaryOpts;
   spawnOpts: SpawnOptions;
@@ -52,6 +66,7 @@ export default class MongoInstance {
   instanceFailed: ErrorVoidCallback = () => {};
 
   constructor(opts: Partial<MongodOpts>) {
+    super();
     this.instanceOpts = opts.instance ?? {};
     this.binaryOpts = opts.binary ?? {};
     this.spawnOpts = opts.spawn ?? {};
@@ -129,6 +144,7 @@ export default class MongoInstance {
     this.killerProcess = this._launchKiller(process.pid, this.childProcess.pid);
 
     await launch;
+    this.emit(MongoInstanceEvents.instanceStarted);
     return this;
   }
 
@@ -224,6 +240,8 @@ export default class MongoInstance {
       throw new Error('Spawned Mongo Instance PID is undefined');
     }
 
+    this.emit(MongoInstanceEvents.instanceLaunched);
+
     return childProcess;
   }
 
@@ -259,6 +277,8 @@ export default class MongoInstance {
       });
     });
 
+    this.emit(MongoInstanceEvents.killerLaunched);
+
     return killer;
   }
 
@@ -267,6 +287,7 @@ export default class MongoInstance {
    * @param err The Error to handle
    */
   errorHandler(err: string): void {
+    this.emit(MongoInstanceEvents.instanceError, err);
     this.instanceFailed(err);
   }
 
@@ -279,7 +300,7 @@ export default class MongoInstance {
       this.debug('Mongod instance closed with an non-0 code!');
     }
     this.debug(`CLOSE: ${code}`);
-    this.instanceFailed(`Mongod instance closed with code "${code}"`);
+    this.emit(MongoInstanceEvents.instanceClosed, code);
   }
 
   /**
@@ -288,6 +309,7 @@ export default class MongoInstance {
    */
   stderrHandler(message: string | Buffer): void {
     this.debug(`STDERR: ${message.toString()}`);
+    this.emit(MongoInstanceEvents.instanceSTDERR, message);
   }
 
   /**
@@ -297,9 +319,11 @@ export default class MongoInstance {
   stdoutHandler(message: string | Buffer): void {
     const line: string = message.toString();
     this.debug(`STDOUT: ${line}`);
+    this.emit(MongoInstanceEvents.instanceSTDOUT, line);
 
     if (/waiting for connections/i.test(line)) {
       this.instanceReady();
+      this.emit(MongoInstanceEvents.instanceReady);
     } else if (/addr already in use/i.test(line)) {
       this.instanceFailed(`Port ${this.instanceOpts.port} already in use`);
     } else if (/mongod instance already running/i.test(line)) {
@@ -328,7 +352,15 @@ export default class MongoInstance {
     } else if (/transition to primary complete; database writes are now permitted/i.test(line)) {
       this.isInstancePrimary = true;
       this.debug('Calling all waitForPrimary resolve functions');
+      this.emit(MongoInstanceEvents.instancePrimary);
       this.waitForPrimaryResolveFns.forEach((resolveFn) => resolveFn(true));
+    } else if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
+      const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNKOWN';
+      this.emit(MongoInstanceEvents.instanceState, state);
+
+      if (state !== 'PRIMARY') {
+        this.isInstancePrimary = false;
+      }
     }
   }
 }
