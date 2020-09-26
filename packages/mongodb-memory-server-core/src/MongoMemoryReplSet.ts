@@ -13,6 +13,7 @@ import {
 import debug from 'debug';
 import { MongoError } from 'mongodb';
 import { deprecate } from 'util';
+import { MongoInstanceEvents } from './util/MongoInstance';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
 
@@ -379,13 +380,16 @@ export default class MongoMemoryReplSet extends EventEmitter {
     });
 
     await Promise.race([
-      ...this.servers.map((server) => {
-        const instanceInfo = server.getInstanceInfo();
-        if (!instanceInfo) {
-          throw new Error('_waitForPrimary - instanceInfo not present ');
-        }
-        return instanceInfo.instance.waitPrimaryReady();
-      }),
+      ...this.servers.map(
+        (server) =>
+          new Promise((res, rej) => {
+            const instanceInfo = server.getInstanceInfo();
+            if (!instanceInfo) {
+              return rej(new Error('_waitForPrimary - instanceInfo not present '));
+            }
+            instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);
+          })
+      ),
       timeoutPromise,
     ]);
 
