@@ -5,7 +5,7 @@ import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { StorageEngineT, SpawnOptions } from '../types';
 import debug from 'debug';
-import { isNullOrUndefined } from './db_util';
+import { assertion, isNullOrUndefined } from './db_util';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 
@@ -67,9 +67,9 @@ export default class MongoInstance extends EventEmitter {
 
   constructor(opts: Partial<MongodOpts>) {
     super();
-    this.instanceOpts = opts.instance ?? {};
-    this.binaryOpts = opts.binary ?? {};
-    this.spawnOpts = opts.spawn ?? {};
+    this.instanceOpts = { ...opts.instance };
+    this.binaryOpts = { ...opts.binary };
+    this.spawnOpts = { ...opts.spawn };
 
     this.on(MongoInstanceEvents.instanceReady, () => {
       this.isInstanceReady = true;
@@ -109,17 +109,23 @@ export default class MongoInstance extends EventEmitter {
    * Create an array of arguments for the mongod instance
    */
   prepareCommandArgs(): string[] {
+    assertion(
+      !isNullOrUndefined(this.instanceOpts.port),
+      new Error('"instanceOpts.port" is required to be set!')
+    );
+    assertion(
+      !isNullOrUndefined(this.instanceOpts.dbPath),
+      new Error('"instanceOpts.dbPath" is required to be set!')
+    );
     const result: string[] = [];
-    result.push('--bind_ip', this.instanceOpts.ip || '127.0.0.1'); // default on all falsy values
     // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
-    if (!!this.instanceOpts.port) {
-      result.push('--port', this.instanceOpts.port.toString());
-    }
+    result.push('--port', this.instanceOpts.port.toString());
+    result.push('--dbpath', this.instanceOpts.dbPath);
     if (!!this.instanceOpts.storageEngine) {
       result.push('--storageEngine', this.instanceOpts.storageEngine);
     }
-    if (!!this.instanceOpts.dbPath) {
-      result.push('--dbpath', this.instanceOpts.dbPath);
+    if (!!this.instanceOpts.ip) {
+      result.push('--bind_ip', this.instanceOpts.ip);
     }
     if (this.instanceOpts.auth) {
       result.push('--auth');
@@ -220,11 +226,10 @@ export default class MongoInstance extends EventEmitter {
    * @param mongoBin The binary to run
    */
   _launchMongod(mongoBin: string): ChildProcess {
-    if (!this.spawnOpts.stdio) {
-      this.spawnOpts.stdio = 'pipe';
-    }
-
-    const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), this.spawnOpts);
+    const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), {
+      ...this.spawnOpts,
+      stdio: 'pipe', // ensure that stdio is always an pipe, regardless of user input
+    });
     childProcess.stderr?.on('data', this.stderrHandler.bind(this));
     childProcess.stdout?.on('data', this.stdoutHandler.bind(this));
     childProcess.on('close', this.closeHandler.bind(this));
