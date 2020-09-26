@@ -150,8 +150,13 @@ export default class MongoInstance {
      */
     async function kill_internal(process: ChildProcess, name: string, debug: DebugFn) {
       await new Promise((resolve) => {
+        const timeout = setTimeout(() => {
+          debug('kill_internal timeout triggered');
+          resolve();
+        }, 1000 * 10);
         process.once(`exit`, (code, signal) => {
           debug(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
+          clearTimeout(timeout);
           resolve();
         });
         debug(`- ${name}: send "SIGINT"`);
@@ -159,12 +164,12 @@ export default class MongoInstance {
       });
     }
 
-    if (this.childProcess && !this.childProcess.killed) {
+    if (!isNullOrUndefined(this.childProcess)) {
       await kill_internal(this.childProcess, 'childProcess', this.debug);
     } else {
       this.debug('- childProcess: nothing to shutdown, skipping.');
     }
-    if (this.killerProcess && !this.killerProcess.killed) {
+    if (!isNullOrUndefined(this.killerProcess)) {
       await kill_internal(this.killerProcess, 'killerProcess', this.debug);
     } else {
       this.debug('- killerProcess: nothing to shutdown, skipping.');
@@ -265,6 +270,7 @@ export default class MongoInstance {
       this.debug('Mongod instance closed with an non-0 code!');
     }
     this.debug(`CLOSE: ${code}`);
+    this.instanceFailed(`Mongod instance closed with code "${code}"`);
   }
 
   /**
