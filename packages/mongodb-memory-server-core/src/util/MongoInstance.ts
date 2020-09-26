@@ -29,10 +29,10 @@ export interface MongodOpts {
   instance: MongoInstanceOpts;
 
   // mongo binary options
-  binary?: MongoBinaryOpts;
+  binary: MongoBinaryOpts;
 
   // child process spawn options
-  spawn?: SpawnOptions;
+  spawn: SpawnOptions;
 }
 
 /**
@@ -49,7 +49,7 @@ export default class MongoInstance {
   instanceReady: EmptyVoidCallback = () => {};
   instanceFailed: ErrorVoidCallback = () => {};
 
-  constructor(opts: MongodOpts) {
+  constructor(opts: Partial<MongodOpts>) {
     this.opts = Object.assign({ binary: {}, instance: {}, spawn: {} } as MongodOpts, opts);
   }
 
@@ -68,7 +68,7 @@ export default class MongoInstance {
    * Create an new instance an call method "run"
    * @param opts Options passed to the new instance
    */
-  static async run(opts: MongodOpts): Promise<MongoInstance> {
+  static async run(opts: Partial<MongodOpts>): Promise<MongoInstance> {
     const instance = new this(opts);
     return instance.run();
   }
