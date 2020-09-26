@@ -140,6 +140,9 @@ export default class MongoInstance extends EventEmitter {
     const launch: Promise<void> = new Promise((resolve, reject) => {
       this.once(MongoInstanceEvents.instanceReady, resolve);
       this.once(MongoInstanceEvents.instanceError, reject);
+      this.once(MongoInstanceEvents.instanceClosed, () => {
+        reject(new Error('Instance Exited before being ready and without throwing an error!'));
+      });
     });
 
     const mongoBin = await MongoBinary.getPath(this.binaryOpts);
@@ -314,7 +317,7 @@ export default class MongoInstance extends EventEmitter {
 
     if (/waiting for connections/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceReady);
-    } else if (/addr already in use/i.test(line)) {
+    } else if (/address already in use/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, `Port ${this.instanceOpts.port} already in use`);
     } else if (/mongod instance already running/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod already running');
@@ -334,11 +337,6 @@ export default class MongoInstance extends EventEmitter {
         'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
           'You need to manually install libcurl4\n'
       );
-    } else if (/shutting down with code/i.test(line)) {
-      // if mongod started succesfully then no error on shutdown!
-      if (!this.isInstanceReady) {
-        this.emit(MongoInstanceEvents.instanceError, 'Mongod shutting down');
-      }
     } else if (/\*\*\*aborting after/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod internal error');
     } else if (/transition to primary complete; database writes are now permitted/i.test(line)) {
