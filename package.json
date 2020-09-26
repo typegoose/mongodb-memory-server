@@ -57,7 +57,7 @@
     }
   },
   "scripts": {
-    "test": "lerna run test --stream",
+    "test": "yarn --cwd packages/mongodb-memory-server-core run test",
     "lint": "lerna run lint --stream --npm-client=yarn --no-prefix",
     "eslint": "eslint 'packages/mongodb-memory-server-core/src/**/*.{js,ts}'",
     "watch": "jest --env node --watch",
