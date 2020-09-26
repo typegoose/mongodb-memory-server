@@ -31,4 +31,16 @@ export function isNullOrUndefined(val: unknown): val is null | undefined {
   return val === null || val === undefined;
 }
 
+/**
+ * Assert an condition, if "false" throw error
+ * Note: it is not named "assert" to differentiate between node and jest types
+ * @param cond The Condition to throw
+ * @param error An Custom Error to throw
+ */
+export function assertion(cond: unknown, error?: Error): asserts cond {
+  if (!cond) {
+    throw error ?? new Error('Assert failed - no custom error [E019]');
+  }
+}
+
 export default generateDbName;
