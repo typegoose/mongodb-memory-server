@@ -59,7 +59,6 @@ export default class MongoInstance extends EventEmitter {
 
   childProcess: ChildProcess | null = null;
   killerProcess: ChildProcess | null = null;
-  waitForPrimaryResolveFns: ((value: boolean) => void)[] = [];
   isInstancePrimary: boolean = false;
   isInstanceReady: boolean = false;
   instanceReady: EmptyVoidCallback = () => {};
@@ -210,18 +209,6 @@ export default class MongoInstance extends EventEmitter {
   }
 
   /**
-   * Wait until mongod has elected an Primary
-   */
-  async waitPrimaryReady(): Promise<boolean> {
-    if (this.isInstancePrimary) {
-      return true;
-    }
-    return new Promise((resolve) => {
-      this.waitForPrimaryResolveFns.push(resolve);
-    });
-  }
-
-  /**
    * Actually launch mongod
    * @param mongoBin The binary to run
    */
@@ -353,7 +340,6 @@ export default class MongoInstance extends EventEmitter {
       this.isInstancePrimary = true;
       this.debug('Calling all waitForPrimary resolve functions');
       this.emit(MongoInstanceEvents.instancePrimary);
-      this.waitForPrimaryResolveFns.forEach((resolveFn) => resolveFn(true));
     } else if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
       const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNKOWN';
       this.emit(MongoInstanceEvents.instanceState, state);
