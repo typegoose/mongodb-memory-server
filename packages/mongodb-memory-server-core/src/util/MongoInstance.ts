@@ -129,6 +129,9 @@ export default class MongoInstance {
     return this;
   }
 
+  /**
+   * Shutdown all related processes (Mongod Instance & Killer Process)
+   */
   async kill(): Promise<MongoInstance> {
     this.debug('Called MongoInstance.kill():');
 
@@ -257,13 +260,17 @@ export default class MongoInstance {
     return killer;
   }
 
+  /**
+   * Event "error" handler
+   * @param err The Error to handle
+   */
   errorHandler(err: string): void {
     this.instanceFailed(err);
   }
 
   /**
    * Write the CLOSE event to the debug function
-   * @param code The Exit code
+   * @param code The Exit code to handle
    */
   closeHandler(code: number): void {
     if (code != 0) {
