@@ -39,26 +39,16 @@ export interface MongodOpts {
 export default class MongoInstance {
   opts: MongodOpts;
 
-  childProcess: ChildProcess | null;
-  killerProcess: ChildProcess | null;
-  waitForPrimaryResolveFns: ((value: boolean) => void)[];
+  childProcess: ChildProcess | null = null;
+  killerProcess: ChildProcess | null = null;
+  waitForPrimaryResolveFns: ((value: boolean) => void)[] = [];
   isInstancePrimary: boolean = false;
   isInstanceReady: boolean = false;
   instanceReady: EmptyVoidCallback = () => {};
   instanceFailed: ErrorVoidCallback = () => {};
 
   constructor(opts: MongodOpts) {
-    this.opts = opts;
-    this.childProcess = null;
-    this.killerProcess = null;
-    this.waitForPrimaryResolveFns = [];
-
-    if (!this.opts.instance) {
-      this.opts.instance = {};
-    }
-    if (!this.opts.binary) {
-      this.opts.binary = {};
-    }
+    this.opts = Object.assign({ binary: {}, instance: {}, spawn: {} } as MongodOpts, opts);
   }
 
   /**
