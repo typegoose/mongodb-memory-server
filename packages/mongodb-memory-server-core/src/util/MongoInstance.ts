@@ -20,7 +20,7 @@ if (lt(process.version, '10.15.0')) {
 
 const log = debug('MongoMS:MongoInstance');
 
-export interface MongodOps {
+export interface MongodOpts {
   // instance options
   instance: {
     port?: number;
@@ -44,7 +44,7 @@ export interface MongodOps {
  */
 export default class MongoInstance {
   static childProcessList: ChildProcess[] = [];
-  opts: MongodOps;
+  opts: MongodOpts;
   debug: DebugFn;
 
   childProcess: ChildProcess | null;
@@ -55,7 +55,7 @@ export default class MongoInstance {
   instanceReady: EmptyVoidCallback = () => {};
   instanceFailed: ErrorVoidCallback = () => {};
 
-  constructor(opts: MongodOps) {
+  constructor(opts: MongodOpts) {
     this.opts = opts;
     this.childProcess = null;
     this.killerProcess = null;
@@ -83,7 +83,7 @@ export default class MongoInstance {
    * Create an new instance an call method "run"
    * @param opts Options passed to the new instance
    */
-  static async run(opts: MongodOps): Promise<MongoInstance> {
+  static async run(opts: MongodOpts): Promise<MongoInstance> {
     const instance = new this(opts);
     return instance.run();
   }
