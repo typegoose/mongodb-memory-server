@@ -80,7 +80,7 @@ export default class MongoInstance {
     const { ip, port, storageEngine, dbPath, replSet, auth, args } = this.opts.instance;
 
     const result: string[] = [];
-    result.push('--bind_ip', ip || '127.0.0.1');
+    result.push('--bind_ip', ip || '127.0.0.1'); // default on all falsy values
     if (port) {
       result.push('--port', port.toString());
     }
@@ -106,11 +106,11 @@ export default class MongoInstance {
    * Create the mongod process
    */
   async run(): Promise<this> {
-    const launch = new Promise((resolve, reject) => {
+    const launch: Promise<void> = new Promise((resolve, reject) => {
       this.instanceReady = () => {
         this.isInstanceReady = true;
         this.debug('MongodbInstance: Instance is ready!');
-        resolve({ ...this.childProcess });
+        resolve();
       };
       this.instanceFailed = (err: any) => {
         this.debug(`MongodbInstance: Instance has failed: ${err.toString()}`);
