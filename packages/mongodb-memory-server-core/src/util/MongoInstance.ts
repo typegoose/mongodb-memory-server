@@ -119,11 +119,11 @@ export default class MongoInstance {
     const launch = new Promise((resolve, reject) => {
       this.instanceReady = () => {
         this.isInstanceReady = true;
-        this.debug('MongodbInstance: is ready!');
+        this.debug('MongodbInstance: Instance is ready!');
         resolve({ ...this.childProcess });
       };
       this.instanceFailed = (err: any) => {
-        this.debug(`MongodbInstance: is failed: ${err.toString()}`);
+        this.debug(`MongodbInstance: Instance has failed: ${err.toString()}`);
         if (this.killerProcess) {
           this.killerProcess.kill();
         }
