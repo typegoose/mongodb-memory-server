@@ -39,7 +39,9 @@ export interface MongodOpts {
  * MongoDB Instance Handler Class
  */
 export default class MongoInstance {
-  opts: MongodOpts;
+  instanceOpts: MongoInstanceOpts;
+  binaryOpts: MongoBinaryOpts;
+  spawnOpts: SpawnOptions;
 
   childProcess: ChildProcess | null = null;
   killerProcess: ChildProcess | null = null;
@@ -50,7 +52,9 @@ export default class MongoInstance {
   instanceFailed: ErrorVoidCallback = () => {};
 
   constructor(opts: Partial<MongodOpts>) {
-    this.opts = Object.assign({ binary: {}, instance: {}, spawn: {} } as MongodOpts, opts);
+    this.instanceOpts = opts.instance ?? {};
+    this.binaryOpts = opts.binary ?? {};
+    this.spawnOpts = opts.spawn ?? {};
   }
 
   /**
@@ -59,7 +63,7 @@ export default class MongoInstance {
    */
   private debug(msg: string): void {
     if (debug.enabled('MongoMS:MongoInstance')) {
-      const port = this.opts?.instance?.port ?? 'unkown';
+      const port = this.instanceOpts.port ?? 'unkown';
       log(`Mongo[${port}]: ${msg}`);
     }
   }
@@ -77,7 +81,7 @@ export default class MongoInstance {
    * Create an array of arguments for the mongod instance
    */
   prepareCommandArgs(): string[] {
-    const { ip, port, storageEngine, dbPath, replSet, auth, args } = this.opts.instance;
+    const { ip, port, storageEngine, dbPath, replSet, auth, args } = this.instanceOpts;
 
     const result: string[] = [];
     result.push('--bind_ip', ip || '127.0.0.1'); // default on all falsy values
@@ -121,7 +125,7 @@ export default class MongoInstance {
       };
     });
 
-    const mongoBin = await MongoBinary.getPath(this.opts.binary);
+    const mongoBin = await MongoBinary.getPath(this.binaryOpts);
     this.childProcess = this._launchMongod(mongoBin);
     this.killerProcess = this._launchKiller(process.pid, this.childProcess.pid);
 
@@ -207,12 +211,11 @@ export default class MongoInstance {
    * @param mongoBin The binary to run
    */
   _launchMongod(mongoBin: string): ChildProcess {
-    const spawnOpts = this.opts.spawn ?? {};
-    if (!spawnOpts.stdio) {
-      spawnOpts.stdio = 'pipe';
+    if (!this.spawnOpts.stdio) {
+      this.spawnOpts.stdio = 'pipe';
     }
 
-    const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), spawnOpts);
+    const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), this.spawnOpts);
     childProcess.stderr?.on('data', this.stderrHandler.bind(this));
     childProcess.stdout?.on('data', this.stdoutHandler.bind(this));
     childProcess.on('close', this.closeHandler.bind(this));
@@ -299,7 +302,7 @@ export default class MongoInstance {
     if (/waiting for connections/i.test(line)) {
       this.instanceReady();
     } else if (/addr already in use/i.test(line)) {
-      this.instanceFailed(`Port ${this.opts.instance.port} already in use`);
+      this.instanceFailed(`Port ${this.instanceOpts.port} already in use`);
     } else if (/mongod instance already running/i.test(line)) {
       this.instanceFailed('Mongod already running');
     } else if (/permission denied/i.test(line)) {
