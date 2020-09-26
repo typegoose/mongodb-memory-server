@@ -81,29 +81,28 @@ export default class MongoInstance {
    * Create an array of arguments for the mongod instance
    */
   prepareCommandArgs(): string[] {
-    const { ip, port, storageEngine, dbPath, replSet, auth, args } = this.instanceOpts;
-
     const result: string[] = [];
-    result.push('--bind_ip', ip || '127.0.0.1'); // default on all falsy values
-    if (port) {
-      result.push('--port', port.toString());
+    result.push('--bind_ip', this.instanceOpts.ip || '127.0.0.1'); // default on all falsy values
+    // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
+    if (!!this.instanceOpts.port) {
+      result.push('--port', this.instanceOpts.port.toString());
     }
-    if (storageEngine) {
-      result.push('--storageEngine', storageEngine);
+    if (!!this.instanceOpts.storageEngine) {
+      result.push('--storageEngine', this.instanceOpts.storageEngine);
     }
-    if (dbPath) {
-      result.push('--dbpath', dbPath);
+    if (!!this.instanceOpts.dbPath) {
+      result.push('--dbpath', this.instanceOpts.dbPath);
     }
-    if (!auth) {
-      result.push('--noauth');
-    } else if (auth) {
+    if (this.instanceOpts.auth) {
       result.push('--auth');
+    } else {
+      result.push('--noauth');
     }
-    if (replSet) {
-      result.push('--replSet', replSet);
+    if (!!this.instanceOpts.replSet) {
+      result.push('--replSet', this.instanceOpts.replSet);
     }
 
-    return result.concat(args ?? []);
+    return result.concat(this.instanceOpts.args ?? []);
   }
 
   /**
