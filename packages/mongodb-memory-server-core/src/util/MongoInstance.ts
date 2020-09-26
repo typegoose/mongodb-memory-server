@@ -3,13 +3,7 @@ import { default as spawnChild } from 'cross-spawn';
 import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
-import {
-  StorageEngineT,
-  SpawnOptions,
-  DebugFn,
-  ErrorVoidCallback,
-  EmptyVoidCallback,
-} from '../types';
+import { StorageEngineT, SpawnOptions, ErrorVoidCallback, EmptyVoidCallback } from '../types';
 import debug from 'debug';
 import { isNullOrUndefined } from './db_util';
 import { lt } from 'semver';
@@ -44,7 +38,6 @@ export interface MongodOpts {
  */
 export default class MongoInstance {
   opts: MongodOpts;
-  debug: DebugFn;
 
   childProcess: ChildProcess | null;
   killerProcess: ChildProcess | null;
@@ -66,15 +59,16 @@ export default class MongoInstance {
     if (!this.opts.binary) {
       this.opts.binary = {};
     }
+  }
 
+  /**
+   * Debug-log with template applied
+   * @param msg The Message to log
+   */
+  private debug(msg: string): void {
     if (debug.enabled('MongoMS:MongoInstance')) {
-      // add instance's port to debug output
-      const port = this.opts.instance?.port;
-      this.debug = (msg: string): void => {
-        log(`Mongo[${port}]: ${msg}`);
-      };
-    } else {
-      this.debug = () => {};
+      const port = this.opts?.instance?.port ?? 'unkown';
+      log(`Mongo[${port}]: ${msg}`);
     }
   }
 
@@ -150,13 +144,12 @@ export default class MongoInstance {
      * Function to De-Duplicate Code
      * @param process The Process to kill
      * @param name the name used in the logs
-     * @param debugfn the debug function
      */
-    async function kill_internal(process: ChildProcess, name: string, debugfn: DebugFn) {
+    async function kill_internal(this: MongoInstance, process: ChildProcess, name: string) {
       const timeoutTime = 1000 * 10;
       await new Promise((resolve, reject) => {
         let timeout = setTimeout(() => {
-          debugfn('kill_internal timeout triggered, trying SIGKILL');
+          this.debug('kill_internal timeout triggered, trying SIGKILL');
           if (!debug.enabled('MongoMS:MongoInstance')) {
             console.warn(
               'An Process didnt exit with signal "SIGINT" within 10 seconds, using "SIGKILL"!\n' +
@@ -165,27 +158,27 @@ export default class MongoInstance {
           }
           process.kill('SIGKILL');
           timeout = setTimeout(() => {
-            debugfn('kill_internal timeout triggered again, rejecting');
+            this.debug('kill_internal timeout triggered again, rejecting');
             reject(new Error('Process didnt exit, enable debug for more information.'));
           }, timeoutTime);
         }, timeoutTime);
         process.once(`exit`, (code, signal) => {
-          debugfn(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
+          this.debug(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
           clearTimeout(timeout);
           resolve();
         });
-        debugfn(`- ${name}: send "SIGINT"`);
+        this.debug(`- ${name}: send "SIGINT"`);
         process.kill('SIGINT');
       });
     }
 
     if (!isNullOrUndefined(this.childProcess)) {
-      await kill_internal(this.childProcess, 'childProcess', this.debug);
+      await kill_internal.call(this, this.childProcess, 'childProcess');
     } else {
       this.debug('- childProcess: nothing to shutdown, skipping.');
     }
     if (!isNullOrUndefined(this.killerProcess)) {
-      await kill_internal(this.killerProcess, 'killerProcess', this.debug);
+      await kill_internal.call(this, this.killerProcess, 'killerProcess');
     } else {
       this.debug('- killerProcess: nothing to shutdown, skipping.');
     }
