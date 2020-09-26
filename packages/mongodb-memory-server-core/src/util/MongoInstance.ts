@@ -3,7 +3,7 @@ import { default as spawnChild } from 'cross-spawn';
 import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
-import { StorageEngineT, SpawnOptions, ErrorVoidCallback, EmptyVoidCallback } from '../types';
+import { StorageEngineT, SpawnOptions } from '../types';
 import debug from 'debug';
 import { isNullOrUndefined } from './db_util';
 import { lt } from 'semver';
@@ -22,6 +22,9 @@ export enum MongoInstanceEvents {
   instanceSTDOUT = 'instanceSTDOUT',
   instanceSTDERR = 'instanceSTDERR',
   instanceClosed = 'instanceClosed',
+  /** Only Raw Error (emitted by childProcess) */
+  instanceRawError = 'instanceRawError',
+  /** Raw Errors and Custom Errors */
   instanceError = 'instanceError',
   killerLaunched = 'killerLaunched',
   instanceLaunched = 'instanceLaunched',
@@ -61,14 +64,25 @@ export default class MongoInstance extends EventEmitter {
   killerProcess: ChildProcess | null = null;
   isInstancePrimary: boolean = false;
   isInstanceReady: boolean = false;
-  instanceReady: EmptyVoidCallback = () => {};
-  instanceFailed: ErrorVoidCallback = () => {};
 
   constructor(opts: Partial<MongodOpts>) {
     super();
     this.instanceOpts = opts.instance ?? {};
     this.binaryOpts = opts.binary ?? {};
     this.spawnOpts = opts.spawn ?? {};
+
+    this.on(MongoInstanceEvents.instanceReady, () => {
+      this.isInstanceReady = true;
+      this.debug('Instance is ready!');
+    });
+
+    this.on(MongoInstanceEvents.instanceError, async (err: string | Error) => {
+      this.debug(`Instance has thrown an Error: ${err.toString()}`);
+      this.isInstanceReady = false;
+      this.isInstancePrimary = false;
+
+      await this.kill();
+    });
   }
 
   /**
@@ -124,18 +138,8 @@ export default class MongoInstance extends EventEmitter {
    */
   async run(): Promise<this> {
     const launch: Promise<void> = new Promise((resolve, reject) => {
-      this.instanceReady = () => {
-        this.isInstanceReady = true;
-        this.debug('MongodbInstance: Instance is ready!');
-        resolve();
-      };
-      this.instanceFailed = (err: any) => {
-        this.debug(`MongodbInstance: Instance has failed: ${err.toString()}`);
-        if (this.killerProcess) {
-          this.killerProcess.kill();
-        }
-        reject(err);
-      };
+      this.once(MongoInstanceEvents.instanceReady, resolve);
+      this.once(MongoInstanceEvents.instanceError, reject);
     });
 
     const mongoBin = await MongoBinary.getPath(this.binaryOpts);
@@ -274,8 +278,8 @@ export default class MongoInstance extends EventEmitter {
    * @param err The Error to handle
    */
   errorHandler(err: string): void {
+    this.emit(MongoInstanceEvents.instanceRawError, err);
     this.emit(MongoInstanceEvents.instanceError, err);
-    this.instanceFailed(err);
   }
 
   /**
@@ -300,7 +304,7 @@ export default class MongoInstance extends EventEmitter {
   }
 
   /**
-   * Write STDOUT to debug function AND instanceReady/instanceFailed if inputs match
+   * Write STDOUT to debug function and process some special messages
    * @param message The STDOUT line to write/parse
    */
   stdoutHandler(message: string | Buffer): void {
@@ -309,38 +313,40 @@ export default class MongoInstance extends EventEmitter {
     this.emit(MongoInstanceEvents.instanceSTDOUT, line);
 
     if (/waiting for connections/i.test(line)) {
-      this.instanceReady();
       this.emit(MongoInstanceEvents.instanceReady);
     } else if (/addr already in use/i.test(line)) {
-      this.instanceFailed(`Port ${this.instanceOpts.port} already in use`);
+      this.emit(MongoInstanceEvents.instanceError, `Port ${this.instanceOpts.port} already in use`);
     } else if (/mongod instance already running/i.test(line)) {
-      this.instanceFailed('Mongod already running');
+      this.emit(MongoInstanceEvents.instanceError, 'Mongod already running');
     } else if (/permission denied/i.test(line)) {
-      this.instanceFailed('Mongod permission denied');
+      this.emit(MongoInstanceEvents.instanceError, 'Mongod permission denied');
     } else if (/Data directory .*? not found/i.test(line)) {
-      this.instanceFailed('Data directory not found');
+      this.emit(MongoInstanceEvents.instanceError, 'Data directory not found');
     } else if (/CURL_OPENSSL_3.*not found/i.test(line)) {
-      this.instanceFailed(
+      this.emit(
+        MongoInstanceEvents.instanceError,
         'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
           'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
       );
     } else if (/CURL_OPENSSL_4.*not found/i.test(line)) {
-      this.instanceFailed(
+      this.emit(
+        MongoInstanceEvents.instanceError,
         'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
           'You need to manually install libcurl4\n'
       );
     } else if (/shutting down with code/i.test(line)) {
       // if mongod started succesfully then no error on shutdown!
       if (!this.isInstanceReady) {
-        this.instanceFailed('Mongod shutting down');
+        this.emit(MongoInstanceEvents.instanceError, 'Mongod shutting down');
       }
     } else if (/\*\*\*aborting after/i.test(line)) {
-      this.instanceFailed('Mongod internal error');
+      this.emit(MongoInstanceEvents.instanceError, 'Mongod internal error');
     } else if (/transition to primary complete; database writes are now permitted/i.test(line)) {
       this.isInstancePrimary = true;
       this.debug('Calling all waitForPrimary resolve functions');
       this.emit(MongoInstanceEvents.instancePrimary);
     } else if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
+      // "[\d\.:]+" matches "0.0.0.0:0000" (IP:PORT)
       const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNKOWN';
       this.emit(MongoInstanceEvents.instanceState, state);
 
