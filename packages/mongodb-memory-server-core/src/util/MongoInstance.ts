@@ -194,7 +194,7 @@ export default class MongoInstance {
   }
 
   /**
-   * Wait until the Primary mongod is running
+   * Wait until mongod has elected an Primary
    */
   async waitPrimaryReady(): Promise<boolean> {
     if (this.isInstancePrimary) {
