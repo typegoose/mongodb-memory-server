@@ -125,7 +125,7 @@ describe('MongodbInstance', () => {
       binary: { version: LATEST_VERSION },
     });
     const pid: any = mongod.getPid();
-    const killerPid: any = mongod.killerProcess && mongod.killerProcess.pid;
+    const killerPid: any = mongod.killerProcess?.pid;
     expect(pid).toBeGreaterThan(0);
     expect(killerPid).toBeGreaterThan(0);
 
