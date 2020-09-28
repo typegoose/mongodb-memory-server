@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import * as mongodb from 'mongodb';
 import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOptsT } from './MongoMemoryServer';
-import { assertion, generateDbName, getHost, isNullOrUndefined } from './util/db_util';
+import { assertion, ensureAsync, generateDbName, getHost, isNullOrUndefined } from './util/db_util';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, MongoMemoryInstancePropBaseT, StorageEngineT } from './types';
 import debug from 'debug';
@@ -280,10 +280,24 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   async waitUntilRunning(): Promise<void> {
     // TODO: this seems like it dosnt catch if an instance fails, and runs forever
-    if (this._state === MongoMemoryReplSetStateEnum.running) {
-      return;
+    await ensureAsync();
+    switch (this._state) {
+      case MongoMemoryReplSetStateEnum.running:
+        // just return immediatly if the replSet is already running
+        return;
+      case MongoMemoryReplSetStateEnum.init:
+        // wait for event "running"
+        await new Promise((resolve) =>
+          this.once(MongoMemoryReplSetStateEnum.running, () => resolve())
+        );
+        return;
+      case MongoMemoryReplSetStateEnum.stopped:
+      default:
+        // throw an error if not "running" or "init"
+        throw new Error(
+          'State is not "running" or "init" - cannot wait on something that dosnt start'
+        );
     }
-    await new Promise((resolve) => this.once(MongoMemoryReplSetStateEnum.running, () => resolve()));
   }
 
   /**
