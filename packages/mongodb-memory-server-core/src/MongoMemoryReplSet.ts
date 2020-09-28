@@ -89,6 +89,10 @@ export interface MongoMemoryReplSetOptsT {
   instanceOpts?: MongoMemoryInstancePropBaseT[];
   binary?: MongoBinaryOpts;
   replSet?: ReplSetOpts;
+  /**
+   * Auto-Start the replSet?
+   * @default true
+   */
   autoStart?: boolean;
 }
 
