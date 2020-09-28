@@ -146,4 +146,14 @@ describe('single server replset', () => {
 
     await replSet.stop();
   });
+
+  it('"waitUntilRunning" should return if state is "running"', async () => {
+    const replSet = new MongoMemoryReplSet({ autoStart: false });
+    const spy = jest.spyOn(replSet, 'once');
+    replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running to not actually have to start an server (test-speedup)
+
+    await replSet.waitUntilRunning();
+
+    expect(spy.mock.calls.length).toEqual(0);
+  });
 });
