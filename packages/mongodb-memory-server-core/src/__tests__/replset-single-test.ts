@@ -174,4 +174,21 @@ describe('single server replset', () => {
       expect(err.message).toEqual('Not in init phase.');
     }
   });
+
+  it('"_initReplSet" should throw if server count is 0 or less', async () => {
+    const replSet = new MongoMemoryReplSet({ autoStart: false });
+    const timeout = setTimeout(() => {
+      fail('Timeout - Expected "_initReplSet" to throw');
+    }, 100);
+
+    replSet._state = MongoMemoryReplSetStateEnum.init; // artificially set this to init
+
+    try {
+      await replSet._initReplSet();
+      fail('Expected "_initReplSet" to throw');
+    } catch (err) {
+      clearTimeout(timeout);
+      expect(err.message).toEqual('One or more servers are required.');
+    }
+  });
 });
