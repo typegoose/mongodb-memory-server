@@ -166,10 +166,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   /**
    * Returns database name.
    */
-  async getDbName(): Promise<string> {
-    // this function is only async for consistency with MongoMemoryServer
-    // I don't see much point to either of them being async but don't
-    // care enough to change it and introduce a breaking change.
+  getDbName(): string {
     return this.opts.replSet.dbName;
   }
 

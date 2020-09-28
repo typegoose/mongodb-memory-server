@@ -27,7 +27,7 @@ describe('single server replset', () => {
   it('should be able to get dbName', async () => {
     const opts: any = { autoStart: false, replSet: { dbName: 'static' } };
     const replSet = new MongoMemoryReplSet(opts);
-    const dbName = await replSet.getDbName();
+    const dbName = replSet.getDbName();
     expect(dbName).toEqual('static');
 
     await replSet.stop();

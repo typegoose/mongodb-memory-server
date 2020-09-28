@@ -27,7 +27,7 @@ describe('multi-member replica set', () => {
     // await while all SECONDARIES will be ready
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const db = await con.db(await replSet.getDbName());
+    const db = await con.db(replSet.getDbName());
     const admin = db.admin();
     const status = await admin.replSetGetStatus();
     expect(status.members.filter((m: any) => m.stateStr === 'PRIMARY')).toHaveLength(1);
