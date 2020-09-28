@@ -1,4 +1,4 @@
-import MongoMemoryReplSet from '../MongoMemoryReplSet';
+import MongoMemoryReplSet, { MongoMemoryReplSetStateEnum } from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -96,5 +96,21 @@ describe('single server replset', () => {
       clearTimeout(timeout);
       expect(err.message).toEqual('Replica Set is not running. Use debug for more info.');
     }
+  });
+
+  it('"getUri" should execute "waitUntilRunning" if state is "init"', async () => {
+    const replSet = new MongoMemoryReplSet({ autoStart: false });
+    const spy = jest.spyOn(replSet, 'waitUntilRunning');
+    // this case can normally happen if "start" is called without await, and "getUri" directly after and that is awaited
+    replSet._state = MongoMemoryReplSetStateEnum.init; // artificially set this to init
+    const promise = replSet.getUri();
+    replSet._state = MongoMemoryReplSetStateEnum.stopped; // set it back for "start"
+    await replSet.start();
+
+    await promise; // await the promise to make sure nothing got thrown
+
+    expect(spy.mock.calls.length).toEqual(1);
+
+    await replSet.stop();
   });
 });
