@@ -65,4 +65,21 @@ describe('single server replset', () => {
       expect(err.message).toEqual('ReplSet Count needs to be 1 or higher!');
     }
   });
+
+  it('"waitUntilRunning" should throw an error if _state is not "init"', async () => {
+    const replSet = new MongoMemoryReplSet({ autoStart: false });
+    const timeout = setTimeout(() => {
+      fail('Timeout - Expected "waitUntilRunning" to throw');
+    }, 100);
+
+    try {
+      await replSet.waitUntilRunning();
+      fail('Expected "waitUntilRunning" to throw');
+    } catch (err) {
+      clearTimeout(timeout);
+      expect(err.message).toEqual(
+        'State is not "running" or "init" - cannot wait on something that dosnt start'
+      );
+    }
+  });
 });
