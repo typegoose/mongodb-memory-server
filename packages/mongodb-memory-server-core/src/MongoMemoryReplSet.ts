@@ -139,7 +139,10 @@ export default class MongoMemoryReplSet extends EventEmitter {
       log('Autostarting MongoMemoryReplSet.');
       setTimeout(() => this.start(), 0);
     }
-    process.on('beforeExit', () => this.stop());
+    process.once('beforeExit', () => {
+      log('"beforeExit" event triggered');
+      return this.stop();
+    });
   }
 
   /**
