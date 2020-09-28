@@ -17,29 +17,63 @@ const log = debug('MongoMS:MongoMemoryReplSet');
 
 /**
  * Replica set specific options.
- *
- * @property {boolean} auth enable auth; (default: false)
- * @property {string[]} args additional command line args passed to `mongod`
- * @property {number} count number of `mongod` servers to start (default: 1)
- * @property {string} dbName database name used in connection string (default: uuid)
- * @property {string} ip bind to all IP addresses specify `::,0.0.0.0`; (default '127.0.0.1')
- * @property {string} name replSet name (default: 'testset')
- * @property {number} oplogSize oplog size (in MB); (default: 1)
- * @property {StorageEngineT} storageEngine `mongod` storage engine type; (default: 'ephemeralForTest')
  */
 export interface ReplSetOpts {
+  /**
+   * enable auth ("--auth" / "--noauth")
+   * @default false
+   */
   auth?: boolean;
+  /**
+   * additional command line args passed to `mongod`
+   * @default []
+   */
   args?: string[];
+  /**
+   * number of `mongod` servers to start
+   * @default 1
+   */
   count?: number;
+  /**
+   * database name used in connection string
+   * @default uuidv4()
+   */
   dbName?: string;
+  /**
+   * bind to all IP addresses specify `::,0.0.0.0`
+   * @default '127.0.0.1'
+   */
   ip?: string;
+  /**
+   * replSet name
+   * @default 'testset'
+   */
   name?: string;
+  /**
+   * oplog size (in MB)
+   * @default 1
+   */
   oplogSize?: number;
+  /**
+   * Childprocess spawn options
+   * @default {}
+   */
   spawn?: SpawnOptions;
+  /**
+   *`mongod` storage engine type
+   * @default 'ephemeralForTest'
+   */
   storageEngine?: StorageEngineT;
+  /**
+   * Options for "rsConfig"
+   * @default {}
+   */
   configSettings?: MongoMemoryReplSetConfigSettingsT;
 }
 
+/**
+ * Options for "rsConfig"
+ */
 export interface MongoMemoryReplSetConfigSettingsT {
   chainingAllowed?: boolean;
   heartbeatTimeoutSecs?: number;
@@ -48,6 +82,9 @@ export interface MongoMemoryReplSetConfigSettingsT {
   catchUpTimeoutMillis?: number;
 }
 
+/**
+ * Options for the replSet
+ */
 export interface MongoMemoryReplSetOptsT {
   instanceOpts?: MongoMemoryInstancePropBaseT[];
   binary?: MongoBinaryOpts;
@@ -55,6 +92,9 @@ export interface MongoMemoryReplSetOptsT {
   autoStart?: boolean;
 }
 
+/**
+ * Class for managing an replSet
+ */
 export default class MongoMemoryReplSet extends EventEmitter {
   servers: MongoMemoryServer[] = [];
   opts: {
@@ -99,9 +139,8 @@ export default class MongoMemoryReplSet extends EventEmitter {
   }
 
   /**
-   * Get a mongodb-URI for a different DataBase
-   * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
-   * @deprecated
+   * Get the Connection String for mongodb to connect
+   * @param otherDb use a different database than what was set on creation?
    */
   async getConnectionString(otherDb?: string | boolean): Promise<string> {
     return this.getUri(otherDb);
@@ -119,7 +158,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
 
   /**
    * Returns instance options suitable for a MongoMemoryServer.
-   * @param {MongoMemoryInstancePropBaseT} baseOpts
+   * @param baseOpts Options to merge with
    */
   getInstanceOpts(baseOpts: MongoMemoryInstancePropBaseT = {}): MongoMemoryInstancePropT {
     const rsOpts: ReplSetOpts = this.opts.replSet;
@@ -148,8 +187,8 @@ export default class MongoMemoryReplSet extends EventEmitter {
   }
 
   /**
-   * Get a mongodb-URI for a different DataBase
-   * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
+   * Returns a mongodb: URI to connect to a given database.
+   * @param otherDb use a different database than what was set on creation?
    */
   async getUri(otherDb?: string | boolean): Promise<string> {
     if (this._state === 'init') {
@@ -219,7 +258,11 @@ export default class MongoMemoryReplSet extends EventEmitter {
       });
   }
 
+  /**
+   * Wait until all instances are running
+   */
   async waitUntilRunning(): Promise<void> {
+    // TODO: this seems like it dosnt catch if an instance fails, and runs forever
     if (this._state === 'running') {
       return;
     }
@@ -296,6 +339,10 @@ export default class MongoMemoryReplSet extends EventEmitter {
     }
   }
 
+  /**
+   * Create the one Instance (without starting them)
+   * @param instanceOpts Instance Options to use for this instance
+   */
   _initServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOptsT = {
       autoStart: false,
@@ -307,6 +354,10 @@ export default class MongoMemoryReplSet extends EventEmitter {
     return server;
   }
 
+  /**
+   * Wait until the replSet has elected an Primary
+   * @param timeout Timeout to not run infinitly
+   */
   async _waitForPrimary(timeout: number = 30000): Promise<void> {
     let timeoutId: NodeJS.Timeout | undefined;
     const timeoutPromise = new Promise((resolve, reject) => {
