@@ -115,7 +115,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     autoStart?: boolean;
   };
 
-  _state: MongoMemoryReplSetStateEnum;
+  _state: MongoMemoryReplSetStateEnum = MongoMemoryReplSetStateEnum.stopped;
 
   constructor(opts: MongoMemoryReplSetOptsT = {}) {
     super();
@@ -131,20 +131,20 @@ export class MongoMemoryReplSet extends EventEmitter {
       storageEngine: 'ephemeralForTest',
       configSettings: {},
     };
-    this._state = MongoMemoryReplSetStateEnum.stopped;
     this.opts = {
-      binary: opts.binary || {},
+      binary: { ...opts.binary },
       instanceOpts: opts.instanceOpts || [],
       replSet: { ...replSetDefaults, ...opts.replSet },
     };
 
+    // ensure "args" is an array and exists
     if (!this.opts.replSet.args) {
       this.opts.replSet.args = [];
     }
     this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
-    if (!(opts && opts.autoStart === false)) {
+    if (!(opts?.autoStart === false)) {
       log('Autostarting MongoMemoryReplSet.');
-      setTimeout(() => this.start(), 0);
+      setImmediate(() => this.start());
     }
 
     process.once('beforeExit', this.stop);
