@@ -113,4 +113,22 @@ describe('single server replset', () => {
 
     await replSet.stop();
   });
+
+  it('"start" should throw an error if _state is not "stopped"', async () => {
+    const replSet = new MongoMemoryReplSet({ autoStart: false });
+    const timeout = setTimeout(() => {
+      fail('Timeout - Expected "start" to throw');
+    }, 100);
+
+    // this case can normally happen if "start" is called again, without either an error or "stop" happened
+    replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running
+
+    try {
+      await replSet.start();
+      fail('Expected "start" to throw');
+    } catch (err) {
+      clearTimeout(timeout);
+      expect(err.message).toEqual('Already in "init" or "running" state. Use debug for more info.');
+    }
+  });
 });
