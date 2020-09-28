@@ -235,8 +235,14 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   async start(): Promise<void> {
     log('start');
-    if (this._state !== MongoMemoryReplSetStateEnum.stopped) {
-      throw new Error(`Already in 'init' or 'running' state. Use debug for more info.`);
+    switch (this._state) {
+      // case MongoMemoryReplSetStateEnum.init:
+      //   return this.waitUntilRunning();
+      case MongoMemoryReplSetStateEnum.stopped:
+        break;
+      case MongoMemoryReplSetStateEnum.running:
+      default:
+        throw new Error(`Already in 'init' or 'running' state. Use debug for more info.`);
     }
     this.emit((this._state = MongoMemoryReplSetStateEnum.init)); // this needs to be executed before "setImmediate"
     await ensureAsync();
