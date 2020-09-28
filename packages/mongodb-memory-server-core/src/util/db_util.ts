@@ -83,6 +83,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
 
 /**
  * Call "setImmediate" to ensure an function is exectued on next event loop
+ * look at the following link to get to know on why this needed: https://snyk.io/blog/nodejs-how-even-quick-async-functions-can-block-the-event-loop-starve-io/
  */
 export async function ensureAsync(): Promise<void> {
   return new Promise((res) => setImmediate(res));
