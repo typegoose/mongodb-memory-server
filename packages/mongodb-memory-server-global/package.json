@@ -21,7 +21,7 @@
     "mongomem"
   ],
   "dependencies": {
-    "mongodb-memory-server": "6.8.1-beta.1",
+    "mongodb-memory-server": "6.8.1-beta.2",
     "os": "^0.1.1"
   },
   "scripts": {
