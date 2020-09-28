@@ -328,7 +328,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       throw new Error('Not in init phase.');
     }
     log('Initializing replica set.');
-    if (!this.servers.length) {
+    if (this.servers.length <= 0) {
       throw new Error('One or more servers are required.');
     }
     const uris = this.servers.map((server) => server.getUri());
