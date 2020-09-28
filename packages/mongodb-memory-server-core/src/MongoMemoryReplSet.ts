@@ -95,6 +95,15 @@ export interface MongoMemoryReplSetOptsT {
 }
 
 /**
+ * Enum for "_state" inside "MongoMemoryReplSet"
+ */
+export enum MongoMemoryReplSetStateEnum {
+  init = 'init',
+  running = 'running',
+  stopped = 'stopped',
+}
+
+/**
  * Class for managing an replSet
  */
 export class MongoMemoryReplSet extends EventEmitter {
@@ -106,7 +115,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     autoStart?: boolean;
   };
 
-  _state: 'init' | 'running' | 'stopped';
+  _state: MongoMemoryReplSetStateEnum;
 
   constructor(opts: MongoMemoryReplSetOptsT = {}) {
     super();
@@ -122,7 +131,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       storageEngine: 'ephemeralForTest',
       configSettings: {},
     };
-    this._state = 'stopped';
+    this._state = MongoMemoryReplSetStateEnum.stopped;
     this.opts = {
       binary: opts.binary || {},
       instanceOpts: opts.instanceOpts || [],
@@ -199,10 +208,10 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @param otherDb use a different database than what was set on creation?
    */
   async getUri(otherDb?: string | boolean): Promise<string> {
-    if (this._state === 'init') {
+    if (this._state === MongoMemoryReplSetStateEnum.init) {
       await this._waitForPrimary();
     }
-    if (this._state !== 'running') {
+    if (this._state !== MongoMemoryReplSetStateEnum.running) {
       throw new Error('Replica Set is not running. Use debug for more info.');
     }
     let dbName: string;
@@ -225,10 +234,10 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   async start(): Promise<void> {
     log('start');
-    if (this._state !== 'stopped') {
+    if (this._state !== MongoMemoryReplSetStateEnum.stopped) {
       throw new Error(`Already in 'init' or 'running' state. Use debug for more info.`);
     }
-    this.emit((this._state = 'init'));
+    this.emit((this._state = MongoMemoryReplSetStateEnum.init));
     log('init');
     // Any servers defined within `opts.instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
@@ -253,20 +262,20 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Stop the underlying `mongod` instance(s).
    */
   async stop(): Promise<boolean> {
-    if (this._state === 'stopped') {
+    if (this._state === MongoMemoryReplSetStateEnum.stopped) {
       return false;
     }
     process.removeListener('beforeExit', this.stop); // many accumulate inside tests
     return Promise.all(this.servers.map((s) => s.stop()))
       .then(() => {
         this.servers = [];
-        this.emit((this._state = 'stopped'));
+        this.emit((this._state = MongoMemoryReplSetStateEnum.stopped));
         return true;
       })
       .catch((err) => {
         this.servers = [];
         log(err);
-        this.emit((this._state = 'stopped'), err);
+        this.emit((this._state = MongoMemoryReplSetStateEnum.stopped), err);
         return false;
       });
   }
@@ -276,10 +285,10 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   async waitUntilRunning(): Promise<void> {
     // TODO: this seems like it dosnt catch if an instance fails, and runs forever
-    if (this._state === 'running') {
+    if (this._state === MongoMemoryReplSetStateEnum.running) {
       return;
     }
-    await new Promise((resolve) => this.once('running', () => resolve()));
+    await new Promise((resolve) => this.once(MongoMemoryReplSetStateEnum.running, () => resolve()));
   }
 
   /**
@@ -287,7 +296,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * command passing in a new replica set configuration object.
    */
   async _initReplSet(): Promise<void> {
-    if (this._state !== 'init') {
+    if (this._state !== MongoMemoryReplSetStateEnum.init) {
       throw new Error('Not in init phase.');
     }
     log('Initializing replica set.');
@@ -354,7 +363,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         log('Waiting for replica set to have a PRIMARY member.');
         await this._waitForPrimary();
       }
-      this.emit((this._state = 'running'));
+      this.emit((this._state = MongoMemoryReplSetStateEnum.running));
       log('running');
     } finally {
       await conn.close();
