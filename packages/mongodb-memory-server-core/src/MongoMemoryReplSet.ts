@@ -139,10 +139,8 @@ export default class MongoMemoryReplSet extends EventEmitter {
       log('Autostarting MongoMemoryReplSet.');
       setTimeout(() => this.start(), 0);
     }
-    process.once('beforeExit', () => {
-      log('"beforeExit" event triggered');
-      return this.stop();
-    });
+
+    process.once('beforeExit', this.stop);
   }
 
   /**
@@ -253,6 +251,7 @@ export default class MongoMemoryReplSet extends EventEmitter {
     }
     const servers = this.servers;
     this.servers = [];
+    process.removeListener('beforeExit', this.stop); // many accumulate inside tests
     return Promise.all(servers.map((s) => s.stop()))
       .then(() => {
         this.emit((this._state = 'stopped'));
