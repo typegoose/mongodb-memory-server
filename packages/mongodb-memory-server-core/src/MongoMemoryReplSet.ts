@@ -142,6 +142,9 @@ export class MongoMemoryReplSet extends EventEmitter {
       this.opts.replSet.args = [];
     }
     this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
+    if (this.opts.replSet.count <= 0) {
+      throw new Error('ReplSet Count needs to be 1 or higher!');
+    }
     if (!(opts?.autoStart === false)) {
       log('Autostarting MongoMemoryReplSet.');
       setImmediate(() => this.start());

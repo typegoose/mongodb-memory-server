@@ -56,4 +56,13 @@ describe('single server replset', () => {
     await con.close();
     await replSet.stop();
   });
+
+  it('"new" should throw an error if replSet count is 0 or less', () => {
+    try {
+      new MongoMemoryReplSet({ replSet: { count: 0 } });
+      fail('Expected "new MongoMemoryReplSet" to throw an error');
+    } catch (err) {
+      expect(err.message).toEqual('ReplSet Count needs to be 1 or higher!');
+    }
+  });
 });
