@@ -275,6 +275,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Stop the underlying `mongod` instance(s).
    */
   async stop(): Promise<boolean> {
+    log('stop' + isNullOrUndefined(process.exitCode) ? '' : ': called by process-event');
     if (this._state === MongoMemoryReplSetStateEnum.stopped) {
       return false;
     }
