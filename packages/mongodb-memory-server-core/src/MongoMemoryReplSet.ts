@@ -178,17 +178,16 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @param baseOpts Options to merge with
    */
   getInstanceOpts(baseOpts: MongoMemoryInstancePropBaseT = {}): MongoMemoryInstancePropT {
-    const rsOpts: ReplSetOpts = this.opts.replSet;
     const opts: MongoMemoryInstancePropT = {
-      auth: !!rsOpts.auth,
-      args: rsOpts.args,
-      dbName: rsOpts.dbName,
-      ip: rsOpts.ip,
-      replSet: rsOpts.name,
-      storageEngine: rsOpts.storageEngine,
+      auth: !!this.opts.replSet.auth,
+      args: this.opts.replSet.args,
+      dbName: this.opts.replSet.dbName,
+      ip: this.opts.replSet.ip,
+      replSet: this.opts.replSet.name,
+      storageEngine: this.opts.replSet.storageEngine,
     };
     if (baseOpts.args) {
-      opts.args = (rsOpts.args || []).concat(baseOpts.args);
+      opts.args = (this.opts.replSet.args || []).concat(baseOpts.args);
     }
     if (baseOpts.port) {
       opts.port = baseOpts.port;
@@ -214,12 +213,11 @@ export class MongoMemoryReplSet extends EventEmitter {
     if (this._state !== MongoMemoryReplSetStateEnum.running) {
       throw new Error('Replica Set is not running. Use debug for more info.');
     }
-    let dbName: string;
-    if (otherDb) {
-      dbName = typeof otherDb === 'string' ? otherDb : generateDbName();
-    } else {
-      dbName = this.opts.replSet.dbName;
-    }
+    const dbName: string = isNullOrUndefined(otherDb)
+      ? this.opts.replSet.dbName
+      : typeof otherDb === 'string'
+      ? otherDb
+      : generateDbName();
     const ports = this.servers.map((s) => {
       const port = s.instanceInfo?.port;
       assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
@@ -410,7 +408,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       timeoutPromise,
     ]);
 
-    if (timeoutId != null) {
+    if (!isNullOrUndefined(timeoutId)) {
       clearTimeout(timeoutId);
     }
 
