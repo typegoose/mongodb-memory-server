@@ -156,4 +156,22 @@ describe('single server replset', () => {
 
     expect(spy.mock.calls.length).toEqual(0);
   });
+
+  it('"_initReplSet" should throw an error if _state is not "init"', async () => {
+    const replSet = new MongoMemoryReplSet({ autoStart: false });
+    const timeout = setTimeout(() => {
+      fail('Timeout - Expected "_initReplSet" to throw');
+    }, 100);
+
+    // this case can normally happen if "start" is called again, without either an error or "stop" happened
+    replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running
+
+    try {
+      await replSet._initReplSet();
+      fail('Expected "_initReplSet" to throw');
+    } catch (err) {
+      clearTimeout(timeout);
+      expect(err.message).toEqual('Not in init phase.');
+    }
+  });
 });
