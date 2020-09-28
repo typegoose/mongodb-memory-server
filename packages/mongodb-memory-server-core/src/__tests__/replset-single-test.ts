@@ -131,4 +131,19 @@ describe('single server replset', () => {
       expect(err.message).toEqual('Already in "init" or "running" state. Use debug for more info.');
     }
   });
+
+  it('start an replset with instanceOpts', async () => {
+    const replSet = new MongoMemoryReplSet({
+      instanceOpts: [{ args: ['--quiet'] }],
+      autoStart: false,
+    });
+    await replSet.start();
+
+    expect(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      replSet.servers[0].opts.instance!.args!.findIndex((x) => x === '--quiet') > -1
+    ).toBeTruthy();
+
+    await replSet.stop();
+  });
 });
