@@ -82,4 +82,19 @@ describe('single server replset', () => {
       );
     }
   });
+
+  it('"getUri" should throw an error if _state is not "running"', async () => {
+    const replSet = new MongoMemoryReplSet({ autoStart: false });
+    const timeout = setTimeout(() => {
+      fail('Timeout - Expected "getUri" to throw');
+    }, 100);
+
+    try {
+      await replSet.getUri();
+      fail('Expected "getUri" to throw');
+    } catch (err) {
+      clearTimeout(timeout);
+      expect(err.message).toEqual('Replica Set is not running. Use debug for more info.');
+    }
+  });
 });
