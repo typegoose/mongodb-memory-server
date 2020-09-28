@@ -210,6 +210,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @param otherDb use a different database than what was set on creation?
    */
   async getUri(otherDb?: string | boolean): Promise<string> {
+    log('getUri:', this._state);
     if (this._state === MongoMemoryReplSetStateEnum.init) {
       await this.waitUntilRunning();
     }
@@ -294,6 +295,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   async waitUntilRunning(): Promise<void> {
     // TODO: this seems like it dosnt catch if an instance fails, and runs forever
     await ensureAsync();
+    log('waitUntilRunning:', this._state);
     switch (this._state) {
       case MongoMemoryReplSetStateEnum.running:
         // just return immediatly if the replSet is already running
