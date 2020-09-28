@@ -211,11 +211,15 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   async getUri(otherDb?: string | boolean): Promise<string> {
     log('getUri:', this._state);
-    if (this._state === MongoMemoryReplSetStateEnum.init) {
-      await this.waitUntilRunning();
-    }
-    if (this._state !== MongoMemoryReplSetStateEnum.running) {
-      throw new Error('Replica Set is not running. Use debug for more info.');
+    switch (this._state) {
+      case MongoMemoryReplSetStateEnum.init:
+        await this.waitUntilRunning();
+        break;
+      case MongoMemoryReplSetStateEnum.running:
+        break;
+      case MongoMemoryReplSetStateEnum.stopped:
+      default:
+        throw new Error('Replica Set is not running. Use debug for more info.');
     }
     const dbName: string = isNullOrUndefined(otherDb)
       ? this.opts.replSet.dbName
