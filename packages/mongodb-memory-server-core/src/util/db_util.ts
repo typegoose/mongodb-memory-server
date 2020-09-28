@@ -80,3 +80,10 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
     childprocess.kill('SIGINT');
   });
 }
+
+/**
+ * Call "setImmediate" to ensure an function is exectued on next event loop
+ */
+export async function ensureAsync(): Promise<void> {
+  return new Promise((res) => setImmediate(res));
+}
