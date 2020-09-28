@@ -7,7 +7,7 @@ module.exports = {
       diagnostics: false,
     },
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
