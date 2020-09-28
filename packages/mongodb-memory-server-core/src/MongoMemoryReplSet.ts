@@ -13,6 +13,9 @@ import { SpawnOptions } from 'child_process';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
 
+// "setImmediate" is used to ensure the functions are async, otherwise the process might evaluate the one function before other async functions (like "start")
+// and so skip to next state check or return before actually ready
+
 /**
  * Replica set specific options.
  */
@@ -235,7 +238,8 @@ export class MongoMemoryReplSet extends EventEmitter {
     if (this._state !== MongoMemoryReplSetStateEnum.stopped) {
       throw new Error(`Already in 'init' or 'running' state. Use debug for more info.`);
     }
-    this.emit((this._state = MongoMemoryReplSetStateEnum.init));
+    this.emit((this._state = MongoMemoryReplSetStateEnum.init)); // this needs to be executed before "setImmediate"
+    await ensureAsync();
     log('init');
     // Any servers defined within `opts.instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
