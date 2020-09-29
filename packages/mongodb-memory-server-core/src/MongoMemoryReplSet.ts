@@ -98,6 +98,11 @@ export default class MongoMemoryReplSet extends EventEmitter {
     process.on('beforeExit', () => this.stop());
   }
 
+  /**
+   * Get a mongodb-URI for a different DataBase
+   * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
+   * @deprecated
+   */
   async getConnectionString(otherDb?: string | boolean): Promise<string> {
     return this.getUri(otherDb);
   }
@@ -143,7 +148,8 @@ export default class MongoMemoryReplSet extends EventEmitter {
   }
 
   /**
-   * Returns a mongodb: URI to connect to a given database.
+   * Get a mongodb-URI for a different DataBase
+   * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
    */
   async getUri(otherDb?: string | boolean): Promise<string> {
     if (this._state === 'init') {
