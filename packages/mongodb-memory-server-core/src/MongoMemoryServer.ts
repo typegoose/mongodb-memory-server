@@ -286,11 +286,11 @@ export class MongoMemoryServer {
 
   /**
    * Get the DB-Name of the currently running Instance
-   * Note: calls "ensureInstance"
    */
-  async getDbName(): Promise<string> {
-    const { dbName }: MongoInstanceDataT = await this.ensureInstance();
-    return dbName;
+  getDbName(): string {
+    assertionInstanceInfoSync(this.instanceInfoSync);
+    assertion(!isNullOrUndefined(this.instanceInfoSync.dbName), new Error('"dbName" is undefined'));
+    return this.instanceInfoSync.dbName;
   }
 }
 

@@ -14,7 +14,7 @@ beforeAll(async () => {
     useUnifiedTopology: true,
   });
 
-  db = con.db(await mongoServer.getDbName());
+  db = con.db(mongoServer.getDbName());
 });
 
 afterAll(async () => {

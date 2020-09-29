@@ -18,7 +18,7 @@ beforeAll(async () => {
     useUnifiedTopology: true,
   });
 
-  db1 = con1.db(await mongoServer1.getDbName());
+  db1 = con1.db(mongoServer1.getDbName());
 
   mongoServer2 = new MongoMemoryServer();
   const mongoUri2 = await mongoServer2.getUri();
@@ -27,7 +27,7 @@ beforeAll(async () => {
     useUnifiedTopology: true,
   });
 
-  db2 = con2.db(await mongoServer1.getDbName());
+  db2 = con2.db(mongoServer1.getDbName());
 });
 
 afterAll(async () => {
