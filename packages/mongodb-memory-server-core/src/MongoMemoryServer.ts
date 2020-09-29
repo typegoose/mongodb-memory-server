@@ -171,10 +171,16 @@ export class MongoMemoryServer {
       return true;
     }
 
+    // assert here, just to be sure
+    assertion(
+      !isNullOrUndefined(this.instanceInfo.instance),
+      new Error('"instanceInfo.instance" is undefined!')
+    );
+
     log(
-      `Shutdown MongoDB server on port ${this.instanceInfo.port} with pid ${
-        this.instanceInfo.instance.getPid() || ''
-      }`
+      `Shutdown MongoDB server on port ${
+        this.instanceInfo.port
+      } with pid ${this.instanceInfo.instance.getPid()}` // "undefined" would say more than ""
     );
     await this.instanceInfo.instance.kill();
 
