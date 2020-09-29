@@ -7,7 +7,6 @@ import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, MongoMemoryInstancePropBaseT, StorageEngineT } from './types';
 import debug from 'debug';
 import { MongoError } from 'mongodb';
-import { deprecate } from 'util';
 import { MongoInstanceEvents } from './util/MongoInstance';
 import { SpawnOptions } from 'child_process';
 
@@ -154,19 +153,6 @@ export class MongoMemoryReplSet extends EventEmitter {
     }
 
     process.once('beforeExit', this.stop);
-  }
-
-  /**
-   * Get the Connection String for mongodb to connect
-   * @param otherDb use a different database than what was set on creation?
-   * @deprecated
-   */
-  async getConnectionString(otherDb?: string | boolean): Promise<string> {
-    return deprecate(
-      this.getUri,
-      '"MongoMemoryReplSet.getConnectionString" is deprecated, use ".getUri"',
-      'MDEP001'
-    ).call(this, otherDb);
   }
 
   /**
