@@ -1,7 +1,7 @@
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as tmp from 'tmp';
 import getPort from 'get-port';
-import { generateDbName, getUriBase, isNullOrUndefined } from './util/db_util';
+import { assertion, generateDbName, getUriBase, isNullOrUndefined } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, StorageEngineT } from './types';
@@ -268,11 +268,11 @@ export class MongoMemoryServer {
 
   /**
    * Get the Port of the currently running Instance
-   * Note: calls "ensureInstance"
    */
-  async getPort(): Promise<number> {
-    const { port }: MongoInstanceDataT = await this.ensureInstance();
-    return port;
+  getPort(): number {
+    assertionInstanceInfoSync(this.instanceInfoSync);
+    assertion(!isNullOrUndefined(this.instanceInfoSync.port), new Error('"port" is undefined'));
+    return this.instanceInfoSync.port;
   }
 
   /**
@@ -295,3 +295,12 @@ export class MongoMemoryServer {
 }
 
 export default MongoMemoryServer;
+
+/**
+ * This function is to de-duplicate code
+ * -> this couldnt be included in the class, because "asserts this.instanceInfoSync" is not allowed
+ * @param val this.instanceInfoSync
+ */
+function assertionInstanceInfoSync(val: unknown): asserts val is MongoInstanceDataT {
+  assertion(!isNullOrUndefined(val), new Error('"instanceInfoSync" is undefined'));
+}

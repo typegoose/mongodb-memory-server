@@ -211,7 +211,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     } else {
       dbName = this.opts.replSet.dbName;
     }
-    const ports = await Promise.all(this.servers.map((s) => s.getPort()));
+    const ports = this.servers.map((s) => s.getPort());
     const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
     return `mongodb://${hosts}/${dbName}?replicaSet=${this.opts.replSet.name}`;
   }

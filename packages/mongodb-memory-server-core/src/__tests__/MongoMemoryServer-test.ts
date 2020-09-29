@@ -132,7 +132,7 @@ describe('MongoMemoryServer', () => {
   describe('getUri()', () => {
     it('"getUri" should return with "otherDb"', async () => {
       const mongoServer = await MongoMemoryServer.create({ autoStart: true });
-      const port: number = await mongoServer.getPort();
+      const port: number = mongoServer.getPort();
       expect(await mongoServer.getUri('customDB')).toBe(`mongodb://127.0.0.1:${port}/customDB?`);
 
       await mongoServer.stop();
