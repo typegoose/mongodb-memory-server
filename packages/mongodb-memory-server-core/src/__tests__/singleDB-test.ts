@@ -1,5 +1,5 @@
 import { Db, MongoClient } from 'mongodb';
-import MongoMemoryServer, { MongoInstanceDataT } from '../MongoMemoryServer';
+import MongoMemoryServer from '../MongoMemoryServer';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 let con: MongoClient;
@@ -37,7 +37,8 @@ describe('Single mongoServer', () => {
 
   it('should throw error on start if there is already a running instance', async () => {
     const mongoServer2 = new MongoMemoryServer();
-    mongoServer2.runningInstance = Promise.resolve({}) as Promise<MongoInstanceDataT>;
+    // this case can normally happen if "start" is called again
+    mongoServer2.instanceInfo = {} as any; // artificially set this to {} to not be undefined anymore
     await expect(mongoServer2.start()).rejects.toThrow(
       'MongoDB instance already in status startup/running/error. Use debug for more info.'
     );

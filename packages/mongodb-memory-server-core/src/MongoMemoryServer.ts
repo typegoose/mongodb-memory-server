@@ -45,8 +45,7 @@ export interface MongoInstanceDataT extends StartupInstanceData {
 }
 
 export class MongoMemoryServer {
-  runningInstance?: Promise<MongoInstanceDataT>;
-  instanceInfoSync?: MongoInstanceDataT;
+  instanceInfo?: MongoInstanceDataT;
   opts: MongoMemoryServerOptsT;
 
   /**
@@ -75,13 +74,13 @@ export class MongoMemoryServer {
    */
   async start(): Promise<boolean> {
     log('Called MongoMemoryServer.start() method');
-    if (this.runningInstance) {
+    if (this.instanceInfo) {
       throw new Error(
         'MongoDB instance already in status startup/running/error. Use debug for more info.'
       );
     }
 
-    const instance = await this._startUpInstance()
+    this.instanceInfo = await this._startUpInstance()
       .catch((err) => {
         if (err.message === 'Mongod shutting down' || err === 'Mongod shutting down') {
           log(`Mongodb did not start. Trying to start on another port one more time...`);
@@ -98,9 +97,6 @@ export class MongoMemoryServer {
         }
         throw err;
       });
-
-    this.runningInstance = new Promise((res) => res(instance));
-    this.instanceInfoSync = instance;
 
     return true;
   }
@@ -170,28 +166,25 @@ export class MongoMemoryServer {
     log('Called MongoMemoryServer.stop() method');
 
     // just return "true" if the instance is already running / defined
-    if (isNullOrUndefined(this.runningInstance)) {
+    if (isNullOrUndefined(this.instanceInfo)) {
       log('Instance is already stopped, returning true');
       return true;
     }
 
-    assertionInstanceInfoSync(this.instanceInfoSync);
-
     log(
-      `Shutdown MongoDB server on port ${this.instanceInfoSync.port} with pid ${
-        this.instanceInfoSync.instance.getPid() || ''
+      `Shutdown MongoDB server on port ${this.instanceInfo.port} with pid ${
+        this.instanceInfo.instance.getPid() || ''
       }`
     );
-    await this.instanceInfoSync.instance.kill();
+    await this.instanceInfo.instance.kill();
 
-    const tmpDir = this.instanceInfoSync.tmpDir;
+    const tmpDir = this.instanceInfo.tmpDir;
     if (tmpDir) {
       log(`Removing tmpDir ${tmpDir.name}`);
       tmpDir.removeCallback();
     }
 
-    this.runningInstance = undefined;
-    this.instanceInfoSync = undefined;
+    this.instanceInfo = undefined;
 
     return true;
   }
@@ -200,7 +193,7 @@ export class MongoMemoryServer {
    * Get Information about the currently running instance, if it is not running it returns "undefined"
    */
   getInstanceInfo(): MongoInstanceDataT | undefined {
-    return this.instanceInfoSync;
+    return this.instanceInfo;
   }
 
   /**
@@ -209,19 +202,19 @@ export class MongoMemoryServer {
    */
   async ensureInstance(): Promise<MongoInstanceDataT> {
     log('Called MongoMemoryServer.ensureInstance() method');
-    if (this.runningInstance) {
-      return this.runningInstance;
+    if (this.instanceInfo) {
+      return this.instanceInfo;
     }
     log(' - no running instance, call `start()` command');
     await this.start();
     log(' - `start()` command was succesfully resolved');
 
     // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
-    if (!this.runningInstance) {
+    if (!this.instanceInfo) {
       throw new Error('Ensure-Instance failed to start an instance!');
     }
 
-    return this.runningInstance;
+    return this.instanceInfo;
   }
 
   /**
@@ -229,46 +222,46 @@ export class MongoMemoryServer {
    * @param otherDbName Set an custom Database name, or set this to "true" to generate an different name
    */
   getUri(otherDbName: string | boolean = false): string {
-    assertionInstanceInfoSync(this.instanceInfoSync);
+    assertionInstanceInfoSync(this.instanceInfo);
 
     // IF true OR string
     if (otherDbName) {
       if (typeof otherDbName === 'string') {
         // generate uri with provided DB name on existed DB instance
-        return getUriBase(this.instanceInfoSync.ip, this.instanceInfoSync.port, otherDbName);
+        return getUriBase(this.instanceInfo.ip, this.instanceInfo.port, otherDbName);
       }
       // generate new random db name
-      return getUriBase(this.instanceInfoSync.ip, this.instanceInfoSync.port, generateDbName());
+      return getUriBase(this.instanceInfo.ip, this.instanceInfo.port, generateDbName());
     }
 
-    return this.instanceInfoSync.uri;
+    return this.instanceInfo.uri;
   }
 
   /**
    * Get the Port of the currently running Instance
    */
   getPort(): number {
-    assertionInstanceInfoSync(this.instanceInfoSync);
-    assertion(!isNullOrUndefined(this.instanceInfoSync.port), new Error('"port" is undefined'));
-    return this.instanceInfoSync.port;
+    assertionInstanceInfoSync(this.instanceInfo);
+    assertion(!isNullOrUndefined(this.instanceInfo.port), new Error('"port" is undefined'));
+    return this.instanceInfo.port;
   }
 
   /**
    * Get the DB-Path of the currently running Instance
    */
   getDbPath(): string {
-    assertionInstanceInfoSync(this.instanceInfoSync);
-    assertion(!isNullOrUndefined(this.instanceInfoSync.dbPath), new Error('"dbPath" is undefined'));
-    return this.instanceInfoSync.dbPath;
+    assertionInstanceInfoSync(this.instanceInfo);
+    assertion(!isNullOrUndefined(this.instanceInfo.dbPath), new Error('"dbPath" is undefined'));
+    return this.instanceInfo.dbPath;
   }
 
   /**
    * Get the DB-Name of the currently running Instance
    */
   getDbName(): string {
-    assertionInstanceInfoSync(this.instanceInfoSync);
-    assertion(!isNullOrUndefined(this.instanceInfoSync.dbName), new Error('"dbName" is undefined'));
-    return this.instanceInfoSync.dbName;
+    assertionInstanceInfoSync(this.instanceInfo);
+    assertion(!isNullOrUndefined(this.instanceInfo.dbName), new Error('"dbName" is undefined'));
+    return this.instanceInfo.dbName;
   }
 }
 
@@ -280,5 +273,5 @@ export default MongoMemoryServer;
  * @param val this.instanceInfoSync
  */
 function assertionInstanceInfoSync(val: unknown): asserts val is MongoInstanceDataT {
-  assertion(!isNullOrUndefined(val), new Error('"instanceInfoSync" is undefined'));
+  assertion(!isNullOrUndefined(val), new Error('"instanceInfo" is undefined'));
 }
