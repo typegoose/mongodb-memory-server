@@ -6,7 +6,6 @@ import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, StorageEngineT } from './types';
 import debug from 'debug';
-import { deprecate } from 'util';
 
 const log = debug('MongoMS:MongoMemoryServer');
 
@@ -251,19 +250,6 @@ export class MongoMemoryServer {
     }
 
     return uri;
-  }
-
-  /**
-   * Get a mongodb-URI for a different DataBase
-   * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
-   * @deprecated
-   */
-  async getConnectionString(otherDbName: string | boolean = false): Promise<string> {
-    return deprecate(
-      this.getUri,
-      '"MongoMemoryReplSet.getConnectionString" is deprecated, use ".getUri"',
-      'MDEP001'
-    ).call(this, otherDbName);
   }
 
   /**
