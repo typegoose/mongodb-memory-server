@@ -81,28 +81,28 @@ export class MongoMemoryServer {
       );
     }
 
-    this.runningInstance = this._startUpInstance()
+    const instance = await this._startUpInstance()
       .catch((err) => {
         if (err.message === 'Mongod shutting down' || err === 'Mongod shutting down') {
           log(`Mongodb did not start. Trying to start on another port one more time...`);
           if (this.opts.instance?.port) {
-            this.opts.instance.port = null;
+            this.opts.instance.port = undefined;
           }
           return this._startUpInstance();
         }
-        throw err;
+        throw err; // give error to next handler
       })
       .catch((err) => {
         if (!debug.enabled('MongoMS:MongoMemoryServer')) {
-          console.warn('Starting the instance failed, please enable debug for more infomation');
+          console.warn('Starting the instance failed, enable debug for more infomation');
         }
         throw err;
       });
 
-    return this.runningInstance.then((data) => {
-      this.instanceInfoSync = data;
-      return true;
-    });
+    this.runningInstance = new Promise((res) => res(instance));
+    this.instanceInfoSync = instance;
+
+    return true;
   }
 
   /**
