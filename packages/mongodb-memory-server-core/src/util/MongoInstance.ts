@@ -146,20 +146,31 @@ export default class MongoInstance {
      * Function to De-Duplicate Code
      * @param process The Process to kill
      * @param name the name used in the logs
-     * @param debug the debug function
+     * @param debugfn the debug function
      */
-    async function kill_internal(process: ChildProcess, name: string, debug: DebugFn) {
-      await new Promise((resolve) => {
-        const timeout = setTimeout(() => {
-          debug('kill_internal timeout triggered');
-          resolve();
-        }, 1000 * 10);
+    async function kill_internal(process: ChildProcess, name: string, debugfn: DebugFn) {
+      const timeoutTime = 1000 * 10;
+      await new Promise((resolve, reject) => {
+        let timeout = setTimeout(() => {
+          debugfn('kill_internal timeout triggered, trying SIGKILL');
+          if (!debug.enabled('MongoMS:MongoInstance')) {
+            console.warn(
+              'An Process didnt exit with signal "SIGINT" within 10 seconds, using "SIGKILL"!\n' +
+                'Enable debug logs for more information'
+            );
+          }
+          process.kill('SIGKILL');
+          timeout = setTimeout(() => {
+            debugfn('kill_internal timeout triggered again, rejecting');
+            reject(new Error('Process didnt exit, enable debug for more information.'));
+          }, timeoutTime);
+        }, timeoutTime);
         process.once(`exit`, (code, signal) => {
-          debug(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
+          debugfn(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
           clearTimeout(timeout);
           resolve();
         });
-        debug(`- ${name}: send "SIGINT"`);
+        debugfn(`- ${name}: send "SIGINT"`);
         process.kill('SIGINT');
       });
     }
