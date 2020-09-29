@@ -7,7 +7,7 @@ let db: Db;
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create({ autoStart: true });
+  mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
   con = await MongoClient.connect(mongoUri, {
     useNewUrlParser: true,
@@ -36,7 +36,7 @@ describe('Single mongoServer', () => {
   });
 
   it('should throw error on start if there is already a running instance', async () => {
-    const mongoServer2 = new MongoMemoryServer({ autoStart: false });
+    const mongoServer2 = new MongoMemoryServer();
     mongoServer2.runningInstance = Promise.resolve({}) as Promise<MongoInstanceDataT>;
     await expect(mongoServer2.start()).rejects.toThrow(
       'MongoDB instance already in status startup/running/error. Use debug for more info.'

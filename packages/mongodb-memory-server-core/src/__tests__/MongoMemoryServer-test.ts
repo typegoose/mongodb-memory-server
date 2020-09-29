@@ -15,7 +15,7 @@ describe('MongoMemoryServer', () => {
     it('should resolve to true if an MongoInstanceData is resolved by _startUpInstance', async () => {
       MongoMemoryServer.prototype._startUpInstance = jest.fn(() => Promise.resolve({} as any));
 
-      const mongoServer = new MongoMemoryServer({ autoStart: false });
+      const mongoServer = new MongoMemoryServer();
 
       expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(0);
 
@@ -31,7 +31,6 @@ describe('MongoMemoryServer', () => {
         .mockResolvedValueOnce({});
 
       const mongoServer = new MongoMemoryServer({
-        autoStart: false,
         instance: {
           port: 123,
         },
@@ -52,7 +51,6 @@ describe('MongoMemoryServer', () => {
       console.warn = jest.fn(); // mock it to prevent writing to console
 
       const mongoServer = new MongoMemoryServer({
-        autoStart: false,
         instance: {
           port: 123,
         },
@@ -70,7 +68,7 @@ describe('MongoMemoryServer', () => {
     it('should throw an error if not instance is running after calling start', async () => {
       MongoMemoryServer.prototype.start = jest.fn(() => Promise.resolve(true));
 
-      const mongoServer = new MongoMemoryServer({ autoStart: false });
+      const mongoServer = new MongoMemoryServer();
 
       await expect(mongoServer.ensureInstance()).rejects.toThrow(
         'Ensure-Instance failed to start an instance!'
@@ -82,9 +80,7 @@ describe('MongoMemoryServer', () => {
 
   describe('stop()', () => {
     it('should stop mongod and answer on isRunning() method', async () => {
-      const mongod = new MongoMemoryServer({
-        autoStart: false,
-      });
+      const mongod = new MongoMemoryServer({});
 
       expect(mongod.getInstanceInfo()).toBeFalsy();
       mongod.start();
@@ -100,8 +96,8 @@ describe('MongoMemoryServer', () => {
       expect(mongod.getInstanceInfo()).toBeFalsy();
     });
 
-    it('should return "true" early if not running', async () => {
-      const mongoServer = new MongoMemoryServer({ autoStart: false });
+    it('should throw an error if instance is undefined', async () => {
+      const mongoServer = new MongoMemoryServer();
       jest.spyOn(mongoServer, 'ensureInstance');
 
       expect(await mongoServer.stop()).toEqual(true);
@@ -116,14 +112,8 @@ describe('MongoMemoryServer', () => {
       MongoMemoryServer.prototype.start = jest.fn(() => Promise.resolve(true));
     });
 
-    it('should create an instance but not autostart', async () => {
+    it('should create an instance and call ".start"', async () => {
       await MongoMemoryServer.create();
-
-      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(0);
-    });
-
-    it('should autostart and be awaitable', async () => {
-      await MongoMemoryServer.create({ autoStart: true });
 
       expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
     });
@@ -131,7 +121,7 @@ describe('MongoMemoryServer', () => {
 
   describe('getUri()', () => {
     it('"getUri" should return with "otherDb"', async () => {
-      const mongoServer = await MongoMemoryServer.create({ autoStart: true });
+      const mongoServer = await MongoMemoryServer.create();
       const port: number = mongoServer.getPort();
       expect(mongoServer.getUri('customDB')).toBe(`mongodb://127.0.0.1:${port}/customDB?`);
 
@@ -142,7 +132,6 @@ describe('MongoMemoryServer', () => {
   it('"getDbPath" should return the dbPath', async () => {
     const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-getDbPath-', unsafeCleanup: true });
     const mongoServer = new MongoMemoryServer({
-      autoStart: false,
       instance: { dbPath: tmpDir.name },
     });
 

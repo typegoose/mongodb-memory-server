@@ -354,7 +354,6 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   _initServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOptsT = {
-      autoStart: false,
       binary: this.opts.binary,
       instance: instanceOpts,
       spawn: this.opts.replSet.spawn,

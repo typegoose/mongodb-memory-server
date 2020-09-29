@@ -12,13 +12,12 @@ const log = debug('MongoMS:MongoMemoryServer');
 tmp.setGracefulCleanup();
 
 /**
- * Starting Options
+ * MongoMemoryServer Stored Options
  */
 export interface MongoMemoryServerOptsT {
   instance?: MongoMemoryInstancePropT;
   binary?: MongoBinaryOpts;
   spawn?: SpawnOptions;
-  autoStart?: boolean;
 }
 
 /**
@@ -58,11 +57,6 @@ export class MongoMemoryServer {
    */
   constructor(opts?: MongoMemoryServerOptsT) {
     this.opts = { ...opts };
-
-    if (opts?.autoStart === true) {
-      log('Autostarting MongoDB instance...');
-      this.start();
-    }
   }
 
   /**
@@ -70,21 +64,14 @@ export class MongoMemoryServer {
    * @param opts Mongo-Memory-Sever Options
    */
   static async create(opts?: MongoMemoryServerOptsT): Promise<MongoMemoryServer> {
-    // create an instance WITHOUT autoStart so that the user can await it
-    const instance = new MongoMemoryServer({
-      ...opts,
-      autoStart: false,
-    });
-    if (opts?.autoStart) {
-      await instance.start();
-    }
+    const instance = new MongoMemoryServer({ ...opts });
+    await instance.start();
 
     return instance;
   }
 
   /**
    * Start the in-memory Instance
-   * (when options.autoStart is true, this already got called)
    */
   async start(): Promise<boolean> {
     log('Called MongoMemoryServer.start() method');
