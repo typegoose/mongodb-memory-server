@@ -97,6 +97,14 @@ describe('MongoMemoryServer', () => {
       await mongod.stop();
       expect(mongod.getInstanceInfo()).toBeFalsy();
     });
+
+    it('should return "true" early if not running', async () => {
+      const mongoServer = new MongoMemoryServer({ autoStart: false });
+      jest.spyOn(mongoServer, 'ensureInstance');
+
+      expect(await mongoServer.stop()).toEqual(true);
+      expect(mongoServer.ensureInstance).not.toHaveBeenCalled();
+    });
   });
 
   describe('create()', () => {
