@@ -66,15 +66,24 @@ describe('MongoMemoryServer', () => {
 
   describe('ensureInstance()', () => {
     it('should throw an error if not instance is running after calling start', async () => {
-      MongoMemoryServer.prototype.start = jest.fn(() => Promise.resolve(true));
-
       const mongoServer = new MongoMemoryServer();
+      jest.spyOn(mongoServer, 'start').mockImplementationOnce(() => Promise.resolve(true));
 
       await expect(mongoServer.ensureInstance()).rejects.toThrow(
         'Ensure-Instance failed to start an instance!'
       );
 
-      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
+      expect(mongoServer.start).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return instanceInfo if already running', async () => {
+      const mongoServer = await MongoMemoryServer.create();
+      jest.spyOn(mongoServer, 'start'); // so it dosnt count the "start" call inside "create"
+
+      expect(await mongoServer.ensureInstance()).toEqual(mongoServer.getInstanceInfo());
+      expect(mongoServer.start).toHaveBeenCalledTimes(0);
+
+      await mongoServer.stop();
     });
   });
 
@@ -120,12 +129,26 @@ describe('MongoMemoryServer', () => {
   });
 
   describe('getUri()', () => {
-    it('"getUri" should return with "otherDb"', async () => {
-      const mongoServer = await MongoMemoryServer.create();
+    // this is here to not start 2 servers, when only 1 would be enough
+    let mongoServer: MongoMemoryServerType;
+    beforeAll(async () => {
+      // why dosnt the "MongoMemoryServer" work here?
+      mongoServer = await MongoMemoryServerType.create({ instance: { dbName: 'hello' } });
+    });
+    afterAll(async () => {
+      if (mongoServer) {
+        await mongoServer.stop();
+      }
+    });
+
+    it('should return correct value with "otherDb" being a string', async () => {
       const port: number = mongoServer.getPort();
       expect(mongoServer.getUri('customDB')).toBe(`mongodb://127.0.0.1:${port}/customDB?`);
+    });
 
-      await mongoServer.stop();
+    it('should return correct value with "otherDb" being a boolean', async () => {
+      const port: number = mongoServer.getPort();
+      expect(mongoServer.getUri(true)).not.toEqual(`mongodb://127.0.0.1:${port}/hello?`);
     });
   });
 
