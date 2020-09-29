@@ -33,7 +33,7 @@
     "prettier": "2.1.2",
     "semantic-release": "^17.1.1",
     "ts-jest": "26.3.0",
-    "typescript": "4.0.2"
+    "typescript": "4.0.3"
   },
   "workspaces": {
     "packages": [
