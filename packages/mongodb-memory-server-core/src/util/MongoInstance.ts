@@ -12,6 +12,11 @@ import {
 } from '../types';
 import debug from 'debug';
 import { isNullOrUndefined } from './db_util';
+import { lt } from 'semver';
+
+if (lt(process.version, '10.15.0')) {
+  console.warn('Using NodeJS below 10.15.0');
+}
 
 const log = debug('MongoMS:MongoInstance');
 
