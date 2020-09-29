@@ -1,5 +1,7 @@
+import * as tmp from 'tmp';
 import MongoMemoryServerType from '../MongoMemoryServer';
 
+tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 describe('MongoMemoryServer', () => {
@@ -135,5 +137,20 @@ describe('MongoMemoryServer', () => {
 
       await mongoServer.stop();
     });
+  });
+
+  it('"getDbPath" should return the dbPath', async () => {
+    const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-getDbPath-', unsafeCleanup: true });
+    const mongoServer = new MongoMemoryServer({
+      autoStart: false,
+      instance: { dbPath: tmpDir.name },
+    });
+
+    await mongoServer.start();
+
+    expect(await mongoServer.getDbPath()).toEqual(tmpDir.name);
+
+    await mongoServer.stop();
+    tmpDir.removeCallback();
   });
 });
