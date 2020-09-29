@@ -205,10 +205,10 @@ export class MongoMemoryServer {
   }
 
   /**
-   * Get Information about the currently running instance, if it is not running it returns "false"
+   * Get Information about the currently running instance, if it is not running it returns "undefined"
    */
-  getInstanceInfo(): MongoInstanceDataT | false {
-    return this.instanceInfoSync ?? false;
+  getInstanceInfo(): MongoInstanceDataT | undefined {
+    return this.instanceInfoSync;
   }
 
   /**
