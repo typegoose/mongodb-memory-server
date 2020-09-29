@@ -11,7 +11,7 @@ let mongoServer1: MongoMemoryServer;
 let mongoServer2: MongoMemoryServer;
 
 beforeAll(async () => {
-  mongoServer1 = new MongoMemoryServer();
+  mongoServer1 = await MongoMemoryServer.create({ autoStart: true });
   const mongoUri = await mongoServer1.getUri();
   con1 = await MongoClient.connect(mongoUri, {
     useNewUrlParser: true,
@@ -20,7 +20,7 @@ beforeAll(async () => {
 
   db1 = con1.db(mongoServer1.getDbName());
 
-  mongoServer2 = new MongoMemoryServer();
+  mongoServer2 = await MongoMemoryServer.create({ autoStart: true });
   const mongoUri2 = await mongoServer2.getUri();
   con2 = await MongoClient.connect(mongoUri2, {
     useNewUrlParser: true,
