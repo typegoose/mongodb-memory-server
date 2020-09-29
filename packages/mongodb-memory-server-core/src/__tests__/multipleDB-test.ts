@@ -12,7 +12,7 @@ let mongoServer2: MongoMemoryServer;
 
 beforeAll(async () => {
   mongoServer1 = await MongoMemoryServer.create({ autoStart: true });
-  const mongoUri = await mongoServer1.getUri();
+  const mongoUri = mongoServer1.getUri();
   con1 = await MongoClient.connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -21,7 +21,7 @@ beforeAll(async () => {
   db1 = con1.db(mongoServer1.getDbName());
 
   mongoServer2 = await MongoMemoryServer.create({ autoStart: true });
-  const mongoUri2 = await mongoServer2.getUri();
+  const mongoUri2 = mongoServer2.getUri();
   con2 = await MongoClient.connect(mongoUri2, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -60,14 +60,14 @@ describe('Multiple mongoServers', () => {
     expect(await col2.countDocuments({})).toBe(2);
   });
 
-  it('should have different uri', async () => {
-    const uri1 = await mongoServer1.getUri();
-    const uri2 = await mongoServer2.getUri();
+  it('should have different uri', () => {
+    const uri1 = mongoServer1.getUri();
+    const uri2 = mongoServer2.getUri();
     expect(uri1).not.toEqual(uri2);
   });
 
-  it('v6.0.0 adds "?" to the connection string (uri)', async () => {
-    const uri1 = await mongoServer1.getUri();
+  it('v6.0.0 adds "?" to the connection string (uri)', () => {
+    const uri1 = mongoServer1.getUri();
     expect(uri1.includes('?')).toBeTruthy();
   });
 });

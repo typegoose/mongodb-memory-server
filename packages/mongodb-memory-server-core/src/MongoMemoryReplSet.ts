@@ -290,7 +290,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     if (!this.servers.length) {
       throw new Error('One or more servers are required.');
     }
-    const uris = await Promise.all(this.servers.map((server) => server.getUri()));
+    const uris = this.servers.map((server) => server.getUri());
 
     let MongoClient: typeof mongodb.MongoClient;
     try {

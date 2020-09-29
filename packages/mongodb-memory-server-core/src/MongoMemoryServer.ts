@@ -233,23 +233,23 @@ export class MongoMemoryServer {
   }
 
   /**
-   * Get a mongodb-URI for a different DataBase
-   * @param otherDbName Set this to "true" to generate a random DataBase name, otherwise a string to specify a DataBase name
+   * Generate the Connection string used by mongodb
+   * @param otherDbName Set an custom Database name, or set this to "true" to generate an different name
    */
-  async getUri(otherDbName: string | boolean = false): Promise<string> {
-    const { uri, port, ip }: MongoInstanceDataT = await this.ensureInstance();
+  getUri(otherDbName: string | boolean = false): string {
+    assertionInstanceInfoSync(this.instanceInfoSync);
 
     // IF true OR string
     if (otherDbName) {
       if (typeof otherDbName === 'string') {
         // generate uri with provided DB name on existed DB instance
-        return getUriBase(ip, port, otherDbName);
+        return getUriBase(this.instanceInfoSync.ip, this.instanceInfoSync.port, otherDbName);
       }
       // generate new random db name
-      return getUriBase(ip, port, generateDbName());
+      return getUriBase(this.instanceInfoSync.ip, this.instanceInfoSync.port, generateDbName());
     }
 
-    return uri;
+    return this.instanceInfoSync.uri;
   }
 
   /**

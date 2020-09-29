@@ -8,7 +8,7 @@ let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create({ autoStart: true });
-  const mongoUri = await mongoServer.getUri();
+  const mongoUri = mongoServer.getUri();
   con = await MongoClient.connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
