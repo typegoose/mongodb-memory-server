@@ -277,11 +277,11 @@ export class MongoMemoryServer {
 
   /**
    * Get the DB-Path of the currently running Instance
-   * Note: calls "ensureInstance"
    */
-  async getDbPath(): Promise<string> {
-    const { dbPath }: MongoInstanceDataT = await this.ensureInstance();
-    return dbPath;
+  getDbPath(): string {
+    assertionInstanceInfoSync(this.instanceInfoSync);
+    assertion(!isNullOrUndefined(this.instanceInfoSync.dbPath), new Error('"dbPath" is undefined'));
+    return this.instanceInfoSync.dbPath;
   }
 
   /**
