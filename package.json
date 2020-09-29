@@ -22,7 +22,7 @@
     "commitlint": "11.0.0",
     "cross-env": "^7.0.2",
     "doctoc": "^1.4.0",
-    "eslint": "7.9.0",
+    "eslint": "7.10.0",
     "eslint-config-prettier": "6.11.0",
     "eslint-plugin-prettier": "3.1.4",
     "husky": "^4.3.0",
