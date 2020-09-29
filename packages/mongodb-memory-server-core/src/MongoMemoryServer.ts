@@ -135,7 +135,7 @@ export default class MongoMemoryServer {
       tmpDir: undefined,
     };
 
-    if (instOpts.port && instOpts.port != data.port) {
+    if (instOpts.port != data.port) {
       log(`starting with port ${data.port}, since ${instOpts.port} was locked:`, data.port);
     }
 
