@@ -188,18 +188,23 @@ export class MongoMemoryServer {
       return true;
     }
 
-    const { instance, port, tmpDir }: MongoInstanceDataT = await this.ensureInstance();
+    assertionInstanceInfoSync(this.instanceInfoSync);
 
-    log(`Shutdown MongoDB server on port ${port} with pid ${instance.getPid() || ''}`);
-    await instance.kill();
+    log(
+      `Shutdown MongoDB server on port ${this.instanceInfoSync.port} with pid ${
+        this.instanceInfoSync.instance.getPid() || ''
+      }`
+    );
+    await this.instanceInfoSync.instance.kill();
 
-    this.runningInstance = undefined;
-    this.instanceInfoSync = undefined;
-
+    const tmpDir = this.instanceInfoSync.tmpDir;
     if (tmpDir) {
       log(`Removing tmpDir ${tmpDir.name}`);
       tmpDir.removeCallback();
     }
+
+    this.runningInstance = undefined;
+    this.instanceInfoSync = undefined;
 
     return true;
   }
