@@ -98,7 +98,7 @@ export default class MongoMemoryServer {
       .catch((err) => {
         if (err.message === 'Mongod shutting down' || err === 'Mongod shutting down') {
           log(`Mongodb did not start. Trying to start on another port one more time...`);
-          if (this.opts.instance && this.opts.instance.port) {
+          if (this.opts.instance?.port) {
             this.opts.instance.port = null;
           }
           return this._startUpInstance();
