@@ -35,11 +35,6 @@ describe('Single mongoServer', () => {
     expect(await col.countDocuments({})).toBe(2);
   });
 
-  it('should get URI of specified DB name', async () => {
-    const port: number = await mongoServer.getPort();
-    expect(await mongoServer.getUri('dumb')).toBe(`mongodb://127.0.0.1:${port}/dumb?`);
-  });
-
   it('should throw error on start if there is already a running instance', async () => {
     const mongoServer2 = new MongoMemoryServer({ autoStart: false });
     mongoServer2.runningInstance = Promise.resolve({}) as Promise<MongoInstanceDataT>;
