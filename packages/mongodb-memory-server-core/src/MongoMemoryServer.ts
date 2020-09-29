@@ -47,8 +47,8 @@ export interface MongoInstanceDataT extends StartupInstanceData {
 }
 
 export class MongoMemoryServer {
-  runningInstance: Promise<MongoInstanceDataT> | null = null;
-  instanceInfoSync: MongoInstanceDataT | null = null;
+  runningInstance?: Promise<MongoInstanceDataT>;
+  instanceInfoSync?: MongoInstanceDataT;
   opts: MongoMemoryServerOptsT;
 
   /**
@@ -194,8 +194,8 @@ export class MongoMemoryServer {
     log(`Shutdown MongoDB server on port ${port} with pid ${instance.getPid() || ''}`);
     await instance.kill();
 
-    this.runningInstance = null;
-    this.instanceInfoSync = null;
+    this.runningInstance = undefined;
+    this.instanceInfoSync = undefined;
 
     if (tmpDir) {
       log(`Removing tmpDir ${tmpDir.name}`);
