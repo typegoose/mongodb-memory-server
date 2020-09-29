@@ -1,53 +1,44 @@
 import * as tmp from 'tmp';
-import MongoMemoryServerType from '../MongoMemoryServer';
+import MongoMemoryServer from '../MongoMemoryServer';
 
 tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 describe('MongoMemoryServer', () => {
-  let MongoMemoryServer: typeof MongoMemoryServerType;
-  beforeEach(() => {
-    jest.resetModules();
-    MongoMemoryServer = jest.requireActual('../MongoMemoryServer').default;
-  });
-
   describe('start()', () => {
     it('should resolve to true if an MongoInstanceData is resolved by _startUpInstance', async () => {
-      MongoMemoryServer.prototype._startUpInstance = jest.fn(() => Promise.resolve({} as any));
-
       const mongoServer = new MongoMemoryServer();
+      jest
+        .spyOn(mongoServer, '_startUpInstance')
+        // @ts-expect-error expect an error here rather than an "as any"
+        .mockImplementationOnce(() => Promise.resolve({}));
 
-      expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(0);
+      expect(mongoServer._startUpInstance).not.toHaveBeenCalled();
 
       await expect(mongoServer.start()).resolves.toEqual(true);
 
-      expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(1);
+      expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(1);
     });
 
     it('_startUpInstance should be called a second time if an error is thrown on the first call and assign the current port to nulll', async () => {
-      MongoMemoryServer.prototype._startUpInstance = jest
-        .fn()
-        .mockRejectedValueOnce(new Error('Mongod shutting down'))
-        .mockResolvedValueOnce({});
-
       const mongoServer = new MongoMemoryServer({
         instance: {
           port: 123,
         },
       });
 
-      expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(0);
+      jest
+        .spyOn(mongoServer, '_startUpInstance')
+        .mockRejectedValueOnce(new Error('Mongod shutting down'))
+        // @ts-expect-error expect an error here rather than an "as any"
+        .mockResolvedValueOnce({});
 
       await expect(mongoServer.start()).resolves.toEqual(true);
 
-      expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(2);
+      expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(2);
     });
 
     it('should throw an error if _startUpInstance throws an unknown error', async () => {
-      MongoMemoryServer.prototype._startUpInstance = jest
-        .fn()
-        .mockRejectedValueOnce(new Error('unknown error'));
-
       console.warn = jest.fn(); // mock it to prevent writing to console
 
       const mongoServer = new MongoMemoryServer({
@@ -56,11 +47,11 @@ describe('MongoMemoryServer', () => {
         },
       });
 
-      expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(0);
+      jest.spyOn(mongoServer, '_startUpInstance').mockRejectedValueOnce(new Error('unknown error'));
 
       await expect(mongoServer.start()).rejects.toThrow('unknown error');
 
-      expect(MongoMemoryServer.prototype._startUpInstance).toHaveBeenCalledTimes(1);
+      expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -81,7 +72,7 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(mongoServer, 'start'); // so it dosnt count the "start" call inside "create"
 
       expect(await mongoServer.ensureInstance()).toEqual(mongoServer.getInstanceInfo());
-      expect(mongoServer.start).toHaveBeenCalledTimes(0);
+      expect(mongoServer.start).not.toHaveBeenCalled();
 
       await mongoServer.stop();
     });
@@ -89,20 +80,20 @@ describe('MongoMemoryServer', () => {
 
   describe('stop()', () => {
     it('should stop mongod and answer on isRunning() method', async () => {
-      const mongod = new MongoMemoryServer({});
+      const mongoServer = new MongoMemoryServer({});
 
-      expect(mongod.getInstanceInfo()).toBeFalsy();
-      mongod.start();
+      expect(mongoServer.getInstanceInfo()).toBeFalsy();
+      mongoServer.start();
       // while mongod launching `getInstanceInfo` is false
-      expect(mongod.getInstanceInfo()).toBeFalsy();
+      expect(mongoServer.getInstanceInfo()).toBeFalsy(); // isnt this an race-condition?
 
       // when instance launched then data became avaliable
-      await mongod.ensureInstance();
-      expect(mongod.getInstanceInfo()).toBeDefined();
+      await mongoServer.ensureInstance();
+      expect(mongoServer.getInstanceInfo()).toBeDefined();
 
       // after stop, instance data should be empty
-      await mongod.stop();
-      expect(mongod.getInstanceInfo()).toBeFalsy();
+      await mongoServer.stop();
+      expect(mongoServer.getInstanceInfo()).toBeFalsy();
     });
 
     it('should throw an error if instance is undefined', async () => {
@@ -115,25 +106,24 @@ describe('MongoMemoryServer', () => {
   });
 
   describe('create()', () => {
-    // before each for sanity (overwrite protection)
-    beforeEach(() => {
-      // de-duplicate code
-      MongoMemoryServer.prototype.start = jest.fn(() => Promise.resolve(true));
-    });
-
     it('should create an instance and call ".start"', async () => {
-      await MongoMemoryServer.create();
+      jest
+        .spyOn(MongoMemoryServer.prototype, 'start')
+        .mockImplementationOnce(() => Promise.resolve(true));
+
+      const mongoServer = await MongoMemoryServer.create();
 
       expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
+
+      await mongoServer.stop();
     });
   });
 
   describe('getUri()', () => {
     // this is here to not start 2 servers, when only 1 would be enough
-    let mongoServer: MongoMemoryServerType;
+    let mongoServer: MongoMemoryServer;
     beforeAll(async () => {
-      // why dosnt the "MongoMemoryServer" work here?
-      mongoServer = await MongoMemoryServerType.create({ instance: { dbName: 'hello' } });
+      mongoServer = await MongoMemoryServer.create({ instance: { dbName: 'hello' } });
     });
     afterAll(async () => {
       if (mongoServer) {
