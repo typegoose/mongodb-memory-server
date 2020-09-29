@@ -168,10 +168,10 @@ export default class MongoInstance extends EventEmitter {
 
     /**
      * Function to De-Duplicate Code
-     * @param process The Process to kill
+     * @param childprocess The Process to kill
      * @param name the name used in the logs
      */
-    async function kill_internal(this: MongoInstance, process: ChildProcess, name: string) {
+    async function kill_internal(this: MongoInstance, childprocess: ChildProcess, name: string) {
       const timeoutTime = 1000 * 10;
       await new Promise((resolve, reject) => {
         let timeout = setTimeout(() => {
@@ -182,19 +182,19 @@ export default class MongoInstance extends EventEmitter {
                 'Enable debug logs for more information'
             );
           }
-          process.kill('SIGKILL');
+          childprocess.kill('SIGKILL');
           timeout = setTimeout(() => {
             this.debug('kill_internal timeout triggered again, rejecting');
             reject(new Error('Process didnt exit, enable debug for more information.'));
           }, timeoutTime);
         }, timeoutTime);
-        process.once(`exit`, (code, signal) => {
+        childprocess.once(`exit`, (code, signal) => {
           this.debug(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
           clearTimeout(timeout);
           resolve();
         });
         this.debug(`- ${name}: send "SIGINT"`);
-        process.kill('SIGINT');
+        childprocess.kill('SIGINT');
       });
     }
 
