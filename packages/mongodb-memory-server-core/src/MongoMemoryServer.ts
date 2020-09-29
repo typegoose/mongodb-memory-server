@@ -219,18 +219,17 @@ export default class MongoMemoryServer {
     log('Called MongoMemoryServer.ensureInstance() method');
     if (this.runningInstance) {
       return this.runningInstance;
-    } else {
-      log(' - no running instance, call `start()` command');
-      await this.start();
-      log(' - `start()` command was succesfully resolved');
-
-      // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
-      if (!this.runningInstance) {
-        throw new Error('Ensure-Instance failed to start an instance!');
-      }
-
-      return this.runningInstance;
     }
+    log(' - no running instance, call `start()` command');
+    await this.start();
+    log(' - `start()` command was succesfully resolved');
+
+    // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
+    if (!this.runningInstance) {
+      throw new Error('Ensure-Instance failed to start an instance!');
+    }
+
+    return this.runningInstance;
   }
 
   /**
