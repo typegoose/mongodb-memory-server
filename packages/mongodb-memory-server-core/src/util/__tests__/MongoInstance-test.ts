@@ -223,4 +223,25 @@ describe('MongodbInstance', () => {
     expect(events.size).toEqual(1);
     expect(events.get(MongoInstanceEvents.instanceSTDERR)).toEqual('hello');
   });
+
+  describe('stdoutHandler()', () => {
+    it('should emit "instanceReady" when waiting for connections', () => {
+      const mongod = new MongodbInstance({});
+      const events: Map<MongoInstanceEvents | string, string> = new Map();
+      jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
+        events.set(event, arg1);
+        return true;
+      });
+
+      // actual line copied from mongod 4.0.14
+      const line =
+        '2020-09-30T18:48:58.273+0200 I NETWORK  [initandlisten] waiting for connections on port 45227';
+
+      mongod.stdoutHandler(line);
+
+      expect(events.size).toEqual(2);
+      expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+      expect(events.get(MongoInstanceEvents.instanceReady)).toEqual(undefined);
+    });
+  });
 });
