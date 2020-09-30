@@ -52,6 +52,13 @@ export interface MongodOpts {
   spawn: SpawnOptions;
 }
 
+export default interface MongoInstance extends EventEmitter {
+  // Overwrite EventEmitter's definitions (to provide at least the event names)
+  emit(event: MongoInstanceEvents, ...args: any[]): boolean;
+  on(event: MongoInstanceEvents, listener: (...args: any[]) => void): this;
+  once(event: MongoInstanceEvents, listener: (...args: any[]) => void): this;
+}
+
 /**
  * MongoDB Instance Handler Class
  */
