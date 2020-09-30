@@ -195,53 +195,49 @@ describe('MongodbInstance', () => {
     }
   });
 
-  it('"errorHandler" should emit "instanceRawError" and "instanceError"', () => {
-    const mongod = new MongodbInstance({});
-    const events: Map<MongoInstanceEvents | string, string> = new Map();
-    jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
-      events.set(event, arg1);
-      return true;
-    });
-
-    mongod.errorHandler('hello');
-
-    expect(events.size).toEqual(2);
-    expect(events.get(MongoInstanceEvents.instanceRawError)).toEqual('hello');
-    expect(events.get(MongoInstanceEvents.instanceError)).toEqual('hello');
-  });
-
-  it('"stderrHandler" should emit "instanceSTDERR"', () => {
-    const mongod = new MongodbInstance({});
-    const events: Map<MongoInstanceEvents | string, string> = new Map();
-    jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
-      events.set(event, arg1);
-      return true;
-    });
-
-    mongod.stderrHandler('hello');
-
-    expect(events.size).toEqual(1);
-    expect(events.get(MongoInstanceEvents.instanceSTDERR)).toEqual('hello');
-  });
-
-  describe('stdoutHandler()', () => {
-    it('should emit "instanceReady" when waiting for connections', () => {
-      const mongod = new MongodbInstance({});
-      const events: Map<MongoInstanceEvents | string, string> = new Map();
-      jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
+  describe('test events', () => {
+    let mongod: MongodbInstance;
+    let events: Map<MongoInstanceEvents | string, string>;
+    let spy: jest.SpyInstance;
+    beforeAll(() => {
+      mongod = new MongodbInstance({});
+      events = new Map();
+      spy = jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
         events.set(event, arg1);
         return true;
       });
-
-      // actual line copied from mongod 4.0.14
-      const line =
-        '2020-09-30T18:48:58.273+0200 I NETWORK  [initandlisten] waiting for connections on port 45227';
-
-      mongod.stdoutHandler(line);
+    });
+    beforeEach(() => {
+      events = new Map(); // reset event map
+      spy.mock.calls = []; // reset calls
+    });
+    it('"errorHandler" should emit "instanceRawError" and "instanceError"', () => {
+      mongod.errorHandler('hello');
 
       expect(events.size).toEqual(2);
-      expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-      expect(events.get(MongoInstanceEvents.instanceReady)).toEqual(undefined);
+      expect(events.get(MongoInstanceEvents.instanceRawError)).toEqual('hello');
+      expect(events.get(MongoInstanceEvents.instanceError)).toEqual('hello');
+    });
+
+    it('"stderrHandler" should emit "instanceSTDERR"', () => {
+      mongod.stderrHandler('hello');
+
+      expect(events.size).toEqual(1);
+      expect(events.get(MongoInstanceEvents.instanceSTDERR)).toEqual('hello');
+    });
+
+    describe('stdoutHandler()', () => {
+      it('should emit "instanceReady" when waiting for connections', () => {
+        // actual line copied from mongod 4.0.14
+        const line =
+          '2020-09-30T18:48:58.273+0200 I NETWORK  [initandlisten] waiting for connections on port 45227';
+
+        mongod.stdoutHandler(line);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceReady)).toEqual(undefined);
+      });
     });
   });
 });
