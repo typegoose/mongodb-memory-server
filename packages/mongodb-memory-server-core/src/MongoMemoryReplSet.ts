@@ -12,6 +12,7 @@ import {
 } from './types';
 import debug from 'debug';
 import { MongoError } from 'mongodb';
+import { deprecate } from 'util';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
 
@@ -146,9 +147,14 @@ export default class MongoMemoryReplSet extends EventEmitter {
   /**
    * Get the Connection String for mongodb to connect
    * @param otherDb use a different database than what was set on creation?
+   * @deprecated
    */
   async getConnectionString(otherDb?: string | boolean): Promise<string> {
-    return this.getUri(otherDb);
+    return deprecate(
+      this.getUri,
+      '"MongoMemoryReplSet.getConnectionString" is deprecated, use ".getUri"',
+      'MDEP001'
+    ).call(this, otherDb);
   }
 
   /**

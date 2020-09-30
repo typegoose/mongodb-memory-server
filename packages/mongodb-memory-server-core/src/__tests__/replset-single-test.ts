@@ -17,11 +17,9 @@ describe('single server replset', () => {
     const replSet = new MongoMemoryReplSet({});
     await replSet.waitUntilRunning();
     const uri = await replSet.getUri('other');
-    const str = await replSet.getConnectionString('other');
     expect(uri.split(',').length).toEqual(1);
     expect(uri.includes('/other')).toBeTruthy();
     expect(uri.includes('replicaSet=testset')).toBeTruthy();
-    expect(str).toEqual(uri);
 
     await replSet.stop();
   });
