@@ -29,7 +29,7 @@ jobs:
           CI: true
       - name: Send codecov.io stats
         if: matrix.node-version == '12.x'
-        run: bash <(curl -s https://codecov.io/bash) || echo ''
+        uses: codecov/codecov-action@v1
 
   publish:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta'
