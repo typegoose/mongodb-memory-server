@@ -109,6 +109,7 @@ export default class MongoInstance extends EventEmitter {
    * Create an array of arguments for the mongod instance
    */
   prepareCommandArgs(): string[] {
+    this.debug('prepareCommandArgs');
     assertion(
       !isNullOrUndefined(this.instanceOpts.port),
       new Error('"instanceOpts.port" is required to be set!')
@@ -136,7 +137,11 @@ export default class MongoInstance extends EventEmitter {
       result.push('--replSet', this.instanceOpts.replSet);
     }
 
-    return result.concat(this.instanceOpts.args ?? []);
+    const final = result.concat(this.instanceOpts.args ?? []);
+
+    this.debug('prepareCommandArgs: final arugment array:' + JSON.stringify(final));
+
+    return final;
   }
 
   /**
