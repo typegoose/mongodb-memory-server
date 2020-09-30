@@ -198,18 +198,13 @@ describe('MongodbInstance', () => {
   describe('test events', () => {
     let mongod: MongodbInstance;
     let events: Map<MongoInstanceEvents | string, string>;
-    let spy: jest.SpyInstance;
-    beforeAll(() => {
+    beforeEach(() => {
       mongod = new MongodbInstance({ instance: { port: 1001, dbPath: 'hello' } });
       events = new Map();
-      spy = jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
+      jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
         events.set(event, arg1);
         return true;
       });
-    });
-    beforeEach(() => {
-      events = new Map(); // reset event map
-      spy.mock.calls = []; // reset calls
     });
     it('"errorHandler" should emit "instanceRawError" and "instanceError"', () => {
       mongod.errorHandler('hello');
@@ -281,6 +276,19 @@ describe('MongodbInstance', () => {
           'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
             'You need to manually install libcurl4\n'
         );
+      });
+
+      it('should emit "instancePrimary" when "transition to primary complete" is found', () => {
+        // actual line copied from mongod 4.0.14
+        const line =
+          '2020-09-30T19:19:56.583+0200 I REPL     [rsSync-0] transition to primary complete; database writes are now permitted';
+
+        mongod.stdoutHandler(line);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instancePrimary)).toEqual(undefined);
+        expect(mongod.isInstancePrimary).toEqual(true);
       });
     });
   });
