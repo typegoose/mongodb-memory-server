@@ -183,4 +183,15 @@ describe('MongodbInstance', () => {
 
     expect(dbUtil.killProcess).not.toBeCalled();
   });
+
+  it('"_launchMongod" should throw an error if "childProcess.pid" is undefined', () => {
+    const mongod = new MongodbInstance({ instance: { port: 0, dbPath: '' } }); // dummy values - they shouldnt matter
+
+    try {
+      mongod._launchMongod('thisShouldNotExist');
+      fail('Expected "_launchMongod" to throw');
+    } catch (err) {
+      expect(err.message).toEqual('Spawned Mongo Instance PID is undefined');
+    }
+  });
 });
