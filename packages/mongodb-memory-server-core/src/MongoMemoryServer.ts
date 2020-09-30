@@ -6,6 +6,7 @@ import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, StorageEngineT, SpawnOptions } from './types';
 import debug from 'debug';
+import { deprecate } from 'util';
 
 const log = debug('MongoMS:MongoMemoryServer');
 
@@ -258,8 +259,11 @@ export default class MongoMemoryServer {
    * @deprecated
    */
   async getConnectionString(otherDbName: string | boolean = false): Promise<string> {
-    // should this function be marked deprecated? because it is just a pass-through to getUri
-    return this.getUri(otherDbName);
+    return deprecate(
+      this.getUri,
+      '"MongoMemoryReplSet.getConnectionString" is deprecated, use ".getUri"',
+      'MDEP001'
+    ).call(this, otherDbName);
   }
 
   /**
