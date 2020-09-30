@@ -250,6 +250,21 @@ describe('MongodbInstance', () => {
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
         expect(events.get(MongoInstanceEvents.instanceError)).toEqual('Port 1001 already in use');
       });
+
+      it('should emit "instanceError" when curl-open-ssl-3 is not found', () => {
+        // actual line copied from mongod 4.0.3 (from https://github.com/nodkz/mongodb-memory-server/issues/204#issuecomment-514492136)
+        const line =
+          "/fm/fm-api/node_modules/.cache/mongodb-memory-server/mongodb-binaries/4.0.3/mongod: /usr/lib/x86_64-linux-gnu/libcurl.so.4: version 'CURL_OPENSSL_3' not found (required by /fm/fm-api/node_modules/.cache/mongodb-memory-server/mongodb-binaries/4.0.3/mongod)";
+
+        mongod.stdoutHandler(line);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceError)).toEqual(
+          'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
+            'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
+        );
+      });
     });
   });
 });
