@@ -209,4 +209,18 @@ describe('MongodbInstance', () => {
     expect(events.get(MongoInstanceEvents.instanceRawError)).toEqual('hello');
     expect(events.get(MongoInstanceEvents.instanceError)).toEqual('hello');
   });
+
+  it('"stderrHandler" should emit "instanceSTDERR"', () => {
+    const mongod = new MongodbInstance({});
+    const events: Map<MongoInstanceEvents | string, string> = new Map();
+    jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
+      events.set(event, arg1);
+      return true;
+    });
+
+    mongod.stderrHandler('hello');
+
+    expect(events.size).toEqual(1);
+    expect(events.get(MongoInstanceEvents.instanceSTDERR)).toEqual('hello');
+  });
 });
