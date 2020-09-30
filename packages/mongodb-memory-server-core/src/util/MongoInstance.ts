@@ -5,7 +5,7 @@ import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { StorageEngineT, SpawnOptions } from '../types';
 import debug from 'debug';
-import { assertion, isNullOrUndefined } from './db_util';
+import { assertion, isNullOrUndefined, killProcess } from './db_util';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 
@@ -166,45 +166,13 @@ export default class MongoInstance extends EventEmitter {
   async kill(): Promise<MongoInstance> {
     this.debug('Called MongoInstance.kill():');
 
-    /**
-     * Function to De-Duplicate Code
-     * @param childprocess The Process to kill
-     * @param name the name used in the logs
-     */
-    async function kill_internal(this: MongoInstance, childprocess: ChildProcess, name: string) {
-      const timeoutTime = 1000 * 10;
-      await new Promise((resolve, reject) => {
-        let timeout = setTimeout(() => {
-          this.debug('kill_internal timeout triggered, trying SIGKILL');
-          if (!debug.enabled('MongoMS:MongoInstance')) {
-            console.warn(
-              'An Process didnt exit with signal "SIGINT" within 10 seconds, using "SIGKILL"!\n' +
-                'Enable debug logs for more information'
-            );
-          }
-          childprocess.kill('SIGKILL');
-          timeout = setTimeout(() => {
-            this.debug('kill_internal timeout triggered again, rejecting');
-            reject(new Error('Process didnt exit, enable debug for more information.'));
-          }, timeoutTime);
-        }, timeoutTime);
-        childprocess.once(`exit`, (code, signal) => {
-          this.debug(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
-          clearTimeout(timeout);
-          resolve();
-        });
-        this.debug(`- ${name}: send "SIGINT"`);
-        childprocess.kill('SIGINT');
-      });
-    }
-
     if (!isNullOrUndefined(this.childProcess)) {
-      await kill_internal.call(this, this.childProcess, 'childProcess');
+      await killProcess(this.childProcess, 'childProcess');
     } else {
       this.debug('- childProcess: nothing to shutdown, skipping.');
     }
     if (!isNullOrUndefined(this.killerProcess)) {
-      await kill_internal.call(this, this.killerProcess, 'killerProcess');
+      await killProcess(this.killerProcess, 'killerProcess');
     } else {
       this.debug('- killerProcess: nothing to shutdown, skipping.');
     }

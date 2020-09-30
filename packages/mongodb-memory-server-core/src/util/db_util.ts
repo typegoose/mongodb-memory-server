@@ -1,4 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
+import debug from 'debug';
+import { ChildProcess } from 'child_process';
+
+const log = debug('MongoMS:db_util');
 
 /**
  * Returns a database name string.
@@ -41,6 +45,38 @@ export function assertion(cond: unknown, error?: Error): asserts cond {
   if (!cond) {
     throw error ?? new Error('Assert failed - no custom error [E019]');
   }
+}
+
+/**
+ * Kill an ChildProcess
+ * @param childprocess The Process to kill
+ * @param name the name used in the logs
+ */
+export async function killProcess(childprocess: ChildProcess, name: string): Promise<void> {
+  const timeoutTime = 1000 * 10;
+  await new Promise((resolve, reject) => {
+    let timeout = setTimeout(() => {
+      log('killProcess timeout triggered, trying SIGKILL');
+      if (!debug.enabled('MongoMS:MongoInstance')) {
+        console.warn(
+          'An Process didnt exit with signal "SIGINT" within 10 seconds, using "SIGKILL"!\n' +
+            'Enable debug logs for more information'
+        );
+      }
+      childprocess.kill('SIGKILL');
+      timeout = setTimeout(() => {
+        log('killProcess timeout triggered again, rejecting');
+        reject(new Error('Process didnt exit, enable debug for more information.'));
+      }, timeoutTime);
+    }, timeoutTime);
+    childprocess.once(`exit`, (code, signal) => {
+      log(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
+      clearTimeout(timeout);
+      resolve();
+    });
+    log(`- ${name}: send "SIGINT"`);
+    childprocess.kill('SIGINT');
+  });
 }
 
 export default generateDbName;
