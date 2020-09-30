@@ -227,6 +227,8 @@ describe('MongodbInstance', () => {
     });
 
     describe('stdoutHandler()', () => {
+      // All the lines used to test here should be sourced from actual mongod output!
+
       it('should emit "instanceReady" when waiting for connections', () => {
         // actual line copied from mongod 4.0.14
         const line =
@@ -263,6 +265,21 @@ describe('MongodbInstance', () => {
         expect(events.get(MongoInstanceEvents.instanceError)).toEqual(
           'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
             'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
+        );
+      });
+
+      it('should emit "instanceError" when curl-open-ssl-4 is not found', () => {
+        // actual line copied from mongod 4.0.14 (from https://github.com/nodkz/mongodb-memory-server/issues/313#issue-631429207)
+        const line =
+          "/usr/src/app/packages/backend/node_modules/.cache/mongodb-memory-server/mongodb-binaries/4.0.14/mongod: /usr/lib/x86_64-linux-gnu/libcurl.so.4: version `CURL_OPENSSL_4' not found (required by /usr/src/app/packages/backend/node_modules/.cache/mongodb-memory-server/mongodb-binaries/4.0.14/mongod)";
+
+        mongod.stdoutHandler(line);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceError)).toEqual(
+          'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
+            'You need to manually install libcurl4\n'
         );
       });
     });
