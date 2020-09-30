@@ -200,7 +200,7 @@ describe('MongodbInstance', () => {
     let events: Map<MongoInstanceEvents | string, string>;
     let spy: jest.SpyInstance;
     beforeAll(() => {
-      mongod = new MongodbInstance({});
+      mongod = new MongodbInstance({ instance: { port: 1001, dbPath: 'hello' } });
       events = new Map();
       spy = jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
         events.set(event, arg1);
@@ -237,6 +237,18 @@ describe('MongodbInstance', () => {
         expect(events.size).toEqual(2);
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
         expect(events.get(MongoInstanceEvents.instanceReady)).toEqual(undefined);
+      });
+
+      it('should emit "instanceError" when port is already in use', () => {
+        // actual line copied from mongod 4.0.14
+        const line =
+          '2020-09-30T19:00:43.555+0200 E STORAGE  [initandlisten] Failed to set up listener: SocketException: Address already in use';
+
+        mongod.stdoutHandler(line);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceError)).toEqual('Port 1001 already in use');
       });
     });
   });
