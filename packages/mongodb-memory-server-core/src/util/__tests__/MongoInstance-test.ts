@@ -1,7 +1,7 @@
 import * as tmp from 'tmp';
 import * as dbUtil from '../db_util';
 import { LATEST_VERSION } from '../MongoBinary';
-import MongodbInstance from '../MongoInstance';
+import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 tmp.setGracefulCleanup();
@@ -193,5 +193,20 @@ describe('MongodbInstance', () => {
     } catch (err) {
       expect(err.message).toEqual('Spawned Mongo Instance PID is undefined');
     }
+  });
+
+  it('"errorHandler" should emit "instanceRawError" and "instanceError"', () => {
+    const mongod = new MongodbInstance({});
+    const events: Map<MongoInstanceEvents | string, string> = new Map();
+    jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
+      events.set(event, arg1);
+      return true;
+    });
+
+    mongod.errorHandler('hello');
+
+    expect(events.size).toEqual(2);
+    expect(events.get(MongoInstanceEvents.instanceRawError)).toEqual('hello');
+    expect(events.get(MongoInstanceEvents.instanceError)).toEqual('hello');
   });
 });
