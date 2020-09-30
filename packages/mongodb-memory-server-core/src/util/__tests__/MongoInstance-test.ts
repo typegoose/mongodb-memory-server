@@ -1,4 +1,5 @@
 import * as tmp from 'tmp';
+import * as dbUtil from '../db_util';
 import { LATEST_VERSION } from '../MongoBinary';
 import MongodbInstance from '../MongoInstance';
 
@@ -173,5 +174,13 @@ describe('MongodbInstance', () => {
     const pid: any = mongod.getPid();
     expect(pid).toBeGreaterThan(0);
     await mongod.kill();
+  });
+
+  it('"kill" should not call "killProcess" if no childProcesses are not running', async () => {
+    const mongod = new MongodbInstance({});
+    jest.spyOn(dbUtil, 'killProcess');
+    await mongod.kill();
+
+    expect(dbUtil.killProcess).not.toBeCalled();
   });
 });
