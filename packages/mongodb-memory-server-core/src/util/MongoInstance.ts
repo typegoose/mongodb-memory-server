@@ -97,10 +97,8 @@ export default class MongoInstance extends EventEmitter {
    * @param msg The Message to log
    */
   private debug(msg: string): void {
-    if (debug.enabled('MongoMS:MongoInstance')) {
-      const port = this.instanceOpts.port ?? 'unkown';
-      log(`Mongo[${port}]: ${msg}`);
-    }
+    const port = this.instanceOpts.port ?? 'unkown';
+    log(`Mongo[${port}]: ${msg}`);
   }
 
   /**
