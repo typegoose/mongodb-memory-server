@@ -224,6 +224,11 @@ describe('MongodbInstance', () => {
     describe('stdoutHandler()', () => {
       // All the lines used to test here should be sourced from actual mongod output!
 
+      // TODO: add test for "mongod instance already running"
+      // TODO: add test for "permission denied"
+      // TODO: add test for "Data directory .*? not found"
+      // TODO: add test for "aborting after"
+
       it('should emit "instanceReady" when waiting for connections', () => {
         // actual line copied from mongod 4.0.14
         const line =
