@@ -153,6 +153,7 @@ export default class MongoInstance extends EventEmitter {
 
   /**
    * Create the mongod process
+   * @fires MongoInstance#instanceStarted
    */
   async run(): Promise<this> {
     const launch: Promise<void> = new Promise((resolve, reject) => {
@@ -204,6 +205,7 @@ export default class MongoInstance extends EventEmitter {
   /**
    * Actually launch mongod
    * @param mongoBin The binary to run
+   * @fires MongoInstance#instanceLaunched
    */
   _launchMongod(mongoBin: string): ChildProcess {
     const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), {
@@ -228,6 +230,7 @@ export default class MongoInstance extends EventEmitter {
    * Spawn an child to kill the parent and the mongod instance if both are Dead
    * @param parentPid Parent to kill
    * @param childPid Mongod process to kill
+   * @fires MongoInstance#killerLaunched
    */
   _launchKiller(parentPid: number, childPid: number): ChildProcess {
     this.debug(`Called MongoInstance._launchKiller(parent: ${parentPid}, child: ${childPid}):`);
@@ -264,6 +267,8 @@ export default class MongoInstance extends EventEmitter {
   /**
    * Event "error" handler
    * @param err The Error to handle
+   * @fires MongoInstance#instanceRawError
+   * @fires MongoInstance#instanceError
    */
   errorHandler(err: string): void {
     this.emit(MongoInstanceEvents.instanceRawError, err);
@@ -273,6 +278,7 @@ export default class MongoInstance extends EventEmitter {
   /**
    * Write the CLOSE event to the debug function
    * @param code The Exit code to handle
+   * @fires MongoInstance#instanceClosed
    */
   closeHandler(code: number): void {
     if (code != 0) {
@@ -285,6 +291,7 @@ export default class MongoInstance extends EventEmitter {
   /**
    * Write STDERR to debug function
    * @param message The STDERR line to write
+   * @fires MongoInstance#instanceSTDERR
    */
   stderrHandler(message: string | Buffer): void {
     this.debug(`STDERR: ${message.toString()}`);
@@ -294,6 +301,11 @@ export default class MongoInstance extends EventEmitter {
   /**
    * Write STDOUT to debug function and process some special messages
    * @param message The STDOUT line to write/parse
+   * @fires MongoInstance#instanceSTDOUT
+   * @fires MongoInstance#instanceReady
+   * @fires MongoInstance#instanceError
+   * @fires MongoInstance#instancePrimary
+   * @fires MongoInstance#instanceState
    */
   stdoutHandler(message: string | Buffer): void {
     const line: string = message.toString();
