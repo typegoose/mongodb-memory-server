@@ -91,6 +91,20 @@ describe('MongoMemoryServer', () => {
         );
       }
     });
+
+    it('should throw an error if the given "_state" has no case', async () => {
+      const mongoServer = new MongoMemoryServer();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      mongoServer._state = 'not Existing';
+
+      try {
+        await mongoServer.ensureInstance();
+        fail('Expected "ensureInstance" to throw');
+      } catch (err) {
+        expect(err.message).toEqual('"ensureInstance" does not have an case for "not Existing"');
+      }
+    });
   });
 
   describe('stop()', () => {
