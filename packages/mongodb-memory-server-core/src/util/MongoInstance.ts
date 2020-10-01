@@ -61,15 +61,28 @@ export default interface MongoInstance extends EventEmitter {
 
 /**
  * MongoDB Instance Handler Class
+ * This Class starts & stops the "mongod" process directly and handles stdout, sterr and close events
  */
 export default class MongoInstance extends EventEmitter {
   instanceOpts: MongoInstanceOpts;
   binaryOpts: MongoBinaryOpts;
   spawnOpts: SpawnOptions;
 
+  /**
+   * The "mongod" Process reference
+   */
   childProcess?: ChildProcess;
+  /**
+   * The "mongo_killer" Process reference
+   */
   killerProcess?: ChildProcess;
+  /**
+   * This boolean is "true" if the instance is elected to be PRIMARY
+   */
   isInstancePrimary: boolean = false;
+  /**
+   * This boolean is "true" if the instance is successfully started
+   */
   isInstanceReady: boolean = false;
 
   constructor(opts: Partial<MongodOpts>) {
