@@ -2,31 +2,32 @@ import { Db, MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
-let con: MongoClient;
-let db: Db;
-let mongoServer: MongoMemoryServer;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  con = await MongoClient.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  db = con.db(mongoServer.getDbName());
-});
-
-afterAll(async () => {
-  if (con) {
-    con.close();
-  }
-  if (mongoServer) {
-    await mongoServer.stop();
-  }
-});
 
 describe('Single mongoServer', () => {
+  let con: MongoClient;
+  let db: Db;
+  let mongoServer: MongoMemoryServer;
+
+  beforeAll(async () => {
+    mongoServer = await MongoMemoryServer.create();
+    const mongoUri = mongoServer.getUri();
+    con = await MongoClient.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    db = con.db(mongoServer.getDbName());
+  });
+
+  afterAll(async () => {
+    if (con) {
+      con.close();
+    }
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
+  });
+
   it('should start mongo server', async () => {
     expect(db).toBeDefined();
     const col = db.collection('test');
