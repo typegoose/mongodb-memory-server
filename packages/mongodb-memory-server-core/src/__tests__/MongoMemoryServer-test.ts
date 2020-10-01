@@ -1,5 +1,8 @@
 import * as tmp from 'tmp';
-import MongoMemoryServer, { MongoMemoryServerStateEnum } from '../MongoMemoryServer';
+import MongoMemoryServer, {
+  MongoMemoryServerEventEnum,
+  MongoMemoryServerStateEnum,
+} from '../MongoMemoryServer';
 import { assertion } from '../util/db_util';
 
 tmp.setGracefulCleanup();
@@ -104,6 +107,18 @@ describe('MongoMemoryServer', () => {
       } catch (err) {
         expect(err.message).toEqual('"ensureInstance" does not have an case for "not Existing"');
       }
+    });
+
+    it('should throw an error if state was "starting" and emitted an event but not "running"', async () => {
+      const mongoServer = new MongoMemoryServer();
+      mongoServer._state = MongoMemoryServerStateEnum.starting;
+      const ensureInstancePromise = mongoServer.ensureInstance();
+
+      mongoServer.emit(MongoMemoryServerEventEnum.stateChange, MongoMemoryServerStateEnum.stopped);
+
+      expect(ensureInstancePromise).rejects.toThrow(
+        `"ensureInstance" waited for "running" but got an different state: "${MongoMemoryServerStateEnum.stopped}"`
+      );
     });
   });
 
