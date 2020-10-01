@@ -48,10 +48,10 @@ module.exports = {
               label: 'Stack Overflow',
               href: 'https://stackoverflow.com/questions/tagged/mongodb-memory-server',
             },
-            //{
-            //  label: 'Discord',
-            //  href: 'https://discord.gg/none',
-            //}
+            {
+             label: 'Discord',
+             href: 'https://discord.gg/bgCrRP9',
+            }
           ],
         },
         {
