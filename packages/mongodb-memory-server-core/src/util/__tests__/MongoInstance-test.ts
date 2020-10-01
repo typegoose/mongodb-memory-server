@@ -296,7 +296,7 @@ describe('MongodbInstance', () => {
         expect(mongod.isInstancePrimary).toEqual(true);
       });
 
-      it('should emit "instanceState" when member state is changed', () => {
+      it('should emit "instanceReplState" when member state is changed', () => {
         // actual line copied from mongod 4.0.14
         const line =
           'STDOUT: 2020-09-30T19:41:48.388+0200 I REPL     [replexec-0] Member 127.0.0.1:34765 is now in state STARTUP';
@@ -306,7 +306,7 @@ describe('MongodbInstance', () => {
 
         expect(events.size).toEqual(2);
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instanceState)).toEqual('STARTUP');
+        expect(events.get(MongoInstanceEvents.instanceReplState)).toEqual('STARTUP');
         expect(mongod.isInstancePrimary).toEqual(false);
       });
     });

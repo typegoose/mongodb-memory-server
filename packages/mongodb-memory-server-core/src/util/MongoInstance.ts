@@ -16,7 +16,7 @@ if (lt(process.version, '10.15.0')) {
 const log = debug('MongoMS:MongoInstance');
 
 export enum MongoInstanceEvents {
-  instanceState = 'instanceState',
+  instanceReplState = 'instanceReplState',
   instancePrimary = 'instancePrimary',
   instanceReady = 'instanceReady',
   instanceSTDOUT = 'instanceSTDOUT',
@@ -303,7 +303,7 @@ export default class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceReady
    * @fires MongoInstance#instanceError
    * @fires MongoInstance#instancePrimary
-   * @fires MongoInstance#instanceState
+   * @fires MongoInstance#instanceReplState
    */
   stdoutHandler(message: string | Buffer): void {
     const line: string = message.toString();
@@ -341,7 +341,7 @@ export default class MongoInstance extends EventEmitter {
     } else if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
       // "[\d\.:]+" matches "0.0.0.0:0000" (IP:PORT)
       const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNKOWN';
-      this.emit(MongoInstanceEvents.instanceState, state);
+      this.emit(MongoInstanceEvents.instanceReplState, state);
 
       if (state !== 'PRIMARY') {
         this.isInstancePrimary = false;
