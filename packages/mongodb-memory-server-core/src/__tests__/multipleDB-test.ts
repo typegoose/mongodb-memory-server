@@ -32,10 +32,10 @@ beforeAll(async () => {
 
 afterAll(async () => {
   if (con1) {
-    con1.close();
+    await con1.close();
   }
   if (con2) {
-    con2.close();
+    await con2.close();
   }
   if (mongoServer1) {
     await mongoServer1.stop();
