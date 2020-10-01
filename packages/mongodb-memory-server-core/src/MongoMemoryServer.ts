@@ -219,7 +219,7 @@ export class MongoMemoryServer {
    * @param otherDbName Set an custom Database name, or set this to "true" to generate an different name
    */
   getUri(otherDbName?: string | boolean): string {
-    assertionInstanceInfoSync(this.instanceInfo);
+    assertionInstanceInfo(this.instanceInfo);
 
     let dbName: string = this.instanceInfo.dbName;
 
@@ -236,7 +236,7 @@ export class MongoMemoryServer {
    * Get the Port of the currently running Instance
    */
   getPort(): number {
-    assertionInstanceInfoSync(this.instanceInfo);
+    assertionInstanceInfo(this.instanceInfo);
     assertion(!isNullOrUndefined(this.instanceInfo.port), new Error('"port" is undefined'));
     return this.instanceInfo.port;
   }
@@ -245,7 +245,7 @@ export class MongoMemoryServer {
    * Get the DB-Path of the currently running Instance
    */
   getDbPath(): string {
-    assertionInstanceInfoSync(this.instanceInfo);
+    assertionInstanceInfo(this.instanceInfo);
     assertion(!isNullOrUndefined(this.instanceInfo.dbPath), new Error('"dbPath" is undefined'));
     return this.instanceInfo.dbPath;
   }
@@ -254,7 +254,7 @@ export class MongoMemoryServer {
    * Get the DB-Name of the currently running Instance
    */
   getDbName(): string {
-    assertionInstanceInfoSync(this.instanceInfo);
+    assertionInstanceInfo(this.instanceInfo);
     assertion(!isNullOrUndefined(this.instanceInfo.dbName), new Error('"dbName" is undefined'));
     return this.instanceInfo.dbName;
   }
@@ -264,9 +264,9 @@ export default MongoMemoryServer;
 
 /**
  * This function is to de-duplicate code
- * -> this couldnt be included in the class, because "asserts this.instanceInfoSync" is not allowed
- * @param val this.instanceInfoSync
+ * -> this couldnt be included in the class, because "asserts this.instanceInfo" is not allowed
+ * @param val this.instanceInfo
  */
-function assertionInstanceInfoSync(val: unknown): asserts val is MongoInstanceDataT {
+function assertionInstanceInfo(val: unknown): asserts val is MongoInstanceDataT {
   assertion(!isNullOrUndefined(val), new Error('"instanceInfo" is undefined'));
 }
