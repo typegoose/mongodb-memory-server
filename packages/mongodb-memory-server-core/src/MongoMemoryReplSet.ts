@@ -252,15 +252,15 @@ export class MongoMemoryReplSet extends EventEmitter {
     if (this._state === 'stopped') {
       return false;
     }
-    const servers = this.servers;
-    this.servers = [];
     process.removeListener('beforeExit', this.stop); // many accumulate inside tests
-    return Promise.all(servers.map((s) => s.stop()))
+    return Promise.all(this.servers.map((s) => s.stop()))
       .then(() => {
+        this.servers = [];
         this.emit((this._state = 'stopped'));
         return true;
       })
       .catch((err) => {
+        this.servers = [];
         log(err);
         this.emit((this._state = 'stopped'), err);
         return false;
