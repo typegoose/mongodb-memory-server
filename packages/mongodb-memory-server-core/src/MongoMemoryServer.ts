@@ -81,7 +81,6 @@ export class MongoMemoryServer {
       .catch((err) => {
         if (err.message === 'Mongod shutting down' || err === 'Mongod shutting down') {
           log(`Mongodb did not start. Trying to start on another port one more time...`);
-          this.opts.instance = { ...this.opts.instance, port: undefined }; // this will always set the "port" to undefined, even if "instance" is undefined
           return this._startUpInstance();
         }
         throw err; // give error to next handler
