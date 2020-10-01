@@ -59,7 +59,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
   await new Promise((resolve, reject) => {
     let timeout = setTimeout(() => {
       log('killProcess timeout triggered, trying SIGKILL');
-      if (!debug.enabled('MongoMS:MongoInstance')) {
+      if (!debug.enabled('MongoMS:db_util')) {
         console.warn(
           'An Process didnt exit with signal "SIGINT" within 10 seconds, using "SIGKILL"!\n' +
             'Enable debug logs for more information'
