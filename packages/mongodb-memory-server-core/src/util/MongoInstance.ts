@@ -179,11 +179,13 @@ export default class MongoInstance extends EventEmitter {
 
     if (!isNullOrUndefined(this.childProcess)) {
       await killProcess(this.childProcess, 'childProcess');
+      this.childProcess = undefined; // reset reference to the childProcess for "mongod"
     } else {
       this.debug('- childProcess: nothing to shutdown, skipping.');
     }
     if (!isNullOrUndefined(this.killerProcess)) {
       await killProcess(this.killerProcess, 'killerProcess');
+      this.killerProcess = undefined; // reset reference to the childProcess for "mongo_killer"
     } else {
       this.debug('- killerProcess: nothing to shutdown, skipping.');
     }
