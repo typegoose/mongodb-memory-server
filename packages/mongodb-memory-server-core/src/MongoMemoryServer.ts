@@ -130,9 +130,8 @@ export class MongoMemoryServer {
       data.dbPath = data.tmpDir.name;
     }
 
-    log(`Starting MongoDB instance with following options: ${JSON.stringify(data)}`);
+    log(`Starting MongoDB instance with options: ${JSON.stringify(data)}`);
 
-    // Download if not exists mongo binaries in ~/.mongodb-prebuilt
     // After that startup MongoDB instance
     const instance = await MongoInstance.run({
       instance: {
