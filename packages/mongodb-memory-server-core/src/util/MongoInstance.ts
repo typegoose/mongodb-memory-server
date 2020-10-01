@@ -64,9 +64,11 @@ export interface MongoInstance extends EventEmitter {
  * This Class starts & stops the "mongod" process directly and handles stdout, sterr and close events
  */
 export class MongoInstance extends EventEmitter {
-  instanceOpts: MongoInstanceOpts;
-  binaryOpts: MongoBinaryOpts;
-  spawnOpts: SpawnOptions;
+  // Mark these values as "readonly" & "Readonly" because modifying them after starting will have no effect
+  // readonly is required otherwise the property can still be changed on the root level
+  readonly instanceOpts: Readonly<MongoInstanceOpts>;
+  readonly binaryOpts: Readonly<MongoBinaryOpts>;
+  readonly spawnOpts: Readonly<SpawnOptions>;
 
   /**
    * The "mongod" Process reference
