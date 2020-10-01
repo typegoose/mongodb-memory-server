@@ -120,7 +120,7 @@ export class MongoMemoryServer {
       log(`starting with port ${data.port}, since ${instOpts.port} was locked:`, data.port);
     }
 
-    data.uri = await getUriBase(data.ip, data.port, data.dbName);
+    data.uri = getUriBase(data.ip, data.port, data.dbName);
     if (!data.dbPath) {
       data.tmpDir = tmp.dirSync({
         mode: 0o755,
