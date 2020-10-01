@@ -6,6 +6,7 @@ import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, StorageEngineT } from './types';
 import debug from 'debug';
+import { EventEmitter } from 'events';
 
 const log = debug('MongoMS:MongoMemoryServer');
 
@@ -41,9 +42,34 @@ export interface MongoInstanceDataT extends StartupInstanceData {
   instance: MongoInstance;
 }
 
-export class MongoMemoryServer {
+/**
+ * All Events for "MongoMemoryServer"
+ */
+export enum MongoMemoryServerEventEnum {
+  stateChange = 'stateChange',
+}
+
+/**
+ * All States for "MongoMemoryServer._state"
+ */
+export enum MongoMemoryServerStateEnum {
+  new = 'new',
+  starting = 'starting',
+  running = 'running',
+  stopped = 'stopped',
+}
+
+export interface MongoMemoryServer extends EventEmitter {
+  // Overwrite EventEmitter's definitions (to provide at least the event names)
+  emit(event: MongoMemoryServerEventEnum, ...args: any[]): boolean;
+  on(event: MongoMemoryServerEventEnum, listener: (...args: any[]) => void): this;
+  once(event: MongoMemoryServerEventEnum, listener: (...args: any[]) => void): this;
+}
+
+export class MongoMemoryServer extends EventEmitter {
   instanceInfo?: MongoInstanceDataT;
   opts: MongoMemoryServerOptsT;
+  _state: MongoMemoryServerStateEnum = MongoMemoryServerStateEnum.new;
 
   /**
    * Create an Mongo-Memory-Sever Instance
@@ -52,6 +78,7 @@ export class MongoMemoryServer {
    * @param opts Mongo-Memory-Sever Options
    */
   constructor(opts?: MongoMemoryServerOptsT) {
+    super();
     this.opts = { ...opts };
   }
 
@@ -60,10 +87,20 @@ export class MongoMemoryServer {
    * @param opts Mongo-Memory-Sever Options
    */
   static async create(opts?: MongoMemoryServerOptsT): Promise<MongoMemoryServer> {
+    log('Called MongoMemoryServer.create() method');
     const instance = new MongoMemoryServer({ ...opts });
     await instance.start();
 
     return instance;
+  }
+
+  /**
+   * Change "this._state" to "newState" and emit "stateChange" with "newState"
+   * @param newState The new State to set & emit
+   */
+  protected stateChange(newState: MongoMemoryServerStateEnum): void {
+    this._state = newState;
+    this.emit(MongoMemoryServerEventEnum.stateChange, newState);
   }
 
   /**
@@ -77,12 +114,16 @@ export class MongoMemoryServer {
       );
     }
 
+    this.stateChange(MongoMemoryServerStateEnum.starting);
+
     this.instanceInfo = await this._startUpInstance().catch((err) => {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
         console.warn('Starting the instance failed, enable debug for more infomation');
       }
       throw err;
     });
+
+    this.stateChange(MongoMemoryServerStateEnum.running);
 
     return true;
   }
@@ -92,6 +133,7 @@ export class MongoMemoryServer {
    * @private
    */
   async _startUpInstance(): Promise<MongoInstanceDataT> {
+    log('Called MongoMemoryServer._startUpInstance() method');
     /** Shortcut to this.opts.instance */
     const instOpts = this.opts.instance ?? {};
     const data: StartupInstanceData = {
@@ -173,6 +215,7 @@ export class MongoMemoryServer {
     }
 
     this.instanceInfo = undefined;
+    this.stateChange(MongoMemoryServerStateEnum.stopped);
 
     return true;
   }
@@ -193,6 +236,30 @@ export class MongoMemoryServer {
     if (this.instanceInfo) {
       return this.instanceInfo;
     }
+
+    switch (this._state) {
+      case MongoMemoryServerStateEnum.running:
+        throw new Error('MongoMemoryServer "_state" is "running" but "instanceInfo" is undefined!');
+      case MongoMemoryServerStateEnum.new:
+      case MongoMemoryServerStateEnum.stopped:
+        break;
+      case MongoMemoryServerStateEnum.starting:
+        return new Promise((res, rej) =>
+          this.once(MongoMemoryServerEventEnum.stateChange, (state) => {
+            if (state != MongoMemoryServerStateEnum.running) {
+              rej(
+                new Error(
+                  `"ensureInstance" waited for "running" but got an different state: "${state}"`
+                )
+              );
+            }
+            res(this.instanceInfo);
+          })
+        );
+      default:
+        throw new Error(`"ensureInstance" does not have an case for "${this._state}"`);
+    }
+
     log(' - no running instance, call `start()` command');
     await this.start();
     log(' - `start()` command was succesfully resolved');
