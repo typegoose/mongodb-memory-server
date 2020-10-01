@@ -1,5 +1,6 @@
 import * as tmp from 'tmp';
 import MongoMemoryServer from '../MongoMemoryServer';
+import { assertion } from '../util/db_util';
 
 tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -133,12 +134,23 @@ describe('MongoMemoryServer', () => {
 
     it('should return correct value with "otherDb" being a string', async () => {
       const port: number = mongoServer.getPort();
-      expect(mongoServer.getUri('customDB')).toBe(`mongodb://127.0.0.1:${port}/customDB?`);
+      expect(mongoServer.getUri('customDB')).toEqual(`mongodb://127.0.0.1:${port}/customDB?`);
     });
 
     it('should return correct value with "otherDb" being a boolean', async () => {
       const port: number = mongoServer.getPort();
       expect(mongoServer.getUri(true)).not.toEqual(`mongodb://127.0.0.1:${port}/hello?`);
+    });
+
+    it('should return correct value without "otherDb" being provided', async () => {
+      const port: number = mongoServer.getPort();
+      assertion(
+        mongoServer.instanceInfo,
+        new Error('"MongoServer.instanceInfo" should be defined!')
+      );
+      expect(mongoServer.getUri()).toEqual(
+        `mongodb://127.0.0.1:${port}/${mongoServer.instanceInfo.dbName}?`
+      );
     });
   });
 
