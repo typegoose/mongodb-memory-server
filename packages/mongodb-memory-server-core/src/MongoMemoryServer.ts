@@ -1,4 +1,4 @@
-import { ChildProcess, SpawnOptions } from 'child_process';
+import { SpawnOptions } from 'child_process';
 import * as tmp from 'tmp';
 import getPort from 'get-port';
 import { assertion, generateDbName, getUriBase, isNullOrUndefined } from './util/db_util';
@@ -41,7 +41,6 @@ export interface MongoInstanceDataT extends StartupInstanceData {
   dbPath: string; // re-declare, because in this interface it is *not* optional
   uri: string; // same as above
   instance: MongoInstance;
-  childProcess?: ChildProcess;
 }
 
 export class MongoMemoryServer {
@@ -152,7 +151,6 @@ export class MongoMemoryServer {
       dbPath: data.dbPath as string, // because otherwise the types would be incompatible
       uri: data.uri as string, // same as above
       instance: instance,
-      childProcess: instance.childProcess ?? undefined, // convert null | undefined to undefined
     };
   }
 
