@@ -1,4 +1,4 @@
-import { Db, MongoClient } from 'mongodb';
+import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -6,29 +6,21 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 describe('Multiple mongoServers', () => {
   let con1: MongoClient;
   let con2: MongoClient;
-  let db1: Db;
-  let db2: Db;
   let mongoServer1: MongoMemoryServer;
   let mongoServer2: MongoMemoryServer;
 
   beforeAll(async () => {
     mongoServer1 = await MongoMemoryServer.create();
-    const mongoUri = mongoServer1.getUri();
-    con1 = await MongoClient.connect(mongoUri, {
+    con1 = await MongoClient.connect(mongoServer1.getUri(), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-
-    db1 = con1.db(mongoServer1.getDbName());
 
     mongoServer2 = await MongoMemoryServer.create();
-    const mongoUri2 = mongoServer2.getUri();
-    con2 = await MongoClient.connect(mongoUri2, {
+    con2 = await MongoClient.connect(mongoServer2.getUri(), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-
-    db2 = con2.db(mongoServer1.getDbName());
   });
 
   afterAll(async () => {
@@ -47,6 +39,9 @@ describe('Multiple mongoServers', () => {
   });
 
   it('should start several servers', async () => {
+    const db1 = con1.db(mongoServer1.getDbName());
+    const db2 = con2.db(mongoServer1.getDbName());
+
     expect(db1).toBeDefined();
     const col1 = db1.collection('test');
     const result1 = await col1.insertMany([{ a: 1 }, { b: 1 }]);
