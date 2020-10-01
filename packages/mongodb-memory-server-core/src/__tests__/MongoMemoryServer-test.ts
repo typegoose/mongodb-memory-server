@@ -112,11 +112,9 @@ describe('MongoMemoryServer', () => {
         .spyOn(MongoMemoryServer.prototype, 'start')
         .mockImplementationOnce(() => Promise.resolve(true));
 
-      const mongoServer = await MongoMemoryServer.create();
+      await MongoMemoryServer.create();
 
       expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
-
-      await mongoServer.stop();
     });
   });
 
