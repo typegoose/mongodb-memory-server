@@ -120,6 +120,18 @@ describe('MongoMemoryServer', () => {
         `"ensureInstance" waited for "running" but got an different state: "${MongoMemoryServerStateEnum.stopped}"`
       );
     });
+
+    it('should also call "start" and actually start an server', async () => {
+      const mongoServer = new MongoMemoryServer();
+      jest.spyOn(mongoServer, 'start');
+
+      await mongoServer.ensureInstance();
+
+      expect(mongoServer.start).toHaveBeenCalledTimes(1);
+      expect(mongoServer.getInstanceInfo()).toBeDefined();
+
+      await mongoServer.stop();
+    });
   });
 
   describe('stop()', () => {
