@@ -21,26 +21,25 @@ describe('MongoMemoryServer', () => {
       expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(1);
     });
 
-    it('_startUpInstance should be called a second time if an error is thrown on the first call and assign the current port to nulll', async () => {
-      const mongoServer = new MongoMemoryServer({
-        instance: {
-          port: 123,
-        },
+    it('"_startUpInstance" should use an different port if address is already in use (use same port for 2 servers)', async () => {
+      const mongoServer1 = await MongoMemoryServer.create({
+        instance: { port: 27444 },
       });
 
-      jest
-        .spyOn(mongoServer, '_startUpInstance')
-        .mockRejectedValueOnce(new Error('Mongod shutting down'))
-        // @ts-expect-error expect an error here rather than an "as any"
-        .mockResolvedValueOnce({});
+      const mongoServer2 = await MongoMemoryServer.create({
+        instance: { port: mongoServer1.getPort() },
+      });
 
-      await expect(mongoServer.start()).resolves.toEqual(true);
+      expect(mongoServer1.getInstanceInfo()).toBeDefined();
+      expect(mongoServer2.getInstanceInfo()).toBeDefined();
+      expect(mongoServer1.getPort()).not.toEqual(mongoServer2.getPort());
 
-      expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(2);
+      await mongoServer1.stop();
+      await mongoServer2.stop();
     });
 
     it('should throw an error if _startUpInstance throws an unknown error', async () => {
-      console.warn = jest.fn(); // mock it to prevent writing to console
+      jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
 
       const mongoServer = new MongoMemoryServer({
         instance: {
@@ -53,6 +52,7 @@ describe('MongoMemoryServer', () => {
       await expect(mongoServer.start()).rejects.toThrow('unknown error');
 
       expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledTimes(1);
     });
   });
 
