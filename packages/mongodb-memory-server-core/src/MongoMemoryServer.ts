@@ -218,20 +218,18 @@ export class MongoMemoryServer {
    * Generate the Connection string used by mongodb
    * @param otherDbName Set an custom Database name, or set this to "true" to generate an different name
    */
-  getUri(otherDbName: string | boolean = false): string {
+  getUri(otherDbName?: string | boolean): string {
     assertionInstanceInfoSync(this.instanceInfo);
 
-    // IF true OR string
-    if (otherDbName) {
-      if (typeof otherDbName === 'string') {
-        // generate uri with provided DB name on existed DB instance
-        return getUriBase(this.instanceInfo.ip, this.instanceInfo.port, otherDbName);
-      }
-      // generate new random db name
-      return getUriBase(this.instanceInfo.ip, this.instanceInfo.port, generateDbName());
+    let dbName: string = this.instanceInfo.dbName;
+
+    // using "if" instead of nested "?:"
+    if (!isNullOrUndefined(otherDbName)) {
+      // use "otherDbName" if string, otherwise generate an db-name
+      dbName = typeof otherDbName === 'string' ? otherDbName : generateDbName();
     }
 
-    return getUriBase(this.instanceInfo.ip, this.instanceInfo.port, this.instanceInfo.dbName);
+    return getUriBase(this.instanceInfo.ip, this.instanceInfo.port, dbName);
   }
 
   /**
