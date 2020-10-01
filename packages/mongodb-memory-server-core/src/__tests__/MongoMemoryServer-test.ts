@@ -57,7 +57,7 @@ describe('MongoMemoryServer', () => {
   });
 
   describe('ensureInstance()', () => {
-    it('should throw an error if not instance is running after calling start', async () => {
+    it('should throw an error if no "instanceInfo" is defined after calling start', async () => {
       const mongoServer = new MongoMemoryServer();
       jest.spyOn(mongoServer, 'start').mockImplementationOnce(() => Promise.resolve(true));
 
@@ -80,7 +80,7 @@ describe('MongoMemoryServer', () => {
   });
 
   describe('stop()', () => {
-    it('should stop mongod and answer on isRunning() method', async () => {
+    it('should start & stop mongod and check output of "getInstanceInfo"', async () => {
       const mongoServer = new MongoMemoryServer({});
 
       expect(mongoServer.getInstanceInfo()).toBeFalsy();
@@ -97,7 +97,7 @@ describe('MongoMemoryServer', () => {
       expect(mongoServer.getInstanceInfo()).toBeFalsy();
     });
 
-    it('should throw an error if instance is undefined', async () => {
+    it('should return "true" if no instance is running', async () => {
       const mongoServer = new MongoMemoryServer();
       jest.spyOn(mongoServer, 'ensureInstance');
 
