@@ -28,7 +28,6 @@ export interface StartupInstanceData {
   dbPath?: string;
   dbName: string;
   ip: string;
-  uri?: string;
   storageEngine: StorageEngineT;
   replSet?: string;
   tmpDir?: tmp.DirResult;
@@ -39,7 +38,6 @@ export interface StartupInstanceData {
  */
 export interface MongoInstanceDataT extends StartupInstanceData {
   dbPath: string; // re-declare, because in this interface it is *not* optional
-  uri: string; // same as above
   instance: MongoInstance;
 }
 
@@ -119,7 +117,6 @@ export class MongoMemoryServer {
       log(`starting with port ${data.port}, since ${instOpts.port} was locked:`, data.port);
     }
 
-    data.uri = getUriBase(data.ip, data.port, data.dbName);
     if (!data.dbPath) {
       data.tmpDir = tmp.dirSync({
         mode: 0o755,
@@ -149,7 +146,6 @@ export class MongoMemoryServer {
     return {
       ...data,
       dbPath: data.dbPath as string, // because otherwise the types would be incompatible
-      uri: data.uri as string, // same as above
       instance: instance,
     };
   }
@@ -235,7 +231,7 @@ export class MongoMemoryServer {
       return getUriBase(this.instanceInfo.ip, this.instanceInfo.port, generateDbName());
     }
 
-    return this.instanceInfo.uri;
+    return getUriBase(this.instanceInfo.ip, this.instanceInfo.port, this.instanceInfo.dbName);
   }
 
   /**
