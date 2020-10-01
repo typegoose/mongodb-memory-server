@@ -3,49 +3,49 @@ import MongoMemoryServer from '../MongoMemoryServer';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
-let con1: MongoClient;
-let con2: MongoClient;
-let db1: Db;
-let db2: Db;
-let mongoServer1: MongoMemoryServer;
-let mongoServer2: MongoMemoryServer;
-
-beforeAll(async () => {
-  mongoServer1 = await MongoMemoryServer.create();
-  const mongoUri = mongoServer1.getUri();
-  con1 = await MongoClient.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  db1 = con1.db(mongoServer1.getDbName());
-
-  mongoServer2 = await MongoMemoryServer.create();
-  const mongoUri2 = mongoServer2.getUri();
-  con2 = await MongoClient.connect(mongoUri2, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  db2 = con2.db(mongoServer1.getDbName());
-});
-
-afterAll(async () => {
-  if (con1) {
-    await con1.close();
-  }
-  if (con2) {
-    await con2.close();
-  }
-  if (mongoServer1) {
-    await mongoServer1.stop();
-  }
-  if (mongoServer2) {
-    await mongoServer2.stop();
-  }
-});
-
 describe('Multiple mongoServers', () => {
+  let con1: MongoClient;
+  let con2: MongoClient;
+  let db1: Db;
+  let db2: Db;
+  let mongoServer1: MongoMemoryServer;
+  let mongoServer2: MongoMemoryServer;
+
+  beforeAll(async () => {
+    mongoServer1 = await MongoMemoryServer.create();
+    const mongoUri = mongoServer1.getUri();
+    con1 = await MongoClient.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    db1 = con1.db(mongoServer1.getDbName());
+
+    mongoServer2 = await MongoMemoryServer.create();
+    const mongoUri2 = mongoServer2.getUri();
+    con2 = await MongoClient.connect(mongoUri2, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    db2 = con2.db(mongoServer1.getDbName());
+  });
+
+  afterAll(async () => {
+    if (con1) {
+      await con1.close();
+    }
+    if (con2) {
+      await con2.close();
+    }
+    if (mongoServer1) {
+      await mongoServer1.stop();
+    }
+    if (mongoServer2) {
+      await mongoServer2.stop();
+    }
+  });
+
   it('should start several servers', async () => {
     expect(db1).toBeDefined();
     const col1 = db1.collection('test');
