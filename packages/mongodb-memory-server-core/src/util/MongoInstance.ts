@@ -67,8 +67,8 @@ export default class MongoInstance extends EventEmitter {
   binaryOpts: MongoBinaryOpts;
   spawnOpts: SpawnOptions;
 
-  childProcess: ChildProcess | null = null;
-  killerProcess: ChildProcess | null = null;
+  childProcess?: ChildProcess;
+  killerProcess?: ChildProcess;
   isInstancePrimary: boolean = false;
   isInstanceReady: boolean = false;
 
