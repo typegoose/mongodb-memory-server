@@ -1,3 +1,41 @@
+# [7.0.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.0...v7.0.0-beta.1) (2020-10-01)
+
+
+### Bug Fixes
+
+* **MongoInstance:** reset "childProcess" and "killerProcess" after "kill" ([49c710d](https://github.com/nodkz/mongodb-memory-server/commit/49c710df5b2fcaba1163c2d86b81e4eb1728bdff))
+
+
+### Code Refactoring
+
+* **MongoInstance:** change "null" to "undefined" for "childProcess" & "killerProcess" ([232b812](https://github.com/nodkz/mongodb-memory-server/commit/232b812c7799da392955f6e4d4e49f67b8e10597))
+* **MongoInstance:** move "debug" into an private function ([3d23d5b](https://github.com/nodkz/mongodb-memory-server/commit/3d23d5b6d6dbac3c7b365bad3bc9bb03021ddfc6))
+* **MongoInstance:** replace "instanceReady" and "instanceFailed" with events ([6925c45](https://github.com/nodkz/mongodb-memory-server/commit/6925c45a15d4ab14d4bd134ebcad1e96c6349580))
+* **MongoMemoryReplSet:** "_waitForPrimary" use new events ([ed4b9e9](https://github.com/nodkz/mongodb-memory-server/commit/ed4b9e9c448435ff05cd504ed4e8a1a0e515b649))
+
+
+### Features
+
+* **db_util:** add function "assertion" ([c059500](https://github.com/nodkz/mongodb-memory-server/commit/c059500f946fa248260b686ec4ffaaa58c942a74))
+* **MongoInstance:** change root values of "MongodOpts" to be required ([9779721](https://github.com/nodkz/mongodb-memory-server/commit/97797210bddbb117bfabb28f5b0be898a543bb3e))
+* **MongoInstance:** extend EventEmitter ([10965c7](https://github.com/nodkz/mongodb-memory-server/commit/10965c7ac5c6a0877561221608f80d508cbfe30a)), closes [#365](https://github.com/nodkz/mongodb-memory-server/issues/365)
+* **MongoInstance:** make "port" and "dbPath" required ([749c3e3](https://github.com/nodkz/mongodb-memory-server/commit/749c3e3dc9bc93d1506e034bf24a74b4420a4139))
+* **MongoInstance:** outsource "MongodOpts.instance" ([d9dd6f8](https://github.com/nodkz/mongodb-memory-server/commit/d9dd6f81f84a69b412cdb5198baaabbdfaa156f7))
+* **MongoInstance:** remove function "waitPrimaryReady" ([1536dc2](https://github.com/nodkz/mongodb-memory-server/commit/1536dc26f8548e95abc3baa0dba4b9b333b9e140))
+* **MongoInstance:** rename interface "MongodOps" to "MongodOpts" ([edd4d39](https://github.com/nodkz/mongodb-memory-server/commit/edd4d39e0f8c0d1ed9c21f95f462e7bb8f42737f))
+
+
+### BREAKING CHANGES
+
+* **MongoInstance:** changing "null" to "undefined" can break some code
+* **MongoInstance:** throwing an error if 2 values are now undefined/null can break some code
+* **MongoInstance:** removing the possibility to overwrite 2 functions this can break some use-cases
+* **MongoInstance:** removing an function can break some use-cases
+* **MongoMemoryReplSet:** "_waitForPrimary" now uses events instead of calling function "waitPrimaryReady"
+* **MongoInstance:** because of changing values to "required" this can break some use-cases
+* **MongoInstance:** removing the "dynamic" part can break some code with custom debug-logging
+* **MongoInstance:** because of the rename it can break some use-cases
+
 # [6.9.0](https://github.com/nodkz/mongodb-memory-server/compare/v6.8.1...v6.9.0) (2020-09-30)
 
 
