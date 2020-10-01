@@ -1,5 +1,5 @@
 import * as tmp from 'tmp';
-import MongoMemoryServer from '../MongoMemoryServer';
+import MongoMemoryServer, { MongoMemoryServerStateEnum } from '../MongoMemoryServer';
 import { assertion } from '../util/db_util';
 
 tmp.setGracefulCleanup();
@@ -76,6 +76,20 @@ describe('MongoMemoryServer', () => {
       expect(mongoServer.start).not.toHaveBeenCalled();
 
       await mongoServer.stop();
+    });
+
+    it('should throw an error if "instanceInfo" is undefined but "_state" is "running"', async () => {
+      const mongoServer = new MongoMemoryServer();
+      mongoServer._state = MongoMemoryServerStateEnum.running;
+
+      try {
+        await mongoServer.ensureInstance();
+        fail('Expected "ensureInstance" to throw');
+      } catch (err) {
+        expect(err.message).toEqual(
+          'MongoMemoryServer "_state" is "running" but "instanceInfo" is undefined!'
+        );
+      }
     });
   });
 
