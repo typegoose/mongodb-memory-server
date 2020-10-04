@@ -1,14 +1,9 @@
-export type DebugFn = (...args: any[]) => any;
-export type DebugPropT = boolean;
-
 export interface DownloadProgressT {
   current: number;
   length: number;
   totalMb: number;
   lastPrintedAt: number;
 }
-
-export type CallbackFn = (...args: any[]) => any;
 
 export { SpawnOptions } from 'child_process';
 
@@ -28,14 +23,3 @@ export interface MongoMemoryInstancePropT extends MongoMemoryInstancePropBaseT {
   replSet?: string;
   storageEngine?: StorageEngineT;
 }
-
-export interface ReplStatusReplT {
-  ismaster: boolean;
-}
-
-export interface ReplStatusResultT {
-  repl: ReplStatusReplT;
-}
-
-export type ErrorVoidCallback = (err: any) => void;
-export type EmptyVoidCallback = () => void;
