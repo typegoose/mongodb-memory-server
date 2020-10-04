@@ -69,6 +69,7 @@
   "scripts": {
     "clean": "rimraf tmp lib coverage node_modules/.cache",
     "build": "rimraf ./lib && tsc -p ./tsconfig.build.json",
+    "build:tests": "rimraf ./build && tsc -p ./tsconfig.json",
     "watch": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --watchAll",
     "coverage": "cross-env MONGOMS_DOWNLOAD_DIR=./tmp jest --coverage",
     "lint": "npm run eslint && npm run tscheck",
