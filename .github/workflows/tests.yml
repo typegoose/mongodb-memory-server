@@ -4,6 +4,14 @@
 name: Node.js CI
 
 on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      git-ref:
+        description: Git Ref (Optional)
+        required: false
 
 jobs:
   tests:
@@ -13,6 +21,11 @@ jobs:
         node-version: [10.x, 12.x, 14.x]
     steps:
       - uses: actions/checkout@v2
+        if: github.event.inputs.git-ref == ''
+      - uses: actions/checkout@v2
+        if: github.event.inputs.git-ref != ''
+        with:
+          ref: ${{ github.event.inputs.git-ref }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
