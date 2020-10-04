@@ -52,7 +52,7 @@ export interface MongodOpts {
   spawn: SpawnOptions;
 }
 
-export default interface MongoInstance extends EventEmitter {
+export interface MongoInstance extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
   emit(event: MongoInstanceEvents, ...args: any[]): boolean;
   on(event: MongoInstanceEvents, listener: (...args: any[]) => void): this;
@@ -63,7 +63,7 @@ export default interface MongoInstance extends EventEmitter {
  * MongoDB Instance Handler Class
  * This Class starts & stops the "mongod" process directly and handles stdout, sterr and close events
  */
-export default class MongoInstance extends EventEmitter {
+export class MongoInstance extends EventEmitter {
   instanceOpts: MongoInstanceOpts;
   binaryOpts: MongoBinaryOpts;
   spawnOpts: SpawnOptions;
@@ -364,3 +364,5 @@ export default class MongoInstance extends EventEmitter {
     }
   }
 }
+
+export default MongoInstance;

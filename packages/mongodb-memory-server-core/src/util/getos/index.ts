@@ -47,7 +47,7 @@ export function isLinuxOS(os: AnyOS): os is LinuxOS {
 }
 
 /** Get an OS object */
-export default async function getOS(): Promise<AnyOS> {
+export async function getOS(): Promise<AnyOS> {
   /** Node builtin function for first determinations */
   const osName = platform();
 
@@ -58,6 +58,8 @@ export default async function getOS(): Promise<AnyOS> {
 
   return { os: osName };
 }
+
+export default getOS;
 
 /** Function to outsource Linux Infomation Parsing */
 async function getLinuxInfomation(): Promise<LinuxOS> {

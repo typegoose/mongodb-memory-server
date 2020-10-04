@@ -36,13 +36,15 @@ findPackageJson();
  * Resolve "variableName" with a prefix of "ENV_CONFIG_PREFIX"
  * @param variableName The variable to use
  */
-export default function resolveConfig(variableName: string): string | undefined {
+export function resolveConfig(variableName: string): string | undefined {
   return (
     process.env[`${ENV_CONFIG_PREFIX}${variableName}`] ??
     packageJsonConfig?.[camelCase(variableName)] ??
     defaultValues.get(variableName)
   );
 }
+
+export default resolveConfig;
 
 /**
  * Convert "1, on, yes, true" to true (otherwise false)

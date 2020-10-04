@@ -46,7 +46,7 @@ export interface MongoInstanceDataT extends StartupInstanceData {
   childProcess?: ChildProcess;
 }
 
-export default class MongoMemoryServer {
+export class MongoMemoryServer {
   runningInstance: Promise<MongoInstanceDataT> | null = null;
   instanceInfoSync: MongoInstanceDataT | null = null;
   opts: MongoMemoryServerOptsT;
@@ -293,3 +293,5 @@ export default class MongoMemoryServer {
     return dbName;
   }
 }
+
+export default MongoMemoryServer;

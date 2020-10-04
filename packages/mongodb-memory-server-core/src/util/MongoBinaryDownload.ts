@@ -37,7 +37,7 @@ interface HttpDownloadOptions {
 /**
  * Download and extract the "mongod" binary
  */
-export default class MongoBinaryDownload {
+export class MongoBinaryDownload {
   dlProgress: DownloadProgressT;
   _downloadingUrl?: string;
 
@@ -442,3 +442,5 @@ export default class MongoBinaryDownload {
     }
   }
 }
+
+export default MongoBinaryDownload;

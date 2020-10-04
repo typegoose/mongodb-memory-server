@@ -12,6 +12,8 @@ export function generateDbName(dbName?: string): string {
   return dbName || uuidv4();
 }
 
+export default generateDbName;
+
 /**
  * Extracts the host and port information from a mongodb URI string.
  * @param {string} uri mongodb URI
@@ -78,5 +80,3 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
     childprocess.kill('SIGINT');
   });
 }
-
-export default generateDbName;

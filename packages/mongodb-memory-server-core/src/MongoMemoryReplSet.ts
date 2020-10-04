@@ -97,7 +97,7 @@ export interface MongoMemoryReplSetOptsT {
 /**
  * Class for managing an replSet
  */
-export default class MongoMemoryReplSet extends EventEmitter {
+export class MongoMemoryReplSet extends EventEmitter {
   servers: MongoMemoryServer[] = [];
   opts: {
     instanceOpts: MongoMemoryInstancePropBaseT[];
@@ -396,3 +396,5 @@ export default class MongoMemoryReplSet extends EventEmitter {
     log('_waitForPrimary detected one primary instance ');
   }
 }
+
+export default MongoMemoryReplSet;

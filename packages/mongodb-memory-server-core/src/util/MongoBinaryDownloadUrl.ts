@@ -17,7 +17,7 @@ export interface MongoBinaryDownloadUrlOpts {
 /**
  * Download URL generator
  */
-export default class MongoBinaryDownloadUrl {
+export class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
   version: string;
@@ -372,3 +372,5 @@ export default class MongoBinaryDownloadUrl {
     }
   }
 }
+
+export default MongoBinaryDownloadUrl;

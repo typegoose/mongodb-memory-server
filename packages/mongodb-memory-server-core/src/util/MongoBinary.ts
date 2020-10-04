@@ -29,7 +29,7 @@ export interface MongoBinaryOpts {
   checkMD5?: boolean;
 }
 
-export default class MongoBinary {
+export class MongoBinary {
   static cache: MongoBinaryCache = {};
 
   /**
@@ -199,3 +199,5 @@ export default class MongoBinary {
     return binaryPath;
   }
 }
+
+export default MongoBinary;
