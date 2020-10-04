@@ -5,8 +5,6 @@ export interface DownloadProgressT {
   lastPrintedAt: number;
 }
 
-export { SpawnOptions } from 'child_process';
-
 export type StorageEngineT = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
 
 export interface MongoMemoryInstancePropBaseT {

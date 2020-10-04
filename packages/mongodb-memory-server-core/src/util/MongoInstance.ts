@@ -1,9 +1,9 @@
-import { ChildProcess } from 'child_process';
+import { ChildProcess, SpawnOptions } from 'child_process';
 import { default as spawnChild } from 'cross-spawn';
 import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
-import { StorageEngineT, SpawnOptions } from '../types';
+import { StorageEngineT } from '../types';
 import debug from 'debug';
 import { assertion, isNullOrUndefined, killProcess } from './db_util';
 import { lt } from 'semver';

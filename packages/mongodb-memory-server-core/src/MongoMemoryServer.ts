@@ -1,10 +1,10 @@
-import { ChildProcess } from 'child_process';
+import { ChildProcess, SpawnOptions } from 'child_process';
 import * as tmp from 'tmp';
 import getPort from 'get-port';
 import { generateDbName, getUriBase, isNullOrUndefined } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import { MongoMemoryInstancePropT, StorageEngineT, SpawnOptions } from './types';
+import { MongoMemoryInstancePropT, StorageEngineT } from './types';
 import debug from 'debug';
 import { deprecate } from 'util';
 

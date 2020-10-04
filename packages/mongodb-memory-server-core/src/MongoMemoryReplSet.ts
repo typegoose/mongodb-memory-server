@@ -4,16 +4,12 @@ import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOptsT } from './MongoMemoryServer';
 import { generateDbName, getHost } from './util/db_util';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import {
-  MongoMemoryInstancePropT,
-  MongoMemoryInstancePropBaseT,
-  SpawnOptions,
-  StorageEngineT,
-} from './types';
+import { MongoMemoryInstancePropT, MongoMemoryInstancePropBaseT, StorageEngineT } from './types';
 import debug from 'debug';
 import { MongoError } from 'mongodb';
 import { deprecate } from 'util';
 import { MongoInstanceEvents } from './util/MongoInstance';
+import { SpawnOptions } from 'child_process';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
 
