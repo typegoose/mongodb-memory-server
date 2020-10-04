@@ -6947,15 +6947,15 @@ modify-values@^1.0.0:
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
-mongodb-memory-server-core@6.8.1:
-  version "6.8.1"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-6.8.1.tgz#3ec2f1f2de6dd5dc9a4789163d77d5d8b6e14dd2"
-  integrity sha512-7vOkJTmxkrMaVgM1UjMVfDJJ0xPyLvvA060Yj/yo8HIjYslWinH1PB9FE3NpmU5aisfRHWWRn8kwv6VNDY6csg==
+mongodb-memory-server-core@7.0.0-beta.1:
+  version "7.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-7.0.0-beta.1.tgz#29a36f4eef7aaa01d434b54bd88a116b4c9b9ee7"
+  integrity sha512-NNpQ9O9w2zfeoOpcFTCDePYpLAiieRIXo1X8VdRiykgLt0F+UB4Bga92sReHLndWiiGTuqh+225OtWUqfgVqHQ==
   dependencies:
     "@types/tmp" "^0.2.0"
     camelcase "^6.0.0"
     cross-spawn "^7.0.3"
-    debug "^4.1.1"
+    debug "^4.2.0"
     find-cache-dir "^3.3.1"
     find-package-json "^1.2.0"
     get-port "^5.1.1"
@@ -6971,12 +6971,12 @@ mongodb-memory-server-core@6.8.1:
   optionalDependencies:
     mongodb "3.6.2"
 
-mongodb-memory-server@6.8.1:
-  version "6.8.1"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-6.8.1.tgz#d0550a6c6f62d1dfa3de837e0866b62331824188"
-  integrity sha512-qVgpd1u+Ff8itoOZ4iEMrYoTOvcRY3R8XT7TFWBGFf/9d4Sr/ZvhLCsYUrcOg31pBtVLxkDAFLaUcEzdm1xMUw==
+mongodb-memory-server@7.0.0-beta.1:
+  version "7.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-7.0.0-beta.1.tgz#bf3240bbe0108ade67368031faa28ca8def46ab1"
+  integrity sha512-m/q2GETcclaXswT8DCF8pkydH8tFGOalZGb7C/dk1eaxRvR/jylsAsLuWbc+Bj59gZ+tHUFGLnKRTgqa+hW6wQ==
   dependencies:
-    mongodb-memory-server-core "6.8.1"
+    mongodb-memory-server-core "7.0.0-beta.1"
 
 mongodb@3.6.2:
   version "3.6.2"
@@ -9760,6 +9760,11 @@ tslib@^1.8.1, tslib@^1.9.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
   integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
+
+tslib@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.1.tgz#410eb0d113e5b6356490eec749603725b021b43e"
+  integrity sha512-SgIkNheinmEBgx1IUNirK0TUD4X9yjjBRTqqjggWCU3pUEqIk3/Uwl3yRixYKT6WjQuGiwDv4NomL3wqRCj+CQ==
 
 tsutils@^3.17.1:
   version "3.17.1"
