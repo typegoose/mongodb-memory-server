@@ -1,6 +1,22 @@
 module.exports = {
   plugins: [
-    '@semantic-release/commit-analyzer',
+    [
+      '@semantic-release/commit-analyzer',
+      {
+        preset: "angular",
+        releaseRules: [
+          {type: "feat", release: "minor"},
+          {type: "fix", relase: "patch"},
+          {type: "docs", release: false},
+          {type: "style", release: false},
+          {type: "refactor", release: "patch"},
+          {type: "perf", release: "patch"},
+          {type: "test", release: false},
+          {type: "chore", release: false},
+          {type: "dependencies", release: "minor"}
+        ]
+      }
+    ],
     '@semantic-release/release-notes-generator',
     [
       // Update versions in sub-packages dependencies
