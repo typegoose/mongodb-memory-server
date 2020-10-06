@@ -13,7 +13,9 @@ module.exports = {
           {type: "perf", release: "patch"},
           {type: "test", release: false},
           {type: "chore", release: false},
-          {type: "dependencies", release: "minor"}
+          {type: "dependencies", release: "minor"},
+          // dont trigger another release on release commit
+          {type: "release", release: false}
         ]
       }
     ],
@@ -32,7 +34,8 @@ module.exports = {
             {type: "test", hidden: true},
             {type: "chore", hidden: true},
             {type: "dependencies", section: "Dependencies"},
-            {type: "revert", section: "Reverts"}
+            {type: "revert", section: "Reverts"},
+            {type: "release", hidden: true}
           ]
         }
       }
@@ -100,7 +103,7 @@ module.exports = {
     ],
     ["@semantic-release/git", {
       "assets": ["packages/*/package.json", "CHANGELOG.md"],
-      "message": "chore: release v${nextRelease.version}"
+      "message": "release: v${nextRelease.version}"
     }],
     "@semantic-release/github"
   ],
