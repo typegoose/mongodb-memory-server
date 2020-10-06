@@ -1,0 +1,11 @@
+codecov:
+  # enable the line below to remove warning "waiting for CI to complete..."
+  # require_ci_to_pass: false # because in this repo, tests are run once per workflow (tests.yml)
+
+coverage:
+  precision: 2 # 00.00%
+  round: down
+  range: "75...100"
+
+github_checks:
+    annotations: true
