@@ -1,15 +1,7 @@
 {
+  "extends": "./packages/mongodb-memory-server-core/tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "target": "es5",
-    "module": "commonjs",
-    "strict": true,
-    "lib": ["es2017"],
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest"],
-    "importHelpers": true
   },
   "include": ["packages/**/*"]
 }
