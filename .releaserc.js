@@ -17,7 +17,26 @@ module.exports = {
         ]
       }
     ],
-    '@semantic-release/release-notes-generator',
+    [
+      '@semantic-release/release-notes-generator',
+      {
+        preset: "angular",
+        presetConfig: {
+          types: [
+            {type: "feat", section: "Features"},
+            {type: "fix", section: "Fixes"},
+            {type: "docs", hidden: true},
+            {type: "style", section: "Style"},
+            {type: "refactor", section: "Refactor"},
+            {type: "perf", section: "Performance"},
+            {type: "test", hidden: true},
+            {type: "chore", hidden: true},
+            {type: "dependencies", section: "Dependencies"},
+            {type: "revert", section: "Reverts"}
+          ]
+        }
+      }
+    ],
     [
       // Update versions in sub-packages dependencies
       "@google/semantic-release-replace-plugin",
