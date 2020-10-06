@@ -21,10 +21,6 @@ module.exports = {
       }
     ],
     "@semantic-release/changelog",
-    ["@semantic-release/git", {
-      "assets": ["packages/*/package.json", "CHANGELOG.md"],
-      "message": "chore: release v${nextRelease.version}"
-    }],
     [
       '@semantic-release/npm',
       {
@@ -67,6 +63,10 @@ module.exports = {
         pkgRoot: './packages/mongodb-memory-server-global-4.4',
       },
     ],
+    ["@semantic-release/git", {
+      "assets": ["packages/*/package.json", "CHANGELOG.md"],
+      "message": "chore: release v${nextRelease.version}"
+    }],
     "@semantic-release/github"
   ],
 };
