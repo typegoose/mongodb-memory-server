@@ -23,7 +23,7 @@ module.exports = {
     "@semantic-release/changelog",
     ["@semantic-release/git", {
       "assets": ["packages/*/package.json", "CHANGELOG.md"],
-      "message": "v${nextRelease.version}"
+      "message": "chore: release v${nextRelease.version}"
     }],
     [
       '@semantic-release/npm',
