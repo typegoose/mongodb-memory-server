@@ -12,7 +12,6 @@ module.exports = {
     sourceType: 'module',
     useJSXTextNode: true,
     project: [
-      path.resolve(__dirname, 'tsconfig.test.json'),
       path.resolve(__dirname, 'packages/mongodb-memory-server-core/tsconfig.json'),
     ],
   },
