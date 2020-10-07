@@ -33,8 +33,8 @@ describe('MongoMemoryServer', () => {
         instance: { port: mongoServer1.getPort() },
       });
 
-      expect(mongoServer1.getInstanceInfo()).toBeDefined();
-      expect(mongoServer2.getInstanceInfo()).toBeDefined();
+      expect(mongoServer1.instanceInfo).toBeDefined();
+      expect(mongoServer2.instanceInfo).toBeDefined();
       expect(mongoServer1.getPort()).not.toEqual(mongoServer2.getPort());
 
       await mongoServer1.stop();
@@ -75,7 +75,7 @@ describe('MongoMemoryServer', () => {
       const mongoServer = await MongoMemoryServer.create();
       jest.spyOn(mongoServer, 'start'); // so it dosnt count the "start" call inside "create"
 
-      expect(await mongoServer.ensureInstance()).toEqual(mongoServer.getInstanceInfo());
+      expect(await mongoServer.ensureInstance()).toEqual(mongoServer.instanceInfo);
       expect(mongoServer.start).not.toHaveBeenCalled();
 
       await mongoServer.stop();
@@ -128,7 +128,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.ensureInstance();
 
       expect(mongoServer.start).toHaveBeenCalledTimes(1);
-      expect(mongoServer.getInstanceInfo()).toBeDefined();
+      expect(mongoServer.instanceInfo).toBeDefined();
 
       await mongoServer.stop();
     });
@@ -138,18 +138,18 @@ describe('MongoMemoryServer', () => {
     it('should start & stop mongod and check output of "getInstanceInfo"', async () => {
       const mongoServer = new MongoMemoryServer({});
 
-      expect(mongoServer.getInstanceInfo()).toBeFalsy();
+      expect(mongoServer.instanceInfo).toBeFalsy();
       mongoServer.start();
       // while mongod launching `getInstanceInfo` is false
-      expect(mongoServer.getInstanceInfo()).toBeFalsy(); // isnt this an race-condition?
+      expect(mongoServer.instanceInfo).toBeFalsy(); // isnt this an race-condition?
 
       // when instance launched then data became avaliable
       await mongoServer.ensureInstance();
-      expect(mongoServer.getInstanceInfo()).toBeDefined();
+      expect(mongoServer.instanceInfo).toBeDefined();
 
       // after stop, instance data should be empty
       await mongoServer.stop();
-      expect(mongoServer.getInstanceInfo()).toBeFalsy();
+      expect(mongoServer.instanceInfo).toBeFalsy();
     });
 
     it('should return "true" if no instance is running', async () => {
@@ -197,7 +197,7 @@ describe('MongoMemoryServer', () => {
 
     it('should return correct value without "otherDb" being provided', async () => {
       const port: number = mongoServer.getPort();
-      const instanceInfo = mongoServer.getInstanceInfo();
+      const instanceInfo = mongoServer.instanceInfo;
       assertion(instanceInfo, new Error('"MongoServer.instanceInfo" should be defined!'));
       expect(mongoServer.getUri()).toEqual(`mongodb://127.0.0.1:${port}/${instanceInfo.dbName}?`);
     });

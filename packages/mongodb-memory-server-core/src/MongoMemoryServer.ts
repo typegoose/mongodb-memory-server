@@ -223,7 +223,7 @@ export class MongoMemoryServer extends EventEmitter {
   /**
    * Get Information about the currently running instance, if it is not running it returns "undefined"
    */
-  getInstanceInfo(): MongoInstanceDataT | undefined {
+  get instanceInfo(): MongoInstanceDataT | undefined {
     return this._instanceInfo;
   }
 

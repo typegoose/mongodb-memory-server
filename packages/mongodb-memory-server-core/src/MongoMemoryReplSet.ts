@@ -378,7 +378,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       ...this.servers.map(
         (server) =>
           new Promise((res, rej) => {
-            const instanceInfo = server.getInstanceInfo();
+            const instanceInfo = server.instanceInfo;
             if (!instanceInfo) {
               return rej(new Error('_waitForPrimary - instanceInfo not present '));
             }
