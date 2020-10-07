@@ -77,7 +77,7 @@ export default class MongoBinaryDownloadUrl {
     if (!isNullOrUndefined(semver.coerce(this.version))) {
       if (semver.satisfies(this.version, '4.2.x')) {
         name += '-2012plus';
-      } else if (semver.lt(this.version, '4.0.0')) {
+      } else if (semver.lt(this.version, '4.1.0')) {
         name += '-2008plus-ssl';
       }
     }
