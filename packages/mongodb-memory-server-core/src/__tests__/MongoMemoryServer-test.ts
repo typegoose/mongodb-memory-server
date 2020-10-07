@@ -197,13 +197,9 @@ describe('MongoMemoryServer', () => {
 
     it('should return correct value without "otherDb" being provided', async () => {
       const port: number = mongoServer.getPort();
-      assertion(
-        mongoServer.instanceInfo,
-        new Error('"MongoServer.instanceInfo" should be defined!')
-      );
-      expect(mongoServer.getUri()).toEqual(
-        `mongodb://127.0.0.1:${port}/${mongoServer.instanceInfo.dbName}?`
-      );
+      const instanceInfo = mongoServer.getInstanceInfo();
+      assertion(instanceInfo, new Error('"MongoServer.instanceInfo" should be defined!'));
+      expect(mongoServer.getUri()).toEqual(`mongodb://127.0.0.1:${port}/${instanceInfo.dbName}?`);
     });
   });
 
