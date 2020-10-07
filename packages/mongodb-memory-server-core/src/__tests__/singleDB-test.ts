@@ -39,7 +39,7 @@ describe('Single mongoServer', () => {
     // this case can normally happen if "start" is called again
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    mongoServer2.instanceInfo = {} as any; // artificially set this to {} to not be undefined anymore
+    mongoServer2._instanceInfo = {} as any; // artificially set this to {} to not be undefined anymore
     await expect(mongoServer2.start()).rejects.toThrow(
       'MongoDB instance already in status startup/running/error. Use debug for more info.'
     );

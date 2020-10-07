@@ -67,7 +67,7 @@ export interface MongoMemoryServer extends EventEmitter {
 }
 
 export class MongoMemoryServer extends EventEmitter {
-  protected instanceInfo?: MongoInstanceDataT;
+  protected _instanceInfo?: MongoInstanceDataT;
   opts: MongoMemoryServerOptsT;
   _state: MongoMemoryServerStateEnum = MongoMemoryServerStateEnum.new;
 
@@ -108,7 +108,7 @@ export class MongoMemoryServer extends EventEmitter {
    */
   async start(): Promise<boolean> {
     log('Called MongoMemoryServer.start() method');
-    if (this.instanceInfo) {
+    if (this._instanceInfo) {
       throw new Error(
         'MongoDB instance already in status startup/running/error. Use debug for more info.'
       );
@@ -116,7 +116,7 @@ export class MongoMemoryServer extends EventEmitter {
 
     this.stateChange(MongoMemoryServerStateEnum.starting);
 
-    this.instanceInfo = await this._startUpInstance().catch((err) => {
+    this._instanceInfo = await this._startUpInstance().catch((err) => {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
         console.warn('Starting the instance failed, enable debug for more infomation');
       }
@@ -190,31 +190,31 @@ export class MongoMemoryServer extends EventEmitter {
     log('Called MongoMemoryServer.stop() method');
 
     // just return "true" if the instance is already running / defined
-    if (isNullOrUndefined(this.instanceInfo)) {
+    if (isNullOrUndefined(this._instanceInfo)) {
       log('Instance is already stopped, returning true');
       return true;
     }
 
     // assert here, just to be sure
     assertion(
-      !isNullOrUndefined(this.instanceInfo.instance),
+      !isNullOrUndefined(this._instanceInfo.instance),
       new Error('"instanceInfo.instance" is undefined!')
     );
 
     log(
       `Shutdown MongoDB server on port ${
-        this.instanceInfo.port
-      } with pid ${this.instanceInfo.instance.getPid()}` // "undefined" would say more than ""
+        this._instanceInfo.port
+      } with pid ${this._instanceInfo.instance.getPid()}` // "undefined" would say more than ""
     );
-    await this.instanceInfo.instance.kill();
+    await this._instanceInfo.instance.kill();
 
-    const tmpDir = this.instanceInfo.tmpDir;
+    const tmpDir = this._instanceInfo.tmpDir;
     if (tmpDir) {
       log(`Removing tmpDir ${tmpDir.name}`);
       tmpDir.removeCallback();
     }
 
-    this.instanceInfo = undefined;
+    this._instanceInfo = undefined;
     this.stateChange(MongoMemoryServerStateEnum.stopped);
 
     return true;
@@ -224,7 +224,7 @@ export class MongoMemoryServer extends EventEmitter {
    * Get Information about the currently running instance, if it is not running it returns "undefined"
    */
   getInstanceInfo(): MongoInstanceDataT | undefined {
-    return this.instanceInfo;
+    return this._instanceInfo;
   }
 
   /**
@@ -233,8 +233,8 @@ export class MongoMemoryServer extends EventEmitter {
    */
   async ensureInstance(): Promise<MongoInstanceDataT> {
     log('Called MongoMemoryServer.ensureInstance() method');
-    if (this.instanceInfo) {
-      return this.instanceInfo;
+    if (this._instanceInfo) {
+      return this._instanceInfo;
     }
 
     switch (this._state) {
@@ -253,7 +253,7 @@ export class MongoMemoryServer extends EventEmitter {
                 )
               );
             }
-            res(this.instanceInfo);
+            res(this._instanceInfo);
           })
         );
       default:
@@ -265,11 +265,11 @@ export class MongoMemoryServer extends EventEmitter {
     log(' - `start()` command was succesfully resolved');
 
     // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
-    if (!this.instanceInfo) {
+    if (!this._instanceInfo) {
       throw new Error('Ensure-Instance failed to start an instance!');
     }
 
-    return this.instanceInfo;
+    return this._instanceInfo;
   }
 
   /**
@@ -277,9 +277,9 @@ export class MongoMemoryServer extends EventEmitter {
    * @param otherDbName Set an custom Database name, or set this to "true" to generate an different name
    */
   getUri(otherDbName?: string | boolean): string {
-    assertionInstanceInfo(this.instanceInfo);
+    assertionInstanceInfo(this._instanceInfo);
 
-    let dbName: string = this.instanceInfo.dbName;
+    let dbName: string = this._instanceInfo.dbName;
 
     // using "if" instead of nested "?:"
     if (!isNullOrUndefined(otherDbName)) {
@@ -287,34 +287,34 @@ export class MongoMemoryServer extends EventEmitter {
       dbName = typeof otherDbName === 'string' ? otherDbName : generateDbName();
     }
 
-    return getUriBase(this.instanceInfo.ip, this.instanceInfo.port, dbName);
+    return getUriBase(this._instanceInfo.ip, this._instanceInfo.port, dbName);
   }
 
   /**
    * Get the Port of the currently running Instance
    */
   getPort(): number {
-    assertionInstanceInfo(this.instanceInfo);
-    assertion(!isNullOrUndefined(this.instanceInfo.port), new Error('"port" is undefined'));
-    return this.instanceInfo.port;
+    assertionInstanceInfo(this._instanceInfo);
+    assertion(!isNullOrUndefined(this._instanceInfo.port), new Error('"port" is undefined'));
+    return this._instanceInfo.port;
   }
 
   /**
    * Get the DB-Path of the currently running Instance
    */
   getDbPath(): string {
-    assertionInstanceInfo(this.instanceInfo);
-    assertion(!isNullOrUndefined(this.instanceInfo.dbPath), new Error('"dbPath" is undefined'));
-    return this.instanceInfo.dbPath;
+    assertionInstanceInfo(this._instanceInfo);
+    assertion(!isNullOrUndefined(this._instanceInfo.dbPath), new Error('"dbPath" is undefined'));
+    return this._instanceInfo.dbPath;
   }
 
   /**
    * Get the DB-Name of the currently running Instance
    */
   getDbName(): string {
-    assertionInstanceInfo(this.instanceInfo);
-    assertion(!isNullOrUndefined(this.instanceInfo.dbName), new Error('"dbName" is undefined'));
-    return this.instanceInfo.dbName;
+    assertionInstanceInfo(this._instanceInfo);
+    assertion(!isNullOrUndefined(this._instanceInfo.dbName), new Error('"dbName" is undefined'));
+    return this._instanceInfo.dbName;
   }
 }
 
