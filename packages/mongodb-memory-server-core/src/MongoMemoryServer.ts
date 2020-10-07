@@ -298,15 +298,6 @@ export class MongoMemoryServer extends EventEmitter {
   }
 
   /**
-   * Get the DB-Path of the currently running Instance
-   */
-  getDbPath(): string {
-    assertionInstanceInfo(this._instanceInfo);
-    assertion(!isNullOrUndefined(this._instanceInfo.dbPath), new Error('"dbPath" is undefined'));
-    return this._instanceInfo.dbPath;
-  }
-
-  /**
    * Get the DB-Name of the currently running Instance
    */
   getDbName(): string {

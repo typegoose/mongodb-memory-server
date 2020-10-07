@@ -215,7 +215,7 @@ describe('MongoMemoryServer', () => {
 
     await mongoServer.start();
 
-    expect(mongoServer.getDbPath()).toEqual(tmpDir.name);
+    expect(mongoServer.instanceInfo!.dbPath).toEqual(tmpDir.name);
 
     await mongoServer.stop();
     tmpDir.removeCallback();
