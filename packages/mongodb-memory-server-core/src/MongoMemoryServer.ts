@@ -228,6 +228,13 @@ export class MongoMemoryServer extends EventEmitter {
   }
 
   /**
+   * Get Current state of this class
+   */
+  get state(): MongoMemoryServerStateEnum {
+    return this._state;
+  }
+
+  /**
    * Ensure that the instance is running
    * -> throws if instance cannot be started
    */

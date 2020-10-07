@@ -219,4 +219,12 @@ describe('MongoMemoryServer', () => {
     await mongoServer.stop();
     tmpDir.removeCallback();
   });
+
+  it('"state" should return correct state', () => {
+    const mongoServer = new MongoMemoryServer();
+    expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
+    // @ts-expect-error
+    mongoServer.stateChange(MongoMemoryServerStateEnum.running);
+    expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.running);
+  });
 });
