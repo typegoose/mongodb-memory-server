@@ -1,3 +1,12 @@
+# [7.0.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.1...v7.0.0-beta.2) (2020-10-07)
+
+
+### Bug Fixes
+
+* **types:** remove alias "SpawnOptions" ([8b963c5](https://github.com/nodkz/mongodb-memory-server/commit/8b963c52da9b1acf901a8e5c52074c9c7778aff4))
+* **types:** remove unused types ([ab2944b](https://github.com/nodkz/mongodb-memory-server/commit/ab2944b76c9fc5ffa33b15cbfad822ab77a19301))
+* remove unused file "deprecate" ([bb3e0f4](https://github.com/nodkz/mongodb-memory-server/commit/bb3e0f4e1c2564632516bf069c25c2bbd1a9e67a))
+
 # [7.0.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.0...v7.0.0-beta.1) (2020-10-01)
 
 
