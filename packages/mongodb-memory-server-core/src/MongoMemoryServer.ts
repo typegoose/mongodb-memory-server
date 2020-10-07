@@ -69,7 +69,7 @@ export interface MongoMemoryServer extends EventEmitter {
 export class MongoMemoryServer extends EventEmitter {
   protected _instanceInfo?: MongoInstanceDataT;
   opts: MongoMemoryServerOptsT;
-  _state: MongoMemoryServerStateEnum = MongoMemoryServerStateEnum.new;
+  protected _state: MongoMemoryServerStateEnum = MongoMemoryServerStateEnum.new;
 
   /**
    * Create an Mongo-Memory-Sever Instance

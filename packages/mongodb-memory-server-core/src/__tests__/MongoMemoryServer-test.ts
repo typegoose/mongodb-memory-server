@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as tmp from 'tmp';
 import MongoMemoryServer, {
   MongoMemoryServerEventEnum,
@@ -83,6 +84,7 @@ describe('MongoMemoryServer', () => {
 
     it('should throw an error if "instanceInfo" is undefined but "_state" is "running"', async () => {
       const mongoServer = new MongoMemoryServer();
+      // @ts-expect-error
       mongoServer._state = MongoMemoryServerStateEnum.running;
 
       try {
@@ -111,6 +113,7 @@ describe('MongoMemoryServer', () => {
 
     it('should throw an error if state was "starting" and emitted an event but not "running"', async () => {
       const mongoServer = new MongoMemoryServer();
+      // @ts-expect-error
       mongoServer._state = MongoMemoryServerStateEnum.starting;
       const ensureInstancePromise = mongoServer.ensureInstance();
 
