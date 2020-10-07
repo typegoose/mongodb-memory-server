@@ -298,15 +298,6 @@ export class MongoMemoryServer extends EventEmitter {
   }
 
   /**
-   * Get the Port of the currently running Instance
-   */
-  getPort(): number {
-    assertionInstanceInfo(this._instanceInfo);
-    assertion(!isNullOrUndefined(this._instanceInfo.port), new Error('"port" is undefined'));
-    return this._instanceInfo.port;
-  }
-
-  /**
    * Get the DB-Path of the currently running Instance
    */
   getDbPath(): string {

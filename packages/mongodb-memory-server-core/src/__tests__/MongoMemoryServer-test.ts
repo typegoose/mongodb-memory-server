@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as tmp from 'tmp';
 import MongoMemoryServer, {
@@ -31,12 +32,12 @@ describe('MongoMemoryServer', () => {
       });
 
       const mongoServer2 = await MongoMemoryServer.create({
-        instance: { port: mongoServer1.getPort() },
+        instance: { port: mongoServer1.instanceInfo!.port },
       });
 
       expect(mongoServer1.instanceInfo).toBeDefined();
       expect(mongoServer2.instanceInfo).toBeDefined();
-      expect(mongoServer1.getPort()).not.toEqual(mongoServer2.getPort());
+      expect(mongoServer1.instanceInfo!.port).not.toEqual(mongoServer2.instanceInfo!.port);
 
       await mongoServer1.stop();
       await mongoServer2.stop();
@@ -189,17 +190,17 @@ describe('MongoMemoryServer', () => {
     });
 
     it('should return correct value with "otherDb" being a string', async () => {
-      const port: number = mongoServer.getPort();
+      const port: number = mongoServer.instanceInfo!.port;
       expect(mongoServer.getUri('customDB')).toEqual(`mongodb://127.0.0.1:${port}/customDB?`);
     });
 
     it('should return correct value with "otherDb" being a boolean', async () => {
-      const port: number = mongoServer.getPort();
+      const port: number = mongoServer.instanceInfo!.port;
       expect(mongoServer.getUri(true)).not.toEqual(`mongodb://127.0.0.1:${port}/hello?`);
     });
 
     it('should return correct value without "otherDb" being provided', async () => {
-      const port: number = mongoServer.getPort();
+      const port: number = mongoServer.instanceInfo!.port;
       const instanceInfo = mongoServer.instanceInfo;
       assertion(instanceInfo, new Error('"MongoServer.instanceInfo" should be defined!'));
       expect(mongoServer.getUri()).toEqual(`mongodb://127.0.0.1:${port}/${instanceInfo.dbName}?`);

@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import * as mongodb from 'mongodb';
 import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOptsT } from './MongoMemoryServer';
-import { generateDbName, getHost } from './util/db_util';
+import { assertion, generateDbName, getHost, isNullOrUndefined } from './util/db_util';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, MongoMemoryInstancePropBaseT, StorageEngineT } from './types';
 import debug from 'debug';
@@ -211,7 +211,11 @@ export class MongoMemoryReplSet extends EventEmitter {
     } else {
       dbName = this.opts.replSet.dbName;
     }
-    const ports = this.servers.map((s) => s.getPort());
+    const ports = this.servers.map((s) => {
+      const port = s.instanceInfo?.port;
+      assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
+      return port;
+    });
     const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
     return `mongodb://${hosts}/${dbName}?replicaSet=${this.opts.replSet.name}`;
   }
