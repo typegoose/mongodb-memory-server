@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 
@@ -39,8 +40,8 @@ describe('Multiple mongoServers', () => {
   });
 
   it('should start several servers', async () => {
-    const db1 = con1.db(mongoServer1.getDbName());
-    const db2 = con2.db(mongoServer1.getDbName());
+    const db1 = con1.db(mongoServer1.instanceInfo!.dbName);
+    const db2 = con2.db(mongoServer1.instanceInfo!.dbName);
 
     expect(db1).toBeDefined();
     const col1 = db1.collection('test');

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 
@@ -25,7 +26,7 @@ describe('Single mongoServer', () => {
   });
 
   it('should start mongo server', async () => {
-    const db = con.db(mongoServer.getDbName());
+    const db = con.db(mongoServer.instanceInfo!.dbName);
 
     expect(db).toBeDefined();
     const col = db.collection('test');

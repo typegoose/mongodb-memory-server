@@ -296,15 +296,6 @@ export class MongoMemoryServer extends EventEmitter {
 
     return getUriBase(this._instanceInfo.ip, this._instanceInfo.port, dbName);
   }
-
-  /**
-   * Get the DB-Name of the currently running Instance
-   */
-  getDbName(): string {
-    assertionInstanceInfo(this._instanceInfo);
-    assertion(!isNullOrUndefined(this._instanceInfo.dbName), new Error('"dbName" is undefined'));
-    return this._instanceInfo.dbName;
-  }
 }
 
 export default MongoMemoryServer;
