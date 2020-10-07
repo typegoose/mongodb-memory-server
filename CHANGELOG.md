@@ -1,3 +1,10 @@
+## [6.9.1](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.0...v6.9.1) (2020-10-07)
+
+
+### Bug Fixes
+
+* **MongoBinaryDownloadUrl:** fix win32 download generation ([d62b489](https://github.com/nodkz/mongodb-memory-server/commit/d62b4891a01fe40b5f00c21ee02f08b24a55d80c)), closes [#399](https://github.com/nodkz/mongodb-memory-server/issues/399)
+
 # [6.9.0](https://github.com/nodkz/mongodb-memory-server/compare/v6.8.1...v6.9.0) (2020-09-30)
 
 
