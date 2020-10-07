@@ -3146,7 +3146,7 @@ conventional-changelog-angular@^5.0.0, conventional-changelog-angular@^5.0.3:
     compare-func "^2.0.0"
     q "^1.5.1"
 
-conventional-changelog-conventionalcommits@^4.3.1:
+conventional-changelog-conventionalcommits@^4.3.1, conventional-changelog-conventionalcommits@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/conventional-changelog-conventionalcommits/-/conventional-changelog-conventionalcommits-4.4.0.tgz#8d96687141c9bbd725a89b95c04966d364194cd4"
   integrity sha512-ybvx76jTh08tpaYrYn/yd0uJNLt5yMrb1BphDe4WBredMlvPisvMghfpnJb6RmRNcqXeuhR6LfGZGewbkRm9yA==
@@ -6946,37 +6946,6 @@ modify-values@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
-
-mongodb-memory-server-core@7.0.0-beta.1:
-  version "7.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-7.0.0-beta.1.tgz#29a36f4eef7aaa01d434b54bd88a116b4c9b9ee7"
-  integrity sha512-NNpQ9O9w2zfeoOpcFTCDePYpLAiieRIXo1X8VdRiykgLt0F+UB4Bga92sReHLndWiiGTuqh+225OtWUqfgVqHQ==
-  dependencies:
-    "@types/tmp" "^0.2.0"
-    camelcase "^6.0.0"
-    cross-spawn "^7.0.3"
-    debug "^4.2.0"
-    find-cache-dir "^3.3.1"
-    find-package-json "^1.2.0"
-    get-port "^5.1.1"
-    https-proxy-agent "^5.0.0"
-    lockfile "^1.0.4"
-    md5-file "^5.0.0"
-    mkdirp "^1.0.4"
-    semver "^7.3.2"
-    tar-stream "^2.1.4"
-    tmp "^0.2.1"
-    uuid "8.3.0"
-    yauzl "^2.10.0"
-  optionalDependencies:
-    mongodb "3.6.2"
-
-mongodb-memory-server@7.0.0-beta.1:
-  version "7.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-7.0.0-beta.1.tgz#bf3240bbe0108ade67368031faa28ca8def46ab1"
-  integrity sha512-m/q2GETcclaXswT8DCF8pkydH8tFGOalZGb7C/dk1eaxRvR/jylsAsLuWbc+Bj59gZ+tHUFGLnKRTgqa+hW6wQ==
-  dependencies:
-    mongodb-memory-server-core "7.0.0-beta.1"
 
 mongodb@3.6.2:
   version "3.6.2"
