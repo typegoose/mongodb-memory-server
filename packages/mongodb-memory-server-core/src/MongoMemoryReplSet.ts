@@ -118,7 +118,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     replSet: Required<ReplSetOpts>;
   };
 
-  _state: MongoMemoryReplSetStateEnum = MongoMemoryReplSetStateEnum.stopped;
+  protected _state: MongoMemoryReplSetStateEnum = MongoMemoryReplSetStateEnum.stopped;
 
   constructor(opts: Partial<MongoMemoryReplSetOptsT> = {}) {
     super();

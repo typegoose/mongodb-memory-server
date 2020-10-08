@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import MongoMemoryReplSet, { MongoMemoryReplSetStateEnum } from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
 
@@ -88,8 +89,10 @@ describe('single server replset', () => {
     const replSet = new MongoMemoryReplSet();
     const spy = jest.spyOn(replSet, 'waitUntilRunning');
     // this case can normally happen if "start" is called without await, and "getUri" directly after and that is awaited
+    // @ts-expect-error
     replSet._state = MongoMemoryReplSetStateEnum.init; // artificially set this to init
     const promise = replSet.getUri();
+    // @ts-expect-error
     replSet._state = MongoMemoryReplSetStateEnum.stopped; // set it back for "start"
     await replSet.start();
 
@@ -107,6 +110,7 @@ describe('single server replset', () => {
     }, 100);
 
     // this case can normally happen if "start" is called again, without either an error or "stop" happened
+    // @ts-expect-error
     replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running
 
     try {
@@ -133,6 +137,7 @@ describe('single server replset', () => {
   it('"waitUntilRunning" should return if state is "running"', async () => {
     const replSet = new MongoMemoryReplSet();
     const spy = jest.spyOn(replSet, 'once');
+    // @ts-expect-error
     replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running to not actually have to start an server (test-speedup)
 
     await replSet.waitUntilRunning();
@@ -147,6 +152,7 @@ describe('single server replset', () => {
     }, 100);
 
     // this case can normally happen if "start" is called again, without either an error or "stop" happened
+    // @ts-expect-error
     replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running
 
     try {
@@ -164,6 +170,7 @@ describe('single server replset', () => {
       fail('Timeout - Expected "_initReplSet" to throw');
     }, 100);
 
+    // @ts-expect-error
     replSet._state = MongoMemoryReplSetStateEnum.init; // artificially set this to init
 
     try {
