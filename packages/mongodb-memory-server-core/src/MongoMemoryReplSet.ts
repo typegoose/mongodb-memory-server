@@ -105,6 +105,13 @@ export enum MongoMemoryReplSetStateEnum {
   stopped = 'stopped',
 }
 
+export interface MongoMemoryReplSet extends EventEmitter {
+  // Overwrite EventEmitter's definitions (to provide at least the event names)
+  emit(event: MongoMemoryReplSetStateEnum, ...args: any[]): boolean;
+  on(event: MongoMemoryReplSetStateEnum, listener: (...args: any[]) => void): this;
+  once(event: MongoMemoryReplSetStateEnum, listener: (...args: any[]) => void): this;
+}
+
 /**
  * Class for managing an replSet
  */
@@ -153,6 +160,15 @@ export class MongoMemoryReplSet extends EventEmitter {
     }
 
     process.once('beforeExit', this.stop);
+  }
+
+  /**
+   * Change "this._state" to "newState" and emit "newState"
+   * @param newState The new State to set & emit
+   */
+  protected stateChange(newState: MongoMemoryReplSetStateEnum, ...args: any[]): void {
+    this._state = newState;
+    this.emit(newState, ...args);
   }
 
   /**
@@ -235,7 +251,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       default:
         throw new Error('Already in "init" or "running" state. Use debug for more info.');
     }
-    this.emit((this._state = MongoMemoryReplSetStateEnum.init)); // this needs to be executed before "setImmediate"
+    this.stateChange(MongoMemoryReplSetStateEnum.init); // this needs to be executed before "setImmediate"
     await ensureAsync();
     log('init');
     // Any servers defined within `opts.instanceOpts` should be started first as
@@ -269,13 +285,13 @@ export class MongoMemoryReplSet extends EventEmitter {
     return Promise.all(this.servers.map((s) => s.stop()))
       .then(() => {
         this.servers = [];
-        this.emit((this._state = MongoMemoryReplSetStateEnum.stopped));
+        this.stateChange(MongoMemoryReplSetStateEnum.stopped);
         return true;
       })
       .catch((err) => {
         this.servers = [];
         log(err);
-        this.emit((this._state = MongoMemoryReplSetStateEnum.stopped), err);
+        this.stateChange(MongoMemoryReplSetStateEnum.stopped, err);
         return false;
       });
   }
@@ -378,7 +394,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         log('Waiting for replica set to have a PRIMARY member.');
         await this._waitForPrimary();
       }
-      this.emit((this._state = MongoMemoryReplSetStateEnum.running));
+      this.stateChange(MongoMemoryReplSetStateEnum.running);
       log('running');
     } finally {
       await conn.close();

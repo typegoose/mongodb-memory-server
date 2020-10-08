@@ -35,8 +35,7 @@ describe('single server replset', () => {
 
   it('should not autostart if autostart: false', async () => {
     const replSet = new MongoMemoryReplSet({ autoStart: false });
-    await new Promise((resolve, reject) => {
-      replSet.once('state', (state) => reject(new Error(`Invalid state: ${state}`)));
+    await new Promise((resolve) => {
       setTimeout(resolve, 500);
     });
 
