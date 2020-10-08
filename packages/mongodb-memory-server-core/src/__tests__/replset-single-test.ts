@@ -7,8 +7,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 describe('single server replset', () => {
   it('should enter running state', async () => {
     const replSet = await MongoMemoryReplSet.create();
-    const uri = replSet.getUri();
-    expect(uri.split(',').length).toEqual(1);
+    expect(replSet.getUri().split(',').length).toEqual(1);
 
     await replSet.stop();
   });
@@ -32,9 +31,8 @@ describe('single server replset', () => {
 
   it('should be possible to connect replicaset after waitUntilRunning resolves', async () => {
     const replSet = await MongoMemoryReplSet.create();
-    const uri = replSet.getUri();
 
-    const con = await MongoClient.connect(`${uri}?replicaSet=testset`, {
+    const con = await MongoClient.connect(replSet.getUri(), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
