@@ -399,13 +399,13 @@ export class MongoMemoryReplSet extends EventEmitter {
       );
     }
 
-    const conn: mongodb.MongoClient = await MongoClient.connect(uris[0], {
+    const con: mongodb.MongoClient = await MongoClient.connect(uris[0], {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
     try {
-      const db = await conn.db(this._replSetOpts.dbName);
+      const db = await con.db(this._replSetOpts.dbName);
 
       // MongoClient HACK which helps to avoid the following error:
       //   "RangeError: Maximum call stack size exceeded"
@@ -451,7 +451,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       this.stateChange(MongoMemoryReplSetStateEnum.running);
       log('running');
     } finally {
-      await conn.close();
+      await con.close();
     }
   }
 
