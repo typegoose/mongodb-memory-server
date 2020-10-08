@@ -1,3 +1,81 @@
+## [7.0.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.2...v7.0.0-beta.3) (2020-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **MongoMemoryServer:** remove function "getDbName", can be replaced with "instanceInfo.dbName"
+* **MongoMemoryServer:** remove function "getDbPath", can be replaced with "instanceInfo.dbPath"
+* **MongoMemoryServer:** remove function "getPort", can be replaced with "instanceInfo.port"
+* **MongoInstance:** change "start" to not reset "port" to "undefined"
+* **MongoInstance:** change "instanceOpts" to be readonly and Readonly
+change "binaryOpts" to be readonly and Readonly
+change "spawnOpts" to be readonly and Readonly
+* **MongoMemoryServer:** removing ".uri" because of function "getUri"
+* **MongoMemoryServer:** removing ".childProcess" because it is an alias for ".instance.childProcess"
+* **MongoMemoryServer:** remove option "autoStart"
+change "MongoMemoryServer.create" to always call "MongoMemoryServer.start"
+* **MongoMemoryServer:** change "MongoMemoryServer.getInstanceInfo" to return "undefined" instead of "false"
+* **MongoMemoryServer:** change "MongoMemoryServer.getUri" to be sync
+* **MongoMemoryServer:** remove deprecated function "getConnectionString" (replace with "getUri")
+* **MongoMemoryServer:** change "MongoMemoryServer.getDbName" to be sync
+* **MongoMemoryServer:** change "MongoMemoryServer.getDbPath" to be sync
+* **MongoMemoryServer:** change "MongoMemoryServer.getPort" to be sync
+* **MongoMemoryServer:** change "MongoMemoryServer.runningInstance" to be "undefined" instead of "null"
+change "MongoMemoryServer.instanceInfoSync" to be "undefined" instead of "null"
+
+### Features
+
+* **MongoInstance:** change options to be readonly ([e599372](https://github.com/nodkz/mongodb-memory-server/commit/e5993727c618e08e1196b61d1d768bee34657738))
+* **MongoMemoryServer:** add getter function "state" ([c19493f](https://github.com/nodkz/mongodb-memory-server/commit/c19493fd5243e66dc9afee7052178ee921d11369))
+* **MongoMemoryServer:** extend EventEmitter ([04ca3d7](https://github.com/nodkz/mongodb-memory-server/commit/04ca3d750b83174400409c073d709e7642dc819e))
+* **MongoMemoryServer:** remove "MongoInstanceDataT.childProcess" ([c71d8d4](https://github.com/nodkz/mongodb-memory-server/commit/c71d8d46ad52dbecc37470ccd182829b1afbc61e))
+* **MongoMemoryServer:** remove "StartupInstanceData.uri" ([dec17a4](https://github.com/nodkz/mongodb-memory-server/commit/dec17a4379c54aab99a881faec2d6e88c949969b))
+* **MongoMemoryServer:** remove deprecated function "getConnectionString" ([198f4c0](https://github.com/nodkz/mongodb-memory-server/commit/198f4c032ba0746c7b03ca509b16d8cd772ac875))
+* **MongoMemoryServer:** remove function "getDbName" ([e2fc23f](https://github.com/nodkz/mongodb-memory-server/commit/e2fc23f62797aeb4e61a21924e7413621e767da8))
+* **MongoMemoryServer:** remove function "getDbPath" ([2343771](https://github.com/nodkz/mongodb-memory-server/commit/2343771c9c7f1c780889cfea94e3f3947550edcd))
+* **MongoMemoryServer:** remove function "getPort" ([5eb7017](https://github.com/nodkz/mongodb-memory-server/commit/5eb701741d6f650b72cfbda5394b4ccfab030766))
+* **MongoMemoryServer:** remove option "autoStart" ([347085f](https://github.com/nodkz/mongodb-memory-server/commit/347085f890be05a28dc2b01c6ddb5011744f12dc))
+* **MongoMemoryServer:** rename function "getInstanceInfo" into "get instanceInfo" ([ae8a9f8](https://github.com/nodkz/mongodb-memory-server/commit/ae8a9f82743df91a13716ab954bac510c30832af))
+
+
+### Reverts
+
+* "chore: remove unused file "tsconfig.test"" ([cc053c7](https://github.com/nodkz/mongodb-memory-server/commit/cc053c7f78ff29f67aabae30d180376c26ca96d8))
+
+
+### Style
+
+* **MongoMemoryServer:** remove comment & change log ([b098941](https://github.com/nodkz/mongodb-memory-server/commit/b0989411f39fe1397cecb8423e93bdf3245af0ea))
+
+
+### Fixes
+
+* **db_util:** killProcess: fix "SIGINT"-"SIGKILL" warn condition ([4113d94](https://github.com/nodkz/mongodb-memory-server/commit/4113d9457874c660b550e4ce5929582091f19d0a))
+* **MongoInstance:** remove resetting "port" inside "start" ([7861a6f](https://github.com/nodkz/mongodb-memory-server/commit/7861a6faaf9fbdf229cd5792e7f515931f5a64b8)), closes [#393](https://github.com/nodkz/mongodb-memory-server/issues/393)
+
+
+### Refactor
+
+* **MongoMemoryReplSet:** stop: reset "servers" after stopping them ([0aa2293](https://github.com/nodkz/mongodb-memory-server/commit/0aa2293168b8081fcf2e1391c6096d30e31e0c38))
+* **MongoMemoryServer:** add sanity check to "stop" ([8aff4ef](https://github.com/nodkz/mongodb-memory-server/commit/8aff4efe4356c12fcbe6153d8f33c03779b0626f))
+* **MongoMemoryServer:** always reset "port" to "undefined" ([8ca0729](https://github.com/nodkz/mongodb-memory-server/commit/8ca0729cade0f1dd82c0eaefd81a5d2bf2b8fd6c))
+* **MongoMemoryServer:** change "_state" to be "protected" ([b716c2c](https://github.com/nodkz/mongodb-memory-server/commit/b716c2cef8b6b74e90930ae08f2390abd3775206))
+* **MongoMemoryServer:** change "getDbName" to be sync ([85a97e0](https://github.com/nodkz/mongodb-memory-server/commit/85a97e056c2d407a2d949e94b872403231c164d1))
+* **MongoMemoryServer:** change "getDbPath" to be sync ([281fa1c](https://github.com/nodkz/mongodb-memory-server/commit/281fa1c716704f0142b022c7e0555f13c0b63b4f))
+* **MongoMemoryServer:** change "getInstanceInfo" to return undefined ([27349a3](https://github.com/nodkz/mongodb-memory-server/commit/27349a3ddabd956038165d94932b5df4d9c0941f))
+* **MongoMemoryServer:** change "getPort" to be sync ([e849f2c](https://github.com/nodkz/mongodb-memory-server/commit/e849f2caa5b2c84cb2901269162b8d92351be944))
+* **MongoMemoryServer:** change "getUri" to be sync ([5b53f03](https://github.com/nodkz/mongodb-memory-server/commit/5b53f03f25be9946df236977cfb65c7fb72ba4c6))
+* **MongoMemoryServer:** change "instanceInfo" to be "protected" ([7390eee](https://github.com/nodkz/mongodb-memory-server/commit/7390eee23bf5edb23b29ddeb33fb1ebf962eae53))
+* **MongoMemoryServer:** merge "runningInstance" and "instanceInfoSync" into "instanceInfo" ([7642c75](https://github.com/nodkz/mongodb-memory-server/commit/7642c754f25a20ebee99fe974a008b522be75c0a))
+* **MongoMemoryServer:** refactor "start" to be more readable ([7fb31c1](https://github.com/nodkz/mongodb-memory-server/commit/7fb31c151081ef1ada4062966a85eb9aaaace214))
+* **MongoMemoryServer:** remove "await" from "getUriBase" call ([ca536b6](https://github.com/nodkz/mongodb-memory-server/commit/ca536b6a3c1059132b0a767653f70e7441b687bd))
+* **MongoMemoryServer:** remove "null" use "undefined" ([086abef](https://github.com/nodkz/mongodb-memory-server/commit/086abef19eefb9fd8ac2e6e3304ea2cbafab9e0a))
+* **MongoMemoryServer:** remove call to "ensureInstance" inside "stop" ([57801cf](https://github.com/nodkz/mongodb-memory-server/commit/57801cf3e08e95084a73a5e0b8ef3258c098c83b))
+* **MongoMemoryServer:** rename "instanceInfo" to "_instanceInfo" ([d3ddcb4](https://github.com/nodkz/mongodb-memory-server/commit/d3ddcb41a55aeb012aeb92c2303eec7b2472cda7))
+* **MongoMemoryServer:** rename function "assertionInstanceInfoSync" to "assertionInstanceInfo" ([03c8343](https://github.com/nodkz/mongodb-memory-server/commit/03c834379c306464ede6667a53916f4dfbbe5b39))
+* **MongoMemoryServer:** shorten "getUri" ([f1024e5](https://github.com/nodkz/mongodb-memory-server/commit/f1024e551b594783e580a8d6b13dd243c25240dc))
+* **MongoMemoryServer:** start: remove first ".catch" ([fafaa29](https://github.com/nodkz/mongodb-memory-server/commit/fafaa29116683c2ce08d027eef8cdcae4c50c991))
+
 # [7.0.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.1...v7.0.0-beta.2) (2020-10-07)
 
 
