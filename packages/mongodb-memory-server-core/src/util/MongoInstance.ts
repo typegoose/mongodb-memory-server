@@ -5,9 +5,10 @@ import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { StorageEngineT } from '../types';
 import debug from 'debug';
-import { assertion, isNullOrUndefined, killProcess } from './db_util';
+import { assertion, getUriBase, isNullOrUndefined, killProcess } from './db_util';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
+import { MongoClient, MongoNetworkError } from 'mongodb';
 
 if (lt(process.version, '10.15.0')) {
   console.warn('Using NodeJS below 10.15.0');
@@ -198,6 +199,46 @@ export class MongoInstance extends EventEmitter {
     this.debug('Called MongoInstance.kill():');
 
     if (!isNullOrUndefined(this.childProcess)) {
+      // try to run "replSetStepDown" before running "killProcess" (gracefull "SIGINT")
+      // running "&& this.isInstancePrimary" otherwise "replSetStepDown" will fail with "MongoError: not primary so can't step down"
+      if (this.isReplSet && this.isInstancePrimary) {
+        let con: MongoClient | undefined;
+        try {
+          log('kill: instanceStopFailed event');
+          const port = this.instanceOpts.port;
+          const ip = this.instanceOpts.ip;
+          assertion(
+            !isNullOrUndefined(port),
+            new Error('Cannot shutdown replset gracefully, no "port" is provided')
+          );
+          assertion(
+            !isNullOrUndefined(ip),
+            new Error('Cannot shutdown replset gracefully, no "ip" is provided')
+          );
+
+          con = await MongoClient.connect(getUriBase(ip, port, 'admin'), {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+          });
+
+          const admin = con.db('admin');
+          await admin.command({ replSetStepDown: 1, force: true });
+          await con.close();
+        } catch (err) {
+          // Quote from MongoDB Documentation (https://docs.mongodb.com/manual/reference/command/replSetStepDown/#client-connections):
+          // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.
+          // > In MongoDB 4.0 and earlier, replSetStepDown command closes all client connections during the step down.
+          // so error "MongoNetworkError: connection 1 to 127.0.0.1:41485 closed" will get thrown below 4.2
+          if (!(err instanceof MongoNetworkError)) {
+            console.warn(err);
+          }
+        } finally {
+          if (!isNullOrUndefined(con)) {
+            // even if it errors out, somehow the connection stays open
+            await con.close();
+          }
+        }
+      }
       await killProcess(this.childProcess, 'childProcess');
       this.childProcess = undefined; // reset reference to the childProcess for "mongod"
     } else {
