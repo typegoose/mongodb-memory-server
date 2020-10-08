@@ -407,7 +407,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         members,
         settings: {
           electionTimeoutMillis: 500,
-          ...(this._replSetOpts.configSettings || {}),
+          ...this._replSetOpts.configSettings,
         },
       };
       try {
