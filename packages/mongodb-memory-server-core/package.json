@@ -63,10 +63,8 @@
     "tmp": "^0.2.1",
     "tslib": "^2.0.1",
     "uuid": "8.3.0",
-    "yauzl": "^2.10.0"
-  },
-  "optionalDependencies": {
-    "mongodb": "3.6.2"
+    "yauzl": "^2.10.0",
+    "mongodb": "^3.6.2"
   },
   "scripts": {
     "clean": "rimraf tmp lib coverage node_modules/.cache",
