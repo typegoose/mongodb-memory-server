@@ -393,10 +393,6 @@ export class MongoMemoryReplSet extends EventEmitter {
     try {
       const adminDb = await con.db('admin');
 
-      // MongoClient HACK which helps to avoid the following error:
-      //   "RangeError: Maximum call stack size exceeded"
-      // (db as any).topology.shouldCheckForSessionSupport = () => false; // TODO: remove after 1.1.2021 if no issues arise
-
       const members = uris.map((uri, idx) => ({ _id: idx, host: getHost(uri) }));
       const rsConfig = {
         _id: this._replSetOpts.name,
