@@ -1,12 +1,11 @@
 import { EventEmitter } from 'events';
-import * as mongodb from 'mongodb';
 import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOptsT } from './MongoMemoryServer';
 import { assertion, ensureAsync, generateDbName, getHost, isNullOrUndefined } from './util/db_util';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, MongoMemoryInstancePropBaseT, StorageEngineT } from './types';
 import debug from 'debug';
-import { MongoError } from 'mongodb';
+import { MongoClient, MongoError } from 'mongodb';
 import { MongoInstanceEvents } from './util/MongoInstance';
 import { SpawnOptions } from 'child_process';
 
@@ -390,16 +389,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     }
     const uris = this.servers.map((server) => server.getUri());
 
-    let MongoClient: typeof mongodb.MongoClient;
-    try {
-      MongoClient = (await import('mongodb')).MongoClient;
-    } catch (e) {
-      throw new Error(
-        `You need to install "mongodb" package. It's required for checking ReplicaSet state.`
-      );
-    }
-
-    const con: mongodb.MongoClient = await MongoClient.connect(uris[0], {
+    const con: MongoClient = await MongoClient.connect(uris[0], {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
