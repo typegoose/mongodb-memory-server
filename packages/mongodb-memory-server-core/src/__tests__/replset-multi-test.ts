@@ -19,7 +19,7 @@ describe('multi-member replica set', () => {
     await replSet.waitUntilRunning();
     const uri = await replSet.getUri();
 
-    const conn = await MongoClient.connect(uri, {
+    const con = await MongoClient.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
@@ -27,12 +27,13 @@ describe('multi-member replica set', () => {
     // await while all SECONDARIES will be ready
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const db = await conn.db(await replSet.getDbName());
+    const db = await con.db(await replSet.getDbName());
     const admin = db.admin();
     const status = await admin.replSetGetStatus();
     expect(status.members.filter((m: any) => m.stateStr === 'PRIMARY')).toHaveLength(1);
     expect(status.members.filter((m: any) => m.stateStr === 'SECONDARY')).toHaveLength(2);
 
+    await con.close();
     await replSet.stop();
   });
 });
