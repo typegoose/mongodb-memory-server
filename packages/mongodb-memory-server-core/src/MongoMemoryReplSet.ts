@@ -25,12 +25,13 @@ export interface ReplSetOpts {
    */
   auth?: boolean;
   /**
-   * additional command line args passed to `mongod`
+   * additional command line arguments passed to `mongod`
    * @default []
    */
   args?: string[];
   /**
-   * number of `mongod` servers to start
+   * if this number is bigger than "instanceOpts.length", more "generic" servers get started
+   * if this number is lower than "instanceOpts.length", no more "generic" servers get started (server count will be "instanceOpts.length")
    * @default 1
    */
   count?: number;
@@ -81,8 +82,18 @@ export interface MongoMemoryReplSetConfigSettingsT {
  * Options for the replSet
  */
 export interface MongoMemoryReplSetOptsT {
+  /**
+   * Specific Options to use for some instances
+   */
   instanceOpts: MongoMemoryInstancePropBaseT[];
+  /**
+   * Binary Options used for all instances
+   */
   binary: MongoBinaryOpts;
+  /**
+   * Options used for all instances
+   * -> gets overwritten by specific "instanceOpts"
+   */
   replSet: ReplSetOpts;
 }
 
@@ -106,6 +117,9 @@ export interface MongoMemoryReplSet extends EventEmitter {
  * Class for managing an replSet
  */
 export class MongoMemoryReplSet extends EventEmitter {
+  /**
+   * All servers this ReplSet instance manages
+   */
   servers: MongoMemoryServer[] = [];
 
   // "!" is used, because the getters are used instead of the "_" values
@@ -245,6 +259,8 @@ export class MongoMemoryReplSet extends EventEmitter {
   /**
    * Returns an mongodb URI that is setup with all replSet servers
    * @param otherDb use a different database than what was set on creation?
+   * @throws if state is not "running"
+   * @throws if an server doesnt have "instanceInfo.port" defined
    */
   getUri(otherDb?: string | boolean): string {
     log('getUri:', this._state);
@@ -273,6 +289,7 @@ export class MongoMemoryReplSet extends EventEmitter {
 
   /**
    * Start underlying `mongod` instances.
+   * @throws if state is already "running"
    */
   async start(): Promise<void> {
     log('start');
@@ -332,6 +349,7 @@ export class MongoMemoryReplSet extends EventEmitter {
 
   /**
    * Wait until all instances are running
+   * @throws if state is "stopped" (cannot wait on something that dosnt start)
    */
   async waitUntilRunning(): Promise<void> {
     // TODO: this seems like it dosnt catch if an instance fails, and runs forever
@@ -359,6 +377,9 @@ export class MongoMemoryReplSet extends EventEmitter {
   /**
    * Connects to the first server from the list of servers and issues the `replSetInitiate`
    * command passing in a new replica set configuration object.
+   * @throws if state is not "init"
+   * @throws if "servers.length" is not 1 or above
+   * @throws if package "mongodb" is not installed
    */
   protected async _initReplSet(): Promise<void> {
     if (this._state !== MongoMemoryReplSetStateEnum.init) {
@@ -452,6 +473,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   /**
    * Wait until the replSet has elected an Primary
    * @param timeout Timeout to not run infinitly
+   * @throws if timeout is reached
    */
   protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
     let timeoutId: NodeJS.Timeout | undefined;
