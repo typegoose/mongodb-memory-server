@@ -86,6 +86,10 @@ export class MongoInstance extends EventEmitter {
    * This boolean is "true" if the instance is successfully started
    */
   isInstanceReady: boolean = false;
+  /**
+   * This boolean is "true" if the instance is part of an replset
+   */
+  isReplSet: boolean = false;
 
   constructor(opts: Partial<MongodOpts>) {
     super();
@@ -154,6 +158,7 @@ export class MongoInstance extends EventEmitter {
       result.push('--noauth');
     }
     if (!!this.instanceOpts.replSet) {
+      this.isReplSet = true;
       result.push('--replSet', this.instanceOpts.replSet);
     }
 
