@@ -454,7 +454,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Wait until the replSet has elected an Primary
    * @param timeout Timeout to not run infinitly
    */
-  async _waitForPrimary(timeout: number = 30000): Promise<void> {
+  protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
     let timeoutId: NodeJS.Timeout | undefined;
     const timeoutPromise = new Promise((resolve, reject) => {
       timeoutId = setTimeout(() => {
