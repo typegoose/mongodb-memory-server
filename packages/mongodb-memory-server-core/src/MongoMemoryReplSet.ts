@@ -217,7 +217,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Returns instance options suitable for a MongoMemoryServer.
    * @param baseOpts Options to merge with
    */
-  getInstanceOpts(baseOpts: MongoMemoryInstancePropBaseT = {}): MongoMemoryInstancePropT {
+  protected getInstanceOpts(baseOpts: MongoMemoryInstancePropBaseT = {}): MongoMemoryInstancePropT {
     const opts: MongoMemoryInstancePropT = {
       auth: !!this._replSetOpts.auth,
       args: this._replSetOpts.args,
