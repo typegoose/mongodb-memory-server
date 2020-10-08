@@ -89,11 +89,6 @@ export interface MongoMemoryReplSetOptsT {
   instanceOpts?: MongoMemoryInstancePropBaseT[];
   binary?: MongoBinaryOpts;
   replSet?: ReplSetOpts;
-  /**
-   * Auto-Start the replSet?
-   * @default true
-   */
-  autoStart?: boolean;
 }
 
 /**
@@ -121,7 +116,6 @@ export class MongoMemoryReplSet extends EventEmitter {
     instanceOpts: MongoMemoryInstancePropBaseT[];
     binary: MongoBinaryOpts;
     replSet: Required<ReplSetOpts>;
-    autoStart?: boolean;
   };
 
   _state: MongoMemoryReplSetStateEnum = MongoMemoryReplSetStateEnum.stopped;
@@ -154,10 +148,6 @@ export class MongoMemoryReplSet extends EventEmitter {
     if (this.opts.replSet.count <= 0) {
       throw new Error('ReplSet Count needs to be 1 or higher!');
     }
-    if (!(opts?.autoStart === false)) {
-      log('Autostarting MongoMemoryReplSet.');
-      setImmediate(() => this.start());
-    }
 
     process.once('beforeExit', this.stop);
   }
@@ -176,7 +166,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @param opts Options for the ReplSet
    */
   static async create(opts: MongoMemoryReplSetOptsT = {}): Promise<MongoMemoryReplSet> {
-    const replSet = new this({ ...opts, autoStart: false });
+    const replSet = new this({ ...opts });
     await replSet.start();
     return replSet;
   }

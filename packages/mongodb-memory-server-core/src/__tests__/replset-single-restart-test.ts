@@ -28,8 +28,7 @@ describe('single-member replica set', () => {
       ],
     } as MongoMemoryReplSetOptsT;
 
-    const replSetBefore = new MongoMemoryReplSet(opts);
-    await replSetBefore.waitUntilRunning();
+    const replSetBefore = await MongoMemoryReplSet.create(opts);
 
     // Write real port to config (because 27017 may be busy, we need to get real port)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -45,8 +44,7 @@ describe('single-member replica set', () => {
     // this test needs to use the *exact same port* again, otherwise Mongod will throw an error "No host described in new configuration ${newPort} for replica set testset maps to this node"
     await sleep(30000);
 
-    const replSetAfter = new MongoMemoryReplSet(opts);
-    await replSetAfter.waitUntilRunning();
+    const replSetAfter = await MongoMemoryReplSet.create(opts);
     await replSetAfter.stop();
   }, 600000);
 });
