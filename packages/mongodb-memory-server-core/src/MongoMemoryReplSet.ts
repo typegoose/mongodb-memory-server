@@ -440,7 +440,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Create the one Instance (without starting them)
    * @param instanceOpts Instance Options to use for this instance
    */
-  _initServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
+  protected _initServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOptsT = {
       binary: this._binaryOpts,
       instance: instanceOpts,
