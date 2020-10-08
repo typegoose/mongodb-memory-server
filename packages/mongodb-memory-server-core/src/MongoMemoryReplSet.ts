@@ -395,14 +395,12 @@ export class MongoMemoryReplSet extends EventEmitter {
     });
 
     try {
-      const db = await con.db(this._replSetOpts.dbName);
+      const adminDb = await con.db('admin');
 
       // MongoClient HACK which helps to avoid the following error:
       //   "RangeError: Maximum call stack size exceeded"
       // (db as any).topology.shouldCheckForSessionSupport = () => false; // TODO: remove after 1.1.2021 if no issues arise
 
-      /** reference to "db.admin()" */
-      const admin = db.admin();
       const members = uris.map((uri, idx) => ({ _id: idx, host: getHost(uri) }));
       const rsConfig = {
         _id: this._replSetOpts.name,
@@ -413,13 +411,13 @@ export class MongoMemoryReplSet extends EventEmitter {
         },
       };
       try {
-        await admin.command({ replSetInitiate: rsConfig });
+        await adminDb.command({ replSetInitiate: rsConfig });
       } catch (e) {
         if (e instanceof MongoError && e.errmsg == 'already initialized') {
           log(`${e.errmsg}: trying to set old config`);
-          const { config: oldConfig } = await admin.command({ replSetGetConfig: 1 });
+          const { config: oldConfig } = await adminDb.command({ replSetGetConfig: 1 });
           log('got old config:\n', oldConfig);
-          await admin.command({
+          await adminDb.command({
             replSetReconfig: oldConfig,
             force: true,
           });
@@ -430,7 +428,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       log('ReplSet-reConfig finished');
       // Documentation for return value: https://docs.mongodb.com/manual/reference/command/replSetGetStatus/#output
       // there is no interface provided by MongoDb inside typescript, so defining only needed values
-      const status: { members: { stateStr: string }[] } = await admin.command({
+      const status: { members: { stateStr: string }[] } = await adminDb.command({
         replSetGetStatus: 1,
       });
       // test if the ReplSet has already an member Primary, if false wait for primary
