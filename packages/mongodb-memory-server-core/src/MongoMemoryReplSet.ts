@@ -305,18 +305,17 @@ export class MongoMemoryReplSet extends EventEmitter {
     this.stateChange(MongoMemoryReplSetStateEnum.init); // this needs to be executed before "setImmediate"
     await ensureAsync();
     log('init');
+    const servers: MongoMemoryServer[] = [];
     // Any servers defined within `_instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
     // the `replSetInitiate` command against that server.
-    const servers = this._instanceOpts.map((opts) => {
-      log('  starting server from instanceOpts:', opts, '...');
-      return this._initServer(this.getInstanceOpts(opts));
+    this._instanceOpts.forEach((opts) => {
+      log(`  starting server from instanceOpts (count: ${servers.length + 1}):`, opts);
+      servers.push(this._initServer(this.getInstanceOpts(opts)));
     });
-    const cnt = this._replSetOpts.count || 1;
-    while (servers.length < cnt) {
-      log(`  starting server ${servers.length + 1} of ${cnt}...`);
-      const server = this._initServer(this.getInstanceOpts({}));
-      servers.push(server);
+    while (servers.length < this._replSetOpts.count) {
+      log(`  starting server ${servers.length + 1} of ${this._replSetOpts.count}`);
+      servers.push(this._initServer(this.getInstanceOpts()));
     }
     // ensures all servers are listening for connection
     await Promise.all(servers.map((s) => s.start()));
