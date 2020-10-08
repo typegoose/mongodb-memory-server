@@ -456,11 +456,6 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
     let timeoutId: NodeJS.Timeout | undefined;
-    const timeoutPromise = new Promise((resolve, reject) => {
-      timeoutId = setTimeout(() => {
-        reject('Timed out in ' + timeout + 'ms. When waiting for primary.');
-      }, timeout);
-    });
 
     await Promise.race([
       ...this.servers.map(
@@ -473,7 +468,11 @@ export class MongoMemoryReplSet extends EventEmitter {
             instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);
           })
       ),
-      timeoutPromise,
+      new Promise((res, rej) => {
+        timeoutId = setTimeout(() => {
+          rej(`Timed out after ${timeout}ms while waiting for an Primary`);
+        }, timeout);
+      }),
     ]);
 
     if (!isNullOrUndefined(timeoutId)) {
