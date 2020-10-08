@@ -86,9 +86,9 @@ export interface MongoMemoryReplSetConfigSettingsT {
  * Options for the replSet
  */
 export interface MongoMemoryReplSetOptsT {
-  instanceOpts?: MongoMemoryInstancePropBaseT[];
-  binary?: MongoBinaryOpts;
-  replSet?: ReplSetOpts;
+  instanceOpts: MongoMemoryInstancePropBaseT[];
+  binary: MongoBinaryOpts;
+  replSet: ReplSetOpts;
 }
 
 /**
@@ -120,7 +120,7 @@ export class MongoMemoryReplSet extends EventEmitter {
 
   _state: MongoMemoryReplSetStateEnum = MongoMemoryReplSetStateEnum.stopped;
 
-  constructor(opts: MongoMemoryReplSetOptsT = {}) {
+  constructor(opts: Partial<MongoMemoryReplSetOptsT> = {}) {
     super();
     const replSetDefaults: Required<ReplSetOpts> = {
       auth: false,
@@ -165,7 +165,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Create an instance of "MongoMemoryReplSet" and call start
    * @param opts Options for the ReplSet
    */
-  static async create(opts: MongoMemoryReplSetOptsT = {}): Promise<MongoMemoryReplSet> {
+  static async create(opts: Partial<MongoMemoryReplSetOptsT> = {}): Promise<MongoMemoryReplSet> {
     const replSet = new this({ ...opts });
     await replSet.start();
     return replSet;
