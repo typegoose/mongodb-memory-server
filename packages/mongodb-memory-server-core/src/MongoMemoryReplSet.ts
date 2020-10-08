@@ -359,9 +359,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         return;
       case MongoMemoryReplSetStateEnum.init:
         // wait for event "running"
-        await new Promise((resolve) =>
-          this.once(MongoMemoryReplSetStateEnum.running, () => resolve())
-        );
+        await new Promise((res) => this.once(MongoMemoryReplSetStateEnum.running, res));
         return;
       case MongoMemoryReplSetStateEnum.stopped:
       default:
