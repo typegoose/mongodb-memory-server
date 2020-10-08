@@ -380,13 +380,9 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @throws if package "mongodb" is not installed
    */
   protected async _initReplSet(): Promise<void> {
-    if (this._state !== MongoMemoryReplSetStateEnum.init) {
-      throw new Error('Not in init phase.');
-    }
-    log('Initializing replica set.');
-    if (this.servers.length <= 0) {
-      throw new Error('One or more servers are required.');
-    }
+    log('_initReplSet');
+    assertion(this._state === MongoMemoryReplSetStateEnum.init, new Error('Not in init phase.'));
+    assertion(this.servers.length > 0, new Error('One or more servers are required.'));
     const uris = this.servers.map((server) => server.getUri());
 
     const con: MongoClient = await MongoClient.connect(uris[0], {
