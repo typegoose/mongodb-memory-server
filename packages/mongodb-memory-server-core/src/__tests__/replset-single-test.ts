@@ -43,16 +43,17 @@ describe('single server replset', () => {
     await replSet.stop();
   });
 
-  it('should be possible to connect replicaset after waitUntilRunning resolveds', async () => {
+  it('should be possible to connect replicaset after waitUntilRunning resolves', async () => {
     const replSet = new MongoMemoryReplSet();
     await replSet.waitUntilRunning();
     const uri = await replSet.getUri();
 
-    await MongoClient.connect(`${uri}?replicaSet=testset`, {
+    const con = await MongoClient.connect(`${uri}?replicaSet=testset`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
+    await con.close();
     await replSet.stop();
   });
 });
