@@ -243,21 +243,20 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   /**
-   * Returns a mongodb: URI to connect to a given database.
+   * Returns an mongodb URI that is setup with all replSet servers
    * @param otherDb use a different database than what was set on creation?
    */
-  async getUri(otherDb?: string | boolean): Promise<string> {
+  getUri(otherDb?: string | boolean): string {
     log('getUri:', this._state);
     switch (this._state) {
-      case MongoMemoryReplSetStateEnum.init:
-        await this.waitUntilRunning();
-        break;
       case MongoMemoryReplSetStateEnum.running:
         break;
+      case MongoMemoryReplSetStateEnum.init:
       case MongoMemoryReplSetStateEnum.stopped:
       default:
         throw new Error('Replica Set is not running. Use debug for more info.');
     }
+
     const dbName: string = isNullOrUndefined(otherDb)
       ? this._replSetOpts.dbName
       : typeof otherDb === 'string'

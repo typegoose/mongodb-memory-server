@@ -7,7 +7,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 describe('single server replset', () => {
   it('should enter running state', async () => {
     const replSet = await MongoMemoryReplSet.create();
-    const uri = await replSet.getUri();
+    const uri = replSet.getUri();
     expect(uri.split(',').length).toEqual(1);
 
     await replSet.stop();
@@ -15,7 +15,7 @@ describe('single server replset', () => {
 
   it('should be able to get connection string to specific db', async () => {
     const replSet = await MongoMemoryReplSet.create();
-    const uri = await replSet.getUri('other');
+    const uri = replSet.getUri('other');
     expect(uri.split(',').length).toEqual(1);
     expect(uri.includes('/other')).toBeTruthy();
     expect(uri.includes('replicaSet=testset')).toBeTruthy();
@@ -32,7 +32,7 @@ describe('single server replset', () => {
 
   it('should be possible to connect replicaset after waitUntilRunning resolves', async () => {
     const replSet = await MongoMemoryReplSet.create();
-    const uri = await replSet.getUri();
+    const uri = replSet.getUri();
 
     const con = await MongoClient.connect(`${uri}?replicaSet=testset`, {
       useNewUrlParser: true,
@@ -69,14 +69,14 @@ describe('single server replset', () => {
     }
   });
 
-  it('"getUri" should throw an error if _state is not "running"', async () => {
+  it('"getUri" should throw an error if _state is not "running" (state = "stopped")', async () => {
     const replSet = new MongoMemoryReplSet();
     const timeout = setTimeout(() => {
       fail('Timeout - Expected "getUri" to throw');
     }, 100);
 
     try {
-      await replSet.getUri();
+      replSet.getUri();
       fail('Expected "getUri" to throw');
     } catch (err) {
       clearTimeout(timeout);
@@ -84,22 +84,21 @@ describe('single server replset', () => {
     }
   });
 
-  it('"getUri" should execute "waitUntilRunning" if state is "init"', async () => {
+  it('"getUri" should throw an error if _state is not "running" (state = "stopped")', async () => {
     const replSet = new MongoMemoryReplSet();
-    const spy = jest.spyOn(replSet, 'waitUntilRunning');
-    // this case can normally happen if "start" is called without await, and "getUri" directly after and that is awaited
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.init; // artificially set this to init
-    const promise = replSet.getUri();
-    // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.stopped; // set it back for "start"
-    await replSet.start();
+    replSet._state = MongoMemoryReplSetStateEnum.init;
+    const timeout = setTimeout(() => {
+      fail('Timeout - Expected "getUri" to throw');
+    }, 100);
 
-    await promise; // await the promise to make sure nothing got thrown
-
-    expect(spy.mock.calls.length).toEqual(1);
-
-    await replSet.stop();
+    try {
+      replSet.getUri();
+      fail('Expected "getUri" to throw');
+    } catch (err) {
+      clearTimeout(timeout);
+      expect(err.message).toEqual('Replica Set is not running. Use debug for more info.');
+    }
   });
 
   it('"start" should throw an error if _state is not "stopped"', async () => {

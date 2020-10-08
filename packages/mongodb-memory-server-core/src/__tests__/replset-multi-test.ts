@@ -7,7 +7,7 @@ describe('multi-member replica set', () => {
   it('should enter running state', async () => {
     const replSet = await MongoMemoryReplSet.create({ replSet: { count: 3 } });
     expect(replSet.servers.length).toEqual(3);
-    const uri = await replSet.getUri();
+    const uri = replSet.getUri();
     expect(uri.split(',').length).toEqual(3);
 
     await replSet.stop();
@@ -15,7 +15,7 @@ describe('multi-member replica set', () => {
 
   it('should be possible to connect replicaset after waitUntilRunning resolveds', async () => {
     const replSet = await MongoMemoryReplSet.create({ replSet: { count: 3 } });
-    const uri = await replSet.getUri();
+    const uri = replSet.getUri();
 
     const con = await MongoClient.connect(uri, {
       useNewUrlParser: true,
