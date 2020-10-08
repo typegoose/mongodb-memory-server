@@ -179,13 +179,6 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   /**
-   * Returns database name.
-   */
-  getDbName(): string {
-    return this.opts.replSet.dbName;
-  }
-
-  /**
    * Returns instance options suitable for a MongoMemoryServer.
    * @param baseOpts Options to merge with
    */
