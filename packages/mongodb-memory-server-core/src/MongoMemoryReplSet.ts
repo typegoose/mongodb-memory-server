@@ -112,42 +112,22 @@ export interface MongoMemoryReplSet extends EventEmitter {
  */
 export class MongoMemoryReplSet extends EventEmitter {
   servers: MongoMemoryServer[] = [];
-  opts: {
-    instanceOpts: MongoMemoryInstancePropBaseT[];
-    binary: MongoBinaryOpts;
-    replSet: Required<ReplSetOpts>;
-  };
+
+  // "!" is used, because the getters are used instead of the "_" values
+  protected _instanceOpts!: MongoMemoryInstancePropBaseT[];
+  protected _binaryOpts!: MongoBinaryOpts;
+  protected _replSetOpts!: Required<ReplSetOpts>;
 
   protected _state: MongoMemoryReplSetStateEnum = MongoMemoryReplSetStateEnum.stopped;
 
   constructor(opts: Partial<MongoMemoryReplSetOptsT> = {}) {
     super();
-    const replSetDefaults: Required<ReplSetOpts> = {
-      auth: false,
-      args: [],
-      name: 'testset',
-      count: 1,
-      dbName: generateDbName(),
-      ip: '127.0.0.1',
-      oplogSize: 1,
-      spawn: {},
-      storageEngine: 'ephemeralForTest',
-      configSettings: {},
-    };
-    this.opts = {
-      binary: { ...opts.binary },
-      instanceOpts: opts.instanceOpts || [],
-      replSet: { ...replSetDefaults, ...opts.replSet },
-    };
 
-    // ensure "args" is an array and exists
-    if (!this.opts.replSet.args) {
-      this.opts.replSet.args = [];
-    }
-    this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
-    if (this.opts.replSet.count <= 0) {
-      throw new Error('ReplSet Count needs to be 1 or higher!');
-    }
+    this.binaryOpts = { ...opts.binary };
+    this.instanceOpts = opts.instanceOpts ?? [];
+    this.replSetOpts = { ...opts.replSet };
+
+    this._replSetOpts.args.push('--oplogSize', `${this._replSetOpts.oplogSize}`);
 
     process.once('beforeExit', this.stop);
   }
@@ -179,20 +159,83 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   /**
+   * Get & Set "instanceOpts"
+   * @throws if "state" is not "stopped"
+   */
+  get instanceOpts(): MongoMemoryInstancePropBaseT[] {
+    return this._instanceOpts;
+  }
+
+  set instanceOpts(val: MongoMemoryInstancePropBaseT[]) {
+    assertion(
+      this._state === MongoMemoryReplSetStateEnum.stopped,
+      new Error('Cannot change instance Options while "state" is not "stopped"!')
+    );
+    this._instanceOpts = val;
+  }
+
+  /**
+   * Get & Set "binaryOpts"
+   * @throws if "state" is not "stopped"
+   */
+  get binaryOpts(): MongoBinaryOpts {
+    return this._binaryOpts;
+  }
+
+  set binaryOpts(val: MongoBinaryOpts) {
+    assertion(
+      this._state === MongoMemoryReplSetStateEnum.stopped,
+      new Error('Cannot change binary Options while "state" is not "stopped"!')
+    );
+    this._binaryOpts = val;
+  }
+
+  /**
+   * Get & Set "replSetOpts"
+   * (Applies defaults)
+   * @throws if "state" is not "stopped"
+   */
+  get replSetOpts(): ReplSetOpts {
+    return this._replSetOpts;
+  }
+
+  set replSetOpts(val: ReplSetOpts) {
+    assertion(
+      this._state === MongoMemoryReplSetStateEnum.stopped,
+      new Error('Cannot change replSet Options while "state" is not "stopped"!')
+    );
+    const defaults: Required<ReplSetOpts> = {
+      auth: false,
+      args: [],
+      name: 'testset',
+      count: 1,
+      dbName: generateDbName(),
+      ip: '127.0.0.1',
+      oplogSize: 1,
+      spawn: {},
+      storageEngine: 'ephemeralForTest',
+      configSettings: {},
+    };
+    this._replSetOpts = { ...defaults, ...val };
+
+    assertion(this._replSetOpts.count > 0, new Error('ReplSet Count needs to be 1 or higher!'));
+  }
+
+  /**
    * Returns instance options suitable for a MongoMemoryServer.
    * @param baseOpts Options to merge with
    */
   getInstanceOpts(baseOpts: MongoMemoryInstancePropBaseT = {}): MongoMemoryInstancePropT {
     const opts: MongoMemoryInstancePropT = {
-      auth: !!this.opts.replSet.auth,
-      args: this.opts.replSet.args,
-      dbName: this.opts.replSet.dbName,
-      ip: this.opts.replSet.ip,
-      replSet: this.opts.replSet.name,
-      storageEngine: this.opts.replSet.storageEngine,
+      auth: !!this._replSetOpts.auth,
+      args: this._replSetOpts.args,
+      dbName: this._replSetOpts.dbName,
+      ip: this._replSetOpts.ip,
+      replSet: this._replSetOpts.name,
+      storageEngine: this._replSetOpts.storageEngine,
     };
     if (baseOpts.args) {
-      opts.args = (this.opts.replSet.args || []).concat(baseOpts.args);
+      opts.args = (this._replSetOpts.args || []).concat(baseOpts.args);
     }
     if (baseOpts.port) {
       opts.port = baseOpts.port;
@@ -224,7 +267,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         throw new Error('Replica Set is not running. Use debug for more info.');
     }
     const dbName: string = isNullOrUndefined(otherDb)
-      ? this.opts.replSet.dbName
+      ? this._replSetOpts.dbName
       : typeof otherDb === 'string'
       ? otherDb
       : generateDbName();
@@ -234,7 +277,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       return port;
     });
     const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
-    return `mongodb://${hosts}/${dbName}?replicaSet=${this.opts.replSet.name}`;
+    return `mongodb://${hosts}/${dbName}?replicaSet=${this._replSetOpts.name}`;
   }
 
   /**
@@ -254,14 +297,14 @@ export class MongoMemoryReplSet extends EventEmitter {
     this.stateChange(MongoMemoryReplSetStateEnum.init); // this needs to be executed before "setImmediate"
     await ensureAsync();
     log('init');
-    // Any servers defined within `opts.instanceOpts` should be started first as
+    // Any servers defined within `_instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
     // the `replSetInitiate` command against that server.
-    const servers = this.opts.instanceOpts.map((opts) => {
+    const servers = this._instanceOpts.map((opts) => {
       log('  starting server from instanceOpts:', opts, '...');
       return this._initServer(this.getInstanceOpts(opts));
     });
-    const cnt = this.opts.replSet.count || 1;
+    const cnt = this._replSetOpts.count || 1;
     while (servers.length < cnt) {
       log(`  starting server ${servers.length + 1} of ${cnt}...`);
       const server = this._initServer(this.getInstanceOpts({}));
@@ -351,7 +394,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     });
 
     try {
-      const db = await conn.db(this.opts.replSet.dbName);
+      const db = await conn.db(this._replSetOpts.dbName);
 
       // MongoClient HACK which helps to avoid the following error:
       //   "RangeError: Maximum call stack size exceeded"
@@ -361,11 +404,11 @@ export class MongoMemoryReplSet extends EventEmitter {
       const admin = db.admin();
       const members = uris.map((uri, idx) => ({ _id: idx, host: getHost(uri) }));
       const rsConfig = {
-        _id: this.opts.replSet.name,
+        _id: this._replSetOpts.name,
         members,
         settings: {
           electionTimeoutMillis: 500,
-          ...(this.opts.replSet.configSettings || {}),
+          ...(this._replSetOpts.configSettings || {}),
         },
       };
       try {
@@ -407,9 +450,9 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   _initServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOptsT = {
-      binary: this.opts.binary,
+      binary: this._binaryOpts,
       instance: instanceOpts,
-      spawn: this.opts.replSet.spawn,
+      spawn: this._replSetOpts.spawn,
     };
     const server = new MongoMemoryServer(serverOpts);
     return server;
