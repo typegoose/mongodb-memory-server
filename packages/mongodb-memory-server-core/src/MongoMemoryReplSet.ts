@@ -50,11 +50,6 @@ export interface ReplSetOpts {
    */
   name?: string;
   /**
-   * oplog size (in MB)
-   * @default 1
-   */
-  oplogSize?: number;
-  /**
    * Childprocess spawn options
    * @default {}
    */
@@ -126,8 +121,6 @@ export class MongoMemoryReplSet extends EventEmitter {
     this.binaryOpts = { ...opts.binary };
     this.instanceOpts = opts.instanceOpts ?? [];
     this.replSetOpts = { ...opts.replSet };
-
-    this._replSetOpts.args.push('--oplogSize', `${this._replSetOpts.oplogSize}`);
 
     process.once('beforeExit', this.stop);
   }
@@ -211,7 +204,6 @@ export class MongoMemoryReplSet extends EventEmitter {
       count: 1,
       dbName: generateDbName(),
       ip: '127.0.0.1',
-      oplogSize: 1,
       spawn: {},
       storageEngine: 'ephemeralForTest',
       configSettings: {},
