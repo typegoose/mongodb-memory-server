@@ -172,6 +172,13 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   /**
+   * Get Current state of this class
+   */
+  get state(): MongoMemoryReplSetStateEnum {
+    return this._state;
+  }
+
+  /**
    * Returns database name.
    */
   getDbName(): string {
