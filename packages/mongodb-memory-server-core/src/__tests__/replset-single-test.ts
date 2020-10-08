@@ -30,7 +30,15 @@ describe('single server replset', () => {
   });
 
   it('should be possible to connect replicaset after waitUntilRunning resolves', async () => {
-    const replSet = await MongoMemoryReplSet.create();
+    const replSet = new MongoMemoryReplSet();
+    // @ts-expect-error
+    replSet._state = MongoMemoryReplSetStateEnum.init;
+    const promise = replSet.waitUntilRunning();
+    // @ts-expect-error
+    replSet._state = MongoMemoryReplSetStateEnum.stopped;
+    replSet.start();
+
+    await promise;
 
     const con = await MongoClient.connect(replSet.getUri(), {
       useNewUrlParser: true,
