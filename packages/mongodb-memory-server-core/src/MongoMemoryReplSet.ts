@@ -361,7 +361,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Connects to the first server from the list of servers and issues the `replSetInitiate`
    * command passing in a new replica set configuration object.
    */
-  async _initReplSet(): Promise<void> {
+  protected async _initReplSet(): Promise<void> {
     if (this._state !== MongoMemoryReplSetStateEnum.init) {
       throw new Error('Not in init phase.');
     }

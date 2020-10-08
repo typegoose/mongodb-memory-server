@@ -155,6 +155,7 @@ describe('single server replset', () => {
     replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running
 
     try {
+      // @ts-expect-error
       await replSet._initReplSet();
       fail('Expected "_initReplSet" to throw');
     } catch (err) {
@@ -173,6 +174,7 @@ describe('single server replset', () => {
     replSet._state = MongoMemoryReplSetStateEnum.init; // artificially set this to init
 
     try {
+      // @ts-expect-error
       await replSet._initReplSet();
       fail('Expected "_initReplSet" to throw');
     } catch (err) {
