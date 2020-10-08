@@ -172,6 +172,16 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   /**
+   * Create an instance of "MongoMemoryReplSet" and call start
+   * @param opts Options for the ReplSet
+   */
+  static async create(opts: MongoMemoryReplSetOptsT = {}): Promise<MongoMemoryReplSet> {
+    const replSet = new this({ ...opts, autoStart: false });
+    await replSet.start();
+    return replSet;
+  }
+
+  /**
    * Returns database name.
    */
   getDbName(): string {
