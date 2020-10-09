@@ -188,3 +188,22 @@ describe('single server replset', () => {
     }
   });
 });
+
+describe('MongoMemoryReplSet', () => {
+  describe('getters & setters', () => {
+    let replSet: MongoMemoryReplSet;
+    beforeEach(() => {
+      replSet = new MongoMemoryReplSet();
+    });
+    it('"get state" should match "_state"', () => {
+      // @ts-expect-error
+      expect(replSet.state).toEqual(replSet._state);
+      expect(replSet.state).toEqual(MongoMemoryReplSetStateEnum.stopped);
+      // @ts-expect-error
+      replSet._state = MongoMemoryReplSetStateEnum.init;
+      // @ts-expect-error
+      expect(replSet.state).toEqual(replSet._state);
+      expect(replSet.state).toEqual(MongoMemoryReplSetStateEnum.init);
+    });
+  });
+});
