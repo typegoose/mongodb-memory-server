@@ -196,10 +196,6 @@ describe('MongoMemoryReplSet', () => {
     beforeEach(() => {
       replSet = new MongoMemoryReplSet();
     });
-    afterAll(async () => {
-      // to clean up event listeners
-      await replSet.stop();
-    });
     it('"get state" should match "_state"', () => {
       // @ts-expect-error
       expect(replSet.state).toEqual(replSet._state);

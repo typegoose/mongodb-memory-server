@@ -134,8 +134,6 @@ export class MongoMemoryReplSet extends EventEmitter {
     this.binaryOpts = { ...opts.binary };
     this.instanceOpts = opts.instanceOpts ?? [];
     this.replSetOpts = { ...opts.replSet };
-
-    process.once('beforeExit', this.stop);
   }
 
   /**
@@ -320,6 +318,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     await Promise.all(servers.map((s) => s.start()));
     this.servers = servers;
     await this._initReplSet();
+    process.once('beforeExit', this.stop);
   }
 
   /**
