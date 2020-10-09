@@ -320,6 +320,16 @@ describe('MongoBinaryDownloadUrl', () => {
         })
       ).toBe('ubuntu1804');
     });
+
+    it('should return a archive name for Linux Mint 20', () => {
+      expect(
+        downloadUrl.getMintVersionString({
+          os: 'linux',
+          dist: 'Linux Mint',
+          release: '20',
+        })
+      ).toBe('ubuntu1804');
+    });
   });
 
   it('shouldnt detect linux mint when using peppermint', () => {
