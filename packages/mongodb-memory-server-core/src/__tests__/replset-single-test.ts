@@ -260,5 +260,17 @@ describe('MongoMemoryReplSet', () => {
         configSettings: {},
       });
     });
+
+    it('setter of "binaryOpts" should throw an error if state is not "stopped"', () => {
+      // @ts-expect-error
+      replSet._state = MongoMemoryReplSetStateEnum.init;
+
+      try {
+        replSet.binaryOpts = {};
+        fail('Expected assignment of "replSet.binaryOpts" to fail');
+      } catch (err) {
+        expect(err.message).toEqual('Cannot change binary Options while "state" is not "stopped"!');
+      }
+    });
   });
 });
