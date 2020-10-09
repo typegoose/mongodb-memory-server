@@ -230,5 +230,35 @@ describe('MongoMemoryReplSet', () => {
       expect(replSet.instanceOpts).toEqual([{ port: 1001 }]);
       expect(replSet.instanceOpts).toHaveLength(1);
     });
+
+    it('"replSetOpts" should match "_replSetOpts"', () => {
+      // @ts-expect-error
+      expect(replSet.replSetOpts).toEqual(replSet._replSetOpts);
+      expect(replSet.replSetOpts).toEqual({
+        auth: false,
+        args: [],
+        name: 'testset',
+        count: 1,
+        dbName: replSet.replSetOpts.dbName, // not testing this value, because its generated "randomly"
+        ip: '127.0.0.1',
+        spawn: {},
+        storageEngine: 'ephemeralForTest',
+        configSettings: {},
+      });
+      replSet.replSetOpts = { auth: true };
+      // @ts-expect-error
+      expect(replSet.replSetOpts).toEqual(replSet._replSetOpts);
+      expect(replSet.replSetOpts).toEqual({
+        auth: true,
+        args: [],
+        name: 'testset',
+        count: 1,
+        dbName: replSet.replSetOpts.dbName, // not testing this value, because its generated "randomly"
+        ip: '127.0.0.1',
+        spawn: {},
+        storageEngine: 'ephemeralForTest',
+        configSettings: {},
+      });
+    });
   });
 });
