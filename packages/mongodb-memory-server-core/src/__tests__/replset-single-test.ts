@@ -205,5 +205,15 @@ describe('MongoMemoryReplSet', () => {
       expect(replSet.state).toEqual(replSet._state);
       expect(replSet.state).toEqual(MongoMemoryReplSetStateEnum.init);
     });
+
+    it('"binaryOpts" should match "_binaryOpts"', () => {
+      // @ts-expect-error
+      expect(replSet.binaryOpts).toEqual(replSet._binaryOpts);
+      expect(replSet.binaryOpts).toEqual({});
+      replSet.binaryOpts = { arch: 'x86_64' };
+      // @ts-expect-error
+      expect(replSet.binaryOpts).toEqual(replSet._binaryOpts);
+      expect(replSet.binaryOpts).toEqual({ arch: 'x86_64' });
+    });
   });
 });
