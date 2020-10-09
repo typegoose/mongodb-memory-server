@@ -272,5 +272,19 @@ describe('MongoMemoryReplSet', () => {
         expect(err.message).toEqual('Cannot change binary Options while "state" is not "stopped"!');
       }
     });
+
+    it('setter of "instanceOpts" should throw an error if state is not "stopped"', () => {
+      // @ts-expect-error
+      replSet._state = MongoMemoryReplSetStateEnum.init;
+
+      try {
+        replSet.instanceOpts = [];
+        fail('Expected assignment of "replSet.instanceOpts" to fail');
+      } catch (err) {
+        expect(err.message).toEqual(
+          'Cannot change instance Options while "state" is not "stopped"!'
+        );
+      }
+    });
   });
 });
