@@ -468,7 +468,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       ),
       new Promise((res, rej) => {
         timeoutId = setTimeout(() => {
-          rej(`Timed out after ${timeout}ms while waiting for an Primary`);
+          rej(new Error(`Timed out after ${timeout}ms while waiting for an Primary`));
         }, timeout);
       }),
     ]);
