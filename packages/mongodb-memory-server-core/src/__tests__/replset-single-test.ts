@@ -286,5 +286,19 @@ describe('MongoMemoryReplSet', () => {
         );
       }
     });
+
+    it('setter of "replSetOpts" should throw an error if state is not "stopped"', () => {
+      // @ts-expect-error
+      replSet._state = MongoMemoryReplSetStateEnum.init;
+
+      try {
+        replSet.replSetOpts = {};
+        fail('Expected assignment of "replSet.instanceOpts" to fail');
+      } catch (err) {
+        expect(err.message).toEqual(
+          'Cannot change replSet Options while "state" is not "stopped"!'
+        );
+      }
+    });
   });
 });
