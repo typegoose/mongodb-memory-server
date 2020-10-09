@@ -261,44 +261,43 @@ describe('MongoMemoryReplSet', () => {
       });
     });
 
-    it('setter of "binaryOpts" should throw an error if state is not "stopped"', () => {
-      // @ts-expect-error
-      replSet._state = MongoMemoryReplSetStateEnum.init;
+    describe('state errors', () => {
+      beforeEach(() => {
+        // @ts-expect-error
+        replSet._state = MongoMemoryReplSetStateEnum.init;
+      });
+      it('setter of "binaryOpts" should throw an error if state is not "stopped"', () => {
+        try {
+          replSet.binaryOpts = {};
+          fail('Expected assignment of "replSet.binaryOpts" to fail');
+        } catch (err) {
+          expect(err.message).toEqual(
+            'Cannot change binary Options while "state" is not "stopped"!'
+          );
+        }
+      });
 
-      try {
-        replSet.binaryOpts = {};
-        fail('Expected assignment of "replSet.binaryOpts" to fail');
-      } catch (err) {
-        expect(err.message).toEqual('Cannot change binary Options while "state" is not "stopped"!');
-      }
-    });
+      it('setter of "instanceOpts" should throw an error if state is not "stopped"', () => {
+        try {
+          replSet.instanceOpts = [];
+          fail('Expected assignment of "replSet.instanceOpts" to fail');
+        } catch (err) {
+          expect(err.message).toEqual(
+            'Cannot change instance Options while "state" is not "stopped"!'
+          );
+        }
+      });
 
-    it('setter of "instanceOpts" should throw an error if state is not "stopped"', () => {
-      // @ts-expect-error
-      replSet._state = MongoMemoryReplSetStateEnum.init;
-
-      try {
-        replSet.instanceOpts = [];
-        fail('Expected assignment of "replSet.instanceOpts" to fail');
-      } catch (err) {
-        expect(err.message).toEqual(
-          'Cannot change instance Options while "state" is not "stopped"!'
-        );
-      }
-    });
-
-    it('setter of "replSetOpts" should throw an error if state is not "stopped"', () => {
-      // @ts-expect-error
-      replSet._state = MongoMemoryReplSetStateEnum.init;
-
-      try {
-        replSet.replSetOpts = {};
-        fail('Expected assignment of "replSet.instanceOpts" to fail');
-      } catch (err) {
-        expect(err.message).toEqual(
-          'Cannot change replSet Options while "state" is not "stopped"!'
-        );
-      }
+      it('setter of "replSetOpts" should throw an error if state is not "stopped"', () => {
+        try {
+          replSet.replSetOpts = {};
+          fail('Expected assignment of "replSet.instanceOpts" to fail');
+        } catch (err) {
+          expect(err.message).toEqual(
+            'Cannot change replSet Options while "state" is not "stopped"!'
+          );
+        }
+      });
     });
   });
 });
