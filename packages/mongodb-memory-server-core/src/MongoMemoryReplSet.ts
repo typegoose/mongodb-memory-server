@@ -327,10 +327,10 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   async stop(): Promise<boolean> {
     log('stop' + isNullOrUndefined(process.exitCode) ? '' : ': called by process-event');
+    process.removeListener('beforeExit', this.stop); // many accumulate inside tests
     if (this._state === MongoMemoryReplSetStateEnum.stopped) {
       return false;
     }
-    process.removeListener('beforeExit', this.stop); // many accumulate inside tests
     return Promise.all(this.servers.map((s) => s.stop()))
       .then(() => {
         this.servers = [];
