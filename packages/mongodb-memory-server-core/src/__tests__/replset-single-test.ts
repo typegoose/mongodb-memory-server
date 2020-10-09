@@ -323,4 +323,16 @@ describe('MongoMemoryReplSet', () => {
     expect(await replSet.stop()).toEqual(false);
     expect(instance.stop).toBeCalledTimes(1);
   });
+
+  it('"_waitForPrimary" should throw an error if timeout is reached', async () => {
+    const replSet = new MongoMemoryReplSet();
+
+    try {
+      // @ts-expect-error
+      await replSet._waitForPrimary(1); // 1ms to be fast (0 and 1 are equal for "setTimeout" in js)
+      fail('Expected "_waitForPrimary" to throw');
+    } catch (err) {
+      expect(err.message).toEqual('Timed out after 1ms while waiting for an Primary');
+    }
+  });
 });
