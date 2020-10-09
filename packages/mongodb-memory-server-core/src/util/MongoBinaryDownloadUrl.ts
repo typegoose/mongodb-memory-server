@@ -259,6 +259,7 @@ export default class MongoBinaryDownloadUrl {
       case 18:
         name += '1604';
         break;
+      case 20: // because "1804" binaries also work on "2004" (and because earlier versions than 4.4 are not available in "2004")
       case 19:
       default:
         // a default to support versions > 19
