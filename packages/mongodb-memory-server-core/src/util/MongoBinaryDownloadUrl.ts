@@ -144,7 +144,7 @@ export default class MongoBinaryDownloadUrl {
       return this.getFedoraVersionString(os);
     } else if (/debian/i.test(os.dist)) {
       return this.getDebianVersionString(os);
-    } else if (/\s+mint\s*$/i.test(os.dist)) {
+    } else if (/^linux\s?mint\s*$/i.test(os.dist)) {
       return this.getMintVersionString(os);
     } else if (/arch/i.test(os.dist)) {
       console.warn('There is no offical build of MongoDB for ArchLinux!');

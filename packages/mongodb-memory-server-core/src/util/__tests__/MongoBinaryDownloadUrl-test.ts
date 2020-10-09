@@ -315,7 +315,7 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(
         downloadUrl.getMintVersionString({
           os: 'linux',
-          dist: 'Linux Mint',
+          dist: 'LinuxMint',
           release: '19',
         })
       ).toBe('ubuntu1804');
