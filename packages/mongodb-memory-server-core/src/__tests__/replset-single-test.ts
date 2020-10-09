@@ -195,6 +195,10 @@ describe('MongoMemoryReplSet', () => {
     beforeEach(() => {
       replSet = new MongoMemoryReplSet();
     });
+    afterAll(async () => {
+      // to clean up event listeners
+      await replSet.stop();
+    });
     it('"get state" should match "_state"', () => {
       // @ts-expect-error
       expect(replSet.state).toEqual(replSet._state);
@@ -214,6 +218,17 @@ describe('MongoMemoryReplSet', () => {
       // @ts-expect-error
       expect(replSet.binaryOpts).toEqual(replSet._binaryOpts);
       expect(replSet.binaryOpts).toEqual({ arch: 'x86_64' });
+    });
+
+    it('"instanceOpts" should match "_instanceOpts"', () => {
+      // @ts-expect-error
+      expect(replSet.instanceOpts).toEqual(replSet._instanceOpts);
+      expect(replSet.instanceOpts).toEqual([]);
+      replSet.instanceOpts = [{ port: 1001 }];
+      // @ts-expect-error
+      expect(replSet.instanceOpts).toEqual(replSet._instanceOpts);
+      expect(replSet.instanceOpts).toEqual([{ port: 1001 }]);
+      expect(replSet.instanceOpts).toHaveLength(1);
     });
   });
 });
