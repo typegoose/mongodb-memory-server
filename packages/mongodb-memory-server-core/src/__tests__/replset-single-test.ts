@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import MongoMemoryReplSet, { MongoMemoryReplSetStateEnum } from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
+import MongoMemoryServer from '../MongoMemoryServer';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
@@ -308,5 +309,18 @@ describe('MongoMemoryReplSet', () => {
         expect(err.message).toEqual('ReplSet Count needs to be 1 or higher!');
       }
     });
+  });
+
+  it('"stop" should return "false" if an error got thrown', async () => {
+    // this test creates an mock-instance, so that no actual instance gets started
+    const replSet = new MongoMemoryReplSet();
+    // @ts-expect-error
+    replSet._state = MongoMemoryReplSetStateEnum.running;
+    const instance = new MongoMemoryServer();
+    jest.spyOn(instance, 'stop').mockRejectedValueOnce(new Error('Some Error'));
+    replSet.servers = [instance];
+
+    expect(await replSet.stop()).toEqual(false);
+    expect(instance.stop).toBeCalledTimes(1);
   });
 });
