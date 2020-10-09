@@ -299,5 +299,14 @@ describe('MongoMemoryReplSet', () => {
         }
       });
     });
+
+    it('setter of "replSetOpts" should throw an error if count is 1 or above', () => {
+      try {
+        replSet.replSetOpts = { count: 0 };
+        fail('Expected assignment of "replSet.instanceOpts" to fail');
+      } catch (err) {
+        expect(err.message).toEqual('ReplSet Count needs to be 1 or higher!');
+      }
+    });
   });
 });
