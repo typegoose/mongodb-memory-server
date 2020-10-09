@@ -2,6 +2,8 @@
 import MongoMemoryReplSet, { MongoMemoryReplSetStateEnum } from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
+import * as db_util from '../util/db_util';
+import { MongoMemoryInstancePropT } from '../types';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
@@ -13,12 +15,25 @@ describe('single server replset', () => {
     await replSet.stop();
   });
 
-  it('should be able to get connection string to specific db', async () => {
+  it('"getUri" should be able to get connection string to specific db', async () => {
     const replSet = await MongoMemoryReplSet.create();
     const uri = replSet.getUri('other');
     expect(uri.split(',').length).toEqual(1);
     expect(uri.includes('/other')).toBeTruthy();
     expect(uri.includes('replicaSet=testset')).toBeTruthy();
+
+    await replSet.stop();
+  });
+
+  it('"getUri" should be able to generate an dbName', async () => {
+    jest.spyOn(db_util, 'generateDbName');
+    const replSet = await MongoMemoryReplSet.create();
+    const uri = replSet.getUri(true);
+    expect(uri.split(',').length).toEqual(1);
+    // regex for "uuidv4" ("17b00a74-e1f9-4aaa-86a1-aee757c8d3a6")
+    expect(/\/.{8}-.{4}-.{4}-.{4}-.{12}\?/i.test(uri)).toBeTruthy();
+    expect(uri.includes('replicaSet=testset')).toBeTruthy();
+    expect(db_util.generateDbName).toHaveBeenCalledTimes(3); // once in "new MongoMemoryReplSet" (setter), once in "_startUpInstance", once in getUri
 
     await replSet.stop();
   });
@@ -330,5 +345,16 @@ describe('MongoMemoryReplSet', () => {
     } catch (err) {
       expect(err.message).toEqual('Timed out after 1ms while waiting for an Primary');
     }
+  });
+
+  it('"getInstanceOpts" should return "storageEngine" if in baseOpts', () => {
+    const replSet = new MongoMemoryReplSet();
+
+    // @ts-expect-error
+    expect(replSet.getInstanceOpts({ storageEngine: 'wiredTiger' })).toMatchObject<
+      MongoMemoryInstancePropT // this is needed, otherwise no ts error when "storageEngine" might get changed
+    >({
+      storageEngine: 'wiredTiger',
+    });
   });
 });
