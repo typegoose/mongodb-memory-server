@@ -1,4 +1,4 @@
-/* eslint @typescript-eslint/no-var-requires: 0 */
+/* eslint-disable @typescript-eslint/no-var-requires */
 
 /*
 This script is used as postinstall hook.
