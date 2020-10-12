@@ -22,7 +22,7 @@
     "mongomem"
   ],
   "dependencies": {
-    "mongodb-memory-server": "7.0.0-beta.3",
+    "mongodb-memory-server-core": "7.0.0-beta.3",
     "os": "^0.1.1"
   },
   "scripts": {

@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/no-var-requires: 0 */
 
-function isModuleExists(name) {
+function doesModuleExist(name) {
   try {
     return !!require.resolve(name);
   } catch (e) {
@@ -8,21 +8,25 @@ function isModuleExists(name) {
   }
 }
 
-if (!isModuleExists('../mongodb-memory-server-core/lib/util/resolve-config')) {
-  console.log('Could not resolve postinstall configuration');
+const resolveConfigPath = '../mongodb-memory-server-core/lib/util/resolve-config';
+
+if (!doesModuleExist(resolveConfigPath)) {
+  console.log('Could not find file "resolve-config" in core package!');
   return;
 }
-const setDefaultValue = require('../mongodb-memory-server-core/lib/util/resolve-config')
-  .setDefaultValue;
+
+const setDefaultValue = require(resolveConfigPath).setDefaultValue;
 
 setDefaultValue(
   'DOWNLOAD_DIR',
   require('path').resolve(require('os').homedir(), '.cache', 'mongodb-binaries')
 );
 
-const script = '../mongodb-memory-server/postinstall.js';
-if (isModuleExists(script)) {
-  require(script);
-} else {
-  console.error(`Cannot find script: ${script}`);
+const modulePath = '../mongodb-memory-server-core/lib/postinstall';
+
+if (!doesModuleExist(modulePath)) {
+  console.log('Could not find file "postinstall" in core package!');
+  return;
 }
+
+require(modulePath);

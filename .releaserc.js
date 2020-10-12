@@ -47,11 +47,6 @@ module.exports = {
         "replacements": [
           {
             "files": ["packages/*/package.json"],
-            "from": "\"mongodb-memory-server\": \".*\"",
-            "to": "\"mongodb-memory-server\": \"${nextRelease.version}\"",
-          },
-          {
-            "files": ["packages/*/package.json"],
             "from": "\"mongodb-memory-server-core\": \".*\"",
             "to": "\"mongodb-memory-server-core\": \"${nextRelease.version}\"",
           }
