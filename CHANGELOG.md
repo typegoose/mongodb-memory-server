@@ -1,3 +1,83 @@
+## [7.0.0-beta.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.4...v7.0.0-beta.5) (2020-10-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **MongoMemoryReplSet:** change "getUri" to be sync (dosnt wait until running anymore)
+* **MongoMemoryReplSet:** remove option "oplogSize", replace with ".replSetOpts.args.push('--oplogSize', '1')"
+* **MongoMemoryReplSet:** remove function "getDbName", replace with ".opts.replSet.dbName"
+* **MongoMemoryReplSet:** removing function "getConnectionString" could break some code
+* **MongoMemoryReplSet:** removing "async" / modifing return type "Promise<string>" can break code
+
+### Features
+
+* change package "mongodb" to be non-optional ([2b14552](https://github.com/nodkz/mongodb-memory-server/commit/2b14552beb5f2bdb1dd1978c8cf391d25adba4b1))
+* **db_util:** add function "ensureAsync" ([971b02d](https://github.com/nodkz/mongodb-memory-server/commit/971b02d07453b46dd37dace8d91efd74b20c3575))
+* **MongoInstance:** add value "isReplSet" ([3ba31e2](https://github.com/nodkz/mongodb-memory-server/commit/3ba31e249c6ea4cd883979a1a5799863bf9ae971))
+* **MongoInstance:** graceful ReplSet shutdown ([017239c](https://github.com/nodkz/mongodb-memory-server/commit/017239c953fd44018855a55d417bfc4573c9f684))
+* **MongoMemoryReplSet:** add error if replSet count is 0 or lower ([0202e8f](https://github.com/nodkz/mongodb-memory-server/commit/0202e8fefb835fb256e8c1bd4573e15f8ac5c6f5))
+* **MongoMemoryReplSet:** add getter "state" ([65135a8](https://github.com/nodkz/mongodb-memory-server/commit/65135a83a27a932937fe3989e1c56f8c33ea5f5c))
+* **MongoMemoryReplSet:** remove function "getConnectionString" ([dbe844e](https://github.com/nodkz/mongodb-memory-server/commit/dbe844e8f972925391ba9edd983fc3043bc39efa))
+* **MongoMemoryReplSet:** remove function "getDbName" ([6ebafbd](https://github.com/nodkz/mongodb-memory-server/commit/6ebafbd762c208f60bc9132773edfee07e6d2821))
+* **MongoMemoryReplSet:** remove option "autoStart" ([90ed578](https://github.com/nodkz/mongodb-memory-server/commit/90ed57865db4f629d0efd00df5ac0ccbf1fda65a))
+* **MongoMemoryReplSet:** remove option "oplogSize" ([07937e2](https://github.com/nodkz/mongodb-memory-server/commit/07937e2fd8ebce9759f4a837a6b013574488b7eb))
+* **MongoMemoryReplSet:** rename "opts.*" to "*Opts" & add getters & setters ([c701f09](https://github.com/nodkz/mongodb-memory-server/commit/c701f0980762b21761361ef485b6282569b9741a))
+* **MongoMemoryServer:** add function "create" ([6dcb12a](https://github.com/nodkz/mongodb-memory-server/commit/6dcb12ad4a7f96739b0e11e13e3fb9c473633b11))
+
+
+### Style
+
+* **MongoMemoryReplSet:** add more tsdoc ([6b60a71](https://github.com/nodkz/mongodb-memory-server/commit/6b60a71e0c9c81197f2a42b59e8b6f96660cf410))
+* remove "uri" value when only used once ([150494e](https://github.com/nodkz/mongodb-memory-server/commit/150494e8d736d1cb61fc5fdd9306215a599f0b1d))
+* **db_util:** add link on why "ensureAsync" is needed ([412e615](https://github.com/nodkz/mongodb-memory-server/commit/412e61589077b8f2ebcc7d046466ffc652a4fe32))
+* **MongoMemoryReplSet:** add log to "stop" ([d3dff26](https://github.com/nodkz/mongodb-memory-server/commit/d3dff2605ee0837a3d655a0f31096edc5e33cb7c))
+* **MongoMemoryReplSet:** add more logs ([a3a911f](https://github.com/nodkz/mongodb-memory-server/commit/a3a911fda1e083cd4964e57ae34dbe74b7f3a721))
+* **MongoMemoryReplSet:** replace templating string with normal ([9add2bc](https://github.com/nodkz/mongodb-memory-server/commit/9add2bcf983e2b7c7c981753c9ca447db49ea2eb))
+
+
+### Dependencies
+
+* **uuid:** add "^" ([e12396e](https://github.com/nodkz/mongodb-memory-server/commit/e12396eb8368358c69d2d8c23e7d787a42b669db))
+
+
+### Refactor
+
+* **MongoMemoryReplSet:** _initReplSet: directly use db "admin" ([a335500](https://github.com/nodkz/mongodb-memory-server/commit/a33550022244b023c21d16e667c5c8697b1c22b8))
+* **MongoMemoryReplSet:** _initReplSet: remove redundant object assignment ([8e6e312](https://github.com/nodkz/mongodb-memory-server/commit/8e6e312dfc2b9e430854f9868ee68f9cfdfdb8d8))
+* **MongoMemoryReplSet:** _initReplSet: rename "conn" to "con" ([335780e](https://github.com/nodkz/mongodb-memory-server/commit/335780e295f0abe7f6d0d7f67aaf1f2e8f0ac8ba))
+* **MongoMemoryReplSet:** _waitForPrimary: remove value "timeoutPromise" ([18b9a58](https://github.com/nodkz/mongodb-memory-server/commit/18b9a587b2f6b1185d6253f549abda380f018dec))
+* **MongoMemoryReplSet:** add function "stateChange" ([3c3d6fb](https://github.com/nodkz/mongodb-memory-server/commit/3c3d6fb6abe094ecf26bb55af1140041134eed27))
+* **MongoMemoryReplSet:** change "_initReplSet" to be "protected" ([f46d113](https://github.com/nodkz/mongodb-memory-server/commit/f46d113497ea0c8685439abae7e3467b25ff8498))
+* **MongoMemoryReplSet:** change "_initServer" to be "protected" ([4c32f45](https://github.com/nodkz/mongodb-memory-server/commit/4c32f458bb2957a6a33e783c990eaffe4b77637e))
+* **MongoMemoryReplSet:** change "_state" to be "protected" ([415fc8f](https://github.com/nodkz/mongodb-memory-server/commit/415fc8fce60b8ca12dc1d352eddfa304ce77a70b))
+* **MongoMemoryReplSet:** change "_waitForPrimary" to be "protected" ([d0d62e2](https://github.com/nodkz/mongodb-memory-server/commit/d0d62e2b9c4824ac6b238d97889d9bab96057bf6))
+* **MongoMemoryReplSet:** change "getInstanceOpts" to be "protected" ([e954806](https://github.com/nodkz/mongodb-memory-server/commit/e9548062793340c78ff160afb41c7e3c9229a2d9))
+* **MongoMemoryReplSet:** change "getUri" to be sync ([13f3f1d](https://github.com/nodkz/mongodb-memory-server/commit/13f3f1d3ee636b20005f233cb6f50530885659fc))
+* **MongoMemoryReplSet:** change "if not state 'stopped'" to switch ([df1af0c](https://github.com/nodkz/mongodb-memory-server/commit/df1af0cac6690ccf5ac3d8b946a13f75d581ca62))
+* **MongoMemoryReplSet:** change if-error to "assertion" ([179bdbb](https://github.com/nodkz/mongodb-memory-server/commit/179bdbb417548ce42b02d31c1e545c96595f0a56))
+* **MongoMemoryReplSet:** improve "start" ([c2311cb](https://github.com/nodkz/mongodb-memory-server/commit/c2311cb4601404f08175f166d4c5114bca3f1d35))
+* **MongoMemoryReplSet:** refactor "_state" into an enum ([e3d4678](https://github.com/nodkz/mongodb-memory-server/commit/e3d4678d34d7165a9726866234a1e25b898dd338))
+* **MongoMemoryReplSet:** refactor multiple "if" into one switch ([8b8a609](https://github.com/nodkz/mongodb-memory-server/commit/8b8a6095f415f4daa5761f25c998bd594b0e3f4d))
+* **MongoMemoryReplSet:** remove "?" from "MongoMemoryReplSetOptsT" ([138e21d](https://github.com/nodkz/mongodb-memory-server/commit/138e21d6433bfb431243ed9c0c83cef6ec71adfd))
+* **MongoMemoryReplSet:** remove "async" from "getDbName" ([2775b4f](https://github.com/nodkz/mongodb-memory-server/commit/2775b4fcc6afcaab99414faf7100021f4047629e))
+* **MongoMemoryReplSet:** remove commented out HACK ([1ad5bdc](https://github.com/nodkz/mongodb-memory-server/commit/1ad5bdc879a8f90620ba572e9ec9ab5ca686744c))
+* **MongoMemoryReplSet:** remove dynamic import "mongodb" ([fb958ae](https://github.com/nodkz/mongodb-memory-server/commit/fb958aef5a604f636956c2d8656a45ade9595895))
+* **MongoMemoryReplSet:** shorten constructor ([e17762d](https://github.com/nodkz/mongodb-memory-server/commit/e17762db2ffbbfa77aef0de24ba6752c0326401a))
+* **MongoMemoryReplSet:** small improvements ([9b17925](https://github.com/nodkz/mongodb-memory-server/commit/9b179254099f3d07607f3fbb97b627ea0c323b5f))
+* **MongoMemoryReplSet:** waitUntilRunning: shorten function ([0fc27d6](https://github.com/nodkz/mongodb-memory-server/commit/0fc27d6b308a34ab27ae71e113872999549d098c))
+* **replset-single:** shorten "state errors" ([2559117](https://github.com/nodkz/mongodb-memory-server/commit/2559117b69c0476b9835b87e1f1cbd702f69e863))
+
+
+### Fixes
+
+* **MongoMemoryReplSet:** _initReplSet: throw error if "this.servers.length" is "<= 0" ([019b118](https://github.com/nodkz/mongodb-memory-server/commit/019b1188b8f77bcbf47aced7e07aba67336ec3f4))
+* **MongoMemoryReplSet:** "getUri" now uses "waitUntilRunning" ([18428d5](https://github.com/nodkz/mongodb-memory-server/commit/18428d5a7f46fdf47f88154f833fcf896d4c3bb5))
+* **MongoMemoryReplSet:** change "_waitForPrimary" timout message to be an error ([89c8af6](https://github.com/nodkz/mongodb-memory-server/commit/89c8af6399b81a42bf38a14418aee967d4559d9c))
+* **MongoMemoryReplSet:** ensure "start" is async ([765b5b1](https://github.com/nodkz/mongodb-memory-server/commit/765b5b13ded44c68d109552391d0581bbbdddf84))
+* **MongoMemoryReplSet:** move "removeListener" before "_state" check ([60646eb](https://github.com/nodkz/mongodb-memory-server/commit/60646eb4829b0c09bf6b88ade4a55f010f8bca6f))
+* **MongoMemoryReplSet:** register listener for event "beforeExit" inside "start" ([7859d6c](https://github.com/nodkz/mongodb-memory-server/commit/7859d6c60e47b6f1bbfb2a0c3a39ce417f200470))
+* **MongoMemoryReplSet:** throw error if state is not "running" or "init" ([27f6215](https://github.com/nodkz/mongodb-memory-server/commit/27f62155c219ed4a8685c360dfa9bf822d62b38d))
+
 ## [7.0.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.3...v7.0.0-beta.4) (2020-10-12)
 
 
