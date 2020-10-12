@@ -1,3 +1,20 @@
+## [7.0.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.3...v7.0.0-beta.4) (2020-10-12)
+
+
+### Fixes
+
+* **-global:** change "mongodb_version" to latest patch version ([adcbdcf](https://github.com/nodkz/mongodb-memory-server/commit/adcbdcfa3240f4182466a70b8c731d0d97fa5287))
+* **MongoBinary:** change "LATEST_VERSION" to latest patch version "4.0.20" ([23e6eaa](https://github.com/nodkz/mongodb-memory-server/commit/23e6eaa89c82efeb27fe71fd012cf438b54b006a))
+* **MongoMemoryReplSet:** _initReplSet: check if there is already an PRIMARY ([a1c9264](https://github.com/nodkz/mongodb-memory-server/commit/a1c92648c8e3ac114b211e86c31b310d00c1c140))
+
+
+### Refactor
+
+* **postinstall:** rename function "postInstall" to "postInstallEnsureBinary" ([aca8262](https://github.com/nodkz/mongodb-memory-server/commit/aca826211351e73458c56e6d0dce99d068e05941))
+* apply suggested changes ([2a9aab7](https://github.com/nodkz/mongodb-memory-server/commit/2a9aab7738e6512ce0e03135f4c8a8d217d62816))
+* ***index:** use "tslib.__exportStar" ([2e9faec](https://github.com/nodkz/mongodb-memory-server/commit/2e9faec7a27a13652378d4cdd4d5bd632dc0fa8c))
+* **postinstall:** change all packages to depend on "core" ([de41060](https://github.com/nodkz/mongodb-memory-server/commit/de41060cae7e4fcc1af286d18b90d473bca5864e)), closes [#378](https://github.com/nodkz/mongodb-memory-server/issues/378) [#174](https://github.com/nodkz/mongodb-memory-server/issues/174)
+
 ## [7.0.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.2...v7.0.0-beta.3) (2020-10-08)
 
 
