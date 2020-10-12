@@ -18,11 +18,12 @@ function doesModuleExist(name) {
   }
 }
 
-const modulePath = '../mongodb-memory-server-core/lib/postinstall';
+const modulePath = '../mongodb-memory-server-core/lib/util/postinstall-helper';
 
 if (!doesModuleExist(modulePath)) {
   console.log('Could not find file "postinstall" in core package!');
   return;
 }
 
-require(modulePath);
+// no explicit version, but "local"
+require(modulePath).postInstall(undefined, true);

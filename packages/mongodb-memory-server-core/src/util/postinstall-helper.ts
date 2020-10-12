@@ -1,8 +1,15 @@
 // this file is used by 'mongodb-memory-server' and 'mongodb-memory-server-global' (and '-global-x.x') as an shared install script
 // in this file the types for variables are set *explicitly* to prevent issues on type changes
 
-import { MongoBinary } from './util/MongoBinary';
-import { envToBool, reInitializePackageJson, resolveConfig } from './util/resolve-config';
+import { homedir } from 'os';
+import { resolve } from 'path';
+import { MongoBinary } from './MongoBinary';
+import {
+  envToBool,
+  reInitializePackageJson,
+  resolveConfig,
+  setDefaultValue,
+} from './resolve-config';
 
 reInitializePackageJson(process.env.INIT_CWD);
 
@@ -23,11 +30,22 @@ if (typeof envSystemBinary === 'string') {
   process.exit(0);
 }
 
-(async () => {
+export async function postInstall(version?: string, local?: boolean): Promise<never | void> {
   console.log('Mongodb-Memory-Server* checking MongoDB binaries');
+
+  if (!local) {
+    // set "DOWNLOAD_DIR" to ~/.cache
+    setDefaultValue('DOWNLOAD_DIR', resolve(homedir(), '.cache', 'mongodb-binaries'));
+  }
+
+  if (version) {
+    // if "version" is defined, apply it
+    setDefaultValue('VERSION', version);
+  }
+
   const binPath = await MongoBinary.getPath().catch((err) => {
     console.warn('Mongodb-Memory-Server* failed to find an binary:\n', err.message);
     process.exit(0); // Exiting with "0" to not fail the install (because it is an problem that can be solved otherwise)
   });
   console.log(`Mongodb-Memory-Server* found binary: "${binPath}"`);
-})();
+}
