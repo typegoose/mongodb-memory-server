@@ -1,7 +1,7 @@
 {
   "name": "mongodb-memory-server-global-3.4",
   "version": "6.6.9",
-  "mongodb_version": "3.4.20",
+  "mongodb_version": "3.4.24",
   "description": "MongoDB Server for testing (auto-download 3.4 version to ~/.cache/mongodb-binaries).",
   "main": "index.js",
   "types": "index.d.ts",
