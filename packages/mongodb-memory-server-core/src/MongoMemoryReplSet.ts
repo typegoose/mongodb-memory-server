@@ -343,8 +343,17 @@ export class MongoMemoryReplSet extends EventEmitter {
           throw e;
         }
       }
-      log('Waiting for replica set to have a PRIMARY member.');
-      await this._waitForPrimary();
+      log('ReplSet-reConfig finished');
+      // Documentation for return value: https://docs.mongodb.com/manual/reference/command/replSetGetStatus/#output
+      // there is no interface provided by MongoDb inside typescript, so defining only needed values
+      const status: { members: { stateStr: string }[] } = await admin.command({
+        replSetGetStatus: 1,
+      });
+      // test if the ReplSet has already an member Primary, if false wait for primary
+      if (status.members.findIndex((m) => m.stateStr === 'PRIMARY') <= -1) {
+        log('Waiting for replica set to have a PRIMARY member.');
+        await this._waitForPrimary();
+      }
       this.emit((this._state = 'running'));
       log('running');
     } finally {
