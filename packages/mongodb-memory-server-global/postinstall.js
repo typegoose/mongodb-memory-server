@@ -16,4 +16,4 @@ if (!doesModuleExist(modulePath)) {
 }
 
 // no explicit version and not local
-require(modulePath).postInstall();
+require(modulePath).postInstallEnsureBinary();

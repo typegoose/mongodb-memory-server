@@ -30,7 +30,10 @@ if (typeof envSystemBinary === 'string') {
   process.exit(0);
 }
 
-export async function postInstall(version?: string, local?: boolean): Promise<never | void> {
+export async function postInstallEnsureBinary(
+  version?: string,
+  local?: boolean
+): Promise<never | void> {
   console.log('Mongodb-Memory-Server* checking MongoDB binaries');
 
   if (!local) {

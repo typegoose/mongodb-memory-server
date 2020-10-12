@@ -15,4 +15,4 @@ if (!doesModuleExist(modulePath)) {
   return;
 }
 
-require(modulePath).postInstall(require('./package.json').mongodb_version);
+require(modulePath).postInstallEnsureBinary(require('./package.json').mongodb_version);
