@@ -10,6 +10,9 @@
     "url": "https://github.com/nodkz/mongodb-memory-server.git",
     "directory": "packages/mongodb-memory-server"
   },
+  "engines": {
+    "node": ">=10.15.0"
+  },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "keywords": [
     "mongodb",
