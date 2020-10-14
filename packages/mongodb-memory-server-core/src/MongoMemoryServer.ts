@@ -4,7 +4,7 @@ import getPort from 'get-port';
 import { assertion, generateDbName, uriTemplate, isNullOrUndefined } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import { MongoMemoryInstancePropT, StorageEngineT } from './types';
+import { MongoMemoryInstanceProp, StorageEngine } from './types';
 import debug from 'debug';
 import { EventEmitter } from 'events';
 
@@ -15,8 +15,8 @@ tmp.setGracefulCleanup();
 /**
  * MongoMemoryServer Stored Options
  */
-export interface MongoMemoryServerOptsT {
-  instance?: MongoMemoryInstancePropT;
+export interface MongoMemoryServerOpts {
+  instance?: MongoMemoryInstanceProp;
   binary?: MongoBinaryOpts;
   spawn?: SpawnOptions;
 }
@@ -29,7 +29,7 @@ export interface StartupInstanceData {
   dbPath?: string;
   dbName: string;
   ip: string;
-  storageEngine: StorageEngineT;
+  storageEngine: StorageEngine;
   replSet?: string;
   tmpDir?: tmp.DirResult;
 }
@@ -37,7 +37,7 @@ export interface StartupInstanceData {
 /**
  * Information about the currently running instance
  */
-export interface MongoInstanceDataT extends StartupInstanceData {
+export interface MongoInstanceData extends StartupInstanceData {
   dbPath: string; // re-declare, because in this interface it is *not* optional
   instance: MongoInstance;
 }
@@ -67,8 +67,8 @@ export interface MongoMemoryServer extends EventEmitter {
 }
 
 export class MongoMemoryServer extends EventEmitter {
-  protected _instanceInfo?: MongoInstanceDataT;
-  opts: MongoMemoryServerOptsT;
+  protected _instanceInfo?: MongoInstanceData;
+  opts: MongoMemoryServerOpts;
   protected _state: MongoMemoryServerStateEnum = MongoMemoryServerStateEnum.new;
 
   /**
@@ -77,7 +77,7 @@ export class MongoMemoryServer extends EventEmitter {
    * Note: because of JavaScript limitations, autoStart cannot be awaited here, use ".create" for async/await ability
    * @param opts Mongo-Memory-Sever Options
    */
-  constructor(opts?: MongoMemoryServerOptsT) {
+  constructor(opts?: MongoMemoryServerOpts) {
     super();
     this.opts = { ...opts };
   }
@@ -86,7 +86,7 @@ export class MongoMemoryServer extends EventEmitter {
    * Create an Mongo-Memory-Sever Instance that can be awaited
    * @param opts Mongo-Memory-Sever Options
    */
-  static async create(opts?: MongoMemoryServerOptsT): Promise<MongoMemoryServer> {
+  static async create(opts?: MongoMemoryServerOpts): Promise<MongoMemoryServer> {
     log('Called MongoMemoryServer.create() method');
     const instance = new MongoMemoryServer({ ...opts });
     await instance.start();
@@ -132,7 +132,7 @@ export class MongoMemoryServer extends EventEmitter {
    * Internal Function to start an instance
    * @private
    */
-  async _startUpInstance(): Promise<MongoInstanceDataT> {
+  async _startUpInstance(): Promise<MongoInstanceData> {
     log('Called MongoMemoryServer._startUpInstance() method');
     /** Shortcut to this.opts.instance */
     const instOpts = this.opts.instance ?? {};
@@ -223,7 +223,7 @@ export class MongoMemoryServer extends EventEmitter {
   /**
    * Get Information about the currently running instance, if it is not running it returns "undefined"
    */
-  get instanceInfo(): MongoInstanceDataT | undefined {
+  get instanceInfo(): MongoInstanceData | undefined {
     return this._instanceInfo;
   }
 
@@ -238,7 +238,7 @@ export class MongoMemoryServer extends EventEmitter {
    * Ensure that the instance is running
    * -> throws if instance cannot be started
    */
-  async ensureInstance(): Promise<MongoInstanceDataT> {
+  async ensureInstance(): Promise<MongoInstanceData> {
     log('Called MongoMemoryServer.ensureInstance() method');
     if (this._instanceInfo) {
       return this._instanceInfo;
@@ -305,6 +305,6 @@ export default MongoMemoryServer;
  * -> this couldnt be included in the class, because "asserts this.instanceInfo" is not allowed
  * @param val this.instanceInfo
  */
-function assertionInstanceInfo(val: unknown): asserts val is MongoInstanceDataT {
+function assertionInstanceInfo(val: unknown): asserts val is MongoInstanceData {
   assertion(!isNullOrUndefined(val), new Error('"instanceInfo" is undefined'));
 }

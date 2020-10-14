@@ -1,23 +1,23 @@
-export interface DownloadProgressT {
+export interface DownloadProgress {
   current: number;
   length: number;
   totalMb: number;
   lastPrintedAt: number;
 }
 
-export type StorageEngineT = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
+export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
 
-export interface MongoMemoryInstancePropBaseT {
+export interface MongoMemoryInstancePropBase {
   args?: string[];
   port?: number | null;
   dbPath?: string;
-  storageEngine?: StorageEngineT;
+  storageEngine?: StorageEngine;
 }
 
-export interface MongoMemoryInstancePropT extends MongoMemoryInstancePropBaseT {
+export interface MongoMemoryInstanceProp extends MongoMemoryInstancePropBase {
   auth?: boolean;
   dbName?: string;
   ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
   replSet?: string;
-  storageEngine?: StorageEngineT;
+  storageEngine?: StorageEngine;
 }

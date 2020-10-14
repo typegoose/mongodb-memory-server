@@ -89,3 +89,11 @@ It has the following protection rules:
 ### next branch
 
 The `next` branch is the development branch, to accumulate changes before releasing an version
+
+## Code Styles
+
+### Interface & Type & Enum names
+
+If the interface/type/enum is specially for some *file / class* (example: `MongoReplSet`), then the name should include the name plus what it is for (example: `MongoReplSetOptions`)
+If the type/enum is specially for some *property* then the name should include the property (example: `MongoReplSetStateEnum`)
+If the interface/type/enum is an "standalone" then it should be named appropriately (example: `StorageEninge` / `DownloadProgress`)

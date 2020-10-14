@@ -3,7 +3,7 @@ import MongoMemoryReplSet, { MongoMemoryReplSetStateEnum } from '../MongoMemoryR
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 import * as db_util from '../util/db_util';
-import { MongoMemoryInstancePropT } from '../types';
+import { MongoMemoryInstanceProp } from '../types';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
@@ -352,7 +352,7 @@ describe('MongoMemoryReplSet', () => {
 
     // @ts-expect-error
     expect(replSet.getInstanceOpts({ storageEngine: 'wiredTiger' })).toMatchObject<
-      MongoMemoryInstancePropT // this is needed, otherwise no ts error when "storageEngine" might get changed
+      MongoMemoryInstanceProp // this is needed, otherwise no ts error when "storageEngine" might get changed
     >({
       storageEngine: 'wiredTiger',
     });

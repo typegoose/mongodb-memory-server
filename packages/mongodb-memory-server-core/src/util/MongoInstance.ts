@@ -3,7 +3,7 @@ import { default as spawnChild } from 'cross-spawn';
 import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
-import { StorageEngineT } from '../types';
+import { StorageEngine } from '../types';
 import debug from 'debug';
 import { assertion, uriTemplate, isNullOrUndefined, killProcess } from './db_util';
 import { lt } from 'semver';
@@ -35,7 +35,7 @@ export enum MongoInstanceEvents {
 export interface MongoInstanceOpts {
   port?: number;
   ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
-  storageEngine?: StorageEngineT;
+  storageEngine?: StorageEngine;
   dbPath?: string;
   replSet?: string;
   args?: string[];

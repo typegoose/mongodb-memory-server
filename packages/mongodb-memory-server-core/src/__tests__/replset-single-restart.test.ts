@@ -1,4 +1,4 @@
-import MongoMemoryReplSet, { MongoMemoryReplSetOptsT } from '../MongoMemoryReplSet';
+import MongoMemoryReplSet, { MongoMemoryReplSetOpts } from '../MongoMemoryReplSet';
 import * as tmp from 'tmp';
 
 let tmpDir: tmp.DirResult;
@@ -26,7 +26,7 @@ describe('single-member replica set', () => {
           dbPath: tmpDir.name,
         },
       ],
-    } as MongoMemoryReplSetOptsT;
+    } as MongoMemoryReplSetOpts;
 
     const replSetBefore = await MongoMemoryReplSet.create(opts);
 

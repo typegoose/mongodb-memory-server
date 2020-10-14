@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
 import MongoMemoryServer from './MongoMemoryServer';
-import { MongoMemoryServerOptsT } from './MongoMemoryServer';
+import { MongoMemoryServerOpts } from './MongoMemoryServer';
 import { assertion, ensureAsync, generateDbName, getHost, isNullOrUndefined } from './util/db_util';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import { MongoMemoryInstancePropT, MongoMemoryInstancePropBaseT, StorageEngineT } from './types';
+import { MongoMemoryInstanceProp, MongoMemoryInstancePropBase, StorageEngine } from './types';
 import debug from 'debug';
 import { MongoClient, MongoError } from 'mongodb';
 import { MongoInstanceEvents } from './util/MongoInstance';
@@ -58,18 +58,18 @@ export interface ReplSetOpts {
    *`mongod` storage engine type
    * @default 'ephemeralForTest'
    */
-  storageEngine?: StorageEngineT;
+  storageEngine?: StorageEngine;
   /**
    * Options for "rsConfig"
    * @default {}
    */
-  configSettings?: MongoMemoryReplSetConfigSettingsT;
+  configSettings?: MongoMemoryReplSetConfigSettings;
 }
 
 /**
  * Options for "rsConfig"
  */
-export interface MongoMemoryReplSetConfigSettingsT {
+export interface MongoMemoryReplSetConfigSettings {
   chainingAllowed?: boolean;
   heartbeatTimeoutSecs?: number;
   heartbeatIntervalMillis?: number;
@@ -80,11 +80,11 @@ export interface MongoMemoryReplSetConfigSettingsT {
 /**
  * Options for the replSet
  */
-export interface MongoMemoryReplSetOptsT {
+export interface MongoMemoryReplSetOpts {
   /**
    * Specific Options to use for some instances
    */
-  instanceOpts: MongoMemoryInstancePropBaseT[];
+  instanceOpts: MongoMemoryInstancePropBase[];
   /**
    * Binary Options used for all instances
    */
@@ -122,13 +122,13 @@ export class MongoMemoryReplSet extends EventEmitter {
   servers: MongoMemoryServer[] = [];
 
   // "!" is used, because the getters are used instead of the "_" values
-  protected _instanceOpts!: MongoMemoryInstancePropBaseT[];
+  protected _instanceOpts!: MongoMemoryInstancePropBase[];
   protected _binaryOpts!: MongoBinaryOpts;
   protected _replSetOpts!: Required<ReplSetOpts>;
 
   protected _state: MongoMemoryReplSetStateEnum = MongoMemoryReplSetStateEnum.stopped;
 
-  constructor(opts: Partial<MongoMemoryReplSetOptsT> = {}) {
+  constructor(opts: Partial<MongoMemoryReplSetOpts> = {}) {
     super();
 
     this.binaryOpts = { ...opts.binary };
@@ -149,7 +149,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Create an instance of "MongoMemoryReplSet" and call start
    * @param opts Options for the ReplSet
    */
-  static async create(opts: Partial<MongoMemoryReplSetOptsT> = {}): Promise<MongoMemoryReplSet> {
+  static async create(opts: Partial<MongoMemoryReplSetOpts> = {}): Promise<MongoMemoryReplSet> {
     const replSet = new this({ ...opts });
     await replSet.start();
     return replSet;
@@ -166,11 +166,11 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Get & Set "instanceOpts"
    * @throws if "state" is not "stopped"
    */
-  get instanceOpts(): MongoMemoryInstancePropBaseT[] {
+  get instanceOpts(): MongoMemoryInstancePropBase[] {
     return this._instanceOpts;
   }
 
-  set instanceOpts(val: MongoMemoryInstancePropBaseT[]) {
+  set instanceOpts(val: MongoMemoryInstancePropBase[]) {
     assertion(
       this._state === MongoMemoryReplSetStateEnum.stopped,
       new Error('Cannot change instance Options while "state" is not "stopped"!')
@@ -228,8 +228,8 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Returns instance options suitable for a MongoMemoryServer.
    * @param baseOpts Options to merge with
    */
-  protected getInstanceOpts(baseOpts: MongoMemoryInstancePropBaseT = {}): MongoMemoryInstancePropT {
-    const opts: MongoMemoryInstancePropT = {
+  protected getInstanceOpts(baseOpts: MongoMemoryInstancePropBase = {}): MongoMemoryInstanceProp {
+    const opts: MongoMemoryInstanceProp = {
       auth: !!this._replSetOpts.auth,
       args: this._replSetOpts.args,
       dbName: this._replSetOpts.dbName,
@@ -436,8 +436,8 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Create the one Instance (without starting them)
    * @param instanceOpts Instance Options to use for this instance
    */
-  protected _initServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
-    const serverOpts: MongoMemoryServerOptsT = {
+  protected _initServer(instanceOpts: MongoMemoryInstanceProp): MongoMemoryServer {
+    const serverOpts: MongoMemoryServerOpts = {
       binary: this._binaryOpts,
       instance: instanceOpts,
       spawn: this._replSetOpts.spawn,

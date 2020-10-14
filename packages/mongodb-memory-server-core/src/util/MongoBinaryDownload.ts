@@ -8,7 +8,7 @@ import { createUnzip } from 'zlib';
 import tar from 'tar-stream';
 import yauzl from 'yauzl';
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
-import { DownloadProgressT } from '../types';
+import { DownloadProgress } from '../types';
 import { LATEST_VERSION } from './MongoBinary';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { promisify } from 'util';
@@ -38,7 +38,7 @@ interface HttpDownloadOptions {
  * Download and extract the "mongod" binary
  */
 export class MongoBinaryDownload {
-  dlProgress: DownloadProgressT;
+  dlProgress: DownloadProgress;
   _downloadingUrl?: string;
 
   checkMD5: boolean;
