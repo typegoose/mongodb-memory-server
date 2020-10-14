@@ -5,7 +5,7 @@ import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { StorageEngineT } from '../types';
 import debug from 'debug';
-import { assertion, getUriBase, isNullOrUndefined, killProcess } from './db_util';
+import { assertion, uriTemplate, isNullOrUndefined, killProcess } from './db_util';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoNetworkError } from 'mongodb';
@@ -216,12 +216,12 @@ export class MongoInstance extends EventEmitter {
             new Error('Cannot shutdown replset gracefully, no "ip" is provided')
           );
 
-          con = await MongoClient.connect(getUriBase(ip, port, 'admin'), {
+          con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
             useNewUrlParser: true,
             useUnifiedTopology: true,
           });
 
-          const admin = con.db('admin');
+          const admin = con.db('admin'); // just to ensure it is actually the "admin" database
           await admin.command({ replSetStepDown: 1, force: true });
           await con.close();
         } catch (err) {

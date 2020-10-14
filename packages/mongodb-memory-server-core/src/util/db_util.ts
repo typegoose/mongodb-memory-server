@@ -25,8 +25,8 @@ export function getHost(uri: string): string {
 /**
  * Basic MongoDB Connection string
  */
-export function getUriBase(host: string, port: number, dbName: string): string {
-  return `mongodb://${host}:${port}/${dbName}?`;
+export function uriTemplate(host: string, port: number, dbName: string, query?: string): string {
+  return `mongodb://${host}:${port}/${dbName}` + (!isNullOrUndefined(query) ? `?${query}` : '');
 }
 
 /**

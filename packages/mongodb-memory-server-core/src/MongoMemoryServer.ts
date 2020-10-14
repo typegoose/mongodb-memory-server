@@ -1,7 +1,7 @@
 import { SpawnOptions } from 'child_process';
 import * as tmp from 'tmp';
 import getPort from 'get-port';
-import { assertion, generateDbName, getUriBase, isNullOrUndefined } from './util/db_util';
+import { assertion, generateDbName, uriTemplate, isNullOrUndefined } from './util/db_util';
 import MongoInstance from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import { MongoMemoryInstancePropT, StorageEngineT } from './types';
@@ -294,7 +294,7 @@ export class MongoMemoryServer extends EventEmitter {
       dbName = typeof otherDbName === 'string' ? otherDbName : generateDbName();
     }
 
-    return getUriBase(this._instanceInfo.ip, this._instanceInfo.port, dbName);
+    return uriTemplate(this._instanceInfo.ip, this._instanceInfo.port, dbName);
   }
 }
 

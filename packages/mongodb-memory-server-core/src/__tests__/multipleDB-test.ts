@@ -61,9 +61,4 @@ describe('Multiple mongoServers', () => {
     const uri2 = mongoServer2.getUri();
     expect(uri1).not.toEqual(uri2);
   });
-
-  it('v6.0.0 adds "?" to the connection string (uri)', () => {
-    const uri1 = mongoServer1.getUri();
-    expect(uri1.includes('?')).toBeTruthy();
-  });
 });
