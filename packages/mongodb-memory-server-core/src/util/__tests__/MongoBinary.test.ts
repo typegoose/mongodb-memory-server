@@ -27,7 +27,7 @@ describe('MongoBinary', () => {
     tmpDir.removeCallback();
     (MongoBinaryDownload as jest.Mock).mockClear();
     mockGetMongodPath.mockClear();
-    MongoBinary.cache = {};
+    MongoBinary.cache = new Map();
   });
 
   describe('getPath', () => {
@@ -62,14 +62,14 @@ describe('MongoBinary', () => {
 
       expect(mockGetMongodPath).toHaveBeenCalledTimes(1);
 
-      expect(MongoBinary.cache[version]).toBeDefined();
-      expect(MongoBinary.cache[version]).toEqual(binPath);
+      expect(MongoBinary.getCachePath(version)).toBeDefined();
+      expect(MongoBinary.getCachePath(version)).toEqual(binPath);
     });
   });
 
   describe('getCachePath', () => {
     it('should get the cache', async () => {
-      MongoBinary.cache['3.4.2'] = '/bin/mongod';
+      MongoBinary.cache.set('3.4.2', '/bin/mongod');
       expect(MongoBinary.getCachePath('3.4.2')).toEqual('/bin/mongod');
     });
   });

@@ -9,6 +9,7 @@ import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool } from './resolve-config';
 import debug from 'debug';
+import { assertion } from './db_util';
 
 const log = debug('MongoMS:MongoBinary');
 
@@ -30,7 +31,7 @@ export interface MongoBinaryOpts {
 }
 
 export class MongoBinary {
-  static cache: MongoBinaryCache = {};
+  static cache: Map<string, string> = new Map();
 
   /**
    * Probe if the provided "systemBinary" is an existing path
@@ -56,8 +57,8 @@ export class MongoBinary {
    * Check if specified version already exists in the cache
    * @param version The Version to check for
    */
-  static getCachePath(version: string): string {
-    return this.cache[version];
+  static getCachePath(version: string): string | undefined {
+    return this.cache.get(version);
   }
 
   /**
@@ -100,7 +101,7 @@ export class MongoBinary {
         version,
         checkMD5,
       });
-      this.cache[version] = await downloader.getMongodPath();
+      this.cache.set(version, await downloader.getMongodPath());
     }
     // remove lock
     await new Promise((res) => {
@@ -113,7 +114,14 @@ export class MongoBinary {
         res(); // we don't care if it was successful or not
       });
     });
-    return this.getCachePath(version);
+
+    const cachePath = this.getCachePath(version);
+    // ensure that "path" exists, so the return type does not change
+    assertion(
+      typeof cachePath === 'string',
+      new Error(`No Cache Path for version "${version}" found (and download failed silently?)`)
+    );
+    return cachePath;
   }
 
   /**
@@ -155,7 +163,7 @@ export class MongoBinary {
     const options = { ...defaultOptions, ...opts };
     log(`MongoBinary options:`, JSON.stringify(options, null, 2));
 
-    let binaryPath = '';
+    let binaryPath: string | undefined;
 
     if (options.systemBinary) {
       binaryPath = await this.getSystemPath(options.systemBinary);
