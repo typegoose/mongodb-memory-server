@@ -13,6 +13,6 @@ module.exports = {
   },
   roots: ['<rootDir>/src'],
   testPathIgnorePatterns: ['/node_modules/', '/lib/'],
-  testMatch: ['**/__tests__/**/*-test.(ts|js)'],
+  testMatch: ['**/__tests__/**/*.test.(ts|js)'],
   testEnvironment: 'node',
 };

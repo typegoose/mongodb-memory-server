@@ -53,8 +53,11 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
 - [CI](#ci)
 - [Contributing](#contributing)
 - [Credits](#credits)
-- [License](#license)
 - [Maintainers](#maintainers)
+- [Contributors](#contributors)
+- [Backers](#backers)
+- [Sponsors](#sponsors)
+- [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -320,7 +323,7 @@ process.chdir('/custom/path'); // not recommended
 
 ### Simple test with MongoClient
 
-Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB-test.ts).
+Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB.test.ts).
 
 ### Provide connection string to mongoose
 
