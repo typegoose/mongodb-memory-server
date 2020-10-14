@@ -229,7 +229,12 @@ export class MongoInstance extends EventEmitter {
           // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.
           // > In MongoDB 4.0 and earlier, replSetStepDown command closes all client connections during the step down.
           // so error "MongoNetworkError: connection 1 to 127.0.0.1:41485 closed" will get thrown below 4.2
-          if (!(err instanceof MongoNetworkError)) {
+          if (
+            !(
+              err instanceof MongoNetworkError &&
+              /^connection \d+ to [\d.]+:\d+ closed$/i.test(err.message)
+            )
+          ) {
             console.warn(err);
           }
         } finally {
