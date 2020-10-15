@@ -9,7 +9,7 @@ import {
   reInitializePackageJson,
   resolveConfig,
   setDefaultValue,
-} from './resolve-config';
+} from './resolveConfig';
 
 reInitializePackageJson(process.env.INIT_CWD);
 

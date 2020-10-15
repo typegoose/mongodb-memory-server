@@ -7,7 +7,7 @@ import findCacheDir from 'find-cache-dir';
 import { execSync } from 'child_process';
 import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
-import resolveConfig, { envToBool } from './resolve-config';
+import resolveConfig, { envToBool } from './resolveConfig';
 import debug from 'debug';
 import { assertion } from './utils';
 

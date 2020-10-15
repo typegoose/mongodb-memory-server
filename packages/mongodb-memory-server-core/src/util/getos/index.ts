@@ -4,7 +4,7 @@ import { platform } from 'os';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
-import resolveConfig from '../resolve-config';
+import resolveConfig from '../resolveConfig';
 import debug from 'debug';
 import { isNullOrUndefined } from '../utils';
 

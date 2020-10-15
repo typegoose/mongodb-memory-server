@@ -11,7 +11,7 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { LATEST_VERSION } from './MongoBinary';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { promisify } from 'util';
-import resolveConfig, { envToBool } from './resolve-config';
+import resolveConfig, { envToBool } from './resolveConfig';
 import debug from 'debug';
 
 const log = debug('MongoMS:MongoBinaryDownload');

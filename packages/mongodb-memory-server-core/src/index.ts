@@ -1,4 +1,4 @@
-import './util/resolve-config'; // import it for the side-effects (globals)
+import './util/resolveConfig'; // import it for the side-effects (globals)
 
 export { MongoBinary } from './util/MongoBinary';
 export { MongoInstance } from './util/MongoInstance';

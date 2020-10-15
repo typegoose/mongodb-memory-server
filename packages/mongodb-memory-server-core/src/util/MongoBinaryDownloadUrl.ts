@@ -1,6 +1,6 @@
 import getOS, { AnyOS, LinuxOS } from './getos';
 import { execSync } from 'child_process';
-import resolveConfig from './resolve-config';
+import resolveConfig from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';

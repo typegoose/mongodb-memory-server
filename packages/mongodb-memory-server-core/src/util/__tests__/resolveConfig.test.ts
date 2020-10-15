@@ -1,7 +1,7 @@
 import fs from 'fs';
 import * as tmp from 'tmp';
 import { promisify } from 'util';
-import resolveConfig, { findPackageJson } from '../resolve-config';
+import resolveConfig, { findPackageJson } from '../resolveConfig';
 
 tmp.setGracefulCleanup();
 const mkdirAsync = promisify(fs.mkdir);

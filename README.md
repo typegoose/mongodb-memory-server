@@ -312,7 +312,7 @@ By default it uses the nearest (upwards) `package.json` to `process.cwd()`.
 To change this:
 
 ```ts
-import { findPackageJson } from "mongodb-memory-server-core/lib/util/resolve-config";
+import { findPackageJson } from "mongodb-memory-server-core/lib/util/resolveConfig";
 
 findPackageJson('/custom/path');
 
