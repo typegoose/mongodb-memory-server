@@ -18,7 +18,7 @@ function doesModuleExist(name) {
   }
 }
 
-const modulePath = '../mongodb-memory-server-core/lib/util/postinstall-helper';
+const modulePath = '../mongodb-memory-server-core/lib/util/postinstallHelper';
 
 if (!doesModuleExist(modulePath)) {
   console.log('Could not find file "postinstall" in core package!');
