@@ -97,3 +97,8 @@ The `next` branch is the development branch, to accumulate changes before releas
 If the interface/type/enum is specially for some *file / class* (example: `MongoReplSet`), then the name should include the name plus what it is for (example: `MongoReplSetOptions`)
 If the type/enum is specially for some *property* then the name should include the property (example: `MongoReplSetStateEnum`)
 If the interface/type/enum is an "standalone" then it should be named appropriately (example: `StorageEninge` / `DownloadProgress`)
+
+### File Names
+
+Source file names should be `PascalCase` if the main export is an class (example: `MongoBinary`, and not `Mongo-Binary`)
+Source file names should be `camelCase` if there is no "definitive main export" (example: `resolveConfig` & `utils`)
