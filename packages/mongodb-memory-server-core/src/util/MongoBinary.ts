@@ -9,7 +9,7 @@ import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool } from './resolve-config';
 import debug from 'debug';
-import { assertion } from './db_util';
+import { assertion } from './utils';
 
 const log = debug('MongoMS:MongoBinary');
 

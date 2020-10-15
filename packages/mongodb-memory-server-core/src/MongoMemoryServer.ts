@@ -1,7 +1,7 @@
 import { SpawnOptions } from 'child_process';
 import * as tmp from 'tmp';
 import getPort from 'get-port';
-import { assertion, generateDbName, uriTemplate, isNullOrUndefined } from './util/db_util';
+import { assertion, generateDbName, uriTemplate, isNullOrUndefined } from './util/utils';
 import MongoInstance, { MongoMemoryInstanceProp, StorageEngine } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';

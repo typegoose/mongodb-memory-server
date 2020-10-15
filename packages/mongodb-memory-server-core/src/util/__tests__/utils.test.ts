@@ -1,6 +1,6 @@
-import { uriTemplate } from '../db_util';
+import { uriTemplate } from '../utils';
 
-describe('db_util', () => {
+describe('utils', () => {
   describe('uriTemplate', () => {
     it('should not add "?" without query options', () => {
       expect(uriTemplate('0.0.0.0', 1001, 'somedb')).toEqual('mongodb://0.0.0.0:1001/somedb');

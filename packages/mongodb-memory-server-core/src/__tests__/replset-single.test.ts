@@ -2,7 +2,7 @@
 import MongoMemoryReplSet, { MongoMemoryReplSetStateEnum } from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
-import * as db_util from '../util/db_util';
+import * as utils from '../util/utils';
 import { MongoMemoryInstanceProp } from '../util/MongoInstance';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -26,14 +26,14 @@ describe('single server replset', () => {
   });
 
   it('"getUri" should be able to generate an dbName', async () => {
-    jest.spyOn(db_util, 'generateDbName');
+    jest.spyOn(utils, 'generateDbName');
     const replSet = await MongoMemoryReplSet.create();
     const uri = replSet.getUri(true);
     expect(uri.split(',').length).toEqual(1);
     // regex for "uuidv4" ("17b00a74-e1f9-4aaa-86a1-aee757c8d3a6")
     expect(/\/.{8}-.{4}-.{4}-.{4}-.{12}\?/i.test(uri)).toBeTruthy();
     expect(uri.includes('replicaSet=testset')).toBeTruthy();
-    expect(db_util.generateDbName).toHaveBeenCalledTimes(3); // once in "new MongoMemoryReplSet" (setter), once in "_startUpInstance", once in getUri
+    expect(utils.generateDbName).toHaveBeenCalledTimes(3); // once in "new MongoMemoryReplSet" (setter), once in "_startUpInstance", once in getUri
 
     await replSet.stop();
   });

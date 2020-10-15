@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import debug from 'debug';
 import { ChildProcess } from 'child_process';
 
-const log = debug('MongoMS:db_util');
+const log = debug('MongoMS:utils');
 
 /**
  * Returns a database name string.
@@ -61,7 +61,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
   await new Promise((resolve, reject) => {
     let timeout = setTimeout(() => {
       log('killProcess timeout triggered, trying SIGKILL');
-      if (!debug.enabled('MongoMS:db_util')) {
+      if (!debug.enabled('MongoMS:utils')) {
         console.warn(
           'An Process didnt exit with signal "SIGINT" within 10 seconds, using "SIGKILL"!\n' +
             'Enable debug logs for more information'

@@ -6,7 +6,7 @@ import { promisify } from 'util';
 import { join } from 'path';
 import resolveConfig from '../resolve-config';
 import debug from 'debug';
-import { isNullOrUndefined } from '../db_util';
+import { isNullOrUndefined } from '../utils';
 
 const log = debug('MongoMS:getos');
 

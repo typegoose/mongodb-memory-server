@@ -1,5 +1,5 @@
 import * as tmp from 'tmp';
-import * as dbUtil from '../db_util';
+import * as dbUtil from '../utils';
 import { LATEST_VERSION } from '../MongoBinary';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 

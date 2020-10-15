@@ -4,7 +4,7 @@ import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import debug from 'debug';
-import { assertion, uriTemplate, isNullOrUndefined, killProcess } from './db_util';
+import { assertion, uriTemplate, isNullOrUndefined, killProcess } from './utils';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoNetworkError } from 'mongodb';

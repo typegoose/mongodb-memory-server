@@ -5,7 +5,7 @@ import MongoMemoryServer, {
   MongoMemoryServerEventEnum,
   MongoMemoryServerStateEnum,
 } from '../MongoMemoryServer';
-import { assertion } from '../util/db_util';
+import { assertion } from '../util/utils';
 
 tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;

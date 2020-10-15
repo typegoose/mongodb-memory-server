@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOpts } from './MongoMemoryServer';
-import { assertion, ensureAsync, generateDbName, getHost, isNullOrUndefined } from './util/db_util';
+import { assertion, ensureAsync, generateDbName, getHost, isNullOrUndefined } from './util/utils';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { MongoClient, MongoError } from 'mongodb';
