@@ -16,7 +16,7 @@ import debug from 'debug';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
-export interface DownloadProgress {
+export interface MongoBinaryDownloadProgress {
   current: number;
   length: number;
   totalMb: number;
@@ -44,7 +44,7 @@ interface HttpDownloadOptions {
  * Download and extract the "mongod" binary
  */
 export class MongoBinaryDownload {
-  dlProgress: DownloadProgress;
+  dlProgress: MongoBinaryDownloadProgress;
   _downloadingUrl?: string;
 
   checkMD5: boolean;
