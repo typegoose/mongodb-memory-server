@@ -24,6 +24,8 @@ export interface MongoMemoryInstancePropBase {
   storageEngine?: StorageEngine;
 }
 
+// TODO: find an better name for this interface
+// TODO: find a way to unify with "MongoInstanceOpts"
 export interface MongoMemoryInstanceProp extends MongoMemoryInstancePropBase {
   auth?: boolean;
   dbName?: string;
