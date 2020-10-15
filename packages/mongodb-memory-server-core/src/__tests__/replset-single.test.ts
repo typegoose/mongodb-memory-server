@@ -3,7 +3,7 @@ import MongoMemoryReplSet, { MongoMemoryReplSetStateEnum } from '../MongoMemoryR
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 import * as db_util from '../util/db_util';
-import { MongoMemoryInstanceProp } from '../types';
+import { MongoMemoryInstanceProp } from '../util/MongoInstance';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 

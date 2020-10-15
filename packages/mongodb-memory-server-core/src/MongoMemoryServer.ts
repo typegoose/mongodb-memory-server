@@ -2,9 +2,8 @@ import { SpawnOptions } from 'child_process';
 import * as tmp from 'tmp';
 import getPort from 'get-port';
 import { assertion, generateDbName, uriTemplate, isNullOrUndefined } from './util/db_util';
-import MongoInstance from './util/MongoInstance';
+import MongoInstance, { MongoMemoryInstanceProp, StorageEngine } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import { MongoMemoryInstanceProp, StorageEngine } from './types';
 import debug from 'debug';
 import { EventEmitter } from 'events';
 

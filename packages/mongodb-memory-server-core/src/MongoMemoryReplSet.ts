@@ -3,10 +3,14 @@ import MongoMemoryServer from './MongoMemoryServer';
 import { MongoMemoryServerOpts } from './MongoMemoryServer';
 import { assertion, ensureAsync, generateDbName, getHost, isNullOrUndefined } from './util/db_util';
 import { MongoBinaryOpts } from './util/MongoBinary';
-import { MongoMemoryInstanceProp, MongoMemoryInstancePropBase, StorageEngine } from './types';
 import debug from 'debug';
 import { MongoClient, MongoError } from 'mongodb';
-import { MongoInstanceEvents } from './util/MongoInstance';
+import {
+  MongoInstanceEvents,
+  MongoMemoryInstanceProp,
+  MongoMemoryInstancePropBase,
+  StorageEngine,
+} from './util/MongoInstance';
 import { SpawnOptions } from 'child_process';
 
 const log = debug('MongoMS:MongoMemoryReplSet');

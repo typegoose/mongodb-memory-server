@@ -3,7 +3,6 @@ import { default as spawnChild } from 'cross-spawn';
 import path from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
-import { StorageEngine } from '../types';
 import debug from 'debug';
 import { assertion, uriTemplate, isNullOrUndefined, killProcess } from './db_util';
 import { lt } from 'semver';
@@ -15,6 +14,23 @@ if (lt(process.version, '10.15.0')) {
 }
 
 const log = debug('MongoMS:MongoInstance');
+
+export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
+
+export interface MongoMemoryInstancePropBase {
+  args?: string[];
+  port?: number | null;
+  dbPath?: string;
+  storageEngine?: StorageEngine;
+}
+
+export interface MongoMemoryInstanceProp extends MongoMemoryInstancePropBase {
+  auth?: boolean;
+  dbName?: string;
+  ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
+  replSet?: string;
+  storageEngine?: StorageEngine;
+}
 
 export enum MongoInstanceEvents {
   instanceReplState = 'instanceReplState',
