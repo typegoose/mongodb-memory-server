@@ -1,5 +1,9 @@
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe('MongoBinaryDownloadUrl', () => {
   describe('getDownloadUrl()', () => {
     describe('for mac', () => {
@@ -127,7 +131,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('fallback', async () => {
-      console.warn = jest.fn(); // mock it to prevent writing to console
+      jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
@@ -143,7 +147,7 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(await du.getDownloadUrl()).toBe(
         'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
       );
-      expect((console.warn as any).mock.calls.length).toEqual(2);
+      expect(console.warn).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -312,6 +316,7 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   it('shouldnt detect linux mint when using peppermint', () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => void 0);
     const downloadUrl = new MongoBinaryDownloadUrl({
       platform: 'linux',
       arch: 'x64',
@@ -325,6 +330,8 @@ describe('MongoBinaryDownloadUrl', () => {
         release: '10',
       })
     ).toBe('');
+
+    expect(console.warn).toHaveBeenCalledTimes(2); // once "Unknown linux distro Peppermint" and once "Falling back to legacy MongoDB build!"
   });
 
   describe('getLegacyVersionString', () => {
