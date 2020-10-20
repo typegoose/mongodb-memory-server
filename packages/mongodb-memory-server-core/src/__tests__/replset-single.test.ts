@@ -203,6 +203,83 @@ describe('single server replset', () => {
       expect(err.message).toEqual('One or more servers are required.');
     }
   });
+
+  it('should make use of "AutomaticAuth" (ephemeralForTest)', async () => {
+    // @ts-expect-error
+    jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+    const replSet = await MongoMemoryReplSet.create({
+      replSet: { auth: {}, count: 3, storageEngine: 'ephemeralForTest' },
+    });
+
+    utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth));
+    utils.assertion(typeof replSet.replSetOpts.auth === 'object');
+
+    utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootName));
+    utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootPwd));
+
+    const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      authSource: 'admin',
+      authMechanism: 'SCRAM-SHA-256',
+      auth: {
+        user: replSet.replSetOpts.auth.customRootName,
+        password: replSet.replSetOpts.auth.customRootPwd,
+      },
+    });
+
+    const db = con.db('admin');
+    const users: { users: { user: string }[] } = await db.command({
+      usersInfo: replSet.replSetOpts.auth.customRootName,
+    });
+    expect(users.users).toHaveLength(1);
+    expect(users.users[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
+    // @ts-expect-error
+    expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledTimes(1);
+
+    await con.close();
+    await replSet.stop();
+  });
+
+  // TODO: re-enable this test when an solution for keeping dbPath across replset restarts
+  // it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
+  //   // @ts-expect-error
+  //   jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
+  //   const replSet = await MongoMemoryReplSet.create({
+  //     replSet: { auth: {}, count: 3, storageEngine: 'wiredTiger' },
+  //   });
+
+  //   utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth));
+  //   utils.assertion(typeof replSet.replSetOpts.auth === 'object');
+
+  //   utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootName));
+  //   utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootPwd));
+
+  //   const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
+  //     useNewUrlParser: true,
+  //     useUnifiedTopology: true,
+  //     authSource: 'admin',
+  //     authMechanism: 'SCRAM-SHA-256',
+  //     auth: {
+  //       user: replSet.replSetOpts.auth.customRootName,
+  //       password: replSet.replSetOpts.auth.customRootPwd,
+  //     },
+  //   });
+
+  //   const db = con.db('admin');
+  //   const users: { users: { user: string }[] } = await db.command({
+  //     usersInfo: replSet.replSetOpts.auth.customRootName,
+  //   });
+  //   expect(users.users).toHaveLength(1);
+  //   expect(users.users[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
+  //   // @ts-expect-error
+  //   expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(2);
+
+  //   await con.close();
+  //   await replSet.stop();
+  // });
 });
 
 describe('MongoMemoryReplSet', () => {

@@ -1,7 +1,14 @@
 import { EventEmitter } from 'events';
-import MongoMemoryServer from './MongoMemoryServer';
+import MongoMemoryServer, { AutomaticAuth } from './MongoMemoryServer';
 import { MongoMemoryServerOpts } from './MongoMemoryServer';
-import { assertion, ensureAsync, generateDbName, getHost, isNullOrUndefined } from './util/utils';
+import {
+  assertion,
+  authDefault,
+  ensureAsync,
+  generateDbName,
+  getHost,
+  isNullOrUndefined,
+} from './util/utils';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { MongoClient, MongoError } from 'mongodb';
@@ -26,7 +33,7 @@ export interface ReplSetOpts {
    * enable auth ("--auth" / "--noauth")
    * @default false
    */
-  auth?: boolean;
+  auth?: boolean | AutomaticAuth;
   /**
    * additional command line arguments passed to `mongod`
    * @default []
@@ -131,6 +138,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   protected _replSetOpts!: Required<ReplSetOpts>;
 
   protected _state: MongoMemoryReplSetStateEnum = MongoMemoryReplSetStateEnum.stopped;
+  protected _ranCreateAuth: boolean = false;
 
   constructor(opts: Partial<MongoMemoryReplSetOpts> = {}) {
     super();
@@ -226,6 +234,10 @@ export class MongoMemoryReplSet extends EventEmitter {
     this._replSetOpts = { ...defaults, ...val };
 
     assertion(this._replSetOpts.count > 0, new Error('ReplSet Count needs to be 1 or higher!'));
+
+    if (typeof this._replSetOpts.auth === 'object') {
+      this._replSetOpts.auth = authDefault(this._replSetOpts.auth);
+    }
   }
 
   /**
@@ -234,7 +246,11 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   protected getInstanceOpts(baseOpts: MongoMemoryInstancePropBase = {}): MongoMemoryInstanceProp {
     const opts: MongoMemoryInstanceProp = {
-      auth: !!this._replSetOpts.auth,
+      // disable "auth" if replsetopts has an object-auth
+      auth:
+        typeof this._replSetOpts.auth === 'object' && !this._ranCreateAuth
+          ? false
+          : !!this._replSetOpts.auth,
       args: this._replSetOpts.args,
       dbName: this._replSetOpts.dbName,
       ip: this._replSetOpts.ip,
@@ -306,23 +322,26 @@ export class MongoMemoryReplSet extends EventEmitter {
     this.stateChange(MongoMemoryReplSetStateEnum.init); // this needs to be executed before "setImmediate"
     await ensureAsync();
     log('init');
-    const servers: MongoMemoryServer[] = [];
+    await this.initAllServers();
+    await this._initReplSet();
+    process.once('beforeExit', this.stop);
+  }
+
+  protected async initAllServers(): Promise<void> {
     // Any servers defined within `_instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
     // the `replSetInitiate` command against that server.
     this._instanceOpts.forEach((opts) => {
-      log(`  starting server from instanceOpts (count: ${servers.length + 1}):`, opts);
-      servers.push(this._initServer(this.getInstanceOpts(opts)));
+      log(`  starting server from instanceOpts (count: ${this.servers.length + 1}):`, opts);
+      this.servers.push(this._initServer(this.getInstanceOpts(opts)));
     });
-    while (servers.length < this._replSetOpts.count) {
-      log(`  starting server ${servers.length + 1} of ${this._replSetOpts.count}`);
-      servers.push(this._initServer(this.getInstanceOpts()));
+    while (this.servers.length < this._replSetOpts.count) {
+      log(`  starting server ${this.servers.length + 1} of ${this._replSetOpts.count}`);
+      this.servers.push(this._initServer(this.getInstanceOpts()));
     }
+
     // ensures all servers are listening for connection
-    await Promise.all(servers.map((s) => s.start()));
-    this.servers = servers;
-    await this._initReplSet();
-    process.once('beforeExit', this.stop);
+    await Promise.all(this.servers.map((s) => s.start()));
   }
 
   /**
@@ -386,7 +405,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     assertion(this.servers.length > 0, new Error('One or more servers are required.'));
     const uris = this.servers.map((server) => server.getUri());
 
-    const con: MongoClient = await MongoClient.connect(uris[0], {
+    let con: MongoClient = await MongoClient.connect(uris[0], {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
@@ -405,6 +424,55 @@ export class MongoMemoryReplSet extends EventEmitter {
       };
       try {
         await adminDb.command({ replSetInitiate: rsConfig });
+
+        if (typeof this._replSetOpts.auth === 'object') {
+          log('_initReplSet: "this._replSetOpts.auth" is an object');
+
+          const status: { members: { stateStr: string }[] } = await adminDb.command({
+            replSetGetStatus: 1,
+          });
+          // test if the ReplSet has already an member Primary, if false wait for primary
+          if (status.members.findIndex((m) => m.stateStr === 'PRIMARY') <= -1) {
+            log('Waiting for replica set to have a PRIMARY member.');
+            await this._waitForPrimary();
+          }
+
+          const primary = this.servers.find(
+            (server) => server.instanceInfo?.instance.isInstancePrimary
+          );
+          assertion(!isNullOrUndefined(primary), new Error('No Primary found'));
+          assertion(
+            !isNullOrUndefined(primary.instanceInfo),
+            new Error('Primary dosnt have an "instanceInfo" defined')
+          );
+
+          await primary.createAuth(primary.instanceInfo);
+          this._ranCreateAuth = true;
+
+          if (primary.opts.instance?.storageEngine !== 'ephemeralForTest') {
+            log('_initReplSet: closing connection for restart');
+            await con.close(); // close connection in preparation for "stop"
+            await this.stop(); // stop all servers for enabling auth
+            log('_initReplSet: starting all server again with auth');
+            await this.initAllServers(); // start all servers again with "auth" enabled
+            con = await MongoClient.connect(uris[0], {
+              useNewUrlParser: true,
+              useUnifiedTopology: true,
+              authSource: 'admin',
+              authMechanism: 'SCRAM-SHA-256',
+              auth: {
+                user: this._replSetOpts.auth.customRootName as string, // cast because these are existing
+                password: this._replSetOpts.auth.customRootPwd as string,
+              },
+            });
+            log('_initReplSet: auth restart finished');
+          } else {
+            console.warn(
+              'Not Restarting ReplSet for Auth\n' +
+                'Storage engine of current PRIMARY is ephemeralForTest, which does not write data on shutdown, and mongodb does not allow changeing "auth" runtime'
+            );
+          }
+        }
       } catch (e) {
         if (e instanceof MongoError && e.errmsg == 'already initialized') {
           log(`${e.errmsg}: trying to set old config`);
@@ -445,6 +513,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       binary: this._binaryOpts,
       instance: instanceOpts,
       spawn: this._replSetOpts.spawn,
+      auth: typeof this.replSetOpts.auth === 'object' ? this.replSetOpts.auth : undefined,
     };
     const server = new MongoMemoryServer(serverOpts);
     return server;
