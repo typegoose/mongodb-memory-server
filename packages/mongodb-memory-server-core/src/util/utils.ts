@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import debug from 'debug';
 import { ChildProcess } from 'child_process';
+import { AutomaticAuth } from '../MongoMemoryServer';
 
 const log = debug('MongoMS:utils');
 
@@ -89,4 +90,15 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
  */
 export async function ensureAsync(): Promise<void> {
   return new Promise((res) => setImmediate(res));
+}
+
+export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
+  return {
+    force: false,
+    disable: false,
+    customRootName: 'mongodb-memory-server-root',
+    customRootPwd: 'rootuser',
+    extraUsers: [],
+    ...opts,
+  };
 }
