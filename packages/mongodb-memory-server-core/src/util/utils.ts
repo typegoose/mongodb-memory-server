@@ -58,6 +58,11 @@ export function assertion(cond: unknown, error?: Error): asserts cond {
  * @param name the name used in the logs
  */
 export async function killProcess(childprocess: ChildProcess, name: string): Promise<void> {
+  // check if the childProcess (via PID) is still alive (found thanks to https://github.com/nodkz/mongodb-memory-server/issues/411)
+  if (!isAlive(childprocess.pid)) {
+    log("killProcess: given childProcess's PID was not alive anymore");
+    return;
+  }
   const timeoutTime = 1000 * 10;
   await new Promise((resolve, reject) => {
     let timeout = setTimeout(() => {
@@ -82,6 +87,19 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
     log(`- ${name}: send "SIGINT"`);
     childprocess.kill('SIGINT');
   });
+}
+
+/**
+ * Check if the given Process is still alive
+ * @param {number} pid The Process PID
+ */
+export function isAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (err) {
+    return false;
+  }
 }
 
 /**
