@@ -428,14 +428,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         if (typeof this._replSetOpts.auth === 'object') {
           log('_initReplSet: "this._replSetOpts.auth" is an object');
 
-          const status: { members: { stateStr: string }[] } = await adminDb.command({
-            replSetGetStatus: 1,
-          });
-          // test if the ReplSet has already an member Primary, if false wait for primary
-          if (status.members.findIndex((m) => m.stateStr === 'PRIMARY') <= -1) {
-            log('Waiting for replica set to have a PRIMARY member.');
-            await this._waitForPrimary();
-          }
+          await this._waitForPrimary();
 
           const primary = this.servers.find(
             (server) => server.instanceInfo?.instance.isInstancePrimary
@@ -487,16 +480,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         }
       }
       log('ReplSet-reConfig finished');
-      // Documentation for return value: https://docs.mongodb.com/manual/reference/command/replSetGetStatus/#output
-      // there is no interface provided by MongoDb inside typescript, so defining only needed values
-      const status: { members: { stateStr: string }[] } = await adminDb.command({
-        replSetGetStatus: 1,
-      });
-      // test if the ReplSet has already an member Primary, if false wait for primary
-      if (status.members.findIndex((m) => m.stateStr === 'PRIMARY') <= -1) {
-        log('Waiting for replica set to have a PRIMARY member.');
-        await this._waitForPrimary();
-      }
+      await this._waitForPrimary();
       this.stateChange(MongoMemoryReplSetStateEnum.running);
       log('running');
     } finally {
@@ -536,6 +520,11 @@ export class MongoMemoryReplSet extends EventEmitter {
               return rej(new Error('_waitForPrimary - instanceInfo not present '));
             }
             instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);
+
+            if (instanceInfo.instance.isInstancePrimary) {
+              log('_waitForPrimary: found instance being already primary');
+              res();
+            }
           })
       ),
       new Promise((res, rej) => {
