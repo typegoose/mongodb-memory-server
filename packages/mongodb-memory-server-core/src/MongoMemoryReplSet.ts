@@ -283,8 +283,8 @@ export class MongoMemoryReplSet extends EventEmitter {
     log('getUri:', this._state);
     switch (this._state) {
       case MongoMemoryReplSetStateEnum.running:
-        break;
       case MongoMemoryReplSetStateEnum.init:
+        break;
       case MongoMemoryReplSetStateEnum.stopped:
       default:
         throw new Error('Replica Set is not running. Use debug for more info.');

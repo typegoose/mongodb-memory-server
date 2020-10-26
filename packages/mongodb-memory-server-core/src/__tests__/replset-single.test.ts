@@ -91,28 +91,20 @@ describe('single server replset', () => {
     }
   });
 
-  it('"getUri" should throw an error if _state is not "running" (state = "stopped")', async () => {
+  it('"getUri" should throw an error if _state is not "running" or "init"', async () => {
     const replSet = new MongoMemoryReplSet();
     const timeout = setTimeout(() => {
       fail('Timeout - Expected "getUri" to throw');
     }, 100);
 
-    try {
-      replSet.getUri();
-      fail('Expected "getUri" to throw');
-    } catch (err) {
-      clearTimeout(timeout);
-      expect(err.message).toEqual('Replica Set is not running. Use debug for more info.');
-    }
-  });
-
-  it('"getUri" should throw an error if _state is not "running" (state = "stopped")', async () => {
-    const replSet = new MongoMemoryReplSet();
     // @ts-expect-error
     replSet._state = MongoMemoryReplSetStateEnum.init;
-    const timeout = setTimeout(() => {
-      fail('Timeout - Expected "getUri" to throw');
-    }, 100);
+    replSet.getUri();
+    // @ts-expect-error
+    replSet._state = MongoMemoryReplSetStateEnum.running;
+    replSet.getUri();
+    // @ts-expect-error
+    replSet._state = MongoMemoryReplSetStateEnum.stopped;
 
     try {
       replSet.getUri();
