@@ -483,10 +483,10 @@ export class MongoMemoryReplSet extends EventEmitter {
           throw e;
         }
       }
-      log('ReplSet-reConfig finished');
+      log('_initReplSet: ReplSet-reConfig finished');
       await this._waitForPrimary();
       this.stateChange(MongoMemoryReplSetStateEnum.running);
-      log('running');
+      log('_initReplSet: running');
     } finally {
       await con.close();
     }
