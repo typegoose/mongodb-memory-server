@@ -436,12 +436,12 @@ export class MongoMemoryServer extends EventEmitter {
    */
   async ensureInstance(): Promise<MongoInstanceData> {
     log('Called MongoMemoryServer.ensureInstance() method');
-    if (this._instanceInfo) {
-      return this._instanceInfo;
-    }
 
     switch (this._state) {
       case MongoMemoryServerStateEnum.running:
+        if (this._instanceInfo) {
+          return this._instanceInfo;
+        }
         throw new Error('MongoMemoryServer "_state" is "running" but "instanceInfo" is undefined!');
       case MongoMemoryServerStateEnum.new:
       case MongoMemoryServerStateEnum.stopped:
