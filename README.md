@@ -75,6 +75,8 @@ Choose any package, because they are the same. They differ only in the default c
 - NodeJS: 10.15+
 - Typescript: 3.8+ (if used)
 
+If using NodeJS below 12.10, package `rimraf` needs to be installed (when using cleanup with `force`)
+
 And one of those:
 
 - having `lsb-core` installed (or any that provides the `lsb_release` command)

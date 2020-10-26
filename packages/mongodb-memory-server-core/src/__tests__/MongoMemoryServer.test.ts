@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { promises } from 'fs';
 import { MongoClient } from 'mongodb';
 import * as tmp from 'tmp';
 import MongoMemoryServer, {
@@ -7,8 +8,8 @@ import MongoMemoryServer, {
   MongoMemoryServerStateEnum,
 } from '../MongoMemoryServer';
 import MongoInstance from '../util/MongoInstance';
-import { assertion, isNullOrUndefined, uriTemplate } from '../util/utils';
-// import * as debug from 'debug';
+import { assertion, isNullOrUndefined, statPath, uriTemplate } from '../util/utils';
+import * as semver from 'semver';
 
 tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -373,7 +374,7 @@ describe('MongoMemoryServer', () => {
 
       // when instance launched then data became avaliable
       await mongoServer.ensureInstance();
-      expect(mongoServer.instanceInfo).toBeDefined();
+      expect(mongoServer.instanceInfo).toBeTruthy();
 
       // after stop, instance data should be empty
       await mongoServer.stop();
@@ -431,6 +432,52 @@ describe('MongoMemoryServer', () => {
     });
   });
 
+  describe('cleanup()', () => {
+    // "beforeAll" dosnt work here, thanks to the top-level "afterAll" hook
+    beforeEach(() => {
+      jest.spyOn(promises, 'stat');
+      // @ts-expect-error
+      jest.spyOn(semver.default, 'lt'); // it needs to be ".default" otherwise "lt" is only an getter
+    });
+
+    it('should properly cleanup with tmpDir', async () => {
+      const mongoServer = await MongoMemoryServer.create();
+      const dbPath = mongoServer.instanceInfo!.dbPath;
+      await mongoServer.stop(false);
+      await mongoServer.cleanup();
+      expect(promises.stat).not.toHaveBeenCalled();
+      expect(semver.lt).not.toHaveBeenCalled();
+      expect(await statPath(dbPath)).toBeUndefined();
+      expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
+      expect(mongoServer.instanceInfo).toBeUndefined();
+    });
+
+    it('should properly cleanup with tmpDir and re-check with force', async () => {
+      const mongoServer = await MongoMemoryServer.create();
+      const dbPath = mongoServer.instanceInfo!.dbPath;
+      await mongoServer.stop(false);
+      await mongoServer.cleanup(true);
+      expect(promises.stat).toHaveBeenCalledTimes(1);
+      expect(semver.lt).not.toHaveBeenCalled();
+      expect(await statPath(dbPath)).toBeUndefined();
+      expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
+      expect(mongoServer.instanceInfo).toBeUndefined();
+    });
+
+    it('should properly cleanup with force (without tmpDir)', async () => {
+      const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-cleanup-', unsafeCleanup: true });
+      const mongoServer = await MongoMemoryServer.create({ instance: { dbPath: tmpDir.name } });
+      const dbPath = mongoServer.instanceInfo!.dbPath;
+      await mongoServer.stop(false);
+      await mongoServer.cleanup(true);
+      expect(promises.stat).toHaveBeenCalledTimes(1);
+      expect(semver.lt).toHaveBeenCalledTimes(1);
+      expect(await statPath(dbPath)).toBeUndefined();
+      expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
+      expect(mongoServer.instanceInfo).toBeUndefined();
+    });
+  });
+
   it('"getDbPath" should return the dbPath', async () => {
     const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-getDbPath-', unsafeCleanup: true });
     const mongoServer = new MongoMemoryServer({
@@ -463,5 +510,23 @@ describe('MongoMemoryServer', () => {
     } catch (err) {
       expect(err.message).toEqual('"createAuth" got called, but "this.auth" is undefined!');
     }
+  });
+
+  it('should start & stop multiple times without creating new instances & directories', async () => {
+    const mongoServer = await MongoMemoryServer.create();
+    const dbPath = mongoServer.instanceInfo!.dbPath;
+    await mongoServer.stop(false);
+    expect(await statPath(dbPath)).toBeTruthy();
+    expect(mongoServer.instanceInfo).toBeTruthy();
+    await mongoServer.start();
+    expect(mongoServer.instanceInfo!.dbPath).toEqual(dbPath);
+    await mongoServer.stop(false);
+    expect(await statPath(dbPath)).toBeTruthy();
+    expect(mongoServer.instanceInfo).toBeTruthy();
+
+    await mongoServer.cleanup();
+    expect(await statPath(dbPath)).toBeFalsy();
+    expect(mongoServer.instanceInfo).toBeFalsy();
+    expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
   });
 });

@@ -85,7 +85,7 @@ export interface MongoInstance extends EventEmitter {
 export class MongoInstance extends EventEmitter {
   // Mark these values as "readonly" & "Readonly" because modifying them after starting will have no effect
   // readonly is required otherwise the property can still be changed on the root level
-  readonly instanceOpts: Readonly<MongoInstanceOpts>;
+  instanceOpts: MongoInstanceOpts;
   readonly binaryOpts: Readonly<MongoBinaryOpts>;
   readonly spawnOpts: Readonly<SpawnOptions>;
 

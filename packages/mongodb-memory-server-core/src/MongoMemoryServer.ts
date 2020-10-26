@@ -7,6 +7,7 @@ import {
   uriTemplate,
   isNullOrUndefined,
   authDefault,
+  statPath,
 } from './util/utils';
 import MongoInstance, {
   MongodOpts,
@@ -18,6 +19,7 @@ import debug from 'debug';
 import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
 import { MongoClient } from 'mongodb';
+import { lt } from 'semver';
 
 // this is because "import {promises: {readdir}}" is not valid syntax
 // const { readdir, stat, rmdir } = promises;
@@ -266,7 +268,16 @@ export class MongoMemoryServer extends EventEmitter {
 
     this.stateChange(MongoMemoryServerStateEnum.starting);
 
-    this._instanceInfo = await this._startUpInstance().catch((err) => {
+    // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
+    if (
+      process
+        .listeners('beforeExit')
+        .findIndex((f: (...args: any[]) => any) => f === this.cleanup) <= -1
+    ) {
+      process.on('beforeExit', this.cleanup);
+    }
+
+    await this._startUpInstance().catch((err) => {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
         console.warn('Starting the instance failed, enable debug for more infomation');
       }
@@ -315,20 +326,25 @@ export class MongoMemoryServer extends EventEmitter {
       tmpDir: undefined,
     };
 
-    if (!data.dbPath) {
-      data.tmpDir = tmp.dirSync({
-        mode: 0o755,
-        prefix: 'mongo-mem-',
-        unsafeCleanup: true,
-      });
-      data.dbPath = data.tmpDir.name;
+    if (isNullOrUndefined(this._instanceInfo)) {
+      // create an tmpDir instance if no "dbPath" is given
+      if (!data.dbPath) {
+        data.tmpDir = tmp.dirSync({
+          mode: 0o755,
+          prefix: 'mongo-mem-',
+          unsafeCleanup: true,
+        });
+        data.dbPath = data.tmpDir.name;
 
-      isNew = true; // just to ensure "isNew" is "true" because an new temporary directory got created
+        isNew = true; // just to ensure "isNew" is "true" because an new temporary directory got created
+      } else {
+        log(`Checking if "${data.dbPath}}" (no new tmpDir) already has data`);
+        const files = await fspromises.readdir(data.dbPath);
+
+        isNew = files.length > 0; // if there already files in the directory, assume that the database is not new
+      }
     } else {
-      log(`Checking if "${data.dbPath}}" (no new tmpDir) already has data`);
-      const files = await fspromises.readdir(data.dbPath);
-
-      isNew = files.length > 0; // if there already files in the directory, assume that the database is not new
+      isNew = false;
     }
 
     const createAuth: boolean =
@@ -361,8 +377,18 @@ export class MongoMemoryServer extends EventEmitter {
    * Internal Function to start an instance
    * @private
    */
-  async _startUpInstance(): Promise<MongoInstanceData> {
+  async _startUpInstance(): Promise<void> {
     log('Called MongoMemoryServer._startUpInstance() method');
+
+    if (!isNullOrUndefined(this._instanceInfo)) {
+      log('_startUpInstance: "instanceInfo" already defined, reusing instance');
+      const newPort = await this.getNewPort(this._instanceInfo.port);
+      this._instanceInfo.instance.instanceOpts.port = newPort;
+      this._instanceInfo.port = newPort;
+      await this._instanceInfo.instance.run();
+
+      return;
+    }
 
     const { mongodOptions, createAuth, data } = await this.getStartOptions();
     log(`Creating new MongoDB instance with options: ${JSON.stringify(mongodOptions)}`);
@@ -401,22 +427,28 @@ export class MongoMemoryServer extends EventEmitter {
       }
     }
 
-    return {
+    this._instanceInfo = {
       ...data,
       dbPath: data.dbPath as string, // because otherwise the types would be incompatible
-      instance: instance,
+      instance,
     };
   }
 
   /**
    * Stop the current In-Memory Instance
+   * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
    */
-  async stop(): Promise<boolean> {
+  async stop(runCleanup: boolean = true): Promise<boolean> {
     log('Called MongoMemoryServer.stop() method');
 
-    // just return "true" if the instance is already running / defined
+    // just return "true" if there was never an instance
     if (isNullOrUndefined(this._instanceInfo)) {
-      log('Instance is already stopped, returning true');
+      log('"instanceInfo" is not defined (never ran?)');
+      return true;
+    }
+
+    if (this._state === MongoMemoryServerStateEnum.stopped) {
+      log(`stop: state is "stopped", so already stopped`);
       return true;
     }
 
@@ -433,16 +465,80 @@ export class MongoMemoryServer extends EventEmitter {
     );
     await this._instanceInfo.instance.kill();
 
+    this.stateChange(MongoMemoryServerStateEnum.stopped);
+
+    if (runCleanup) {
+      await this.cleanup(false);
+    }
+
+    return true;
+  }
+
+  /**
+   * Remove the defined dbPath
+   * This function gets automatically called on process event "beforeExit" (with force being "false")
+   * @param force Remove the dbPath even if it is no "tmpDir" (and re-check if tmpDir actually removed it)
+   * @throws If "state" is not "stopped"
+   * @throws If "instanceInfo" is not defined
+   * @throws If an fs error occured
+   */
+  async cleanup(force: boolean): Promise<void>;
+  /**
+   * This Overload is used for the "beforeExit" listener (ignore this)
+   * @internal
+   */
+  async cleanup(code?: number): Promise<void>;
+  async cleanup(force: boolean | number = false): Promise<void> {
+    if (typeof force !== 'boolean') {
+      force = false;
+    }
+    assertion(
+      this.state === MongoMemoryServerStateEnum.stopped,
+      new Error('Cannot cleanup when state is not "stopped"')
+    );
+    process.removeListener('beforeExit', this.cleanup);
+    if (isNullOrUndefined(this._instanceInfo)) {
+      log('cleanup: "instanceInfo" is undefined');
+      return;
+    }
+    assertion(
+      isNullOrUndefined(this._instanceInfo.instance.childProcess),
+      new Error('Cannot cleanup because "instance.childProcess" is still defined')
+    );
+
+    log(`cleanup: force ${force}`);
+
     const tmpDir = this._instanceInfo.tmpDir;
-    if (tmpDir) {
-      log(`Removing tmpDir ${tmpDir.name}`);
+    if (!isNullOrUndefined(tmpDir)) {
+      log(`cleanup: removing tmpDir at ${tmpDir.name}`);
       tmpDir.removeCallback();
     }
 
-    this._instanceInfo = undefined;
-    this.stateChange(MongoMemoryServerStateEnum.stopped);
+    if (force) {
+      const dbPath: string = this._instanceInfo.dbPath;
+      const res = await statPath(dbPath);
 
-    return true;
+      if (isNullOrUndefined(res)) {
+        log(`cleanup: force is true, but path "${dbPath}" dosnt exist anymore`);
+      } else {
+        assertion(res.isDirectory(), new Error('Defined dbPath is not an directory'));
+
+        if (lt(process.version, '12.10.0')) {
+          try {
+            const rimraf = (await import('rimraf')).sync;
+            rimraf(dbPath);
+          } catch (err) {
+            console.warn('When using NodeJS below 12.10 package "rimraf" is needed');
+            throw err;
+          }
+        } else {
+          await fspromises.rmdir(dbPath, { recursive: true, maxRetries: 1 });
+        }
+      }
+    }
+
+    this.stateChange(MongoMemoryServerStateEnum.new); // reset "state" to new, because the dbPath got removed
+    this._instanceInfo = undefined;
   }
 
   /**

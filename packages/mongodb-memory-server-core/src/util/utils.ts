@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import debug from 'debug';
 import { ChildProcess } from 'child_process';
 import { AutomaticAuth } from '../MongoMemoryServer';
+import { promises as fspromises, Stats } from 'fs';
 
 const log = debug('MongoMS:utils');
 
@@ -119,4 +120,19 @@ export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
     extraUsers: [],
     ...opts,
   };
+}
+
+/**
+ * Run "fs.promises.stat", but return "undefined" if error is "ENOENT"
+ * @param path The Path to Stat
+ * @throws if the error is not "ENOENT"
+ */
+export async function statPath(path: string): Promise<Stats | undefined> {
+  return fspromises.stat(path).catch((err) => {
+    if (err.code === 'ENOENT') {
+      return undefined; // catch the error if the directory dosnt exist, without throwing an error
+    }
+
+    throw err;
+  });
 }
