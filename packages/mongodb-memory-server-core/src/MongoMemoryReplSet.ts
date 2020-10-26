@@ -328,6 +328,8 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   protected async initAllServers(): Promise<void> {
+    this.stateChange(MongoMemoryReplSetStateEnum.init);
+
     // Any servers defined within `_instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
     // the `replSetInitiate` command against that server.
