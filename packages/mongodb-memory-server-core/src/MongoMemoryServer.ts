@@ -188,6 +188,12 @@ export interface CreateUser extends CreateUserMongoDB {
   database?: string;
 }
 
+export interface MongoMemoryServerGetStartOptions {
+  createAuth: boolean;
+  data: StartupInstanceData;
+  mongodOptions: Partial<MongodOpts>;
+}
+
 export interface MongoMemoryServer extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
   emit(event: MongoMemoryServerEventEnum, ...args: any[]): boolean;
@@ -279,23 +285,16 @@ export class MongoMemoryServer extends EventEmitter {
   }
 
   /**
-   * Internal Function to start an instance
-   * @private
+   * Construct Instance Starting Options
    */
-  async _startUpInstance(): Promise<MongoInstanceData> {
-    log('Called MongoMemoryServer._startUpInstance() method');
+  protected async getStartOptions(): Promise<MongoMemoryServerGetStartOptions> {
+    log('getStartOptions');
     /** Shortcut to this.opts.instance */
     const instOpts = this.opts.instance ?? {};
     /**
      * This variable is used for determining if "createAuth" should be run
      */
     let isNew: boolean = true;
-    const createAuth: boolean =
-      !!instOpts.auth && // check if auth is even meant to be enabled
-      !isNullOrUndefined(this.auth) && // check if "this.auth" is defined
-      !this.auth.disable && // check that "this.auth.disable" is falsey
-      (this.auth.force || isNew) && // check that either "isNew" or "this.auth.force" is "true"
-      !instOpts.replSet; // dont run "createAuth" when its an replset
 
     const data: StartupInstanceData = {
       port: await this.getNewPort(instOpts.port ?? undefined), // do (null or undefined) to undefined
@@ -323,24 +322,44 @@ export class MongoMemoryServer extends EventEmitter {
       isNew = files.length > 0; // if there already files in the directory, assume that the database is not new
     }
 
-    log(`Starting MongoDB instance with options: ${JSON.stringify(data)}`);
+    const createAuth: boolean =
+      !!instOpts.auth && // check if auth is even meant to be enabled
+      !isNullOrUndefined(this.auth) && // check if "this.auth" is defined
+      !this.auth.disable && // check that "this.auth.disable" is falsey
+      (this.auth.force || isNew) && // check that either "isNew" or "this.auth.force" is "true"
+      !instOpts.replSet; // dont run "createAuth" when its an replset
 
-    const mongodOpts: Partial<MongodOpts> = {
-      instance: {
-        dbPath: data.dbPath,
-        ip: data.ip,
-        port: data.port,
-        storageEngine: data.storageEngine,
-        replSet: data.replSet,
-        args: instOpts.args,
-        auth: createAuth ? false : instOpts.auth, // disable "auth" for "createAuth"
+    return {
+      data: data,
+      createAuth: createAuth,
+      mongodOptions: {
+        instance: {
+          dbPath: data.dbPath,
+          ip: data.ip,
+          port: data.port,
+          storageEngine: data.storageEngine,
+          replSet: data.replSet,
+          args: instOpts.args,
+          auth: createAuth ? false : instOpts.auth, // disable "auth" for "createAuth"
+        },
+        binary: this.opts.binary,
+        spawn: this.opts.spawn,
       },
-      binary: this.opts.binary,
-      spawn: this.opts.spawn,
     };
+  }
+
+  /**
+   * Internal Function to start an instance
+   * @private
+   */
+  async _startUpInstance(): Promise<MongoInstanceData> {
+    log('Called MongoMemoryServer._startUpInstance() method');
+
+    const { mongodOptions, createAuth, data } = await this.getStartOptions();
+    log(`Creating new MongoDB instance with options: ${JSON.stringify(mongodOptions)}`);
 
     // After that startup MongoDB instance
-    let instance = await MongoInstance.run(mongodOpts);
+    let instance = await MongoInstance.run(mongodOptions);
 
     // another "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
     if (!isNullOrUndefined(this.auth) && createAuth) {
@@ -354,10 +373,10 @@ export class MongoMemoryServer extends EventEmitter {
         // TODO: change this to just change the options instead of an new instance after adding getters & setters
         log('Starting Auth Instance');
         instance = await MongoInstance.run({
-          ...mongodOpts,
+          ...mongodOptions,
           instance: {
-            ...mongodOpts.instance,
-            auth: instOpts.auth,
+            ...mongodOptions.instance,
+            auth: true,
           },
         });
       } else {
