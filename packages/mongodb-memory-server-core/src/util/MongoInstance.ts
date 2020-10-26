@@ -193,6 +193,10 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceStarted
    */
   async run(): Promise<this> {
+    this.isInstancePrimary = false;
+    this.isInstanceReady = false;
+    this.isReplSet = false;
+
     const launch: Promise<void> = new Promise((resolve, reject) => {
       this.once(MongoInstanceEvents.instanceReady, resolve);
       this.once(MongoInstanceEvents.instanceError, reject);
