@@ -263,6 +263,21 @@ export class MongoMemoryServer extends EventEmitter {
   }
 
   /**
+   * Find an new unlocked port
+   * @param port An User defined default port
+   */
+  protected async getNewPort(port?: number): Promise<number> {
+    const newPort = await getPort({ port });
+
+    // only log this message if an custom port was provided
+    if (port != newPort && typeof port === 'number') {
+      log(`starting with port ${newPort}, since ${port} was locked`);
+    }
+
+    return newPort;
+  }
+
+  /**
    * Internal Function to start an instance
    * @private
    */
@@ -282,7 +297,7 @@ export class MongoMemoryServer extends EventEmitter {
       !instOpts.replSet; // dont run "createAuth" when its an replset
 
     const data: StartupInstanceData = {
-      port: await getPort({ port: instOpts.port ?? undefined }), // do (null or undefined) to undefined
+      port: await this.getNewPort(instOpts.port ?? undefined), // do (null or undefined) to undefined
       dbName: generateDbName(instOpts.dbName),
       ip: instOpts.ip ?? '127.0.0.1',
       storageEngine: instOpts.storageEngine ?? 'ephemeralForTest',
@@ -290,10 +305,6 @@ export class MongoMemoryServer extends EventEmitter {
       dbPath: instOpts.dbPath,
       tmpDir: undefined,
     };
-
-    if (instOpts.port != data.port) {
-      log(`starting with port ${data.port}, since ${instOpts.port} was locked:`, data.port);
-    }
 
     if (!data.dbPath) {
       data.tmpDir = tmp.dirSync({
