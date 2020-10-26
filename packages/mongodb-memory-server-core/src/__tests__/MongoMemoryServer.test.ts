@@ -272,6 +272,17 @@ describe('MongoMemoryServer', () => {
         expect(err.message).toEqual('Already in state running/starting or unkown');
       }
     });
+
+    it('should throw error on start if there is already a running instance', async () => {
+      const mongoServer2 = new MongoMemoryServer();
+      // this case can normally happen if "start" is called again
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      mongoServer2._instanceInfo = { instance: { childProcess: {} } } as any; // artificially set this to {} to not be undefined anymore
+      await expect(mongoServer2.start()).rejects.toThrow(
+        'Cannot start because "instance.childProcess" is already defined!'
+      );
+    });
   });
 
   describe('ensureInstance()', () => {
