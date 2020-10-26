@@ -248,8 +248,9 @@ export class MongoMemoryServer extends EventEmitter {
 
   /**
    * Start the in-memory Instance
+   * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
    */
-  async start(): Promise<boolean> {
+  async start(forceSamePort: boolean = false): Promise<boolean> {
     log('Called MongoMemoryServer.start() method');
 
     switch (this._state) {
@@ -277,7 +278,7 @@ export class MongoMemoryServer extends EventEmitter {
       process.on('beforeExit', this.cleanup);
     }
 
-    await this._startUpInstance().catch((err) => {
+    await this._startUpInstance(forceSamePort).catch((err) => {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
         console.warn('Starting the instance failed, enable debug for more infomation');
       }
@@ -375,16 +376,19 @@ export class MongoMemoryServer extends EventEmitter {
 
   /**
    * Internal Function to start an instance
+   * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
    * @private
    */
-  async _startUpInstance(): Promise<void> {
+  async _startUpInstance(forceSamePort: boolean = false): Promise<void> {
     log('Called MongoMemoryServer._startUpInstance() method');
 
     if (!isNullOrUndefined(this._instanceInfo)) {
       log('_startUpInstance: "instanceInfo" already defined, reusing instance');
-      const newPort = await this.getNewPort(this._instanceInfo.port);
-      this._instanceInfo.instance.instanceOpts.port = newPort;
-      this._instanceInfo.port = newPort;
+      if (!forceSamePort) {
+        const newPort = await this.getNewPort(this._instanceInfo.port);
+        this._instanceInfo.instance.instanceOpts.port = newPort;
+        this._instanceInfo.port = newPort;
+      }
       await this._instanceInfo.instance.run();
 
       return;
