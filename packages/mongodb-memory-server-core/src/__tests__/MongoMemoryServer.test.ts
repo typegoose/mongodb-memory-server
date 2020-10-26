@@ -260,6 +260,18 @@ describe('MongoMemoryServer', () => {
       await con.close();
       await mongoServer.stop();
     });
+
+    it('should throw an error if state is not "new" or "stopped"', async () => {
+      const mongoServer = new MongoMemoryServer();
+      // @ts-expect-error
+      mongoServer._state = MongoMemoryServerStateEnum.starting;
+      try {
+        await mongoServer.start();
+        fail('Expected "start" to fail');
+      } catch (err) {
+        expect(err.message).toEqual('Already in state running/starting or unkown');
+      }
+    });
   });
 
   describe('ensureInstance()', () => {

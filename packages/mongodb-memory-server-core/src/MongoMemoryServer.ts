@@ -249,10 +249,19 @@ export class MongoMemoryServer extends EventEmitter {
    */
   async start(): Promise<boolean> {
     log('Called MongoMemoryServer.start() method');
-    if (this._instanceInfo) {
-      throw new Error(
-        'MongoDB instance already in status startup/running/error. Use debug for more info.'
-      );
+
+    switch (this._state) {
+      case MongoMemoryServerStateEnum.new:
+      case MongoMemoryServerStateEnum.stopped:
+        break;
+      case MongoMemoryServerStateEnum.running:
+      case MongoMemoryServerStateEnum.starting:
+      default:
+        throw new Error('Already in state running/starting or unkown');
+    }
+
+    if (!isNullOrUndefined(this._instanceInfo?.instance.childProcess)) {
+      throw new Error('Cannot start because "instance.childProcess" is already defined!');
     }
 
     this.stateChange(MongoMemoryServerStateEnum.starting);
