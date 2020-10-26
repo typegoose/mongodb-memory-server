@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import MongoMemoryReplSet, { MongoMemoryReplSetStateEnum } from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
@@ -6,6 +7,10 @@ import * as utils from '../util/utils';
 import { MongoMemoryInstanceProp } from '../util/MongoInstance';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe('single server replset', () => {
   it('should enter running state', async () => {
@@ -425,5 +430,20 @@ describe('MongoMemoryReplSet', () => {
     >({
       storageEngine: 'wiredTiger',
     });
+  });
+
+  it('"cleanup" should run cleanup on all instances', async () => {
+    const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
+    const instance = replSet.servers[0];
+    const dbPath = instance.instanceInfo!.dbPath;
+    jest.spyOn(instance, 'cleanup');
+    expect(await utils.statPath(dbPath)).toBeTruthy();
+
+    await replSet.stop();
+    expect(await utils.statPath(dbPath)).toBeTruthy();
+
+    await replSet.cleanup();
+    expect(await utils.statPath(dbPath)).toBeFalsy();
+    expect(instance.cleanup).toHaveBeenCalledTimes(1);
   });
 });

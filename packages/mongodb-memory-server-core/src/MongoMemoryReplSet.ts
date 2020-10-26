@@ -330,6 +330,13 @@ export class MongoMemoryReplSet extends EventEmitter {
   protected async initAllServers(): Promise<void> {
     this.stateChange(MongoMemoryReplSetStateEnum.init);
 
+    if (this.servers.length > 0) {
+      log('initAllServers: lenght of "servers" is higher than 0, starting existing servers');
+      await Promise.all(this.servers.map((s) => s.start(true)));
+
+      return;
+    }
+
     // Any servers defined within `_instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
     // the `replSetInitiate` command against that server.
@@ -355,18 +362,37 @@ export class MongoMemoryReplSet extends EventEmitter {
     if (this._state === MongoMemoryReplSetStateEnum.stopped) {
       return false;
     }
-    return Promise.all(this.servers.map((s) => s.stop()))
+    return Promise.all(this.servers.map((s) => s.stop(false)))
       .then(() => {
-        this.servers = [];
         this.stateChange(MongoMemoryReplSetStateEnum.stopped);
         return true;
       })
       .catch((err) => {
-        this.servers = [];
         log(err);
         this.stateChange(MongoMemoryReplSetStateEnum.stopped, err);
         return false;
       });
+  }
+
+  /**
+   * Remove the defined dbPath's
+   * This function gets automatically called on process event "beforeExit" (with force being "false")
+   * @param force Remove the dbPath even if it is no "tmpDir" (and re-check if tmpDir actually removed it)
+   * @throws If "state" is not "stopped"
+   * @throws If "instanceInfo" is not defined
+   * @throws If an fs error occured
+   */
+  async cleanup(force: boolean = false): Promise<void> {
+    assertion(
+      this._state === MongoMemoryReplSetStateEnum.stopped,
+      new Error('Cannot run cleanup when state is not "stopped"')
+    );
+    log(`cleanup for "${this.servers.length}" servers`);
+    await Promise.all(this.servers.map((s) => s.cleanup(force)));
+
+    this.servers = [];
+
+    return;
   }
 
   /**
