@@ -16,11 +16,12 @@ import MongoInstance, {
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { EventEmitter } from 'events';
-import { promises } from 'fs';
+import { promises as fspromises } from 'fs';
 import { MongoClient } from 'mongodb';
 
 // this is because "import {promises: {readdir}}" is not valid syntax
-const { readdir } = promises;
+// const { readdir, stat, rmdir } = promises;
+// the statement above cannot be done, because otherwise in the tests no spy / mock can be applied
 
 const log = debug('MongoMS:MongoMemoryServer');
 
@@ -317,7 +318,7 @@ export class MongoMemoryServer extends EventEmitter {
       isNew = true; // just to ensure "isNew" is "true" because an new temporary directory got created
     } else {
       log(`Checking if "${data.dbPath}}" (no new tmpDir) already has data`);
-      const files = await readdir(data.dbPath);
+      const files = await fspromises.readdir(data.dbPath);
 
       isNew = files.length > 0; // if there already files in the directory, assume that the database is not new
     }
@@ -463,7 +464,7 @@ export class MongoMemoryServer extends EventEmitter {
         throw new Error(`"ensureInstance" does not have an case for "${this._state}"`);
     }
 
-    log(' - no running instance, call `start()` command');
+    log(' - no running instance, calling `start()` command');
     await this.start();
     log(' - `start()` command was succesfully resolved');
 
