@@ -413,7 +413,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     });
 
     try {
-      let adminDb = await con.db('admin');
+      let adminDb = con.db('admin');
 
       const members = uris.map((uri, idx) => ({ _id: idx, host: getHost(uri) }));
       const rsConfig = {
@@ -450,6 +450,7 @@ export class MongoMemoryReplSet extends EventEmitter {
             await this.stop(); // stop all servers for enabling auth
             log('_initReplSet: starting all server again with auth');
             await this.initAllServers(); // start all servers again with "auth" enabled
+
             con = await MongoClient.connect(this.getUri('admin'), {
               useNewUrlParser: true,
               useUnifiedTopology: true,
@@ -460,7 +461,7 @@ export class MongoMemoryReplSet extends EventEmitter {
                 password: this._replSetOpts.auth.customRootPwd as string,
               },
             });
-            adminDb = await con.db('admin');
+            adminDb = con.db('admin');
             log('_initReplSet: auth restart finished');
           } else {
             console.warn(
