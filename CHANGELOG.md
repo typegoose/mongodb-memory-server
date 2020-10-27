@@ -1,3 +1,56 @@
+## [7.0.0-beta.6](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.5...v7.0.0-beta.6) (2020-10-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* **MongoMemoryReplSet:** not resetting "servers" after calling "stop" on an replSet can be breaking for some cases
+* **MongoMemoryServer:** allow the re-use of instances & dbPath's meant to change some things internally, which could be breaking
+
+### Features
+
+* **db_util:** rename function "getUriBase" to "uriTemplate" ([c888b95](https://github.com/nodkz/mongodb-memory-server/commit/c888b952891fc6e5e54d8ac29994fb8e679b9f59)), closes [#404](https://github.com/nodkz/mongodb-memory-server/issues/404)
+* **MongoMemoryReplSet:** add basic "createAuth" support ([6c118a9](https://github.com/nodkz/mongodb-memory-server/commit/6c118a900d9daf272898d0f39134f7919499f299))
+* **MongoMemoryReplSet:** allow re-use of instances & dbPath ([3d64705](https://github.com/nodkz/mongodb-memory-server/commit/3d64705c7406a0eb7e0ef7f1b9dbeb7685050494))
+* **MongoMemoryReplSet:** getUri: allow executing while state is "init" ([b3ebac2](https://github.com/nodkz/mongodb-memory-server/commit/b3ebac256006a5339d578f23d70f5f00d2be57d0))
+* **MongoMemoryServer:** add (protected) function "getNewPort" ([662a69b](https://github.com/nodkz/mongodb-memory-server/commit/662a69b9b60b0c29a76cb1ee6f24eade095eb7a7))
+* **MongoMemoryServer:** add ability to automatically create auth ([d5bf77a](https://github.com/nodkz/mongodb-memory-server/commit/d5bf77a16fe8cf4ca43383c5c371e218a487f314)), closes [#299](https://github.com/nodkz/mongodb-memory-server/issues/299)
+* **MongoMemoryServer:** add ability to force same port on restart ([18c77e2](https://github.com/nodkz/mongodb-memory-server/commit/18c77e27cb4ed80514a3c4e893711a933c9bfe8a))
+* **MongoMemoryServer:** add function "getStartOptions" ([f057ea7](https://github.com/nodkz/mongodb-memory-server/commit/f057ea765785f4acf094f7df2f799fb11acee9fd))
+* **MongoMemoryServer:** allow re-use of instances & dbPath ([e2ae879](https://github.com/nodkz/mongodb-memory-server/commit/e2ae87961fa817e1d885487c9edc8ed89ac82260))
+
+
+### Fixes
+
+* **MongoInstance:** kill: ensure only error ignored is the actual error to be ignored ([5e377fa](https://github.com/nodkz/mongodb-memory-server/commit/5e377fad20604a4fde89c3aee717b3e19123092b))
+* **MongoInstance:** run: reset all booleans on ([188d333](https://github.com/nodkz/mongodb-memory-server/commit/188d3330fead506e66250d761dd9c53326b97f92))
+* **MongoMemoryReplSet:** _waitForPrimary: check if instance is already primary ([8f65696](https://github.com/nodkz/mongodb-memory-server/commit/8f6569646cf8a8953a3db00f2488244b86152403))
+* **MongoMemoryReplSet:** initAllServers: execute "stateChange" with "init" ([28bcf5b](https://github.com/nodkz/mongodb-memory-server/commit/28bcf5bd26b7950a14fd4c5f17688320038b38f9))
+* **utils:** killProcess: check if the childProcess PID is still alive ([96c30de](https://github.com/nodkz/mongodb-memory-server/commit/96c30deee12e295738b93e28fad056e24ccaf40e))
+
+
+### Refactor
+
+* **MongoMemoryReplSet:** _initReplSet: reassign "adminDb" ([19ae688](https://github.com/nodkz/mongodb-memory-server/commit/19ae688d9ccc623ac42d032fada381268c10df93))
+* **MongoMemoryServer:** ensureInstance: move "return instanceInfo" into case "running" ([4214aa5](https://github.com/nodkz/mongodb-memory-server/commit/4214aa56362d5cad139acf2c134f410ddb765aba))
+* **MongoMemoryServer:** remove destructuring of "promises" ([a828506](https://github.com/nodkz/mongodb-memory-server/commit/a828506ec749ebb9b0d081a77cff0036d97e5e41))
+* **MongoMemoryServer:** start: check "state" instead of "instanceInfo" ([4fd1ede](https://github.com/nodkz/mongodb-memory-server/commit/4fd1ede502acb67be052957b3907eb1f5a57212f))
+* remove file "types.ts" ([23cdc65](https://github.com/nodkz/mongodb-memory-server/commit/23cdc656562e662780ae5b314d2da3243116e800)), closes [#406](https://github.com/nodkz/mongodb-memory-server/issues/406)
+* rename "-test.ts" to ".test.ts" ([deb0098](https://github.com/nodkz/mongodb-memory-server/commit/deb00984281d3e7e7e37fb7bd0358390176d6a79))
+* rename file "db_util" to "utils" ([f3df9c8](https://github.com/nodkz/mongodb-memory-server/commit/f3df9c81b4b614ff6cac15579051fd11921c09ce))
+* rename file "postinstall-helper" to "postinstallHelper" ([fdf2d09](https://github.com/nodkz/mongodb-memory-server/commit/fdf2d09a33a3d8ed893f0ba01e0022814f3b2089))
+* rename file "resolve-config" to "resolveConfig" ([7ee646c](https://github.com/nodkz/mongodb-memory-server/commit/7ee646c2479e8237c0c14096a8ac026d45a8c96e))
+* **db_util:** uriTemplate: change "query" to be an string-array ([8dffa64](https://github.com/nodkz/mongodb-memory-server/commit/8dffa64ee4d56523cefd993b1158d2a9e224cd8a))
+* unify interface names (remove "T") ([78a78cd](https://github.com/nodkz/mongodb-memory-server/commit/78a78cdc8c1d67d780aaca064169b8324d04d0c3)), closes [#395](https://github.com/nodkz/mongodb-memory-server/issues/395)
+* **MongoBinary:** change "cache" to be an Map ([74d30a0](https://github.com/nodkz/mongodb-memory-server/commit/74d30a0244f1d4797129dc9b577ef50d5aae8d41)), closes [#374](https://github.com/nodkz/mongodb-memory-server/issues/374)
+
+
+### Style
+
+* **MongoBinaryDownload:** rename interface "DownloadProgress" to "MongoBinaryDownloadProgress" ([2bad87c](https://github.com/nodkz/mongodb-memory-server/commit/2bad87c18ab1bf4fc2c6a723af5893fa57de747f))
+* **MongoInstance:** add TODO comments ([5e320ca](https://github.com/nodkz/mongodb-memory-server/commit/5e320cad6cd277e0e87da7beb4dd35d3bb92e5c5))
+* **MongoMemoryReplSet:** _initReplSet: change logs to be more clear ([561c883](https://github.com/nodkz/mongodb-memory-server/commit/561c8832c5504382d6b70b9a8ff3fa581cbc46e8))
+* **MongoMemoryReplSet:** _initReplSet: remove "await" from non-Promise functions ([846f969](https://github.com/nodkz/mongodb-memory-server/commit/846f969893586050476383622cbed412608d69e9))
+
 ## [7.0.0-beta.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.4...v7.0.0-beta.5) (2020-10-12)
 
 
