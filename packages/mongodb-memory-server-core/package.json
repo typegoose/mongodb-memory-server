@@ -39,7 +39,7 @@
     "@types/lockfile": "^1.0.1",
     "@types/md5-file": "^4.0.2",
     "@types/mkdirp": "^1.0.1",
-    "@types/mongodb": "3.5.27",
+    "@types/mongodb": "3.5.31",
     "@types/semver": "7.3.4",
     "@types/tar-stream": "^2.1.0",
     "@types/uuid": "^8.0.0",
@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@types/tmp": "^0.2.0",
-    "camelcase": "^6.0.0",
+    "camelcase": "^6.1.0",
     "cross-spawn": "^7.0.3",
     "debug": "^4.2.0",
     "find-cache-dir": "^3.3.1",
@@ -62,8 +62,8 @@
     "semver": "^7.3.2",
     "tar-stream": "^2.1.4",
     "tmp": "^0.2.1",
-    "tslib": "^2.0.1",
-    "uuid": "^8.3.0",
+    "tslib": "^2.0.3",
+    "uuid": "^8.3.1",
     "yauzl": "^2.10.0"
   },
   "scripts": {
