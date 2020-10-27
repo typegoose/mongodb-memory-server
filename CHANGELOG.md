@@ -1,3 +1,10 @@
+## [7.0.0-beta.7](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.6...v7.0.0-beta.7) (2020-10-27)
+
+
+### Fixes
+
+* broken build (Cannot find module 'mongodb-memory-server') ([3c7d102](https://github.com/nodkz/mongodb-memory-server/commit/3c7d1027137257913b4648525a51703a95f07ac4))
+
 ## [7.0.0-beta.6](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.5...v7.0.0-beta.6) (2020-10-27)
 
 
