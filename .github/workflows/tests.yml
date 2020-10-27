@@ -36,7 +36,7 @@ jobs:
       - name: ESLint
         run: yarn --cwd packages/mongodb-memory-server-core run eslint
       - name: Tests
-        run: yarn --cwd packages/mongodb-memory-server-core run coverage
+        run: yarn --cwd packages/mongodb-memory-server-core run coverage --colors
         env:
           CI: true
       - name: Send codecov.io stats
