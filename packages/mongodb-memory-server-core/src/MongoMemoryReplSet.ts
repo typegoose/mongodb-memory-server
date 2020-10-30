@@ -116,11 +116,18 @@ export enum MongoMemoryReplSetStateEnum {
   stopped = 'stopped',
 }
 
+/**
+ * All Events for "MongoMemoryReplSet"
+ */
+export enum MongoMemoryReplSetEventEnum {
+  stateChange = 'stateChange',
+}
+
 export interface MongoMemoryReplSet extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
-  emit(event: MongoMemoryReplSetStateEnum, ...args: any[]): boolean;
-  on(event: MongoMemoryReplSetStateEnum, listener: (...args: any[]) => void): this;
-  once(event: MongoMemoryReplSetStateEnum, listener: (...args: any[]) => void): this;
+  emit(event: MongoMemoryReplSetEventEnum, ...args: any[]): boolean;
+  on(event: MongoMemoryReplSetEventEnum, listener: (...args: any[]) => void): this;
+  once(event: MongoMemoryReplSetEventEnum, listener: (...args: any[]) => void): this;
 }
 
 /**
@@ -154,7 +161,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   protected stateChange(newState: MongoMemoryReplSetStateEnum, ...args: any[]): void {
     this._state = newState;
-    this.emit(newState, ...args);
+    this.emit(MongoMemoryReplSetEventEnum.stateChange, newState, ...args);
   }
 
   /**
@@ -409,7 +416,17 @@ export class MongoMemoryReplSet extends EventEmitter {
         return;
       case MongoMemoryReplSetStateEnum.init:
         // wait for event "running"
-        await new Promise((res) => this.once(MongoMemoryReplSetStateEnum.running, res));
+        await new Promise((res) => {
+          // the use of "this" here can be done because "on" either binds "this" or uses an arrow function
+          function waitRunning(this: MongoMemoryReplSet, state: MongoMemoryReplSetStateEnum) {
+            // this is because other states can be emitted multiple times (like stopped & init for auth creation)
+            if (state === MongoMemoryReplSetStateEnum.running) {
+              this.removeListener(MongoMemoryReplSetEventEnum.stateChange, waitRunning);
+              res();
+            }
+          }
+          this.on(MongoMemoryReplSetEventEnum.stateChange, waitRunning);
+        });
         return;
       case MongoMemoryReplSetStateEnum.stopped:
       default:

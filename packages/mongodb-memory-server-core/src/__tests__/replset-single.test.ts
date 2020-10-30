@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import MongoMemoryReplSet, { MongoMemoryReplSetStateEnum } from '../MongoMemoryReplSet';
+import MongoMemoryReplSet, {
+  MongoMemoryReplSetEventEnum,
+  MongoMemoryReplSetStateEnum,
+} from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 import * as utils from '../util/utils';
@@ -444,5 +447,25 @@ describe('MongoMemoryReplSet', () => {
     await replSet.cleanup();
     expect(await utils.statPath(dbPath)).toBeFalsy();
     expect(instance.cleanup).toHaveBeenCalledTimes(1);
+  });
+
+  it('"waitUntilRunning" should clear stateChange listener', async () => {
+    const replSet = new MongoMemoryReplSet();
+    // @ts-expect-error
+    replSet._state = MongoMemoryReplSetStateEnum.init;
+    const promise = replSet.waitUntilRunning();
+    await utils.ensureAsync(); // ensure that "waitUntilRunning" has executed and setup the listener
+    // @ts-expect-error
+    replSet._state = MongoMemoryReplSetStateEnum.stopped;
+
+    expect(replSet.listeners(MongoMemoryReplSetEventEnum.stateChange).length).toEqual(1);
+
+    replSet.start();
+
+    await promise;
+
+    expect(replSet.listeners(MongoMemoryReplSetEventEnum.stateChange).length).toEqual(0);
+
+    await replSet.stop();
   });
 });
