@@ -4,7 +4,7 @@ import { promises } from 'fs';
 import { MongoClient } from 'mongodb';
 import * as tmp from 'tmp';
 import MongoMemoryServer, {
-  MongoMemoryServerEventEnum,
+  MongoMemoryServerEvents,
   MongoMemoryServerStateEnum,
 } from '../MongoMemoryServer';
 import MongoInstance from '../util/MongoInstance';
@@ -343,7 +343,7 @@ describe('MongoMemoryServer', () => {
       mongoServer._state = MongoMemoryServerStateEnum.starting;
       const ensureInstancePromise = mongoServer.ensureInstance();
 
-      mongoServer.emit(MongoMemoryServerEventEnum.stateChange, MongoMemoryServerStateEnum.stopped);
+      mongoServer.emit(MongoMemoryServerEvents.stateChange, MongoMemoryServerStateEnum.stopped);
 
       expect(ensureInstancePromise).rejects.toThrow(
         `"ensureInstance" waited for "running" but got an different state: "${MongoMemoryServerStateEnum.stopped}"`

@@ -94,7 +94,7 @@ export interface MongoInstanceData extends StartupInstanceData {
 /**
  * All Events for "MongoMemoryServer"
  */
-export enum MongoMemoryServerEventEnum {
+export enum MongoMemoryServerEvents {
   stateChange = 'stateChange',
 }
 
@@ -198,9 +198,9 @@ export interface MongoMemoryServerGetStartOptions {
 
 export interface MongoMemoryServer extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
-  emit(event: MongoMemoryServerEventEnum, ...args: any[]): boolean;
-  on(event: MongoMemoryServerEventEnum, listener: (...args: any[]) => void): this;
-  once(event: MongoMemoryServerEventEnum, listener: (...args: any[]) => void): this;
+  emit(event: MongoMemoryServerEvents, ...args: any[]): boolean;
+  on(event: MongoMemoryServerEvents, listener: (...args: any[]) => void): this;
+  once(event: MongoMemoryServerEvents, listener: (...args: any[]) => void): this;
 }
 
 export class MongoMemoryServer extends EventEmitter {
@@ -243,7 +243,7 @@ export class MongoMemoryServer extends EventEmitter {
    */
   protected stateChange(newState: MongoMemoryServerStateEnum): void {
     this._state = newState;
-    this.emit(MongoMemoryServerEventEnum.stateChange, newState);
+    this.emit(MongoMemoryServerEvents.stateChange, newState);
   }
 
   /**
@@ -577,7 +577,7 @@ export class MongoMemoryServer extends EventEmitter {
         break;
       case MongoMemoryServerStateEnum.starting:
         return new Promise((res, rej) =>
-          this.once(MongoMemoryServerEventEnum.stateChange, (state) => {
+          this.once(MongoMemoryServerEvents.stateChange, (state) => {
             if (state != MongoMemoryServerStateEnum.running) {
               rej(
                 new Error(
