@@ -178,6 +178,20 @@ describe('MongoBinaryDownloadUrl', () => {
         expect(err.message).toEqual('Unkown Platform "unkown"');
       }
     });
+
+    it('should throw an error if platform is unkown (translatePlatform)', async () => {
+      // this is to test the default case in "translatePlatform"
+      try {
+        new MongoBinaryDownloadUrl({
+          platform: 'unkown',
+          arch: 'x64',
+          version: '4.0.0',
+        });
+        fail('Expected "translatePlatform" to throw');
+      } catch (err) {
+        expect(err.message).toEqual('Unkown Platform "unkown"');
+      }
+    });
   });
 
   describe('getUbuntuVersionString()', () => {

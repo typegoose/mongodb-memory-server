@@ -331,7 +331,7 @@ export class MongoBinaryDownloadUrl {
   }
 
   /**
-   * Translate input platform to mongodb useable platfrom
+   * Translate input platform to mongodb useable platform
    * @example
    * darwin -> osx
    * @param platform The Platform to translate
@@ -352,7 +352,7 @@ export class MongoBinaryDownloadUrl {
       case 'sunos':
         return 'sunos5';
       default:
-        throw new Error(`unsupported OS ${platform}`);
+        throw new Error(`Unkown Platform "${platform}"`);
     }
   }
 
