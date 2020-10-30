@@ -119,15 +119,15 @@ export enum MongoMemoryReplSetStates {
 /**
  * All Events for "MongoMemoryReplSet"
  */
-export enum MongoMemoryReplSetEventEnum {
+export enum MongoMemoryReplSetEvents {
   stateChange = 'stateChange',
 }
 
 export interface MongoMemoryReplSet extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
-  emit(event: MongoMemoryReplSetEventEnum, ...args: any[]): boolean;
-  on(event: MongoMemoryReplSetEventEnum, listener: (...args: any[]) => void): this;
-  once(event: MongoMemoryReplSetEventEnum, listener: (...args: any[]) => void): this;
+  emit(event: MongoMemoryReplSetEvents, ...args: any[]): boolean;
+  on(event: MongoMemoryReplSetEvents, listener: (...args: any[]) => void): this;
+  once(event: MongoMemoryReplSetEvents, listener: (...args: any[]) => void): this;
 }
 
 /**
@@ -161,7 +161,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   protected stateChange(newState: MongoMemoryReplSetStates, ...args: any[]): void {
     this._state = newState;
-    this.emit(MongoMemoryReplSetEventEnum.stateChange, newState, ...args);
+    this.emit(MongoMemoryReplSetEvents.stateChange, newState, ...args);
   }
 
   /**
@@ -421,11 +421,11 @@ export class MongoMemoryReplSet extends EventEmitter {
           function waitRunning(this: MongoMemoryReplSet, state: MongoMemoryReplSetStates) {
             // this is because other states can be emitted multiple times (like stopped & init for auth creation)
             if (state === MongoMemoryReplSetStates.running) {
-              this.removeListener(MongoMemoryReplSetEventEnum.stateChange, waitRunning);
+              this.removeListener(MongoMemoryReplSetEvents.stateChange, waitRunning);
               res();
             }
           }
-          this.on(MongoMemoryReplSetEventEnum.stateChange, waitRunning);
+          this.on(MongoMemoryReplSetEvents.stateChange, waitRunning);
         });
         return;
       case MongoMemoryReplSetStates.stopped:

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import MongoMemoryReplSet, {
-  MongoMemoryReplSetEventEnum,
+  MongoMemoryReplSetEvents,
   MongoMemoryReplSetStates,
 } from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
@@ -458,13 +458,13 @@ describe('MongoMemoryReplSet', () => {
     // @ts-expect-error
     replSet._state = MongoMemoryReplSetStates.stopped;
 
-    expect(replSet.listeners(MongoMemoryReplSetEventEnum.stateChange).length).toEqual(1);
+    expect(replSet.listeners(MongoMemoryReplSetEvents.stateChange).length).toEqual(1);
 
     replSet.start();
 
     await promise;
 
-    expect(replSet.listeners(MongoMemoryReplSetEventEnum.stateChange).length).toEqual(0);
+    expect(replSet.listeners(MongoMemoryReplSetEvents.stateChange).length).toEqual(0);
 
     await replSet.stop();
   });
