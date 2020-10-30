@@ -285,6 +285,7 @@ MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
 MONGOMS_USE_LINUX_LSB_RELEASE # Only try "lsb_release -a"
 MONGOMS_USE_LINUX_OS_RELEASE # Only try to read "/etc/os-release"
 MONGOMS_USE_LINUX_ANYFILE_RELEASE # Only try to read the first file found "/etc/*-release"
+MONGOMS_ARCHIVE_NAME="mongodb-linux-x86_64-4.0.0.tgz" # Specify what file / archive to download
 ```
 
 ### Options which can be set via package.json's `config` section

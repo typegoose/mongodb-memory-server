@@ -55,6 +55,10 @@ export class MongoBinaryDownloadUrl {
    * Version independent
    */
   async getArchiveName(): Promise<string> {
+    const archive_name = resolveConfig('ARCHIVE_NAME');
+    if (!isNullOrUndefined(archive_name) && archive_name.length > 0) {
+      return archive_name;
+    }
     switch (this.platform) {
       case 'osx':
         return this.getArchiveNameOsx();

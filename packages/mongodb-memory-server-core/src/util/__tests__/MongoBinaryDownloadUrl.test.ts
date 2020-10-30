@@ -1,4 +1,5 @@
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
+import { setDefaultValue } from '../resolveConfig';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -148,6 +149,17 @@ describe('MongoBinaryDownloadUrl', () => {
         'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
       );
       expect(console.warn).toHaveBeenCalledTimes(2);
+    });
+
+    it('should allow overwrite with "ARCHIVE_NAME"', async () => {
+      const archiveName = 'mongodb-linux-x86_64-4.0.0.tgz';
+      setDefaultValue('ARCHIVE_NAME', archiveName);
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
+      expect(await du.getDownloadUrl()).toBe(`https://fastdl.mongodb.org/linux/${archiveName}`);
     });
   });
 
