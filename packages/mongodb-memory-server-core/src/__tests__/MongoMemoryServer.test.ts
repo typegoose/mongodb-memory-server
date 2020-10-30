@@ -5,7 +5,7 @@ import { MongoClient } from 'mongodb';
 import * as tmp from 'tmp';
 import MongoMemoryServer, {
   MongoMemoryServerEvents,
-  MongoMemoryServerStateEnum,
+  MongoMemoryServerStates,
 } from '../MongoMemoryServer';
 import MongoInstance from '../util/MongoInstance';
 import { assertion, isNullOrUndefined, statPath, uriTemplate } from '../util/utils';
@@ -265,7 +265,7 @@ describe('MongoMemoryServer', () => {
     it('should throw an error if state is not "new" or "stopped"', async () => {
       const mongoServer = new MongoMemoryServer();
       // @ts-expect-error
-      mongoServer._state = MongoMemoryServerStateEnum.starting;
+      mongoServer._state = MongoMemoryServerStates.starting;
       try {
         await mongoServer.start();
         fail('Expected "start" to fail');
@@ -311,7 +311,7 @@ describe('MongoMemoryServer', () => {
     it('should throw an error if "instanceInfo" is undefined but "_state" is "running"', async () => {
       const mongoServer = new MongoMemoryServer();
       // @ts-expect-error
-      mongoServer._state = MongoMemoryServerStateEnum.running;
+      mongoServer._state = MongoMemoryServerStates.running;
 
       try {
         await mongoServer.ensureInstance();
@@ -340,13 +340,13 @@ describe('MongoMemoryServer', () => {
     it('should throw an error if state was "starting" and emitted an event but not "running"', async () => {
       const mongoServer = new MongoMemoryServer();
       // @ts-expect-error
-      mongoServer._state = MongoMemoryServerStateEnum.starting;
+      mongoServer._state = MongoMemoryServerStates.starting;
       const ensureInstancePromise = mongoServer.ensureInstance();
 
-      mongoServer.emit(MongoMemoryServerEvents.stateChange, MongoMemoryServerStateEnum.stopped);
+      mongoServer.emit(MongoMemoryServerEvents.stateChange, MongoMemoryServerStates.stopped);
 
       expect(ensureInstancePromise).rejects.toThrow(
-        `"ensureInstance" waited for "running" but got an different state: "${MongoMemoryServerStateEnum.stopped}"`
+        `"ensureInstance" waited for "running" but got an different state: "${MongoMemoryServerStates.stopped}"`
       );
     });
 
@@ -448,7 +448,7 @@ describe('MongoMemoryServer', () => {
       expect(promises.stat).not.toHaveBeenCalled();
       expect(semver.lt).not.toHaveBeenCalled();
       expect(await statPath(dbPath)).toBeUndefined();
-      expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
+      expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
     });
 
@@ -460,7 +460,7 @@ describe('MongoMemoryServer', () => {
       expect(promises.stat).toHaveBeenCalledTimes(1);
       expect(semver.lt).not.toHaveBeenCalled();
       expect(await statPath(dbPath)).toBeUndefined();
-      expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
+      expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
     });
 
@@ -473,7 +473,7 @@ describe('MongoMemoryServer', () => {
       expect(promises.stat).toHaveBeenCalledTimes(1);
       expect(semver.lt).toHaveBeenCalledTimes(1);
       expect(await statPath(dbPath)).toBeUndefined();
-      expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
+      expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
     });
   });
@@ -494,10 +494,10 @@ describe('MongoMemoryServer', () => {
 
   it('"state" should return correct state', () => {
     const mongoServer = new MongoMemoryServer();
-    expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
+    expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
     // @ts-expect-error
-    mongoServer.stateChange(MongoMemoryServerStateEnum.running);
-    expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.running);
+    mongoServer.stateChange(MongoMemoryServerStates.running);
+    expect(mongoServer.state).toEqual(MongoMemoryServerStates.running);
   });
 
   it('"createAuth" should throw an error if called without "this.auth" defined', async () => {
@@ -527,6 +527,6 @@ describe('MongoMemoryServer', () => {
     await mongoServer.cleanup();
     expect(await statPath(dbPath)).toBeFalsy();
     expect(mongoServer.instanceInfo).toBeFalsy();
-    expect(mongoServer.state).toEqual(MongoMemoryServerStateEnum.new);
+    expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
   });
 });

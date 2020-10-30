@@ -101,7 +101,7 @@ export enum MongoMemoryServerEvents {
 /**
  * All States for "MongoMemoryServer._state"
  */
-export enum MongoMemoryServerStateEnum {
+export enum MongoMemoryServerStates {
   new = 'new',
   starting = 'starting',
   running = 'running',
@@ -206,7 +206,7 @@ export interface MongoMemoryServer extends EventEmitter {
 export class MongoMemoryServer extends EventEmitter {
   protected _instanceInfo?: MongoInstanceData;
   opts: MongoMemoryServerOpts;
-  protected _state: MongoMemoryServerStateEnum = MongoMemoryServerStateEnum.new;
+  protected _state: MongoMemoryServerStates = MongoMemoryServerStates.new;
   readonly auth?: Required<AutomaticAuth>;
 
   /**
@@ -241,7 +241,7 @@ export class MongoMemoryServer extends EventEmitter {
    * Change "this._state" to "newState" and emit "stateChange" with "newState"
    * @param newState The new State to set & emit
    */
-  protected stateChange(newState: MongoMemoryServerStateEnum): void {
+  protected stateChange(newState: MongoMemoryServerStates): void {
     this._state = newState;
     this.emit(MongoMemoryServerEvents.stateChange, newState);
   }
@@ -254,11 +254,11 @@ export class MongoMemoryServer extends EventEmitter {
     log('Called MongoMemoryServer.start() method');
 
     switch (this._state) {
-      case MongoMemoryServerStateEnum.new:
-      case MongoMemoryServerStateEnum.stopped:
+      case MongoMemoryServerStates.new:
+      case MongoMemoryServerStates.stopped:
         break;
-      case MongoMemoryServerStateEnum.running:
-      case MongoMemoryServerStateEnum.starting:
+      case MongoMemoryServerStates.running:
+      case MongoMemoryServerStates.starting:
       default:
         throw new Error('Already in state running/starting or unkown');
     }
@@ -267,7 +267,7 @@ export class MongoMemoryServer extends EventEmitter {
       throw new Error('Cannot start because "instance.childProcess" is already defined!');
     }
 
-    this.stateChange(MongoMemoryServerStateEnum.starting);
+    this.stateChange(MongoMemoryServerStates.starting);
 
     // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
     if (
@@ -285,7 +285,7 @@ export class MongoMemoryServer extends EventEmitter {
       throw err;
     });
 
-    this.stateChange(MongoMemoryServerStateEnum.running);
+    this.stateChange(MongoMemoryServerStates.running);
 
     return true;
   }
@@ -451,7 +451,7 @@ export class MongoMemoryServer extends EventEmitter {
       return true;
     }
 
-    if (this._state === MongoMemoryServerStateEnum.stopped) {
+    if (this._state === MongoMemoryServerStates.stopped) {
       log(`stop: state is "stopped", so already stopped`);
       return true;
     }
@@ -469,7 +469,7 @@ export class MongoMemoryServer extends EventEmitter {
     );
     await this._instanceInfo.instance.kill();
 
-    this.stateChange(MongoMemoryServerStateEnum.stopped);
+    this.stateChange(MongoMemoryServerStates.stopped);
 
     if (runCleanup) {
       await this.cleanup(false);
@@ -497,7 +497,7 @@ export class MongoMemoryServer extends EventEmitter {
       force = false;
     }
     assertion(
-      this.state === MongoMemoryServerStateEnum.stopped,
+      this.state === MongoMemoryServerStates.stopped,
       new Error('Cannot cleanup when state is not "stopped"')
     );
     process.removeListener('beforeExit', this.cleanup);
@@ -541,7 +541,7 @@ export class MongoMemoryServer extends EventEmitter {
       }
     }
 
-    this.stateChange(MongoMemoryServerStateEnum.new); // reset "state" to new, because the dbPath got removed
+    this.stateChange(MongoMemoryServerStates.new); // reset "state" to new, because the dbPath got removed
     this._instanceInfo = undefined;
   }
 
@@ -555,7 +555,7 @@ export class MongoMemoryServer extends EventEmitter {
   /**
    * Get Current state of this class
    */
-  get state(): MongoMemoryServerStateEnum {
+  get state(): MongoMemoryServerStates {
     return this._state;
   }
 
@@ -567,18 +567,18 @@ export class MongoMemoryServer extends EventEmitter {
     log('Called MongoMemoryServer.ensureInstance() method');
 
     switch (this._state) {
-      case MongoMemoryServerStateEnum.running:
+      case MongoMemoryServerStates.running:
         if (this._instanceInfo) {
           return this._instanceInfo;
         }
         throw new Error('MongoMemoryServer "_state" is "running" but "instanceInfo" is undefined!');
-      case MongoMemoryServerStateEnum.new:
-      case MongoMemoryServerStateEnum.stopped:
+      case MongoMemoryServerStates.new:
+      case MongoMemoryServerStates.stopped:
         break;
-      case MongoMemoryServerStateEnum.starting:
+      case MongoMemoryServerStates.starting:
         return new Promise((res, rej) =>
           this.once(MongoMemoryServerEvents.stateChange, (state) => {
-            if (state != MongoMemoryServerStateEnum.running) {
+            if (state != MongoMemoryServerStates.running) {
               rej(
                 new Error(
                   `"ensureInstance" waited for "running" but got an different state: "${state}"`
