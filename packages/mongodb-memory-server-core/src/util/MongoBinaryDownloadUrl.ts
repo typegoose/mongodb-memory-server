@@ -301,32 +301,24 @@ export class MongoBinaryDownloadUrl {
     let name = 'ubuntu';
     const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
     const majorVer: number = parseInt(ubuntuVer[0], 10);
-    // const minorVer: string = ubuntuVer[1];
+    // for all cases where its just "10.10" -> "1010"
+    // and because the "04" version always exists for ubuntu, use that as default
+    let version = `${majorVer || 14}04`;
 
-    if (os.release === '12.04') {
-      name += '1204';
-    } else if (os.release === '14.04') {
-      name += '1404';
-    } else if (os.release === '14.10') {
-      name += '1410-clang';
-    } else if (majorVer === 14) {
-      name += '1404';
-    } else if (os.release === '16.04') {
-      name += '1604';
-    } else if (majorVer === 16) {
-      name += '1604';
+    if (os.release === '14.10') {
+      version = '1410-clang';
     } else if (majorVer >= 18) {
       if (this.version && this.version.indexOf('3.') === 0) {
-        // For MongoDB 3.x using 1604 binaries, download distro does not have builds for Ubuntu 1804
+        // For MongoDB 3.x using 1604 binaries, download distro does not have builds for Ubuntu 1804 AND 2004
         // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
-        name += '1604';
+        version = '1604';
       } else {
         // See fulllist of versions https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
-        name += '1804';
+        // For MongoDB <4.4 using 1804 binaries, because 2004 dosnt have anything below 4.4
+        version = '1804';
       }
-    } else {
-      name += '1404';
     }
+    name += version;
     return name;
   }
 
