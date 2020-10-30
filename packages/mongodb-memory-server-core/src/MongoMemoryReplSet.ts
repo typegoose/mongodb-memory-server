@@ -110,7 +110,7 @@ export interface MongoMemoryReplSetOpts {
 /**
  * Enum for "_state" inside "MongoMemoryReplSet"
  */
-export enum MongoMemoryReplSetStateEnum {
+export enum MongoMemoryReplSetStates {
   init = 'init',
   running = 'running',
   stopped = 'stopped',
@@ -144,7 +144,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   protected _binaryOpts!: MongoBinaryOpts;
   protected _replSetOpts!: Required<ReplSetOpts>;
 
-  protected _state: MongoMemoryReplSetStateEnum = MongoMemoryReplSetStateEnum.stopped;
+  protected _state: MongoMemoryReplSetStates = MongoMemoryReplSetStates.stopped;
   protected _ranCreateAuth: boolean = false;
 
   constructor(opts: Partial<MongoMemoryReplSetOpts> = {}) {
@@ -159,7 +159,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Change "this._state" to "newState" and emit "newState"
    * @param newState The new State to set & emit
    */
-  protected stateChange(newState: MongoMemoryReplSetStateEnum, ...args: any[]): void {
+  protected stateChange(newState: MongoMemoryReplSetStates, ...args: any[]): void {
     this._state = newState;
     this.emit(MongoMemoryReplSetEventEnum.stateChange, newState, ...args);
   }
@@ -177,7 +177,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   /**
    * Get Current state of this class
    */
-  get state(): MongoMemoryReplSetStateEnum {
+  get state(): MongoMemoryReplSetStates {
     return this._state;
   }
 
@@ -191,7 +191,7 @@ export class MongoMemoryReplSet extends EventEmitter {
 
   set instanceOpts(val: MongoMemoryInstancePropBase[]) {
     assertion(
-      this._state === MongoMemoryReplSetStateEnum.stopped,
+      this._state === MongoMemoryReplSetStates.stopped,
       new Error('Cannot change instance Options while "state" is not "stopped"!')
     );
     this._instanceOpts = val;
@@ -207,7 +207,7 @@ export class MongoMemoryReplSet extends EventEmitter {
 
   set binaryOpts(val: MongoBinaryOpts) {
     assertion(
-      this._state === MongoMemoryReplSetStateEnum.stopped,
+      this._state === MongoMemoryReplSetStates.stopped,
       new Error('Cannot change binary Options while "state" is not "stopped"!')
     );
     this._binaryOpts = val;
@@ -224,7 +224,7 @@ export class MongoMemoryReplSet extends EventEmitter {
 
   set replSetOpts(val: ReplSetOpts) {
     assertion(
-      this._state === MongoMemoryReplSetStateEnum.stopped,
+      this._state === MongoMemoryReplSetStates.stopped,
       new Error('Cannot change replSet Options while "state" is not "stopped"!')
     );
     const defaults: Required<ReplSetOpts> = {
@@ -289,10 +289,10 @@ export class MongoMemoryReplSet extends EventEmitter {
   getUri(otherDb?: string | boolean): string {
     log('getUri:', this._state);
     switch (this._state) {
-      case MongoMemoryReplSetStateEnum.running:
-      case MongoMemoryReplSetStateEnum.init:
+      case MongoMemoryReplSetStates.running:
+      case MongoMemoryReplSetStates.init:
         break;
-      case MongoMemoryReplSetStateEnum.stopped:
+      case MongoMemoryReplSetStates.stopped:
       default:
         throw new Error('Replica Set is not running. Use debug for more info.');
     }
@@ -320,13 +320,13 @@ export class MongoMemoryReplSet extends EventEmitter {
     switch (this._state) {
       // case MongoMemoryReplSetStateEnum.init:
       //   return this.waitUntilRunning();
-      case MongoMemoryReplSetStateEnum.stopped:
+      case MongoMemoryReplSetStates.stopped:
         break;
-      case MongoMemoryReplSetStateEnum.running:
+      case MongoMemoryReplSetStates.running:
       default:
         throw new Error('Already in "init" or "running" state. Use debug for more info.');
     }
-    this.stateChange(MongoMemoryReplSetStateEnum.init); // this needs to be executed before "setImmediate"
+    this.stateChange(MongoMemoryReplSetStates.init); // this needs to be executed before "setImmediate"
     await ensureAsync();
     log('init');
     await this.initAllServers();
@@ -335,7 +335,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   protected async initAllServers(): Promise<void> {
-    this.stateChange(MongoMemoryReplSetStateEnum.init);
+    this.stateChange(MongoMemoryReplSetStates.init);
 
     if (this.servers.length > 0) {
       log('initAllServers: lenght of "servers" is higher than 0, starting existing servers');
@@ -366,17 +366,17 @@ export class MongoMemoryReplSet extends EventEmitter {
   async stop(): Promise<boolean> {
     log('stop' + isNullOrUndefined(process.exitCode) ? '' : ': called by process-event');
     process.removeListener('beforeExit', this.stop); // many accumulate inside tests
-    if (this._state === MongoMemoryReplSetStateEnum.stopped) {
+    if (this._state === MongoMemoryReplSetStates.stopped) {
       return false;
     }
     return Promise.all(this.servers.map((s) => s.stop(false)))
       .then(() => {
-        this.stateChange(MongoMemoryReplSetStateEnum.stopped);
+        this.stateChange(MongoMemoryReplSetStates.stopped);
         return true;
       })
       .catch((err) => {
         log(err);
-        this.stateChange(MongoMemoryReplSetStateEnum.stopped, err);
+        this.stateChange(MongoMemoryReplSetStates.stopped, err);
         return false;
       });
   }
@@ -391,7 +391,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   async cleanup(force: boolean = false): Promise<void> {
     assertion(
-      this._state === MongoMemoryReplSetStateEnum.stopped,
+      this._state === MongoMemoryReplSetStates.stopped,
       new Error('Cannot run cleanup when state is not "stopped"')
     );
     log(`cleanup for "${this.servers.length}" servers`);
@@ -411,16 +411,16 @@ export class MongoMemoryReplSet extends EventEmitter {
     await ensureAsync();
     log('waitUntilRunning:', this._state);
     switch (this._state) {
-      case MongoMemoryReplSetStateEnum.running:
+      case MongoMemoryReplSetStates.running:
         // just return immediatly if the replSet is already running
         return;
-      case MongoMemoryReplSetStateEnum.init:
+      case MongoMemoryReplSetStates.init:
         // wait for event "running"
         await new Promise((res) => {
           // the use of "this" here can be done because "on" either binds "this" or uses an arrow function
-          function waitRunning(this: MongoMemoryReplSet, state: MongoMemoryReplSetStateEnum) {
+          function waitRunning(this: MongoMemoryReplSet, state: MongoMemoryReplSetStates) {
             // this is because other states can be emitted multiple times (like stopped & init for auth creation)
-            if (state === MongoMemoryReplSetStateEnum.running) {
+            if (state === MongoMemoryReplSetStates.running) {
               this.removeListener(MongoMemoryReplSetEventEnum.stateChange, waitRunning);
               res();
             }
@@ -428,7 +428,7 @@ export class MongoMemoryReplSet extends EventEmitter {
           this.on(MongoMemoryReplSetEventEnum.stateChange, waitRunning);
         });
         return;
-      case MongoMemoryReplSetStateEnum.stopped:
+      case MongoMemoryReplSetStates.stopped:
       default:
         // throw an error if not "running" or "init"
         throw new Error(
@@ -446,7 +446,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   protected async _initReplSet(): Promise<void> {
     log('_initReplSet');
-    assertion(this._state === MongoMemoryReplSetStateEnum.init, new Error('Not in init phase.'));
+    assertion(this._state === MongoMemoryReplSetStates.init, new Error('Not in init phase.'));
     assertion(this.servers.length > 0, new Error('One or more servers are required.'));
     const uris = this.servers.map((server) => server.getUri());
 
@@ -528,7 +528,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       }
       log('_initReplSet: ReplSet-reConfig finished');
       await this._waitForPrimary();
-      this.stateChange(MongoMemoryReplSetStateEnum.running);
+      this.stateChange(MongoMemoryReplSetStates.running);
       log('_initReplSet: running');
     } finally {
       await con.close();

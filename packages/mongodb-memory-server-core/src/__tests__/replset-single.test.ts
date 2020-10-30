@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import MongoMemoryReplSet, {
   MongoMemoryReplSetEventEnum,
-  MongoMemoryReplSetStateEnum,
+  MongoMemoryReplSetStates,
 } from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
@@ -56,10 +56,10 @@ describe('single server replset', () => {
   it('should be possible to connect replicaset after waitUntilRunning resolves', async () => {
     const replSet = new MongoMemoryReplSet();
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.init;
+    replSet._state = MongoMemoryReplSetStates.init;
     const promise = replSet.waitUntilRunning();
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.stopped;
+    replSet._state = MongoMemoryReplSetStates.stopped;
     replSet.start();
 
     await promise;
@@ -106,13 +106,13 @@ describe('single server replset', () => {
     }, 100);
 
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.init;
+    replSet._state = MongoMemoryReplSetStates.init;
     replSet.getUri();
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.running;
+    replSet._state = MongoMemoryReplSetStates.running;
     replSet.getUri();
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.stopped;
+    replSet._state = MongoMemoryReplSetStates.stopped;
 
     try {
       replSet.getUri();
@@ -131,7 +131,7 @@ describe('single server replset', () => {
 
     // this case can normally happen if "start" is called again, without either an error or "stop" happened
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running
+    replSet._state = MongoMemoryReplSetStates.running; // artificially set this to running
 
     try {
       await replSet.start();
@@ -158,7 +158,7 @@ describe('single server replset', () => {
     const replSet = new MongoMemoryReplSet();
     const spy = jest.spyOn(replSet, 'once');
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running to not actually have to start an server (test-speedup)
+    replSet._state = MongoMemoryReplSetStates.running; // artificially set this to running to not actually have to start an server (test-speedup)
 
     await replSet.waitUntilRunning();
 
@@ -173,7 +173,7 @@ describe('single server replset', () => {
 
     // this case can normally happen if "start" is called again, without either an error or "stop" happened
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.running; // artificially set this to running
+    replSet._state = MongoMemoryReplSetStates.running; // artificially set this to running
 
     try {
       // @ts-expect-error
@@ -192,7 +192,7 @@ describe('single server replset', () => {
     }, 100);
 
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.init; // artificially set this to init
+    replSet._state = MongoMemoryReplSetStates.init; // artificially set this to init
 
     try {
       // @ts-expect-error
@@ -290,12 +290,12 @@ describe('MongoMemoryReplSet', () => {
     it('"get state" should match "_state"', () => {
       // @ts-expect-error
       expect(replSet.state).toEqual(replSet._state);
-      expect(replSet.state).toEqual(MongoMemoryReplSetStateEnum.stopped);
+      expect(replSet.state).toEqual(MongoMemoryReplSetStates.stopped);
       // @ts-expect-error
-      replSet._state = MongoMemoryReplSetStateEnum.init;
+      replSet._state = MongoMemoryReplSetStates.init;
       // @ts-expect-error
       expect(replSet.state).toEqual(replSet._state);
-      expect(replSet.state).toEqual(MongoMemoryReplSetStateEnum.init);
+      expect(replSet.state).toEqual(MongoMemoryReplSetStates.init);
     });
 
     it('"binaryOpts" should match "_binaryOpts"', () => {
@@ -352,7 +352,7 @@ describe('MongoMemoryReplSet', () => {
     describe('state errors', () => {
       beforeEach(() => {
         // @ts-expect-error
-        replSet._state = MongoMemoryReplSetStateEnum.init;
+        replSet._state = MongoMemoryReplSetStates.init;
       });
       it('setter of "binaryOpts" should throw an error if state is not "stopped"', () => {
         try {
@@ -402,7 +402,7 @@ describe('MongoMemoryReplSet', () => {
     // this test creates an mock-instance, so that no actual instance gets started
     const replSet = new MongoMemoryReplSet();
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.running;
+    replSet._state = MongoMemoryReplSetStates.running;
     const instance = new MongoMemoryServer();
     jest.spyOn(instance, 'stop').mockRejectedValueOnce(new Error('Some Error'));
     replSet.servers = [instance];
@@ -452,11 +452,11 @@ describe('MongoMemoryReplSet', () => {
   it('"waitUntilRunning" should clear stateChange listener', async () => {
     const replSet = new MongoMemoryReplSet();
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.init;
+    replSet._state = MongoMemoryReplSetStates.init;
     const promise = replSet.waitUntilRunning();
     await utils.ensureAsync(); // ensure that "waitUntilRunning" has executed and setup the listener
     // @ts-expect-error
-    replSet._state = MongoMemoryReplSetStateEnum.stopped;
+    replSet._state = MongoMemoryReplSetStates.stopped;
 
     expect(replSet.listeners(MongoMemoryReplSetEventEnum.stateChange).length).toEqual(1);
 
