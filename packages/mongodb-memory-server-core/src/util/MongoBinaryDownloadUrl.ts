@@ -75,7 +75,7 @@ export class MongoBinaryDownloadUrl {
    * Get the archive for Windows
    * (from: https://www.mongodb.org/dl/win32)
    */
-  async getArchiveNameWin(): Promise<string> {
+  getArchiveNameWin(): string {
     let name = `mongodb-${this.platform}`;
     name += `-${this.arch}`;
     if (!isNullOrUndefined(semver.coerce(this.version))) {
@@ -93,7 +93,7 @@ export class MongoBinaryDownloadUrl {
    * Get the archive for OSX (Mac)
    * (from: https://www.mongodb.org/dl/osx)
    */
-  async getArchiveNameOsx(): Promise<string> {
+  getArchiveNameOsx(): string {
     let name = `mongodb-osx`;
     const version = semver.coerce(this.version);
     if (!isNullOrUndefined(version) && semver.gte(version, '3.2.0')) {
