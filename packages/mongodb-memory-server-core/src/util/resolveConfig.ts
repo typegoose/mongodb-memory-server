@@ -5,7 +5,7 @@ import debug from 'debug';
 const log = debug('MongoMS:ResolveConfig');
 
 const ENV_CONFIG_PREFIX = 'MONGOMS_';
-const defaultValues = new Map<string, string>();
+export const defaultValues = new Map<string, string>();
 
 /**
  * Set an Default value for an specific key

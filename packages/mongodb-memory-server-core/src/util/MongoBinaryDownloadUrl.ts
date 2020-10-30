@@ -66,8 +66,9 @@ export class MongoBinaryDownloadUrl {
       case 'windows':
         return this.getArchiveNameWin();
       case 'linux':
-      default:
         return this.getArchiveNameLinux();
+      default:
+        throw new Error(`Unkown Platform "${this.platform}"`);
     }
   }
 

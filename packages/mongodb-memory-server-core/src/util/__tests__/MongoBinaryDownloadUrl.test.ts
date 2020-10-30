@@ -1,5 +1,5 @@
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
-import { setDefaultValue } from '../resolveConfig';
+import { defaultValues, setDefaultValue } from '../resolveConfig';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -160,6 +160,23 @@ describe('MongoBinaryDownloadUrl', () => {
         version: '3.6.3',
       });
       expect(await du.getDownloadUrl()).toBe(`https://fastdl.mongodb.org/linux/${archiveName}`);
+      defaultValues.delete('ARCHIVE_NAME');
+    });
+
+    it('should throw an error if platform is unkown (getArchiveName)', async () => {
+      // this is to test the default case in "getArchiveName"
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '4.0.0',
+      });
+      du.platform = 'unkown';
+      try {
+        await du.getArchiveName();
+        fail('Expected "getArchiveName" to throw');
+      } catch (err) {
+        expect(err.message).toEqual('Unkown Platform "unkown"');
+      }
     });
   });
 
