@@ -369,8 +369,11 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceClosed
    */
   closeHandler(code: number): void {
-    if (code != 0) {
-      this.debug('Mongod instance closed with an non-0 code!');
+    // check if the platform is windows, if yes check if the code is not "12" or "0" otherwise just check code is not "0"
+    // because for mongodb any event on windows (like SIGINT / SIGTERM) will result in an code 12
+    // https://docs.mongodb.com/manual/reference/exit-codes/#12
+    if ((process.platform === 'win32' && code != 12 && code != 0) || code != 0) {
+      this.debug('Mongod instance closed with an non-0 (or non 12 on windows) code!');
     }
     this.debug(`CLOSE: ${code}`);
     this.emit(MongoInstanceEvents.instanceClosed, code);
