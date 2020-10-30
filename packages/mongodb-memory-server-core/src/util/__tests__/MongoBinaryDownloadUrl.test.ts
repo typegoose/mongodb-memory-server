@@ -250,6 +250,26 @@ describe('MongoBinaryDownloadUrl', () => {
       ).toBe('ubuntu1804');
       downloadUrl.version = oldMongoVersion;
     });
+    it('should return a archive name for Ubuntu 20.04', () => {
+      const oldMongoVersion = downloadUrl.version;
+      downloadUrl.version = '3.6.3';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '20.04',
+        })
+      ).toBe('ubuntu1604');
+      downloadUrl.version = '4.0.1';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '20.04',
+        })
+      ).toBe('ubuntu1804');
+      downloadUrl.version = oldMongoVersion;
+    });
   });
 
   describe('getDebianVersionString()', () => {
