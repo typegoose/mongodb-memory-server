@@ -97,6 +97,17 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
+      it('4.0.14 (win32)', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'win32',
+          arch: 'x64',
+          version: '4.0.14',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-4.0.14.zip'
+        );
+      });
+
       it('4.2 (win32)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
@@ -371,8 +382,18 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(
         downloadUrl.getMintVersionString({
           os: 'linux',
-          dist: 'Linux Mint',
+          dist: 'LinuxMint',
           release: '19',
+        })
+      ).toBe('ubuntu1804');
+    });
+
+    it('should return a archive name for Linux Mint 20', () => {
+      expect(
+        downloadUrl.getMintVersionString({
+          os: 'linux',
+          dist: 'Linux Mint',
+          release: '20',
         })
       ).toBe('ubuntu1804');
     });

@@ -82,7 +82,7 @@ export class MongoBinaryDownloadUrl {
     if (!isNullOrUndefined(semver.coerce(this.version))) {
       if (semver.satisfies(this.version, '4.2.x')) {
         name += '-2012plus';
-      } else if (semver.lt(this.version, '4.0.0')) {
+      } else if (semver.lt(this.version, '4.1.0')) {
         name += '-2008plus-ssl';
       }
     }
@@ -149,7 +149,7 @@ export class MongoBinaryDownloadUrl {
       return this.getFedoraVersionString(os);
     } else if (/debian/i.test(os.dist)) {
       return this.getDebianVersionString(os);
-    } else if (/\s+mint\s*$/i.test(os.dist)) {
+    } else if (/^linux\s?mint\s*$/i.test(os.dist)) {
       return this.getMintVersionString(os);
     } else if (/arch/i.test(os.dist)) {
       console.warn('There is no offical build of MongoDB for ArchLinux!');
@@ -264,6 +264,7 @@ export class MongoBinaryDownloadUrl {
       case 18:
         name += '1604';
         break;
+      case 20: // because "1804" binaries also work on "2004" (and because earlier versions than 4.4 are not available in "2004")
       case 19:
       default:
         // a default to support versions > 19
