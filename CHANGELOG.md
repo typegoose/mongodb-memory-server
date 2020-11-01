@@ -1,3 +1,36 @@
+## [7.0.0-beta.8](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.7...v7.0.0-beta.8) (2020-11-01)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** allow overwrite of archiveName ([c19d216](https://github.com/nodkz/mongodb-memory-server/commit/c19d2167a88977a67c886f651bf0a70dcf51a806)), closes [#295](https://github.com/nodkz/mongodb-memory-server/issues/295)
+
+
+### Style
+
+* **README:** update "packages/*/README.md" to new bages ([3acd086](https://github.com/nodkz/mongodb-memory-server/commit/3acd0866831ddff5f1c3deb5e96a7cc97be56ace))
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** add case for Linux Mint 20 ([01a6bc6](https://github.com/nodkz/mongodb-memory-server/commit/01a6bc63f0e13a4528ee39ccae64390a8de48582))
+* **MongoBinaryDownloadUrl:** detect "linuxmint" and "linux mint" as linux mint ([fda4f72](https://github.com/nodkz/mongodb-memory-server/commit/fda4f7224d156680ac68c743c5a5a963070171dd)), closes [#403](https://github.com/nodkz/mongodb-memory-server/issues/403)
+* **MongoBinaryDownloadUrl:** fix win32 download generation ([d62b489](https://github.com/nodkz/mongodb-memory-server/commit/d62b4891a01fe40b5f00c21ee02f08b24a55d80c)), closes [#399](https://github.com/nodkz/mongodb-memory-server/issues/399)
+* **MongoBinaryDownloadUrl:** getArchiveName: throw error if platform is unkown ([9fc358b](https://github.com/nodkz/mongodb-memory-server/commit/9fc358b9b2997333b2121eabff16e91e543f3897))
+* **MongoInstance:** handle code "12" on windows ([718aed7](https://github.com/nodkz/mongodb-memory-server/commit/718aed7281c25c7198ea068a87b06924d77de8ba)), closes [#411](https://github.com/nodkz/mongodb-memory-server/issues/411)
+
+
+### Refactor
+
+* **MongoBinaryDownloadUrl:** minify "getUbuntuVersionString" ([04b0ee9](https://github.com/nodkz/mongodb-memory-server/commit/04b0ee9c5685107a1db67a6edc19bb3b2762bbc4))
+* **MongoBinaryDownloadUrl:** remove "async" where not needed ([7970fbb](https://github.com/nodkz/mongodb-memory-server/commit/7970fbbaa8a32979a9634765f726419a00bd385c))
+* **MongoBinaryDownloadUrl:** translatePlatform: change default error ([61685e0](https://github.com/nodkz/mongodb-memory-server/commit/61685e04c14a45c410a8c258be58f2ed7962820a))
+* **MongoMemoryReplSet:** rename "MongoMemoryReplSetEventEnum" to "MongoMemoryReplSetEvents" ([bfd5441](https://github.com/nodkz/mongodb-memory-server/commit/bfd5441f0e18a38e324e8c49a4adaa05adfdf3ec))
+* **MongoMemoryReplSet:** rename "MongoMemoryReplSetStateEnum" to "MongoMemoryReplSetStates" ([c02e21d](https://github.com/nodkz/mongodb-memory-server/commit/c02e21d36be0439bc1ea19f2c9cd6733b4fd1074))
+* **MongoMemoryReplSet:** setup proper events ([644a335](https://github.com/nodkz/mongodb-memory-server/commit/644a335089cf6a078a055a6780f4cf48630e6506))
+* **MongoMemoryServer:** rename "MongoMemoryServerEventEnum" to "MongoMemoryServerEvents" ([251c7ed](https://github.com/nodkz/mongodb-memory-server/commit/251c7ede0dd56e7ac0f98f75c278066ea5333272))
+* **MongoMemoryServer:** rename "MongoMemoryServerStateEnum" to "MongoMemoryServerStates" ([139d3fd](https://github.com/nodkz/mongodb-memory-server/commit/139d3fd9c1175c0abc66cc1b0c7c49738f231658))
+
 ## [7.0.0-beta.7](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.6...v7.0.0-beta.7) (2020-10-27)
 
 
