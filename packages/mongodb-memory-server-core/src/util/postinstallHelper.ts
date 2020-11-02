@@ -6,13 +6,13 @@ import { resolve } from 'path';
 import { MongoBinary } from './MongoBinary';
 import {
   envToBool,
-  reInitializePackageJson,
+  findPackageJson,
   resolveConfig,
   ResolveConfigVariables,
   setDefaultValue,
 } from './resolveConfig';
 
-reInitializePackageJson(process.env.INIT_CWD);
+findPackageJson(process.env.INIT_CWD);
 
 const envDisablePostinstall: string | undefined = resolveConfig(
   ResolveConfigVariables.DISABLE_POSTINSTALL

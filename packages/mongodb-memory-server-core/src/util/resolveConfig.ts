@@ -47,7 +47,6 @@ export function findPackageJson(directory?: string): void {
   log(`Using package.json at "${finderIterator.filename}"`);
   packageJsonConfig = finderIterator.value?.config?.mongodbMemoryServer ?? {};
 }
-export const reInitializePackageJson = findPackageJson; // TODO: remove this line on next minor version
 findPackageJson();
 
 /**
