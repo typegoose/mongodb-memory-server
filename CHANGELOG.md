@@ -1,3 +1,16 @@
+## [7.0.0-beta.9](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.8...v7.0.0-beta.9) (2020-11-02)
+
+
+### Dependencies
+
+* upgrade subdependencies (yarn upgrade) ([b7030ae](https://github.com/nodkz/mongodb-memory-server/commit/b7030ae4bdabb7ce64a816c8afe95b0807a44dbe))
+* **eslint-config-prettier:** upgrade to 6.15.0 ([7bbcc33](https://github.com/nodkz/mongodb-memory-server/commit/7bbcc3355f441549f98f7560a308f78e9ba603de))
+* **lint-staged:** upgrade to 10.5.1 ([6339aaa](https://github.com/nodkz/mongodb-memory-server/commit/6339aaa375a37a3c70830f69acd361e625a17859))
+* **semantic-release:** upgrade to 17.2.2 ([1cb1fec](https://github.com/nodkz/mongodb-memory-server/commit/1cb1fecb0a8c3a37e4287df53d2b1db6bd67c565))
+* allow "^" range for all type packages ([37c01d8](https://github.com/nodkz/mongodb-memory-server/commit/37c01d8bf7d0bf7668e56bdfe4f8e9d46e308d8d))
+* pin all non-types devDependencies ([b647153](https://github.com/nodkz/mongodb-memory-server/commit/b647153a1a05295b55eddc5576ab9c52ba92ad0e))
+* remove devDependency "mongodb" ([dbd82a7](https://github.com/nodkz/mongodb-memory-server/commit/dbd82a7d4b7ca831c4c4e4292b2a239e54b112da))
+
 ## [7.0.0-beta.8](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.7...v7.0.0-beta.8) (2020-11-01)
 
 
