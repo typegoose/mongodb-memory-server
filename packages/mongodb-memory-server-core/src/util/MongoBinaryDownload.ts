@@ -8,11 +8,11 @@ import { createUnzip } from 'zlib';
 import tar from 'tar-stream';
 import yauzl from 'yauzl';
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
-import { LATEST_VERSION } from './MongoBinary';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { promisify } from 'util';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
+import { assertion } from './utils';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -56,7 +56,9 @@ export class MongoBinaryDownload {
   constructor({ platform, arch, downloadDir, version, checkMD5 }: MongoBinaryDownloadOpts) {
     this.platform = platform ?? os.platform();
     this.arch = arch ?? os.arch();
-    this.version = version ?? LATEST_VERSION;
+    version = version ?? resolveConfig(ResolveConfigVariables.VERSION);
+    assertion(typeof version === 'string', new Error('"version" is not an string!'));
+    this.version = version;
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
     this.checkMD5 = checkMD5 ?? envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK));
     this.dlProgress = {

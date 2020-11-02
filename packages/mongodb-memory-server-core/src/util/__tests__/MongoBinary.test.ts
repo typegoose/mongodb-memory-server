@@ -1,8 +1,10 @@
 import * as tmp from 'tmp';
 import fs from 'fs';
 import os from 'os';
-import MongoBinary, { LATEST_VERSION } from '../MongoBinary';
+import MongoBinary from '../MongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
+import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
+import { assertion } from '../utils';
 
 tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -45,7 +47,8 @@ describe('MongoBinary', () => {
 
   describe('getDownloadPath', () => {
     it('should download binary and keep it in cache', async () => {
-      const version = LATEST_VERSION;
+      const version = resolveConfig(ResolveConfigVariables.VERSION);
+      assertion(typeof version === 'string', new Error('Expected "version" to be an string'));
       const binPath = await MongoBinary.getPath({
         downloadDir: tmpDir.name,
         version,

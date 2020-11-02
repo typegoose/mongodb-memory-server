@@ -9,14 +9,9 @@ import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
-import { assertion } from './utils';
+import { assertion, isNullOrUndefined } from './utils';
 
 const log = debug('MongoMS:MongoBinary');
-
-// TODO: return back `latest` version when it will be fixed in MongoDB distro (for now use 4.0.14 😂)
-// More details in https://github.com/nodkz/mongodb-memory-server/issues/131
-// export const LATEST_VERSION = 'latest';
-export const LATEST_VERSION: string = '4.0.20';
 
 export interface MongoBinaryCache {
   [version: string]: string;
@@ -154,7 +149,7 @@ export class MongoBinary {
             )),
       platform: resolveConfig(ResolveConfigVariables.PLATFORM) || os.platform(),
       arch: resolveConfig(ResolveConfigVariables.ARCH) || os.arch(),
-      version: resolveConfig(ResolveConfigVariables.VERSION) || LATEST_VERSION,
+      version: resolveConfig(ResolveConfigVariables.VERSION),
       systemBinary: resolveConfig(ResolveConfigVariables.SYSTEM_BINARY),
       checkMD5: envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK)),
     };
@@ -177,7 +172,12 @@ export class MongoBinary {
           .split('\n')[0]
           .split(' ')[2];
 
-        if (options.version !== LATEST_VERSION && options.version !== binaryVersion) {
+        if (isNullOrUndefined(options.version) || options.version.length <= 0) {
+          log('Using SystemBinary version as options.version');
+          options.version = binaryVersion;
+        }
+
+        if (options.version !== binaryVersion) {
           // we will log the version number of the system binary and the version requested so the user can see the difference
           log(
             'MongoMemoryServer: Possible version conflict\n' +
@@ -189,12 +189,17 @@ export class MongoBinary {
       }
     }
 
+    assertion(
+      typeof options.version === 'string',
+      new Error('"MongoBinary.options.version" is not an string!')
+    );
+
     if (!binaryPath) {
       binaryPath = this.getCachePath(options.version);
     }
 
     if (!binaryPath) {
-      binaryPath = await this.getDownloadPath(options);
+      binaryPath = await this.getDownloadPath(options as Required<MongoBinaryOpts>); // casting because "string" is asserted above (assertion is not reflected in type)
     }
 
     if (!binaryPath) {

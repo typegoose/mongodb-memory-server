@@ -1,7 +1,7 @@
 import * as tmp from 'tmp';
 import * as dbUtil from '../utils';
-import { LATEST_VERSION } from '../MongoBinary';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
+import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 tmp.setGracefulCleanup();
@@ -16,6 +16,16 @@ afterEach(() => {
 });
 
 describe('MongodbInstance', () => {
+  let version: string;
+  beforeAll(() => {
+    const tmpVersion = resolveConfig(ResolveConfigVariables.VERSION);
+    dbUtil.assertion(
+      typeof tmpVersion === 'string',
+      new Error('Expected "version" to be an string')
+    );
+    version = tmpVersion;
+  });
+
   it('should prepare command args', () => {
     const inst = new MongodbInstance({
       instance: {
@@ -116,7 +126,7 @@ describe('MongodbInstance', () => {
   it('should start instance on port 27333', async () => {
     const mongod = await MongodbInstance.run({
       instance: { port: 27333, dbPath: tmpDir.name },
-      binary: { version: LATEST_VERSION },
+      binary: { version },
     });
 
     expect(mongod.getPid()).toBeGreaterThan(0);
@@ -127,13 +137,13 @@ describe('MongodbInstance', () => {
   it('should throw error if port is busy', async () => {
     const mongod = await MongodbInstance.run({
       instance: { port: 27444, dbPath: tmpDir.name },
-      binary: { version: LATEST_VERSION },
+      binary: { version },
     });
 
     await expect(
       MongodbInstance.run({
         instance: { port: 27444, dbPath: tmpDir.name },
-        binary: { version: LATEST_VERSION },
+        binary: { version },
       })
     ).rejects.toEqual('Port 27444 already in use');
 
@@ -143,7 +153,7 @@ describe('MongodbInstance', () => {
   it('should wait until childprocess and killerprocess are killed', async () => {
     const mongod: MongodbInstance = await MongodbInstance.run({
       instance: { port: 27445, dbPath: tmpDir.name },
-      binary: { version: LATEST_VERSION },
+      binary: { version },
     });
     const pid: any = mongod.getPid();
     const killerPid: any = mongod.killerProcess?.pid;
