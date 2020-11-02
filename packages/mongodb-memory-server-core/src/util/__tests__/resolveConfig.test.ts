@@ -1,7 +1,7 @@
 import fs from 'fs';
 import * as tmp from 'tmp';
 import { promisify } from 'util';
-import resolveConfig, { findPackageJson } from '../resolveConfig';
+import resolveConfig, { findPackageJson, ResolveConfigVariables } from '../resolveConfig';
 
 tmp.setGracefulCleanup();
 const mkdirAsync = promisify(fs.mkdir);
@@ -62,21 +62,21 @@ describe('resolveConfig', () => {
     test('in project', () => {
       process.chdir(`${tmpObj.name}/project`);
       findPackageJson();
-      const got = resolveConfig('VERSION');
+      const got = resolveConfig(ResolveConfigVariables.VERSION);
       expect(got).toBe('3.0.0');
     });
 
     test('in subproject', () => {
       process.chdir(`${tmpObj.name}/project/subproject`);
       findPackageJson();
-      const got = resolveConfig('VERSION');
+      const got = resolveConfig(ResolveConfigVariables.VERSION);
       expect(got).toBe('4.0.0');
     });
 
     test('with explicit directory in reInitializePackageJson', () => {
       process.chdir(`${tmpObj.name}/project`);
       findPackageJson(`${tmpObj.name}/project/subproject`);
-      const got = resolveConfig('VERSION');
+      const got = resolveConfig(ResolveConfigVariables.VERSION);
       expect(got).toBe('4.0.0');
     });
   });

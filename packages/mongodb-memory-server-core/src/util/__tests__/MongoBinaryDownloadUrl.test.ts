@@ -1,5 +1,5 @@
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
-import { defaultValues, setDefaultValue } from '../resolveConfig';
+import { defaultValues, ResolveConfigVariables, setDefaultValue } from '../resolveConfig';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -164,14 +164,14 @@ describe('MongoBinaryDownloadUrl', () => {
 
     it('should allow overwrite with "ARCHIVE_NAME"', async () => {
       const archiveName = 'mongodb-linux-x86_64-4.0.0.tgz';
-      setDefaultValue('ARCHIVE_NAME', archiveName);
+      setDefaultValue(ResolveConfigVariables.ARCHIVE_NAME, archiveName);
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
         version: '3.6.3',
       });
       expect(await du.getDownloadUrl()).toBe(`https://fastdl.mongodb.org/linux/${archiveName}`);
-      defaultValues.delete('ARCHIVE_NAME');
+      defaultValues.delete(ResolveConfigVariables.ARCHIVE_NAME);
     });
 
     it('should throw an error if platform is unkown (getArchiveName)', async () => {

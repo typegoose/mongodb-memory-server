@@ -8,12 +8,15 @@ import {
   envToBool,
   reInitializePackageJson,
   resolveConfig,
+  ResolveConfigVariables,
   setDefaultValue,
 } from './resolveConfig';
 
 reInitializePackageJson(process.env.INIT_CWD);
 
-const envDisablePostinstall: string | undefined = resolveConfig('DISABLE_POSTINSTALL');
+const envDisablePostinstall: string | undefined = resolveConfig(
+  ResolveConfigVariables.DISABLE_POSTINSTALL
+);
 
 if (!!envToBool(envDisablePostinstall)) {
   console.log(
@@ -22,7 +25,7 @@ if (!!envToBool(envDisablePostinstall)) {
   process.exit(0);
 }
 
-const envSystemBinary: string | undefined = resolveConfig('SYSTEM_BINARY');
+const envSystemBinary: string | undefined = resolveConfig(ResolveConfigVariables.SYSTEM_BINARY);
 
 // value is ensured to be either an string (with more than 0 length) or being undefined
 if (typeof envSystemBinary === 'string') {
@@ -38,12 +41,15 @@ export async function postInstallEnsureBinary(
 
   if (!local) {
     // set "DOWNLOAD_DIR" to ~/.cache
-    setDefaultValue('DOWNLOAD_DIR', resolve(homedir(), '.cache', 'mongodb-binaries'));
+    setDefaultValue(
+      ResolveConfigVariables.DOWNLOAD_DIR,
+      resolve(homedir(), '.cache', 'mongodb-binaries')
+    );
   }
 
   if (version) {
     // if "version" is defined, apply it
-    setDefaultValue('VERSION', version);
+    setDefaultValue(ResolveConfigVariables.VERSION, version);
   }
 
   const binPath = await MongoBinary.getPath().catch((err) => {

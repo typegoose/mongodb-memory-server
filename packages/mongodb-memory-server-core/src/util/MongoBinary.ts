@@ -7,7 +7,7 @@ import findCacheDir from 'find-cache-dir';
 import { execSync } from 'child_process';
 import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
-import resolveConfig, { envToBool } from './resolveConfig';
+import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import { assertion } from './utils';
 
@@ -142,7 +142,7 @@ export class MongoBinary {
     // "||" is still used here, because it should default if the value is false-y (like an empty string)
     const defaultOptions = {
       downloadDir:
-        resolveConfig('DOWNLOAD_DIR') ||
+        resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) ||
         (fs.existsSync(legacyDLDir)
           ? legacyDLDir
           : path.resolve(
@@ -152,11 +152,11 @@ export class MongoBinary {
               }) || '',
               'mongodb-binaries'
             )),
-      platform: resolveConfig('PLATFORM') || os.platform(),
-      arch: resolveConfig('ARCH') || os.arch(),
-      version: resolveConfig('VERSION') || LATEST_VERSION,
-      systemBinary: resolveConfig('SYSTEM_BINARY'),
-      checkMD5: envToBool(resolveConfig('MD5_CHECK')),
+      platform: resolveConfig(ResolveConfigVariables.PLATFORM) || os.platform(),
+      arch: resolveConfig(ResolveConfigVariables.ARCH) || os.arch(),
+      version: resolveConfig(ResolveConfigVariables.VERSION) || LATEST_VERSION,
+      systemBinary: resolveConfig(ResolveConfigVariables.SYSTEM_BINARY),
+      checkMD5: envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK)),
     };
 
     /** Provided Options combined with the Default Options */

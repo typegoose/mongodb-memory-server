@@ -11,7 +11,7 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { LATEST_VERSION } from './MongoBinary';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { promisify } from 'util';
-import resolveConfig, { envToBool } from './resolveConfig';
+import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 
 const log = debug('MongoMS:MongoBinaryDownload');
@@ -58,7 +58,7 @@ export class MongoBinaryDownload {
     this.arch = arch ?? os.arch();
     this.version = version ?? LATEST_VERSION;
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
-    this.checkMD5 = checkMD5 ?? envToBool(resolveConfig('MD5_CHECK'));
+    this.checkMD5 = checkMD5 ?? envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK));
     this.dlProgress = {
       current: 0,
       length: 0,

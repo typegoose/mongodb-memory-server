@@ -1,6 +1,6 @@
 import getOS, { AnyOS, LinuxOS } from './getos';
 import { execSync } from 'child_process';
-import resolveConfig from './resolveConfig';
+import resolveConfig, { ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
@@ -38,13 +38,14 @@ export class MongoBinaryDownloadUrl {
     const archive = await this.getArchiveName();
     log(`Using "${archive}" as the Archive String`);
 
-    const downloadUrl = resolveConfig('DOWNLOAD_URL');
+    const downloadUrl = resolveConfig(ResolveConfigVariables.DOWNLOAD_URL);
     if (downloadUrl) {
       log(`Using "${downloadUrl}" as the Download-URL`);
       return downloadUrl;
     }
 
-    const mirror = resolveConfig('DOWNLOAD_MIRROR') ?? 'https://fastdl.mongodb.org';
+    const mirror =
+      resolveConfig(ResolveConfigVariables.DOWNLOAD_MIRROR) ?? 'https://fastdl.mongodb.org';
     log(`Using "${mirror}" as the mirror`);
 
     return `${mirror}/${this.platform}/${archive}`;
@@ -55,7 +56,7 @@ export class MongoBinaryDownloadUrl {
    * Version independent
    */
   async getArchiveName(): Promise<string> {
-    const archive_name = resolveConfig('ARCHIVE_NAME');
+    const archive_name = resolveConfig(ResolveConfigVariables.ARCHIVE_NAME);
     if (!isNullOrUndefined(archive_name) && archive_name.length > 0) {
       return archive_name;
     }
