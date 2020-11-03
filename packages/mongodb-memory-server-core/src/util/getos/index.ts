@@ -1,4 +1,4 @@
-import { readFile, readdir } from 'fs';
+import { promises } from 'fs';
 import { platform } from 'os';
 
 import { exec } from 'child_process';
@@ -138,7 +138,7 @@ async function tryLSBRelease(): Promise<LinuxOS | undefined> {
  */
 async function tryOSRelease(): Promise<LinuxOS | undefined> {
   try {
-    const os = await promisify(readFile)('/etc/os-release');
+    const os = await promises.readFile('/etc/os-release');
 
     return parseOS(os.toString());
   } catch (err) {
@@ -163,7 +163,7 @@ async function tryOSRelease(): Promise<LinuxOS | undefined> {
  */
 async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
   try {
-    const file = (await promisify(readdir)('/etc')).filter(
+    const file = (await promises.readdir('/etc')).filter(
       (v) =>
         // match if file ends with "-release"
         v.match(/.*-release$/im) &&
@@ -173,7 +173,7 @@ async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
     if (isNullOrUndefined(file) || file.length <= 0) {
       throw new Error('No release file found!');
     }
-    const os = await promisify(readFile)(join('/etc/', file));
+    const os = await promises.readFile(join('/etc/', file));
 
     return parseOS(os.toString());
   } catch (err) {
