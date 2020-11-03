@@ -16,8 +16,7 @@ describe('MongoBinaryDownload', () => {
     expect(new MongoBinaryDownload({ checkMD5: false }).checkMD5).toBe(false);
   });
 
-  it(`if checkMD5 input parameter is missing, then it checks
-MONGOMS_MD5_CHECK environment variable`, () => {
+  it('if checkMD5 input parameter is missing, then it checks "MONGOMS_MD5_CHECK" environment variable', () => {
     expect(new MongoBinaryDownload({}).checkMD5).toBe(false);
     process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.MD5_CHECK] = '1';
     expect(new MongoBinaryDownload({}).checkMD5).toBe(true);
@@ -98,8 +97,7 @@ MONGOMS_MD5_CHECK environment variable`, () => {
     expect(callArg1.rejectUnauthorized).toBe(true);
   });
 
-  it(`makeMD5check returns true if md5 of downloaded mongoDBArchive is
-the same as in the reference result`, () => {
+  it('makeMD5check returns true if md5 of downloaded mongoDBArchive is the same as in the reference result', () => {
     const someMd5 = 'md5';
     (fs.readFileSync as jest.Mock).mockImplementationOnce(() => `${someMd5} fileName`);
     (md5file.sync as jest.Mock).mockImplementationOnce(() => someMd5);
@@ -118,8 +116,7 @@ the same as in the reference result`, () => {
     });
   });
 
-  it(`makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT
-  the same as in the reference result`, () => {
+  it('makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result', () => {
     (fs.readFileSync as jest.Mock).mockImplementationOnce(() => 'someMd5 fileName');
     (md5file.sync as jest.Mock).mockImplementationOnce(() => 'anotherMd5');
     const du = new MongoBinaryDownload({});
