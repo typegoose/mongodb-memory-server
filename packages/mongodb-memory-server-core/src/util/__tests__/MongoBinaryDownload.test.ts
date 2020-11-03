@@ -105,23 +105,24 @@ describe('MongoBinaryDownload', () => {
     expect(callArg1.rejectUnauthorized).toEqual(true);
   });
 
-  it('makeMD5check returns true if md5 of downloaded mongoDBArchive is the same as in the reference result', () => {
+  it('makeMD5check returns true if md5 of downloaded mongoDBArchive is the same as in the reference result', async () => {
     const someMd5 = 'md5';
-    (fs.readFileSync as jest.Mock).mockImplementationOnce(() => `${someMd5} fileName`);
-    (md5file.sync as jest.Mock).mockImplementationOnce(() => someMd5);
     const mongoDBArchivePath = '/some/path';
     const fileWithReferenceMd5 = '/another/path';
+
+    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => `${someMd5} fileName`);
+    jest.spyOn(md5file, 'sync').mockImplementationOnce(() => someMd5);
+
     const du = new MongoBinaryDownload({});
-    // $FlowFixMe
-    du.download = jest.fn(() => Promise.resolve(fileWithReferenceMd5));
+    jest.spyOn(du, 'download').mockResolvedValue(fileWithReferenceMd5);
     const urlToMongoDBArchivePath = 'some-url';
     du.checkMD5 = true;
-    return du.makeMD5check(urlToMongoDBArchivePath, mongoDBArchivePath).then((res) => {
-      expect(res).toBe(true);
-      expect(du.download).toBeCalledWith(urlToMongoDBArchivePath);
-      expect(fs.readFileSync).toBeCalledWith(fileWithReferenceMd5);
-      expect(md5file.sync).toBeCalledWith(mongoDBArchivePath);
-    });
+    const res = await du.makeMD5check(urlToMongoDBArchivePath, mongoDBArchivePath);
+
+    expect(res).toBe(true);
+    expect(du.download).toBeCalledWith(urlToMongoDBArchivePath);
+    expect(fs.readFileSync).toBeCalledWith(fileWithReferenceMd5);
+    expect(md5file.sync).toBeCalledWith(mongoDBArchivePath);
   });
 
   it('makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result', () => {
