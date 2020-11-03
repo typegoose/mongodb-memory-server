@@ -1,11 +1,10 @@
-import fs from 'fs';
+import { existsSync, promises } from 'fs';
 import os from 'os';
 import path from 'path';
 import LockFile from 'lockfile';
 import mkdirp from 'mkdirp';
 import findCacheDir from 'find-cache-dir';
 import { execSync } from 'child_process';
-import { promisify } from 'util';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
@@ -37,7 +36,7 @@ export class MongoBinary {
     let binaryPath = '';
 
     try {
-      await promisify(fs.access)(systemBinary);
+      await promises.access(systemBinary);
 
       log(`MongoBinary: found system binary path at "${systemBinary}"`);
       binaryPath = systemBinary;
@@ -138,7 +137,7 @@ export class MongoBinary {
     const defaultOptions = {
       downloadDir:
         resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) ||
-        (fs.existsSync(legacyDLDir)
+        (existsSync(legacyDLDir)
           ? legacyDLDir
           : path.resolve(
               findCacheDir({

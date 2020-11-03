@@ -1,5 +1,5 @@
 import * as tmp from 'tmp';
-import fs from 'fs';
+import { promises } from 'fs';
 import os from 'os';
 import MongoBinary from '../MongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
@@ -34,12 +34,12 @@ describe('MongoBinary', () => {
 
   describe('getPath', () => {
     it('should get system binary from the environment', async () => {
-      jest.spyOn(fs, 'access');
+      jest.spyOn(promises, 'access');
       process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.SYSTEM_BINARY] =
         '/usr/local/bin/mongod';
       await MongoBinary.getPath();
 
-      expect(fs.access).toHaveBeenCalledWith('/usr/local/bin/mongod', expect.any(Function));
+      expect(promises.access).toHaveBeenCalledWith('/usr/local/bin/mongod');
 
       delete process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.SYSTEM_BINARY];
     });
@@ -79,10 +79,10 @@ describe('MongoBinary', () => {
 
   describe('getSystemPath', () => {
     it('should use system binary if option is passed.', async () => {
-      jest.spyOn(fs, 'access');
+      jest.spyOn(promises, 'access');
       await MongoBinary.getSystemPath('/usr/bin/mongod'); // ignoring return, because this depends on the host system
 
-      expect(fs.access).toHaveBeenCalledWith('/usr/bin/mongod', expect.any(Function));
+      expect(promises.access).toHaveBeenCalledWith('/usr/bin/mongod');
     });
   });
 });
