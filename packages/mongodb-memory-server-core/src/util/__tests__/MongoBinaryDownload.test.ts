@@ -78,14 +78,15 @@ describe('MongoBinaryDownload', () => {
     process.env['npm_config_strict_ssl'] = '';
 
     const du = new MongoBinaryDownload({});
-    du.httpDownload = jest.fn();
-    du.locationExists = jest.fn().mockReturnValue(false);
+    jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
+    jest.spyOn(du, 'locationExists').mockResolvedValue(false);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
-    const callArg1 = (du.httpDownload as jest.Mock).mock.calls[0][0];
-    expect(callArg1.rejectUnauthorized).toBeDefined();
-    expect(callArg1.rejectUnauthorized).toBe(false);
+    const callArg1 = ((du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
+      MongoBinaryDownload['httpDownload']
+    >)[0];
+    expect(callArg1.rejectUnauthorized).toEqual(false);
   });
 
   it('should reject unauthorized when npm strict-ssl config is true', async () => {
