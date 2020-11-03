@@ -160,20 +160,11 @@ describe('MongodbInstance', () => {
     expect(pid).toBeGreaterThan(0);
     expect(killerPid).toBeGreaterThan(0);
 
-    function isPidRunning(p: number): boolean {
-      try {
-        process.kill(p, 0);
-        return true;
-      } catch (e) {
-        return e.code === 'EPERM';
-      }
-    }
-
-    expect(isPidRunning(pid)).toBeTruthy();
-    expect(isPidRunning(killerPid)).toBeTruthy();
+    expect(dbUtil.isAlive(pid)).toBeTruthy();
+    expect(dbUtil.isAlive(killerPid)).toBeTruthy();
     await mongod.kill();
-    expect(isPidRunning(pid)).toBeFalsy();
-    expect(isPidRunning(killerPid)).toBeFalsy();
+    expect(dbUtil.isAlive(pid)).toBeFalsy();
+    expect(dbUtil.isAlive(killerPid)).toBeFalsy();
   });
 
   it('should work with mongodb 4.0.3', async () => {
