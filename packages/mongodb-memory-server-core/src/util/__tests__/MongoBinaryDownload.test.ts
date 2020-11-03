@@ -125,13 +125,14 @@ describe('MongoBinaryDownload', () => {
     expect(md5file.sync).toBeCalledWith(mongoDBArchivePath);
   });
 
-  it('makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result', () => {
-    (fs.readFileSync as jest.Mock).mockImplementationOnce(() => 'someMd5 fileName');
-    (md5file.sync as jest.Mock).mockImplementationOnce(() => 'anotherMd5');
+  it('makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result', async () => {
+    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => `someMD5 fileName`);
+    jest.spyOn(md5file, 'sync').mockImplementationOnce(() => 'anotherMD5');
+
     const du = new MongoBinaryDownload({});
     du.checkMD5 = true;
-    du.download = jest.fn(() => Promise.resolve(''));
-    expect(du.makeMD5check('', '')).rejects.toMatchInlineSnapshot(
+    jest.spyOn(du, 'download').mockResolvedValue('');
+    await expect(du.makeMD5check('', '')).rejects.toMatchInlineSnapshot(
       `[Error: MongoBinaryDownload: md5 check failed]`
     );
   });
