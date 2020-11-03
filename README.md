@@ -268,6 +268,8 @@ const replSet = new MongoMemoryReplSet({
 
 ### Options which can be set via ENVIRONMENT variables
 
+*`=any` means if value is defined at all*
+
 ```sh
 MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
 MONGOMS_PLATFORM=linux
@@ -282,11 +284,11 @@ MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
 # Passed constructor parameter `binary.checkMD5` has higher priority.
 
 # GetOS specific ones (for linux only)
-MONGOMS_USE_LINUX_LSB_RELEASE # Only try "lsb_release -a"
-MONGOMS_USE_LINUX_OS_RELEASE # Only try to read "/etc/os-release"
-MONGOMS_USE_LINUX_ANYFILE_RELEASE # Only try to read the first file found "/etc/*-release"
+MONGOMS_USE_LINUX_LSB_RELEASE=any # Only try "lsb_release -a"
+MONGOMS_USE_LINUX_OS_RELEASE=any # Only try to read "/etc/os-release"
+MONGOMS_USE_LINUX_ANYFILE_RELEASE=any # Only try to read the first file found "/etc/*-release"
 MONGOMS_ARCHIVE_NAME="mongodb-linux-x86_64-4.0.0.tgz" # Specify what file / archive to download
-SKIP_OS_RELEASE # ignore error thrown in "tryOSRelease"
+MONGOMS_SKIP_OS_RELEASE=any # ignore error thrown in "tryOSRelease"
 ```
 
 ### Options which can be set via package.json's `config` section
