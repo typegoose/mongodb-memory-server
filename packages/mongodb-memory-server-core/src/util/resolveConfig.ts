@@ -22,7 +22,7 @@ export enum ResolveConfigVariables {
   ARCHIVE_NAME = 'ARCHIVE_NAME',
 }
 
-const ENV_CONFIG_PREFIX = 'MONGOMS_';
+export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
   [ResolveConfigVariables.VERSION, '4.0.20'],
