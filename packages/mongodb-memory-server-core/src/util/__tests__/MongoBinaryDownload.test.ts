@@ -1,10 +1,9 @@
-import fs from 'fs';
+import { promises } from 'fs';
 import md5file from 'md5-file';
 import MongoBinaryDownload from '../MongoBinaryDownload';
 import { ENV_CONFIG_PREFIX, ResolveConfigVariables } from '../resolveConfig';
 import { assertion, isNullOrUndefined } from '../utils';
 
-jest.mock('fs');
 jest.mock('md5-file');
 
 describe('MongoBinaryDownload', () => {
@@ -110,7 +109,7 @@ describe('MongoBinaryDownload', () => {
     const mongoDBArchivePath = '/some/path';
     const fileWithReferenceMd5 = '/another/path';
 
-    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => `${someMd5} fileName`);
+    jest.spyOn(promises, 'readFile').mockResolvedValueOnce(`${someMd5} fileName`);
     jest.spyOn(md5file, 'sync').mockImplementationOnce(() => someMd5);
 
     const du = new MongoBinaryDownload({});
@@ -121,12 +120,12 @@ describe('MongoBinaryDownload', () => {
 
     expect(res).toBe(true);
     expect(du.download).toBeCalledWith(urlToMongoDBArchivePath);
-    expect(fs.readFileSync).toBeCalledWith(fileWithReferenceMd5);
+    expect(promises.readFile).toBeCalledWith(fileWithReferenceMd5);
     expect(md5file.sync).toBeCalledWith(mongoDBArchivePath);
   });
 
   it('makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result', async () => {
-    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => `someMD5 fileName`);
+    jest.spyOn(promises, 'readFile').mockResolvedValueOnce(`someMD5 fileName`);
     jest.spyOn(md5file, 'sync').mockImplementationOnce(() => 'anotherMD5');
 
     const du = new MongoBinaryDownload({});
@@ -138,7 +137,7 @@ describe('MongoBinaryDownload', () => {
   });
 
   it('false value of checkMD5 attribute disables makeMD5check validation', async () => {
-    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => `someMD5 fileName`);
+    jest.spyOn(promises, 'readFile').mockResolvedValueOnce(`someMD5 fileName`);
     jest.spyOn(md5file, 'sync').mockImplementationOnce(() => 'anotherMD5');
 
     const du = new MongoBinaryDownload({});

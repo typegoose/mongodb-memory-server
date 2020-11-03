@@ -1,7 +1,7 @@
 import os from 'os';
 import url from 'url';
 import path from 'path';
-import fs from 'fs';
+import { promises, existsSync, createWriteStream, createReadStream } from 'fs';
 import md5File from 'md5-file';
 import https from 'https';
 import { createUnzip } from 'zlib';
@@ -9,7 +9,6 @@ import tar from 'tar-stream';
 import yauzl from 'yauzl';
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import { promisify } from 'util';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import { assertion } from './utils';
@@ -83,7 +82,7 @@ export class MongoBinaryDownload {
 
     const mongoDBArchive = await this.startDownload();
     await this.extract(mongoDBArchive);
-    fs.unlinkSync(mongoDBArchive);
+    await promises.unlink(mongoDBArchive);
 
     if (await this.locationExists(mongodPath)) {
       return mongodPath;
@@ -103,8 +102,8 @@ export class MongoBinaryDownload {
       version: this.version,
     });
 
-    if (!fs.existsSync(this.downloadDir)) {
-      fs.mkdirSync(this.downloadDir);
+    if (!existsSync(this.downloadDir)) {
+      await promises.mkdir(this.downloadDir);
     }
 
     const downloadUrl = await mbdUrl.getDownloadUrl();
@@ -134,7 +133,7 @@ export class MongoBinaryDownload {
     }
     log('Checking MD5 of downloaded binary...');
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
-    const signatureContent = fs.readFileSync(mongoDBArchiveMd5).toString('utf-8');
+    const signatureContent = (await promises.readFile(mongoDBArchiveMd5)).toString('utf-8');
     const m = signatureContent.match(/(.*?)\s/);
     const md5Remote = m ? m[1] : null;
     const md5Local = md5File.sync(mongoDBArchive);
@@ -211,8 +210,8 @@ export class MongoBinaryDownload {
     const extractDir = path.resolve(this.downloadDir, this.version);
     log(`extract(): ${extractDir}`);
 
-    if (!fs.existsSync(extractDir)) {
-      fs.mkdirSync(extractDir);
+    if (!existsSync(extractDir)) {
+      promises.mkdir(extractDir);
     }
 
     let filter: (file: string) => boolean;
@@ -261,7 +260,7 @@ export class MongoBinaryDownload {
     extract.on('entry', (header, stream, next) => {
       if (filter(header.name)) {
         stream.pipe(
-          fs.createWriteStream(path.resolve(extractDir, path.basename(header.name)), {
+          createWriteStream(path.resolve(extractDir, path.basename(header.name)), {
             mode: 0o775,
           })
         );
@@ -271,7 +270,7 @@ export class MongoBinaryDownload {
     });
 
     return new Promise((resolve, reject) => {
-      fs.createReadStream(mongoDBArchive)
+      createReadStream(mongoDBArchive)
         .on('error', (err) => {
           reject('Unable to open tarball ' + mongoDBArchive + ': ' + err);
         })
@@ -319,7 +318,7 @@ export class MongoBinaryDownload {
             }
             r.on('end', () => zipfile.readEntry());
             r.pipe(
-              fs.createWriteStream(path.resolve(extractDir, path.basename(entry.fileName)), {
+              createWriteStream(path.resolve(extractDir, path.basename(entry.fileName)), {
                 mode: 0o775,
               })
             );
@@ -341,7 +340,7 @@ export class MongoBinaryDownload {
     tempDownloadLocation: string
   ): Promise<string> {
     return new Promise((resolve, reject) => {
-      const fileStream = fs.createWriteStream(tempDownloadLocation);
+      const fileStream = createWriteStream(tempDownloadLocation);
 
       log(`trying to download https://${httpOptions.hostname}${httpOptions.path}`);
       https
@@ -392,7 +391,7 @@ export class MongoBinaryDownload {
             }
 
             fileStream.close();
-            await promisify(fs.rename)(tempDownloadLocation, downloadLocation);
+            await promises.rename(tempDownloadLocation, downloadLocation);
             log(`moved ${tempDownloadLocation} to ${downloadLocation}`);
 
             resolve(downloadLocation);
@@ -444,7 +443,7 @@ export class MongoBinaryDownload {
    */
   async locationExists(location: string): Promise<boolean> {
     try {
-      await promisify(fs.lstat)(location);
+      await promises.lstat(location);
       return true;
     } catch (e) {
       if (e.code !== 'ENOENT') {
