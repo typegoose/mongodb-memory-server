@@ -3,7 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import MongoBinary from '../MongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
-import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
+import resolveConfig, { ENV_CONFIG_PREFIX, ResolveConfigVariables } from '../resolveConfig';
 import { assertion } from '../utils';
 
 tmp.setGracefulCleanup();
@@ -35,13 +35,14 @@ describe('MongoBinary', () => {
   describe('getPath', () => {
     it('should get system binary from the environment', async () => {
       const accessSpy = jest.spyOn(fs, 'access');
-      process.env.MONGOMS_SYSTEM_BINARY = '/usr/local/bin/mongod';
+      process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.SYSTEM_BINARY] =
+        '/usr/local/bin/mongod';
       await MongoBinary.getPath();
 
       expect(accessSpy).toHaveBeenCalledWith('/usr/local/bin/mongod', expect.any(Function));
 
       accessSpy.mockClear();
-      delete process.env.MONGOMS_SYSTEM_BINARY;
+      delete process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.SYSTEM_BINARY];
     });
   });
 
