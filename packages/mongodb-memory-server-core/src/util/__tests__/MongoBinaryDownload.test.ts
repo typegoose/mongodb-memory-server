@@ -44,8 +44,8 @@ describe('MongoBinaryDownload', () => {
 
   it('should skip download if binary tar exists', async () => {
     const du = new MongoBinaryDownload({});
-    du.httpDownload = jest.fn();
-    du.locationExists = jest.fn().mockReturnValue(true);
+    jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
+    jest.spyOn(du, 'locationExists').mockResolvedValue(true);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
 
