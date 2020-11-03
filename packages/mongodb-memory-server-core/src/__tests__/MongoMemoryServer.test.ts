@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { promises } from 'fs';
 import { MongoClient } from 'mongodb';
 import * as tmp from 'tmp';
@@ -264,7 +263,7 @@ describe('MongoMemoryServer', () => {
 
     it('should throw an error if state is not "new" or "stopped"', async () => {
       const mongoServer = new MongoMemoryServer();
-      // @ts-expect-error
+      // @ts-expect-error because "_state" is protected
       mongoServer._state = MongoMemoryServerStates.starting;
       try {
         await mongoServer.start();
@@ -277,8 +276,7 @@ describe('MongoMemoryServer', () => {
     it('should throw error on start if there is already a running instance', async () => {
       const mongoServer2 = new MongoMemoryServer();
       // this case can normally happen if "start" is called again
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
+      // @ts-expect-error because "_instanceInfo" is protected
       mongoServer2._instanceInfo = { instance: { childProcess: {} } } as any; // artificially set this to {} to not be undefined anymore
       await expect(mongoServer2.start()).rejects.toThrow(
         'Cannot start because "instance.childProcess" is already defined!'
@@ -310,7 +308,7 @@ describe('MongoMemoryServer', () => {
 
     it('should throw an error if "instanceInfo" is undefined but "_state" is "running"', async () => {
       const mongoServer = new MongoMemoryServer();
-      // @ts-expect-error
+      // @ts-expect-error because "_state" is protected
       mongoServer._state = MongoMemoryServerStates.running;
 
       try {
@@ -325,8 +323,7 @@ describe('MongoMemoryServer', () => {
 
     it('should throw an error if the given "_state" has no case', async () => {
       const mongoServer = new MongoMemoryServer();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
+      // @ts-expect-error because "_state" is protected
       mongoServer._state = 'not Existing';
 
       try {
@@ -339,7 +336,7 @@ describe('MongoMemoryServer', () => {
 
     it('should throw an error if state was "starting" and emitted an event but not "running"', async () => {
       const mongoServer = new MongoMemoryServer();
-      // @ts-expect-error
+      // @ts-expect-error because "_state" is protected
       mongoServer._state = MongoMemoryServerStates.starting;
       const ensureInstancePromise = mongoServer.ensureInstance();
 
@@ -436,7 +433,7 @@ describe('MongoMemoryServer', () => {
     // "beforeAll" dosnt work here, thanks to the top-level "afterAll" hook
     beforeEach(() => {
       jest.spyOn(promises, 'stat');
-      // @ts-expect-error
+      // @ts-expect-error because "default" dosnt exist in the definitions
       jest.spyOn(semver.default, 'lt'); // it needs to be ".default" otherwise "lt" is only an getter
     });
 
@@ -495,7 +492,7 @@ describe('MongoMemoryServer', () => {
   it('"state" should return correct state', () => {
     const mongoServer = new MongoMemoryServer();
     expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
-    // @ts-expect-error
+    // @ts-expect-error because "stateChange" is protected
     mongoServer.stateChange(MongoMemoryServerStates.running);
     expect(mongoServer.state).toEqual(MongoMemoryServerStates.running);
   });
@@ -504,7 +501,7 @@ describe('MongoMemoryServer', () => {
     const mongoServer = new MongoMemoryServer();
 
     try {
-      // @ts-expect-error
+      // @ts-expect-error because "createAuth" is protected
       await mongoServer.createAuth();
       fail('Expected "createAuth" to fail');
     } catch (err) {
