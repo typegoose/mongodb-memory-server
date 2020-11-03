@@ -1,11 +1,8 @@
-import fs from 'fs';
+import { promises } from 'fs';
 import * as tmp from 'tmp';
-import { promisify } from 'util';
 import resolveConfig, { findPackageJson, ResolveConfigVariables } from '../resolveConfig';
 
 tmp.setGracefulCleanup();
-const mkdirAsync = promisify(fs.mkdir);
-const writeFileAsync = promisify(fs.writeFile);
 
 const outerPackageJson = {
   config: {
@@ -38,16 +35,16 @@ describe('resolveConfig', () => {
       tmpObj = tmp.dirSync({ unsafeCleanup: true });
       const tmpName = tmpObj.name;
 
-      await mkdirAsync(`${tmpName}/project`);
-      await mkdirAsync(`${tmpName}/project/subproject`);
+      await promises.mkdir(`${tmpName}/project`);
+      await promises.mkdir(`${tmpName}/project/subproject`);
 
       // prettier-ignore
       await Promise.all([
-        writeFileAsync(
+        promises.writeFile(
           `${tmpName}/project/package.json`,
           JSON.stringify(outerPackageJson)
         ),
-        writeFileAsync(
+        promises.writeFile(
           `${tmpName}/project/subproject/package.json`,
           JSON.stringify(innerPackageJson)
         ),
