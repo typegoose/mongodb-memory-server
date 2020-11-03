@@ -7,7 +7,7 @@ import resolveConfig, { ENV_CONFIG_PREFIX, ResolveConfigVariables } from '../res
 import { assertion } from '../utils';
 
 tmp.setGracefulCleanup();
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 5; // 5 seconds
 
 const mockGetMongodPath = jest.fn().mockResolvedValue('/temp/path');
 
@@ -34,14 +34,13 @@ describe('MongoBinary', () => {
 
   describe('getPath', () => {
     it('should get system binary from the environment', async () => {
-      const accessSpy = jest.spyOn(fs, 'access');
+      jest.spyOn(fs, 'access');
       process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.SYSTEM_BINARY] =
         '/usr/local/bin/mongod';
       await MongoBinary.getPath();
 
-      expect(accessSpy).toHaveBeenCalledWith('/usr/local/bin/mongod', expect.any(Function));
+      expect(fs.access).toHaveBeenCalledWith('/usr/local/bin/mongod', expect.any(Function));
 
-      accessSpy.mockClear();
       delete process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.SYSTEM_BINARY];
     });
   });
@@ -80,12 +79,10 @@ describe('MongoBinary', () => {
 
   describe('getSystemPath', () => {
     it('should use system binary if option is passed.', async () => {
-      const accessSpy = jest.spyOn(fs, 'access');
+      jest.spyOn(fs, 'access');
       await MongoBinary.getSystemPath('/usr/bin/mongod'); // ignoring return, because this depends on the host system
 
-      expect(accessSpy).toHaveBeenCalledWith('/usr/bin/mongod', expect.any(Function));
-
-      accessSpy.mockClear();
+      expect(fs.access).toHaveBeenCalledWith('/usr/bin/mongod', expect.any(Function));
     });
   });
 });
