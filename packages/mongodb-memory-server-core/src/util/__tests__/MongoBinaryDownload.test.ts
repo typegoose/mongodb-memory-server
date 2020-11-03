@@ -138,12 +138,12 @@ describe('MongoBinaryDownload', () => {
   });
 
   it('false value of checkMD5 attribute disables makeMD5check validation', async () => {
-    expect.assertions(1);
-    (fs.readFileSync as jest.Mock).mockImplementationOnce(() => 'someMd5 fileName');
-    (md5file.sync as jest.Mock).mockImplementationOnce(() => 'anotherMd5');
+    jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => `someMD5 fileName`);
+    jest.spyOn(md5file, 'sync').mockImplementationOnce(() => 'anotherMD5');
+
     const du = new MongoBinaryDownload({});
     du.checkMD5 = false;
     const result = await du.makeMD5check('', '');
-    expect(result).toBe(undefined);
+    expect(result).toEqual(undefined);
   });
 });
