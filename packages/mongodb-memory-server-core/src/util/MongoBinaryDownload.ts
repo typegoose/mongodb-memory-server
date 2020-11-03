@@ -120,6 +120,10 @@ export class MongoBinaryDownload {
    * Download MD5 file and check it against the MongoDB Archive
    * @param urlForReferenceMD5 URL to download the MD5
    * @param mongoDBArchive The MongoDB Archive file location
+   *
+   * @returns {undefined} if "checkMD5" is falsey
+   * @returns {true} if the md5 check was successful
+   * @throws if the md5 check failed
    */
   async makeMD5check(
     urlForReferenceMD5: string,
