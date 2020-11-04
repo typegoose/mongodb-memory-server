@@ -2,7 +2,7 @@ import { promises } from 'fs';
 import md5file from 'md5-file';
 import MongoBinaryDownload from '../MongoBinaryDownload';
 import { ENV_CONFIG_PREFIX, ResolveConfigVariables } from '../resolveConfig';
-import { assertion, isNullOrUndefined } from '../utils';
+import * as utils from '../utils';
 
 jest.mock('md5-file');
 
@@ -32,7 +32,7 @@ describe('MongoBinaryDownload', () => {
 
     const du = new MongoBinaryDownload({});
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
-    jest.spyOn(du, 'locationExists').mockResolvedValue(false);
+    jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
@@ -45,7 +45,7 @@ describe('MongoBinaryDownload', () => {
   it('should skip download if binary tar exists', async () => {
     const du = new MongoBinaryDownload({});
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
-    jest.spyOn(du, 'locationExists').mockResolvedValue(true);
+    jest.spyOn(utils, 'pathExists').mockResolvedValue(true);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
 
@@ -57,15 +57,15 @@ describe('MongoBinaryDownload', () => {
 
     const du = new MongoBinaryDownload({});
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
-    jest.spyOn(du, 'locationExists').mockResolvedValue(false);
+    jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = ((du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
       MongoBinaryDownload['httpDownload']
     >)[0];
-    assertion(
-      !isNullOrUndefined(callArg1.agent),
+    utils.assertion(
+      !utils.isNullOrUndefined(callArg1.agent),
       new Error('Expected "callArg1.agent" to be defined')
     );
     // @ts-expect-error because "proxy" if soft-private
@@ -78,7 +78,7 @@ describe('MongoBinaryDownload', () => {
 
     const du = new MongoBinaryDownload({});
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
-    jest.spyOn(du, 'locationExists').mockResolvedValue(false);
+    jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
@@ -94,7 +94,7 @@ describe('MongoBinaryDownload', () => {
 
     const du = new MongoBinaryDownload({});
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
-    jest.spyOn(du, 'locationExists').mockResolvedValue(false);
+    jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);

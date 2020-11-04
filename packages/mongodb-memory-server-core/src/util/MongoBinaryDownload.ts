@@ -11,7 +11,7 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
-import { assertion } from './utils';
+import { assertion, pathExists } from './utils';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -76,7 +76,7 @@ export class MongoBinaryDownload {
     const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
     const mongodPath = path.resolve(this.downloadDir, this.version, binaryName);
 
-    if (await this.locationExists(mongodPath)) {
+    if (await pathExists(mongodPath)) {
       return mongodPath;
     }
 
@@ -84,7 +84,7 @@ export class MongoBinaryDownload {
     await this.extract(mongoDBArchive);
     await promises.unlink(mongoDBArchive);
 
-    if (await this.locationExists(mongodPath)) {
+    if (await pathExists(mongodPath)) {
       return mongodPath;
     }
 
@@ -185,7 +185,7 @@ export class MongoBinaryDownload {
     const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
     log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}: "${downloadUrl}"`);
 
-    if (await this.locationExists(downloadLocation)) {
+    if (await pathExists(downloadLocation)) {
       log('Already downloaded archive found, skipping download');
       return downloadLocation;
     }
@@ -235,7 +235,7 @@ export class MongoBinaryDownload {
       );
     }
 
-    if (!(await this.locationExists(path.resolve(this.downloadDir, this.version, binaryName)))) {
+    if (!(await pathExists(path.resolve(this.downloadDir, this.version, binaryName)))) {
       throw new Error(
         `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${
           this._downloadingUrl ?? 'unkown'
@@ -433,23 +433,6 @@ export class MongoBinaryDownload {
       process.stdout.write(message);
     } else {
       console.log(message);
-    }
-  }
-
-  /**
-   * Test if the location given is already used
-   * Does *not* dereference links
-   * @param location The Path to test
-   */
-  async locationExists(location: string): Promise<boolean> {
-    try {
-      await promises.lstat(location);
-      return true;
-    } catch (e) {
-      if (e.code !== 'ENOENT') {
-        throw e;
-      }
-      return false;
     }
   }
 }
