@@ -1,7 +1,7 @@
 import os from 'os';
 import url from 'url';
 import path from 'path';
-import { promises, existsSync, createWriteStream, createReadStream } from 'fs';
+import { promises, createWriteStream, createReadStream } from 'fs';
 import md5File from 'md5-file';
 import https from 'https';
 import { createUnzip } from 'zlib';
@@ -102,7 +102,7 @@ export class MongoBinaryDownload {
       version: this.version,
     });
 
-    if (!existsSync(this.downloadDir)) {
+    if (!(await pathExists(this.downloadDir))) {
       await promises.mkdir(this.downloadDir);
     }
 
@@ -210,7 +210,7 @@ export class MongoBinaryDownload {
     const extractDir = path.resolve(this.downloadDir, this.version);
     log(`extract(): ${extractDir}`);
 
-    if (!existsSync(extractDir)) {
+    if (!(await pathExists(extractDir))) {
       promises.mkdir(extractDir);
     }
 
