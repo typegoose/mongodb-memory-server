@@ -48,14 +48,6 @@ export class MongoBinary {
   }
 
   /**
-   * Check if specified version already exists in the cache
-   * @param version The Version to check for
-   */
-  static getCachePath(version: string): string | undefined {
-    return this.cache.get(version);
-  }
-
-  /**
    * Probe download path and download the binary
    * @param options Options Configuring which binary to download and to which path
    * @returns The BinaryPath the binary has been downloaded to
@@ -87,7 +79,7 @@ export class MongoBinary {
     });
 
     // check cache if it got already added to the cache
-    if (!this.getCachePath(version)) {
+    if (!this.cache.get(version)) {
       const downloader = new MongoBinaryDownload({
         downloadDir,
         platform,
@@ -109,7 +101,7 @@ export class MongoBinary {
       });
     });
 
-    const cachePath = this.getCachePath(version);
+    const cachePath = this.cache.get(version);
     // ensure that "path" exists, so the return type does not change
     assertion(
       typeof cachePath === 'string',
@@ -194,7 +186,7 @@ export class MongoBinary {
     );
 
     if (!binaryPath) {
-      binaryPath = this.getCachePath(options.version);
+      binaryPath = this.cache.get(options.version);
     }
 
     if (!binaryPath) {

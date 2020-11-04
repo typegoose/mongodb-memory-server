@@ -65,15 +65,8 @@ describe('MongoBinary', () => {
 
       expect(mockGetMongodPath).toHaveBeenCalledTimes(1);
 
-      expect(MongoBinary.getCachePath(version)).toBeDefined();
-      expect(MongoBinary.getCachePath(version)).toEqual(binPath);
-    });
-  });
-
-  describe('getCachePath', () => {
-    it('should get the cache', async () => {
-      MongoBinary.cache.set('3.4.2', '/bin/mongod');
-      expect(MongoBinary.getCachePath('3.4.2')).toEqual('/bin/mongod');
+      expect(MongoBinary.cache.get(version)).toBeDefined();
+      expect(MongoBinary.cache.get(version)).toEqual(binPath);
     });
   });
 
