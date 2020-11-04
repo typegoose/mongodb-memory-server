@@ -136,3 +136,12 @@ export async function statPath(path: string): Promise<Stats | undefined> {
     throw err;
   });
 }
+
+/**
+ * Like "fs.existsSync" but async
+ * uses "utils.statPath"
+ * @param path The Path to check for
+ */
+export async function pathExists(path: string): Promise<boolean> {
+  return !isNullOrUndefined(await statPath(path));
+}
