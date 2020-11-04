@@ -49,7 +49,7 @@ export function isNullOrUndefined(val: unknown): val is null | undefined {
  */
 export function assertion(cond: unknown, error?: Error): asserts cond {
   if (!cond) {
-    throw error ?? new Error('Assert failed - no custom error [E019]');
+    throw error ?? new Error('Assert failed - no custom error');
   }
 }
 

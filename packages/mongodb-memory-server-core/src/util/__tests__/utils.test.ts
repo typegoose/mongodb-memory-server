@@ -46,7 +46,7 @@ describe('utils', () => {
         utils.assertion(false);
         fail('Expected Assertion to Throw');
       } catch (err) {
-        expect(err.message).toEqual('Assert failed - no custom error [E019]');
+        expect(err.message).toEqual('Assert failed - no custom error');
       }
     });
   });
