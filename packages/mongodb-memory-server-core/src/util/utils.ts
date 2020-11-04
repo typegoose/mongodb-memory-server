@@ -124,6 +124,7 @@ export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
 
 /**
  * Run "fs.promises.stat", but return "undefined" if error is "ENOENT"
+ * follows symlinks
  * @param path The Path to Stat
  * @throws if the error is not "ENOENT"
  */
@@ -140,6 +141,7 @@ export async function statPath(path: string): Promise<Stats | undefined> {
 /**
  * Like "fs.existsSync" but async
  * uses "utils.statPath"
+ * follows symlinks
  * @param path The Path to check for
  */
 export async function pathExists(path: string): Promise<boolean> {

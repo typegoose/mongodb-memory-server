@@ -1,4 +1,4 @@
-import { existsSync, promises } from 'fs';
+import { promises } from 'fs';
 import os from 'os';
 import path from 'path';
 import LockFile from 'lockfile';
@@ -8,7 +8,7 @@ import { execSync } from 'child_process';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
-import { assertion, isNullOrUndefined } from './utils';
+import { assertion, isNullOrUndefined, pathExists } from './utils';
 
 const log = debug('MongoMS:MongoBinary');
 
@@ -137,7 +137,7 @@ export class MongoBinary {
     const defaultOptions = {
       downloadDir:
         resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) ||
-        (existsSync(legacyDLDir)
+        ((await pathExists(legacyDLDir))
           ? legacyDLDir
           : path.resolve(
               findCacheDir({
