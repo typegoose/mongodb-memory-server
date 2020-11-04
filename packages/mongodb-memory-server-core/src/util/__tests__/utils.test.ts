@@ -38,4 +38,16 @@ describe('utils', () => {
       await expect(utils.statPath('/some/path')).rejects.toThrowError(retError);
     });
   });
+
+  describe('assertion', () => {
+    it('should throw default error if none provided', () => {
+      expect.assertions(1);
+      try {
+        utils.assertion(false);
+        fail('Expected Assertion to Throw');
+      } catch (err) {
+        expect(err.message).toEqual('Assert failed - no custom error [E019]');
+      }
+    });
+  });
 });
