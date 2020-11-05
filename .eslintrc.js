@@ -57,6 +57,12 @@ module.exports = {
       },
       {
         blankLine: 'any', prev: 'if', next: 'if' // allow blank line between ifs, but not enforce either
+      },
+      {
+        blankLine: 'always', prev: '*', next: ['function', 'class'] // add blank line *before* all functions and classes
+      },
+      {
+        blankLine: 'always', prev: ['function', 'class'], next: '*' // add blank line *after* all functions and classes
       }
     ]
   },

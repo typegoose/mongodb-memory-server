@@ -435,6 +435,7 @@ export class MongoMemoryReplSet extends EventEmitter {
               res();
             }
           }
+
           this.on(MongoMemoryReplSetEvents.stateChange, waitRunning);
         });
 
