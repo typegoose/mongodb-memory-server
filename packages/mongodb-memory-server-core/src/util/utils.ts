@@ -65,16 +65,19 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
 
     return;
   }
+
   const timeoutTime = 1000 * 10;
   await new Promise((resolve, reject) => {
     let timeout = setTimeout(() => {
       log('killProcess timeout triggered, trying SIGKILL');
+
       if (!debug.enabled('MongoMS:utils')) {
         console.warn(
           'An Process didnt exit with signal "SIGINT" within 10 seconds, using "SIGKILL"!\n' +
             'Enable debug logs for more information'
         );
       }
+
       childprocess.kill('SIGKILL');
       timeout = setTimeout(() => {
         log('killProcess timeout triggered again, rejecting');

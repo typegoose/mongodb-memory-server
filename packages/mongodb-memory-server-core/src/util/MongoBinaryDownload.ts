@@ -141,6 +141,7 @@ export class MongoBinaryDownload {
     if (!this.checkMD5) {
       return undefined;
     }
+
     log('Checking MD5 of downloaded binary...');
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
     const signatureContent = (await promises.readFile(mongoDBArchiveMd5)).toString('utf-8');
@@ -148,6 +149,7 @@ export class MongoBinaryDownload {
     const md5Remote = m ? m[1] : null;
     const md5Local = md5File.sync(mongoDBArchive);
     log(`Local MD5: ${md5Local}, Remote MD5: ${md5Remote}`);
+
     if (md5Remote !== md5Local) {
       throw new Error('MongoBinaryDownload: md5 check failed');
     }
@@ -188,6 +190,7 @@ export class MongoBinaryDownload {
     };
 
     const filename = (urlObject.pathname || '').split('/').pop();
+
     if (!filename) {
       throw new Error(`MongoBinaryDownload: missing filename for url ${downloadUrl}`);
     }
@@ -228,6 +231,7 @@ export class MongoBinaryDownload {
     }
 
     let filter: (file: string) => boolean;
+
     if (this.platform === 'win32') {
       filter = (file: string) => {
         return /bin\/mongod.exe$/.test(file) || /.dll$/.test(file);
@@ -279,6 +283,7 @@ export class MongoBinaryDownload {
           })
         );
       }
+
       stream.on('end', () => next());
       stream.resume();
     });
@@ -318,6 +323,7 @@ export class MongoBinaryDownload {
         if (e || !zipfile) {
           return reject(e);
         }
+
         zipfile.readEntry();
 
         zipfile.on('end', () => resolve());
@@ -326,10 +332,12 @@ export class MongoBinaryDownload {
           if (!filter(entry.fileName)) {
             return zipfile.readEntry();
           }
+
           zipfile.openReadStream(entry, (e, r) => {
             if (e || !r) {
               return reject(e);
             }
+
             r.on('end', () => zipfile.readEntry());
             r.pipe(
               createWriteStream(path.resolve(extractDir, path.basename(entry.fileName)), {
@@ -377,6 +385,7 @@ export class MongoBinaryDownload {
 
               return;
             }
+
             reject(new Error('Status Code isnt 200!'));
 
             return;
@@ -386,6 +395,7 @@ export class MongoBinaryDownload {
 
             return;
           }
+
           this.dlProgress.current = 0;
           this.dlProgress.length = parseInt(response.headers['content-length'], 10);
           this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
@@ -435,9 +445,11 @@ export class MongoBinaryDownload {
     this.dlProgress.current += chunk.length;
 
     const now = Date.now();
+
     if (now - this.dlProgress.lastPrintedAt < 2000) {
       return;
     }
+
     this.dlProgress.lastPrintedAt = now;
 
     const percentComplete =
@@ -446,6 +458,7 @@ export class MongoBinaryDownload {
 
     const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
     const message = `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`;
+
     if (process.stdout.isTTY) {
       // if TTY overwrite last line over and over until finished
       process.stdout.write(message);

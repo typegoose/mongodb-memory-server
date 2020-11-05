@@ -47,7 +47,16 @@ module.exports = {
     'padding-line-between-statements': [
       "warn",
       {
-        blankLine: 'always', prev: '*', next: 'return'
+        blankLine: 'always', prev: '*', next: 'return' // add blank line *before* all returns (if there are statements before)
+      },
+      {
+        blankLine: 'always', prev: '*', next: 'if' // add blank line *before* all ifs
+      },
+      {
+        blankLine: 'always', prev: 'if', next: '*' // add blank line *after* all ifs
+      },
+      {
+        blankLine: 'any', prev: 'if', next: 'if' // allow blank line between ifs, but not enforce either
       }
     ]
   },

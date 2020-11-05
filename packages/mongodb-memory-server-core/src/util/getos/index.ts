@@ -92,18 +92,21 @@ async function getLinuxInfomation(): Promise<LinuxOS> {
 
   log('Trying LSB-Release');
   const lsbOut = await tryLSBRelease();
+
   if (!isNullOrUndefined(lsbOut)) {
     return lsbOut;
   }
 
   log('Trying OS-Release');
   const osOut = await tryOSRelease();
+
   if (!isNullOrUndefined(osOut)) {
     return osOut;
   }
 
   log('Trying First *-Release file');
   const releaseOut = await tryFirstReleaseFile();
+
   if (!isNullOrUndefined(releaseOut)) {
     return releaseOut;
   }
@@ -174,9 +177,11 @@ async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
         // check if the file does NOT contain "lsb"
         !v.match(/lsb/im)
     )[0];
+
     if (isNullOrUndefined(file) || file.length <= 0) {
       throw new Error('No release file found!');
     }
+
     const os = await promises.readFile(join('/etc/', file));
 
     return parseOS(os.toString());

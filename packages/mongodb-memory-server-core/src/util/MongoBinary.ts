@@ -89,6 +89,7 @@ export class MongoBinary {
       });
       this.cache.set(version, await downloader.getMongodPath());
     }
+
     // remove lock
     await new Promise((res) => {
       LockFile.unlock(lockfile, (err) => {
@@ -154,6 +155,7 @@ export class MongoBinary {
 
     if (options.systemBinary) {
       binaryPath = await this.getSystemPath(options.systemBinary);
+
       if (binaryPath) {
         if (binaryPath.indexOf(' ') >= 0) {
           binaryPath = `"${binaryPath}"`;

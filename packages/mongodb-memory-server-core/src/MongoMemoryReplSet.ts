@@ -265,6 +265,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       replSet: this._replSetOpts.name,
       storageEngine: this._replSetOpts.storageEngine,
     };
+
     if (baseOpts.args) {
       opts.args = (this._replSetOpts.args || []).concat(baseOpts.args);
     }
@@ -277,6 +278,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     if (baseOpts.storageEngine) {
       opts.storageEngine = baseOpts.storageEngine;
     }
+
     log('   instance opts:', opts);
 
     return opts;
@@ -370,6 +372,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   async stop(): Promise<boolean> {
     log('stop' + isNullOrUndefined(process.exitCode) ? '' : ': called by process-event');
     process.removeListener('beforeExit', this.stop); // many accumulate inside tests
+
     if (this._state === MongoMemoryReplSetStates.stopped) {
       return false;
     }
@@ -572,9 +575,11 @@ export class MongoMemoryReplSet extends EventEmitter {
         (server) =>
           new Promise((res, rej) => {
             const instanceInfo = server.instanceInfo;
+
             if (!instanceInfo) {
               return rej(new Error('_waitForPrimary - instanceInfo not present '));
             }
+
             instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);
 
             if (instanceInfo.instance.isInstancePrimary) {

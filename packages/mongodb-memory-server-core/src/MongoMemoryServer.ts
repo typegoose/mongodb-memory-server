@@ -282,6 +282,7 @@ export class MongoMemoryServer extends EventEmitter {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
         console.warn('Starting the instance failed, enable debug for more infomation');
       }
+
       throw err;
     });
 
@@ -384,11 +385,13 @@ export class MongoMemoryServer extends EventEmitter {
 
     if (!isNullOrUndefined(this._instanceInfo)) {
       log('_startUpInstance: "instanceInfo" already defined, reusing instance');
+
       if (!forceSamePort) {
         const newPort = await this.getNewPort(this._instanceInfo.port);
         this._instanceInfo.instance.instanceOpts.port = newPort;
         this._instanceInfo.port = newPort;
       }
+
       await this._instanceInfo.instance.run();
 
       return;
@@ -498,16 +501,19 @@ export class MongoMemoryServer extends EventEmitter {
     if (typeof force !== 'boolean') {
       force = false;
     }
+
     assertion(
       this.state === MongoMemoryServerStates.stopped,
       new Error('Cannot cleanup when state is not "stopped"')
     );
     process.removeListener('beforeExit', this.cleanup);
+
     if (isNullOrUndefined(this._instanceInfo)) {
       log('cleanup: "instanceInfo" is undefined');
 
       return;
     }
+
     assertion(
       isNullOrUndefined(this._instanceInfo.instance.childProcess),
       new Error('Cannot cleanup because "instance.childProcess" is still defined')
@@ -516,6 +522,7 @@ export class MongoMemoryServer extends EventEmitter {
     log(`cleanup: force ${force}`);
 
     const tmpDir = this._instanceInfo.tmpDir;
+
     if (!isNullOrUndefined(tmpDir)) {
       log(`cleanup: removing tmpDir at ${tmpDir.name}`);
       tmpDir.removeCallback();
@@ -574,6 +581,7 @@ export class MongoMemoryServer extends EventEmitter {
         if (this._instanceInfo) {
           return this._instanceInfo;
         }
+
         throw new Error('MongoMemoryServer "_state" is "running" but "instanceInfo" is undefined!');
       case MongoMemoryServerStates.new:
       case MongoMemoryServerStates.stopped:
@@ -588,6 +596,7 @@ export class MongoMemoryServer extends EventEmitter {
                 )
               );
             }
+
             res(this._instanceInfo);
           })
         );
@@ -670,6 +679,7 @@ export class MongoMemoryServer extends EventEmitter {
 
       for (const user of this.auth.extraUsers) {
         user.database = isNullOrUndefined(user.database) ? 'admin' : user.database;
+
         // just to have not to call "con.db" everytime in the loop if its the same
         if (user.database !== db.databaseName) {
           db = con.db(user.database);

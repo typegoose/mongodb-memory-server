@@ -39,6 +39,7 @@ export class MongoBinaryDownloadUrl {
     log(`Using "${archive}" as the Archive String`);
 
     const downloadUrl = resolveConfig(ResolveConfigVariables.DOWNLOAD_URL);
+
     if (downloadUrl) {
       log(`Using "${downloadUrl}" as the Download-URL`);
 
@@ -58,9 +59,11 @@ export class MongoBinaryDownloadUrl {
    */
   async getArchiveName(): Promise<string> {
     const archive_name = resolveConfig(ResolveConfigVariables.ARCHIVE_NAME);
+
     if (!isNullOrUndefined(archive_name) && archive_name.length > 0) {
       return archive_name;
     }
+
     switch (this.platform) {
       case 'osx':
         return this.getArchiveNameOsx();
@@ -81,6 +84,7 @@ export class MongoBinaryDownloadUrl {
   getArchiveNameWin(): string {
     let name = `mongodb-${this.platform}`;
     name += `-${this.arch}`;
+
     if (!isNullOrUndefined(semver.coerce(this.version))) {
       if (semver.satisfies(this.version, '4.2.x')) {
         name += '-2012plus';
@@ -88,6 +92,7 @@ export class MongoBinaryDownloadUrl {
         name += '-2008plus-ssl';
       }
     }
+
     name += `-${this.version}.zip`;
 
     return name;
@@ -100,12 +105,14 @@ export class MongoBinaryDownloadUrl {
   getArchiveNameOsx(): string {
     let name = `mongodb-osx`;
     const version = semver.coerce(this.version);
+
     if (!isNullOrUndefined(version) && semver.gte(version, '3.2.0')) {
       name += '-ssl';
     }
     if (isNullOrUndefined(version) || semver.gte(version, '4.2.0')) {
       name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
+
     name += `-${this.arch}`;
     name += `-${this.version}.tgz`;
 
@@ -121,10 +128,12 @@ export class MongoBinaryDownloadUrl {
     name += `-${this.arch}`;
 
     let osString: string | undefined;
+
     if (this.arch !== 'i686') {
       if (!this.os) {
         this.os = await getOS();
       }
+
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
     }
     if (osString) {
@@ -168,6 +177,7 @@ export class MongoBinaryDownloadUrl {
       // warn if no case for the *parsed* distro is found
       console.warn(`Unknown linux distro ${os.dist}`);
     }
+
     // warn for the fallback
     console.warn(`Falling back to legacy MongoDB build!`);
 
@@ -181,6 +191,7 @@ export class MongoBinaryDownloadUrl {
   getDebianVersionString(os: LinuxOS): string {
     let name = 'debian';
     const release: number = parseFloat(os.release);
+
     if (release >= 10 || os.release === 'unstable') {
       name += '10';
     } else if (release >= 9) {
@@ -201,6 +212,7 @@ export class MongoBinaryDownloadUrl {
   getFedoraVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const fedoraVer: number = parseInt(os.release, 10);
+
     if (fedoraVer > 18) {
       name += '70';
     } else if (fedoraVer < 19 && fedoraVer >= 12) {
@@ -219,6 +231,7 @@ export class MongoBinaryDownloadUrl {
   getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const { release } = os;
+
     if (release) {
       if (/^8/.test(release)) {
         name += '80';
@@ -260,6 +273,7 @@ export class MongoBinaryDownloadUrl {
   getMintVersionString(os: LinuxOS): string {
     let name = 'ubuntu';
     const mintMajorVer = parseInt(os.release ? os.release.split('.')[0] : os.release);
+
     if (mintMajorVer < 17) {
       throw new Error('Mint Versions under 17 are not supported!');
     }
@@ -326,6 +340,7 @@ export class MongoBinaryDownloadUrl {
         version = '1804';
       }
     }
+
     name += version;
 
     return name;
@@ -343,6 +358,7 @@ export class MongoBinaryDownloadUrl {
         return 'osx';
       case 'win32':
         const version = semver.coerce(this.version);
+
         if (isNullOrUndefined(version)) {
           return 'windows';
         }
@@ -371,6 +387,7 @@ export class MongoBinaryDownloadUrl {
       } else if (mongoPlatform === 'win32') {
         return 'i386';
       }
+
       throw new Error('unsupported architecture');
     } else if (arch === 'x64') {
       return 'x86_64';

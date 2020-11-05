@@ -167,6 +167,7 @@ export class MongoInstance extends EventEmitter {
     // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
     result.push('--port', this.instanceOpts.port.toString());
     result.push('--dbpath', this.instanceOpts.dbPath);
+
     if (!!this.instanceOpts.storageEngine) {
       result.push('--storageEngine', this.instanceOpts.storageEngine);
     }
@@ -278,6 +279,7 @@ export class MongoInstance extends EventEmitter {
           }
         }
       }
+
       await killProcess(this.childProcess, 'childProcess');
       this.childProcess = undefined; // reset reference to the childProcess for "mongod"
     } else {
@@ -387,6 +389,7 @@ export class MongoInstance extends EventEmitter {
     if ((process.platform === 'win32' && code != 12 && code != 0) || code != 0) {
       this.debug('Mongod instance closed with an non-0 (or non 12 on windows) code!');
     }
+
     this.debug(`CLOSE: ${code}`);
     this.emit(MongoInstanceEvents.instanceClosed, code);
   }
