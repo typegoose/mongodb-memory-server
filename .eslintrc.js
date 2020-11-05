@@ -46,6 +46,7 @@ module.exports = {
     'curly': ['error', 'all']
   },
   env: {
+    node: true,
     jest: true,
   },
 };
