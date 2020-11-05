@@ -63,7 +63,16 @@ module.exports = {
       },
       {
         blankLine: 'always', prev: ['function', 'class'], next: '*' // add blank line *after* all functions and classes
-      }
+      },
+      {
+        blankLine: 'always', prev: '*', next: 'import' // add blank line *before* all imports
+      },
+      {
+        blankLine: 'always', prev: 'import', next: '*' // add blank line *after* all imports
+      },
+      {
+        blankLine: 'never', prev: 'import', next: 'import' // dont allow blank line between imports
+      },
     ]
   },
   env: {

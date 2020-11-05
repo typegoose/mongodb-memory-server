@@ -1,6 +1,5 @@
 import { promises } from 'fs';
 import { platform } from 'os';
-
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
