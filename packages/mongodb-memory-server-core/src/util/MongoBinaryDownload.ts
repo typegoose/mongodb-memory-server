@@ -1,7 +1,7 @@
 import os from 'os';
 import url from 'url';
 import path from 'path';
-import { promises, createWriteStream, createReadStream } from 'fs';
+import { promises, createWriteStream, createReadStream, constants } from 'fs';
 import md5File from 'md5-file';
 import https from 'https';
 import { createUnzip } from 'zlib';
@@ -104,6 +104,16 @@ export class MongoBinaryDownload {
 
     if (!(await pathExists(this.downloadDir))) {
       await promises.mkdir(this.downloadDir);
+    }
+
+    try {
+      await promises.access(this.downloadDir, constants.X_OK | constants.W_OK); // check that this process has permissions to create files & modify file contents & read file contents
+    } catch (err) {
+      console.error(
+        `Download Directory at "${this.downloadDir}" does not have sufficient permissions to be used by this process\n` +
+          'Needed Permissions: Write & Execute (-wx)\n'
+      );
+      throw err;
     }
 
     const downloadUrl = await mbdUrl.getDownloadUrl();
