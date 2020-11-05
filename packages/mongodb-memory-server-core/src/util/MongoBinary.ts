@@ -107,6 +107,7 @@ export class MongoBinary {
       typeof cachePath === 'string',
       new Error(`No Cache Path for version "${version}" found (and download failed silently?)`)
     );
+
     return cachePath;
   }
 
@@ -200,6 +201,7 @@ export class MongoBinary {
     }
 
     log(`MongoBinary: Mongod binary path: "${binaryPath}"`);
+
     return binaryPath;
   }
 }

@@ -43,7 +43,13 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-use-before-define': 0,
     '@typescript-eslint/no-empty-function': 0,
-    'curly': ['error', 'all']
+    'curly': ['error', 'all'],
+    'padding-line-between-statements': [
+      "warn",
+      {
+        blankLine: 'always', prev: '*', next: 'return'
+      }
+    ]
   },
   env: {
     node: true,

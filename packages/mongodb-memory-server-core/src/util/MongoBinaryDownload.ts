@@ -151,6 +151,7 @@ export class MongoBinaryDownload {
     if (md5Remote !== md5Local) {
       throw new Error('MongoBinaryDownload: md5 check failed');
     }
+
     return true;
   }
 
@@ -197,6 +198,7 @@ export class MongoBinaryDownload {
 
     if (await pathExists(downloadLocation)) {
       log('Already downloaded archive found, skipping download');
+
       return downloadLocation;
     }
 
@@ -207,6 +209,7 @@ export class MongoBinaryDownload {
       downloadLocation,
       tempDownloadLocation
     );
+
     return downloadedFile;
   }
 
@@ -252,6 +255,7 @@ export class MongoBinaryDownload {
         }). Broken archive from MongoDB Provider?`
       );
     }
+
     return extractDir;
   }
 
@@ -370,13 +374,16 @@ export class MongoBinaryDownload {
                     '  https://www.mongodb.org/dl/win32 for Windows'
                 )
               );
+
               return;
             }
             reject(new Error('Status Code isnt 200!'));
+
             return;
           }
           if (typeof response.headers['content-length'] != 'string') {
             reject(new Error('Response header "content-length" is empty!'));
+
             return;
           }
           this.dlProgress.current = 0;
@@ -397,6 +404,7 @@ export class MongoBinaryDownload {
                   `Too small (${this.dlProgress.current} bytes) mongod binary downloaded from ${downloadUrl}`
                 )
               );
+
               return;
             }
 

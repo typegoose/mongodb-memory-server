@@ -204,6 +204,7 @@ describe('MongodbInstance', () => {
       events = new Map();
       jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
         events.set(event, arg1);
+
         return true;
       });
     });

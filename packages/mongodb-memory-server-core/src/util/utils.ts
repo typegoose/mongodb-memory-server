@@ -62,6 +62,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
   // check if the childProcess (via PID) is still alive (found thanks to https://github.com/nodkz/mongodb-memory-server/issues/411)
   if (!isAlive(childprocess.pid)) {
     log("killProcess: given childProcess's PID was not alive anymore");
+
     return;
   }
   const timeoutTime = 1000 * 10;
@@ -97,6 +98,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
 export function isAlive(pid: number): boolean {
   try {
     process.kill(pid, 0);
+
     return true;
   } catch (err) {
     return false;

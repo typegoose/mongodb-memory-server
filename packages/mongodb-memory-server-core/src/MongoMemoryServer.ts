@@ -448,11 +448,13 @@ export class MongoMemoryServer extends EventEmitter {
     // just return "true" if there was never an instance
     if (isNullOrUndefined(this._instanceInfo)) {
       log('"instanceInfo" is not defined (never ran?)');
+
       return true;
     }
 
     if (this._state === MongoMemoryServerStates.stopped) {
       log(`stop: state is "stopped", so already stopped`);
+
       return true;
     }
 
@@ -503,6 +505,7 @@ export class MongoMemoryServer extends EventEmitter {
     process.removeListener('beforeExit', this.cleanup);
     if (isNullOrUndefined(this._instanceInfo)) {
       log('cleanup: "instanceInfo" is undefined');
+
       return;
     }
     assertion(
@@ -661,6 +664,7 @@ export class MongoMemoryServer extends EventEmitter {
         if (a.database === 'admin') {
           return -1; // try to make all "admin" at the start of the array
         }
+
         return a.database === b.database ? 0 : 1; // "0" to sort same databases continuesly, "-1" if nothing before/above applies
       });
 

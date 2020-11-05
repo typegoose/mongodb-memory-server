@@ -71,16 +71,19 @@ async function getLinuxInfomation(): Promise<LinuxOS> {
   // Force "lsb_release" to be used
   if (!isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_LSB_RELEASE))) {
     log('Forced LSB-Release file!');
+
     return (await tryLSBRelease()) as LinuxOS;
   }
   // Force /etc/os-release to be used
   if (!isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_OS_RELEASE))) {
     log('Forced OS-Release file!');
+
     return (await tryOSRelease()) as LinuxOS;
   }
   // Force the first /etc/*-release file to be used
   if (!isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_ANY_RELEASE))) {
     log('Forced First *-Release file!');
+
     return (await tryFirstReleaseFile()) as LinuxOS;
   }
 
@@ -106,6 +109,7 @@ async function getLinuxInfomation(): Promise<LinuxOS> {
   }
 
   log('Couldnt find an release file');
+
   // if none has worked, return unkown
   return {
     os: 'linux',

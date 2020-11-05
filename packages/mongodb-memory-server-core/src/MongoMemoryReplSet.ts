@@ -171,6 +171,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   static async create(opts: Partial<MongoMemoryReplSetOpts> = {}): Promise<MongoMemoryReplSet> {
     const replSet = new this({ ...opts });
     await replSet.start();
+
     return replSet;
   }
 
@@ -277,6 +278,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       opts.storageEngine = baseOpts.storageEngine;
     }
     log('   instance opts:', opts);
+
     return opts;
   }
 
@@ -305,9 +307,11 @@ export class MongoMemoryReplSet extends EventEmitter {
     const ports = this.servers.map((s) => {
       const port = s.instanceInfo?.port;
       assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
+
       return port;
     });
     const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
+
     return `mongodb://${hosts}/${dbName}?replicaSet=${this._replSetOpts.name}`;
   }
 
@@ -369,14 +373,17 @@ export class MongoMemoryReplSet extends EventEmitter {
     if (this._state === MongoMemoryReplSetStates.stopped) {
       return false;
     }
+
     return Promise.all(this.servers.map((s) => s.stop(false)))
       .then(() => {
         this.stateChange(MongoMemoryReplSetStates.stopped);
+
         return true;
       })
       .catch((err) => {
         log(err);
         this.stateChange(MongoMemoryReplSetStates.stopped, err);
+
         return false;
       });
   }
@@ -427,6 +434,7 @@ export class MongoMemoryReplSet extends EventEmitter {
           }
           this.on(MongoMemoryReplSetEvents.stateChange, waitRunning);
         });
+
         return;
       case MongoMemoryReplSetStates.stopped:
       default:
@@ -547,6 +555,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       auth: typeof this.replSetOpts.auth === 'object' ? this.replSetOpts.auth : undefined,
     };
     const server = new MongoMemoryServer(serverOpts);
+
     return server;
   }
 

@@ -146,6 +146,7 @@ export class MongoInstance extends EventEmitter {
    */
   static async run(opts: Partial<MongodOpts>): Promise<MongoInstance> {
     const instance = new this(opts);
+
     return instance.run();
   }
 
@@ -221,6 +222,7 @@ export class MongoInstance extends EventEmitter {
 
     await launch;
     this.emit(MongoInstanceEvents.instanceStarted);
+
     return this;
   }
 

@@ -41,6 +41,7 @@ export class MongoBinaryDownloadUrl {
     const downloadUrl = resolveConfig(ResolveConfigVariables.DOWNLOAD_URL);
     if (downloadUrl) {
       log(`Using "${downloadUrl}" as the Download-URL`);
+
       return downloadUrl;
     }
 
@@ -88,6 +89,7 @@ export class MongoBinaryDownloadUrl {
       }
     }
     name += `-${this.version}.zip`;
+
     return name;
   }
 
@@ -106,6 +108,7 @@ export class MongoBinaryDownloadUrl {
     }
     name += `-${this.arch}`;
     name += `-${this.version}.tgz`;
+
     return name;
   }
 
@@ -187,6 +190,7 @@ export class MongoBinaryDownloadUrl {
     } else if (release >= 7.1) {
       name += '71';
     }
+
     return name;
   }
 
@@ -204,6 +208,7 @@ export class MongoBinaryDownloadUrl {
     } else if (fedoraVer < 12 && fedoraVer >= 6) {
       name += '55';
     }
+
     return name;
   }
 
@@ -225,6 +230,7 @@ export class MongoBinaryDownloadUrl {
         name += '55';
       }
     }
+
     return name;
   }
 
@@ -321,6 +327,7 @@ export class MongoBinaryDownloadUrl {
       }
     }
     name += version;
+
     return name;
   }
 
@@ -339,6 +346,7 @@ export class MongoBinaryDownloadUrl {
         if (isNullOrUndefined(version)) {
           return 'windows';
         }
+
         return semver.gte(version, '4.3.0') ? 'windows' : 'win32';
       case 'linux':
       case 'elementary OS':
