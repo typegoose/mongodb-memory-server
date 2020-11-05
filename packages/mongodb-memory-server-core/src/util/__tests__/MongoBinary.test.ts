@@ -1,5 +1,5 @@
 import * as tmp from 'tmp';
-import { promises } from 'fs';
+import { promises, constants } from 'fs';
 import os from 'os';
 import MongoBinary from '../MongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
@@ -39,7 +39,7 @@ describe('MongoBinary', () => {
         '/usr/local/bin/mongod';
       await MongoBinary.getPath();
 
-      expect(promises.access).toHaveBeenCalledWith('/usr/local/bin/mongod');
+      expect(promises.access).toHaveBeenCalledWith('/usr/local/bin/mongod', constants.X_OK);
 
       delete process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.SYSTEM_BINARY];
     });
@@ -75,7 +75,7 @@ describe('MongoBinary', () => {
       jest.spyOn(promises, 'access');
       await MongoBinary.getSystemPath('/usr/bin/mongod'); // ignoring return, because this depends on the host system
 
-      expect(promises.access).toHaveBeenCalledWith('/usr/bin/mongod');
+      expect(promises.access).toHaveBeenCalledWith('/usr/bin/mongod', constants.X_OK);
     });
   });
 });
