@@ -19,7 +19,7 @@ module.exports = {
   rules: {
     'no-underscore-dangle': 0,
     'arrow-body-style': 0,
-    'no-unused-expressions': 0,
+    'no-unused-expressions': 1,
     'no-plusplus': 0,
     'no-console': 0,
     'func-names': 0,
