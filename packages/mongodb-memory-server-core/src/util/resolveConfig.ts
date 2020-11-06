@@ -59,7 +59,7 @@ findPackageJson();
 export function resolveConfig(variableName: ResolveConfigVariables): string | undefined {
   return (
     process.env[`${ENV_CONFIG_PREFIX}${variableName}`] ??
-    packageJsonConfig?.[camelCase(variableName)] ??
+    packageJsonConfig[camelCase(variableName)] ??
     defaultValues.get(variableName)
   );
 }
