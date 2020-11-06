@@ -3,7 +3,7 @@ import { platform } from 'os';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
-import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
+import resolveConfig, { envToBool, ResolveConfigVariables } from '../resolveConfig';
 import debug from 'debug';
 import { isNullOrUndefined } from '../utils';
 
@@ -68,19 +68,19 @@ async function getLinuxInfomation(): Promise<LinuxOS> {
   // (if not 2) 3. try read dir /etc and filter any file "-release" and try to parse the first file found
 
   // Force "lsb_release" to be used
-  if (!isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_LSB_RELEASE))) {
+  if (envToBool(resolveConfig(ResolveConfigVariables.USE_LINUX_LSB_RELEASE))) {
     log('Forced LSB-Release file!');
 
     return (await tryLSBRelease()) as LinuxOS;
   }
   // Force /etc/os-release to be used
-  if (!isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_OS_RELEASE))) {
+  if (envToBool(resolveConfig(ResolveConfigVariables.USE_LINUX_OS_RELEASE))) {
     log('Forced OS-Release file!');
 
     return (await tryOSRelease()) as LinuxOS;
   }
   // Force the first /etc/*-release file to be used
-  if (!isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_ANY_RELEASE))) {
+  if (envToBool(resolveConfig(ResolveConfigVariables.USE_LINUX_ANY_RELEASE))) {
     log('Forced First *-Release file!');
 
     return (await tryFirstReleaseFile()) as LinuxOS;
@@ -153,7 +153,7 @@ async function tryOSRelease(): Promise<LinuxOS | undefined> {
     // and just return
     if (
       (err?.code === 'ENOENT' ||
-        !isNullOrUndefined(resolveConfig(ResolveConfigVariables.SKIP_OS_RELEASE))) &&
+        envToBool(resolveConfig(ResolveConfigVariables.SKIP_OS_RELEASE))) &&
       isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_OS_RELEASE))
     ) {
       return;
