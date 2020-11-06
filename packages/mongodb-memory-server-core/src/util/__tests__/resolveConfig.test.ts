@@ -1,4 +1,4 @@
-import { promises } from 'fs';
+import { promises as fspromises } from 'fs';
 import * as tmp from 'tmp';
 import resolveConfig, { findPackageJson, ResolveConfigVariables } from '../resolveConfig';
 
@@ -35,16 +35,16 @@ describe('resolveConfig', () => {
       tmpObj = tmp.dirSync({ unsafeCleanup: true });
       const tmpName = tmpObj.name;
 
-      await promises.mkdir(`${tmpName}/project`);
-      await promises.mkdir(`${tmpName}/project/subproject`);
+      await fspromises.mkdir(`${tmpName}/project`);
+      await fspromises.mkdir(`${tmpName}/project/subproject`);
 
       // prettier-ignore
       await Promise.all([
-        promises.writeFile(
+        fspromises.writeFile(
           `${tmpName}/project/package.json`,
           JSON.stringify(outerPackageJson)
         ),
-        promises.writeFile(
+        fspromises.writeFile(
           `${tmpName}/project/subproject/package.json`,
           JSON.stringify(innerPackageJson)
         ),

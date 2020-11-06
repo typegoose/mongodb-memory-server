@@ -8,7 +8,7 @@ import { assertion, uriTemplate, isNullOrUndefined, killProcess } from './utils'
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoNetworkError } from 'mongodb';
-import { promises, constants } from 'fs';
+import { promises as fspromises, constants } from 'fs';
 
 if (lt(process.version, '10.15.0')) {
   console.warn('Using NodeJS below 10.15.0');
@@ -210,7 +210,7 @@ export class MongoInstance extends EventEmitter {
 
     const mongoBin = await MongoBinary.getPath(this.binaryOpts);
     try {
-      await promises.access(mongoBin, constants.X_OK);
+      await fspromises.access(mongoBin, constants.X_OK);
     } catch (err) {
       console.error(
         `Mongod File at "${mongoBin}" does not have sufficient permissions to be used by this process\n` +

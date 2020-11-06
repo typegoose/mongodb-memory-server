@@ -1,7 +1,7 @@
 import os from 'os';
 import url from 'url';
 import path from 'path';
-import { promises, createWriteStream, createReadStream, constants } from 'fs';
+import { promises as fspromises, createWriteStream, createReadStream, constants } from 'fs';
 import md5File from 'md5-file';
 import https from 'https';
 import { createUnzip } from 'zlib';
@@ -82,7 +82,7 @@ export class MongoBinaryDownload {
 
     const mongoDBArchive = await this.startDownload();
     await this.extract(mongoDBArchive);
-    await promises.unlink(mongoDBArchive);
+    await fspromises.unlink(mongoDBArchive);
 
     if (await pathExists(mongodPath)) {
       return mongodPath;
@@ -103,11 +103,11 @@ export class MongoBinaryDownload {
     });
 
     if (!(await pathExists(this.downloadDir))) {
-      await promises.mkdir(this.downloadDir);
+      await fspromises.mkdir(this.downloadDir);
     }
 
     try {
-      await promises.access(this.downloadDir, constants.X_OK | constants.W_OK); // check that this process has permissions to create files & modify file contents & read file contents
+      await fspromises.access(this.downloadDir, constants.X_OK | constants.W_OK); // check that this process has permissions to create files & modify file contents & read file contents
     } catch (err) {
       console.error(
         `Download Directory at "${this.downloadDir}" does not have sufficient permissions to be used by this process\n` +
@@ -144,7 +144,7 @@ export class MongoBinaryDownload {
 
     log('Checking MD5 of downloaded binary...');
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
-    const signatureContent = (await promises.readFile(mongoDBArchiveMd5)).toString('utf-8');
+    const signatureContent = (await fspromises.readFile(mongoDBArchiveMd5)).toString('utf-8');
     const m = signatureContent.match(/(.*?)\s/);
     const md5Remote = m ? m[1] : null;
     const md5Local = md5File.sync(mongoDBArchive);
@@ -227,7 +227,7 @@ export class MongoBinaryDownload {
     log(`extract(): ${extractDir}`);
 
     if (!(await pathExists(extractDir))) {
-      promises.mkdir(extractDir);
+      fspromises.mkdir(extractDir);
     }
 
     let filter: (file: string) => boolean;
@@ -419,7 +419,7 @@ export class MongoBinaryDownload {
             }
 
             fileStream.close();
-            await promises.rename(tempDownloadLocation, downloadLocation);
+            await fspromises.rename(tempDownloadLocation, downloadLocation);
             log(`moved ${tempDownloadLocation} to ${downloadLocation}`);
 
             resolve(downloadLocation);

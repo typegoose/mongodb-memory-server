@@ -1,4 +1,4 @@
-import { promises } from 'fs';
+import { promises as fspromises } from 'fs';
 import md5file from 'md5-file';
 import MongoBinaryDownload from '../MongoBinaryDownload';
 import { ENV_CONFIG_PREFIX, ResolveConfigVariables } from '../resolveConfig';
@@ -109,7 +109,7 @@ describe('MongoBinaryDownload', () => {
     const mongoDBArchivePath = '/some/path';
     const fileWithReferenceMd5 = '/another/path';
 
-    jest.spyOn(promises, 'readFile').mockResolvedValueOnce(`${someMd5} fileName`);
+    jest.spyOn(fspromises, 'readFile').mockResolvedValueOnce(`${someMd5} fileName`);
     jest.spyOn(md5file, 'sync').mockImplementationOnce(() => someMd5);
 
     const du = new MongoBinaryDownload({});
@@ -120,12 +120,12 @@ describe('MongoBinaryDownload', () => {
 
     expect(res).toBe(true);
     expect(du.download).toBeCalledWith(urlToMongoDBArchivePath);
-    expect(promises.readFile).toBeCalledWith(fileWithReferenceMd5);
+    expect(fspromises.readFile).toBeCalledWith(fileWithReferenceMd5);
     expect(md5file.sync).toBeCalledWith(mongoDBArchivePath);
   });
 
   it('makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result', async () => {
-    jest.spyOn(promises, 'readFile').mockResolvedValueOnce(`someMD5 fileName`);
+    jest.spyOn(fspromises, 'readFile').mockResolvedValueOnce(`someMD5 fileName`);
     jest.spyOn(md5file, 'sync').mockImplementationOnce(() => 'anotherMD5');
 
     const du = new MongoBinaryDownload({});
@@ -137,7 +137,7 @@ describe('MongoBinaryDownload', () => {
   });
 
   it('false value of checkMD5 attribute disables makeMD5check validation', async () => {
-    jest.spyOn(promises, 'readFile').mockResolvedValueOnce(`someMD5 fileName`);
+    jest.spyOn(fspromises, 'readFile').mockResolvedValueOnce(`someMD5 fileName`);
     jest.spyOn(md5file, 'sync').mockImplementationOnce(() => 'anotherMD5');
 
     const du = new MongoBinaryDownload({});

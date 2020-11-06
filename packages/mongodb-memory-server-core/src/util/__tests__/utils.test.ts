@@ -1,4 +1,4 @@
-import { Stats, promises } from 'fs';
+import { Stats, promises as fspromises } from 'fs';
 import * as utils from '../utils';
 
 describe('utils', () => {
@@ -16,7 +16,7 @@ describe('utils', () => {
 
   describe('pathExists', () => {
     it('should return true if there are stats', async () => {
-      jest.spyOn(promises, 'stat').mockResolvedValueOnce(new Stats());
+      jest.spyOn(fspromises, 'stat').mockResolvedValueOnce(new Stats());
       await expect(utils.pathExists('/some/path')).resolves.toEqual(true);
     });
 
@@ -24,7 +24,7 @@ describe('utils', () => {
       const retError = new Error();
       // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
       retError.code = 'ENOENT';
-      jest.spyOn(promises, 'stat').mockRejectedValueOnce(retError);
+      jest.spyOn(fspromises, 'stat').mockRejectedValueOnce(retError);
       await expect(utils.pathExists('/some/path')).resolves.toEqual(false);
     });
   });
@@ -34,7 +34,7 @@ describe('utils', () => {
       const retError = new Error();
       // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
       retError.code = 'EPERM';
-      jest.spyOn(promises, 'stat').mockRejectedValueOnce(retError);
+      jest.spyOn(fspromises, 'stat').mockRejectedValueOnce(retError);
       await expect(utils.statPath('/some/path')).rejects.toThrowError(retError);
     });
   });

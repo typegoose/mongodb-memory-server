@@ -1,4 +1,4 @@
-import { promises, constants } from 'fs';
+import { promises as fspromises, constants } from 'fs';
 import os from 'os';
 import path from 'path';
 import LockFile from 'lockfile';
@@ -36,7 +36,7 @@ export class MongoBinary {
     let binaryPath = '';
 
     try {
-      await promises.access(systemBinary, constants.X_OK); // check if the provided path exists and has the execute bit for current user
+      await fspromises.access(systemBinary, constants.X_OK); // check if the provided path exists and has the execute bit for current user
 
       log(`MongoBinary: found system binary path at "${systemBinary}"`);
       binaryPath = systemBinary;

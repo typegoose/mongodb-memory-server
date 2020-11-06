@@ -21,10 +21,6 @@ import { promises as fspromises } from 'fs';
 import { MongoClient } from 'mongodb';
 import { lt } from 'semver';
 
-// this is because "import {promises: {readdir}}" is not valid syntax
-// const { readdir, stat, rmdir } = promises;
-// the statement above cannot be done, because otherwise in the tests no spy / mock can be applied
-
 const log = debug('MongoMS:MongoMemoryServer');
 
 tmp.setGracefulCleanup();
