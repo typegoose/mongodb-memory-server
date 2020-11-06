@@ -1,3 +1,57 @@
+## [7.0.0-beta.10](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.9...v7.0.0-beta.10) (2020-11-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **MongoBinary:** remove function "MongoBinary.getCachePath", replace with "MongoBinary.cache.get"
+* **MongoBinaryDownload:** remove "MongoBinaryDownload.locationExists", replace with "utils.pathExists"
+* **MongoBinary:** remove value "LATEST_VERSION" in favor of using resolveConfig Value "VERSION"
+* **resolveConfig:** removing alias "reInitializePackageJson", replace with "findPackageJson"
+
+### Features
+
+* **MongoBinary:** remove function "getCachePath" ([af164c1](https://github.com/nodkz/mongodb-memory-server/commit/af164c19007699ec79a9077d9ac7409e79c6f651))
+* **MongoBinary:** remove value "LATEST_VERSION" ([22c6dfd](https://github.com/nodkz/mongodb-memory-server/commit/22c6dfd1a710cda5cf465c590f4947c916de46c0))
+* **MongoBinaryDownload:** remove function "locationExists" ([0ba071a](https://github.com/nodkz/mongodb-memory-server/commit/0ba071abfac93d4abe016ad0ed7c9e3a5235a28f))
+* **MongoBinaryDownload:** startDownload: add check that the downloadDir has sufficient permissions ([310cdae](https://github.com/nodkz/mongodb-memory-server/commit/310cdae9299b505b32cd9f2d633ab72119480022))
+* **MongoInstance:** run: add check that the mongoBinary has sufficient permissions ([d9c1019](https://github.com/nodkz/mongodb-memory-server/commit/d9c101937bd3ad1af99ec32c0a3375246df3cafc))
+* **resolveConfig:** add enum for all resolveConfig Variables ([7bd9160](https://github.com/nodkz/mongodb-memory-server/commit/7bd91609393f8151529b6827ef8c2f1a5be2fadb))
+* **resolveConfig:** remove alias "reInitializePackageJson" ([acc4b0a](https://github.com/nodkz/mongodb-memory-server/commit/acc4b0a41f70cee240a4c062140cd14e694414ab))
+* **utils:** add function "pathExists" ([4114d27](https://github.com/nodkz/mongodb-memory-server/commit/4114d27d73a6b34a7b59edc1b86d22723061ec89))
+
+
+### Refactor
+
+* **getos:** replace "promisify" with "fs.promises" ([60e184b](https://github.com/nodkz/mongodb-memory-server/commit/60e184bb294031e151a40cf668ebff2fd09734ed))
+* **MongoBinary:** replace "promisify" with "fs.promises" ([5a769f3](https://github.com/nodkz/mongodb-memory-server/commit/5a769f3fbd32b1be3e6b1413d07362047838f995))
+* **MongoBinaryDownload:** replace "existsSync" with "utils.pathExists" ([d8de1cc](https://github.com/nodkz/mongodb-memory-server/commit/d8de1cc8d0601f48146d7ae34a00af058a87e5db))
+* **MongoBinaryDownload:** replace "promisify" with "fs.promises" ([911a922](https://github.com/nodkz/mongodb-memory-server/commit/911a922c92e8cf177604f33813adfb6fb98c694c))
+* **resolveConfig:** remove unnecessary optional chain ([1c6578d](https://github.com/nodkz/mongodb-memory-server/commit/1c6578d22a311c686ba49eec2ad8afb856eca4a4))
+* **utils:** assertion: remove error code from default error ([bbad7c4](https://github.com/nodkz/mongodb-memory-server/commit/bbad7c4d7036aa608262b7ee2fd41d1dedd4e6dc))
+
+
+### Fixes
+
+* **getos:** replace "not undefined" with "envToBool" ([7fde8be](https://github.com/nodkz/mongodb-memory-server/commit/7fde8beec831edf5d5f6cb2c03646ab182a7ccbe))
+* **MongoBinary:** getSystemPath: also check for execute permission ([a501842](https://github.com/nodkz/mongodb-memory-server/commit/a501842e6c64575542cf976628f66a775a3c7d39))
+
+
+### Style
+
+* **README:** environment variables: add legend for booleans ([17b1937](https://github.com/nodkz/mongodb-memory-server/commit/17b193714870427878058da2ee353808179545c0))
+* rename import "promises" (from fs) to "fspromises" everywhere ([f876670](https://github.com/nodkz/mongodb-memory-server/commit/f876670aaecc3b74ca4a85a80d804c137a40d572))
+* **eslintrc:** add environment "node" ([8f3ed19](https://github.com/nodkz/mongodb-memory-server/commit/8f3ed194f0a2a19c551be076c99ff2af763fe9f5))
+* **eslintrc:** add rule "padding-line-between-statements" for "function" & "class" ([6a0ebd4](https://github.com/nodkz/mongodb-memory-server/commit/6a0ebd43d63785c3457487d2d9834950adf08b30))
+* **eslintrc:** add rule "padding-line-between-statements" for "if" ([3efdb47](https://github.com/nodkz/mongodb-memory-server/commit/3efdb4770b27b996ad75f6b645d99369ebb672f4))
+* **eslintrc:** add rule "padding-line-between-statements" for "import" ([3bfc4ef](https://github.com/nodkz/mongodb-memory-server/commit/3bfc4ef8783557b2e451093f95be8b03c5d1696a))
+* **eslintrc:** add rule "padding-line-between-statements" for "return" ([05b02d2](https://github.com/nodkz/mongodb-memory-server/commit/05b02d231eb70d77e87005943632539a7ddeec49))
+* **eslintrc:** comma-dangle: change "functions" to "never" ([0bf9c3e](https://github.com/nodkz/mongodb-memory-server/commit/0bf9c3e5935ef493877110607ca2e4904942df9e))
+* **eslintrc:** set rule "no-else-return" to "warn" ([cb242e9](https://github.com/nodkz/mongodb-memory-server/commit/cb242e97e738652aba493e80850dfd39059c2dd8))
+* **eslintrc:** set rule "no-unused-expressions" to warn ([d08b293](https://github.com/nodkz/mongodb-memory-server/commit/d08b293f9be929fe159951427a72c030c0e776c1))
+* **MongoBinaryDownload:** makeMD5check: add more tsdoc ([911a09a](https://github.com/nodkz/mongodb-memory-server/commit/911a09a141143bf4fa6190b3b52dc47594ac2af3))
+* **README:** fix missing "MONGOMS_" on "SKIP_OS_RELEASE" ([e352495](https://github.com/nodkz/mongodb-memory-server/commit/e35249523a275fe7b83a31420aa3c0210349cb60))
+* **utils:** add more tsdoc to "statPath" & "pathExists" ([3b36143](https://github.com/nodkz/mongodb-memory-server/commit/3b36143c243497118d4f4fc757bf42305bd36b79))
+
 ## [7.0.0-beta.9](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.8...v7.0.0-beta.9) (2020-11-02)
 
 
