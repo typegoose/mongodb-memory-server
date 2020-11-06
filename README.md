@@ -268,14 +268,14 @@ const replSet = new MongoMemoryReplSet({
 
 ### Options which can be set via ENVIRONMENT variables
 
-*`=any` means if value is defined at all*
+*`=1` means booleans, allowed values for booleans are: (case-insensitive) `1 on yes true`*
 
 ```sh
 MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
 MONGOMS_PLATFORM=linux
 MONGOMS_ARCH=x64
 MONGOMS_VERSION=3
-MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
+MONGOMS_DEBUG=1 # enable debug for all MongoMS files
 MONGOMS_DOWNLOAD_MIRROR=host # your mirror host to download the mongodb binary
 MONGOMS_DOWNLOAD_URL=url # full URL to download the mongodb binary
 MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
