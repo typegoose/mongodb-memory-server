@@ -4,11 +4,11 @@ import path from 'path';
 import LockFile from 'lockfile';
 import mkdirp from 'mkdirp';
 import findCacheDir from 'find-cache-dir';
-import { execSync } from 'child_process';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import { assertion, isNullOrUndefined, pathExists } from './utils';
+import { spawnSync } from 'child_process';
 
 const log = debug('MongoMS:MongoBinary');
 
@@ -157,11 +157,8 @@ export class MongoBinary {
       binaryPath = await this.getSystemPath(options.systemBinary);
 
       if (binaryPath) {
-        if (binaryPath.indexOf(' ') >= 0) {
-          binaryPath = `"${binaryPath}"`;
-        }
-
-        const binaryVersion = execSync(`${binaryPath} --version`)
+        log(`Spawning binaryPath "${binaryPath}" to get version`);
+        const binaryVersion = spawnSync(binaryPath, ['--version'])
           .toString()
           .split('\n')[0]
           .split(' ')[2];

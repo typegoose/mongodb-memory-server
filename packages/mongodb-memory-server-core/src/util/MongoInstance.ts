@@ -1,6 +1,5 @@
-import { ChildProcess, SpawnOptions } from 'child_process';
-import { default as spawnChild } from 'cross-spawn';
-import path from 'path';
+import { ChildProcess, fork, spawn, SpawnOptions } from 'child_process';
+import path, { resolve } from 'path';
 import MongoBinary from './MongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import debug from 'debug';
@@ -310,7 +309,7 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceLaunched
    */
   _launchMongod(mongoBin: string): ChildProcess {
-    const childProcess = spawnChild(mongoBin, this.prepareCommandArgs(), {
+    const childProcess = spawn(resolve(mongoBin), this.prepareCommandArgs(), {
       ...this.spawnOpts,
       stdio: 'pipe', // ensure that stdio is always an pipe, regardless of user input
     });
@@ -337,29 +336,30 @@ export class MongoInstance extends EventEmitter {
   _launchKiller(parentPid: number, childPid: number): ChildProcess {
     this.debug(`Called MongoInstance._launchKiller(parent: ${parentPid}, child: ${childPid}):`);
     // spawn process which kills itself and mongo process if current process is dead
-    const killer = spawnChild(
-      process.env['NODE'] ?? process.argv[0], // try Environment variable "NODE" before using argv[0]
-      [
-        path.resolve(__dirname, '../../scripts/mongo_killer.js'),
-        parentPid.toString(),
-        childPid.toString(),
-      ],
-      { stdio: 'pipe' }
+    const killer = fork(
+      path.resolve(__dirname, '../../scripts/mongo_killer.js'),
+      [parentPid.toString(), childPid.toString()],
+      {
+        detached: true,
+        stdio: 'ignore', // stdio cannot be done with an detached process cross-systems and without killing the fork on parent termination
+      }
     );
 
-    killer.stdout?.on('data', (data) => {
-      this.debug(`[MongoKiller]: ${data}`);
-    });
+    // killer.stdout?.on('data', (data) => {
+    //   this.debug(`[MongoKiller]: ${data}`);
+    // });
 
-    killer.stderr?.on('data', (data) => {
-      this.debug(`[MongoKiller]: ${data}`);
-    });
+    // killer.stderr?.on('data', (data) => {
+    //   this.debug(`[MongoKiller]: ${data}`);
+    // });
 
-    ['exit', 'message', 'disconnect', 'error'].forEach((type) => {
-      killer.on(type, (...args) => {
-        this.debug(`[MongoKiller]: ${type} - ${JSON.stringify(args)}`);
-      });
-    });
+    // ['exit', 'message', 'disconnect', 'error'].forEach((type) => {
+    //   killer.on(type, (...args) => {
+    //     this.debug(`[MongoKiller]: ${type} - ${JSON.stringify(args)}`);
+    //   });
+    // });
+
+    killer.unref(); // dont force an exit on the fork when parent is exiting
 
     this.emit(MongoInstanceEvents.killerLaunched);
 
