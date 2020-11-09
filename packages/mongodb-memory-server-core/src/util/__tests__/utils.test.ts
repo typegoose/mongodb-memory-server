@@ -1,4 +1,5 @@
 import { Stats, promises as fspromises } from 'fs';
+import { ChildProcess } from 'child_process';
 import * as utils from '../utils';
 
 describe('utils', () => {
@@ -48,6 +49,20 @@ describe('utils', () => {
       } catch (err) {
         expect(err.message).toEqual('Assert failed - no custom error');
       }
+    });
+  });
+
+  describe('killProcess', () => {
+    it('should early return if given child pid is not alive', async () => {
+      // mock "process.kill" because when mocking "isAlive", "killProcess" wont actually use the mock
+      jest.spyOn(process, 'kill').mockImplementationOnce(() => {
+        throw new Error('hello');
+      });
+      jest.useFakeTimers(); // fake times to have spys on "setTimeout" (and ensure they never get run)
+
+      await utils.killProcess({ pid: 1001 } as ChildProcess, 'test');
+      expect(process.kill).toHaveBeenCalledWith(1001, 0);
+      expect(setTimeout).not.toHaveBeenCalled();
     });
   });
 });
