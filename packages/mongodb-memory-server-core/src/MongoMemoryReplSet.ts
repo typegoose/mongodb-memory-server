@@ -324,8 +324,6 @@ export class MongoMemoryReplSet extends EventEmitter {
   async start(): Promise<void> {
     log('start');
     switch (this._state) {
-      // case MongoMemoryReplSetStateEnum.init:
-      //   return this.waitUntilRunning();
       case MongoMemoryReplSetStates.stopped:
         break;
       case MongoMemoryReplSetStates.running:
