@@ -30,21 +30,20 @@ export class MongoBinary {
   /**
    * Probe if the provided "systemBinary" is an existing path
    * @param systemBinary The Path to probe for an System-Binary
-   * @return System Binary path or empty string
+   * @return System Binary path or undefined
    */
-  static async getSystemPath(systemBinary: string): Promise<string> {
-    let binaryPath = '';
-
+  static async getSystemPath(systemBinary: string): Promise<string | undefined> {
     try {
       await fspromises.access(systemBinary, constants.X_OK); // check if the provided path exists and has the execute bit for current user
 
       log(`MongoBinary: found system binary path at "${systemBinary}"`);
-      binaryPath = systemBinary;
+
+      return systemBinary; // returns if "access" is successful
     } catch (err) {
       log(`MongoBinary: can't find system binary at "${systemBinary}".\n${err.message}`);
     }
 
-    return binaryPath;
+    return undefined;
   }
 
   /**
