@@ -263,13 +263,28 @@ describe('MongoMemoryServer', () => {
 
     it('should throw an error if state is not "new" or "stopped"', async () => {
       const mongoServer = new MongoMemoryServer();
-      // @ts-expect-error because "_state" is protected
-      mongoServer._state = MongoMemoryServerStates.starting;
-      try {
-        await mongoServer.start();
-        fail('Expected "start" to fail');
-      } catch (err) {
-        expect(err.message).toEqual('Already in state running/starting or unkown');
+      // state = starting
+      {
+        // @ts-expect-error because "_state" is protected
+        mongoServer._state = MongoMemoryServerStates.starting;
+        try {
+          await mongoServer.start();
+          fail('Expected "start" to fail');
+        } catch (err) {
+          expect(err.message).toEqual('Already in state running/starting or unkown');
+        }
+      }
+
+      // state = running
+      {
+        // @ts-expect-error because "_state" is protected
+        mongoServer._state = MongoMemoryServerStates.running;
+        try {
+          await mongoServer.start();
+          fail('Expected "start" to fail');
+        } catch (err) {
+          expect(err.message).toEqual('Already in state running/starting or unkown');
+        }
       }
     });
 
