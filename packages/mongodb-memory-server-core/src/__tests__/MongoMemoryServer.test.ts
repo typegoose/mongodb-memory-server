@@ -400,6 +400,20 @@ describe('MongoMemoryServer', () => {
       expect(await mongoServer.stop()).toEqual(true);
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
     });
+
+    it('should return "true" if instance is already stopped', async () => {
+      const mongoServer = new MongoMemoryServer();
+      // @ts-expect-error because "_instanceInfo" is protected
+      mongoServer._instanceInfo = {};
+      // @ts-expect-error because "_state" is protected
+      mongoServer._state = MongoMemoryServerStates.stopped;
+      jest.spyOn(utils, 'isNullOrUndefined');
+      jest.spyOn(utils, 'assertion');
+
+      expect(await mongoServer.stop()).toEqual(true);
+      expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
+      expect(utils.assertion).not.toHaveBeenCalled();
+    });
   });
 
   describe('create()', () => {
