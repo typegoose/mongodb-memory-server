@@ -267,7 +267,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     };
 
     if (baseOpts.args) {
-      opts.args = (this._replSetOpts.args || []).concat(baseOpts.args);
+      opts.args = this._replSetOpts.args.concat(baseOpts.args);
     }
     if (baseOpts.port) {
       opts.port = baseOpts.port;
