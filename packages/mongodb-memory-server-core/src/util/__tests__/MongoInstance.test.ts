@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as tmp from 'tmp';
 import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
@@ -129,7 +130,7 @@ describe('MongodbInstance', () => {
       binary: { version },
     });
 
-    expect(mongod.getPid()).toBeGreaterThan(0);
+    expect(mongod.childProcess!.pid).toBeGreaterThan(0);
 
     await mongod.kill();
   });
@@ -155,8 +156,8 @@ describe('MongodbInstance', () => {
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version },
     });
-    const pid: any = mongod.getPid();
-    const killerPid: any = mongod.killerProcess?.pid;
+    const pid: any = mongod.childProcess!.pid;
+    const killerPid: any = mongod.killerProcess!.pid;
     expect(pid).toBeGreaterThan(0);
     expect(killerPid).toBeGreaterThan(0);
 
@@ -172,8 +173,7 @@ describe('MongodbInstance', () => {
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version: '4.0.3' },
     });
-    const pid: any = mongod.getPid();
-    expect(pid).toBeGreaterThan(0);
+    expect(mongod.childProcess!.pid).toBeGreaterThan(0);
     await mongod.kill();
   });
 

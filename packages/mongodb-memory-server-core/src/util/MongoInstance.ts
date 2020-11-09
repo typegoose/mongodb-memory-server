@@ -297,13 +297,6 @@ export class MongoInstance extends EventEmitter {
   }
 
   /**
-   * Get the PID of the mongod instance
-   */
-  getPid(): number | undefined {
-    return this.childProcess?.pid;
-  }
-
-  /**
    * Actually launch mongod
    * @param mongoBin The binary to run
    * @fires MongoInstance#instanceLaunched

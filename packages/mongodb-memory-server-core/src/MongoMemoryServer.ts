@@ -464,9 +464,7 @@ export class MongoMemoryServer extends EventEmitter {
     );
 
     log(
-      `Shutdown MongoDB server on port ${
-        this._instanceInfo.port
-      } with pid ${this._instanceInfo.instance.getPid()}` // "undefined" would say more than ""
+      `Shutdown MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.childProcess?.pid}` // "undefined" would say more than ""
     );
     await this._instanceInfo.instance.kill();
 
