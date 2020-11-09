@@ -7,7 +7,7 @@ import MongoMemoryServer, {
   MongoMemoryServerStates,
 } from '../MongoMemoryServer';
 import MongoInstance from '../util/MongoInstance';
-import { assertion, isNullOrUndefined, statPath, uriTemplate } from '../util/utils';
+import * as utils from '../util/utils';
 import * as semver from 'semver';
 
 tmp.setGracefulCleanup();
@@ -78,11 +78,11 @@ describe('MongoMemoryServer', () => {
         },
       });
 
-      assertion(!isNullOrUndefined(mongoServer.instanceInfo));
-      assertion(!isNullOrUndefined(mongoServer.auth));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
 
       const con: MongoClient = await MongoClient.connect(
-        uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
+        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
         {
           useNewUrlParser: true,
           useUnifiedTopology: true,
@@ -117,11 +117,11 @@ describe('MongoMemoryServer', () => {
         },
       });
 
-      assertion(!isNullOrUndefined(mongoServer.instanceInfo));
-      assertion(!isNullOrUndefined(mongoServer.auth));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
 
       const con: MongoClient = await MongoClient.connect(
-        uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
+        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
         {
           useNewUrlParser: true,
           useUnifiedTopology: true,
@@ -181,11 +181,11 @@ describe('MongoMemoryServer', () => {
         },
       });
 
-      assertion(!isNullOrUndefined(mongoServer.instanceInfo));
-      assertion(!isNullOrUndefined(mongoServer.auth));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
 
       const con: MongoClient = await MongoClient.connect(
-        uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
+        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
         {
           useNewUrlParser: true,
           useUnifiedTopology: true,
@@ -235,11 +235,11 @@ describe('MongoMemoryServer', () => {
         },
       });
 
-      assertion(!isNullOrUndefined(mongoServer.instanceInfo));
-      assertion(!isNullOrUndefined(mongoServer.auth));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
 
       const con: MongoClient = await MongoClient.connect(
-        uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
+        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
         {
           useNewUrlParser: true,
           useUnifiedTopology: true,
@@ -393,12 +393,12 @@ describe('MongoMemoryServer', () => {
       expect(mongoServer.instanceInfo).toBeFalsy();
     });
 
-    it('should return "true" if no instance is running', async () => {
+    it('should return "true" if no instance was ever running', async () => {
       const mongoServer = new MongoMemoryServer();
-      jest.spyOn(mongoServer, 'ensureInstance');
+      jest.spyOn(utils, 'isNullOrUndefined');
 
       expect(await mongoServer.stop()).toEqual(true);
-      expect(mongoServer.ensureInstance).not.toHaveBeenCalled();
+      expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -439,7 +439,7 @@ describe('MongoMemoryServer', () => {
     it('should return correct value without "otherDb" being provided', async () => {
       const port: number = mongoServer.instanceInfo!.port;
       const instanceInfo = mongoServer.instanceInfo;
-      assertion(instanceInfo, new Error('"MongoServer.instanceInfo" should be defined!'));
+      utils.assertion(instanceInfo, new Error('"MongoServer.instanceInfo" should be defined!'));
       expect(mongoServer.getUri()).toEqual(`mongodb://127.0.0.1:${port}/${instanceInfo.dbName}`);
     });
   });
@@ -459,7 +459,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.cleanup();
       expect(fspromises.stat).not.toHaveBeenCalled();
       expect(semver.lt).not.toHaveBeenCalled();
-      expect(await statPath(dbPath)).toBeUndefined();
+      expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
     });
@@ -471,7 +471,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.cleanup(true);
       expect(fspromises.stat).toHaveBeenCalledTimes(1);
       expect(semver.lt).not.toHaveBeenCalled();
-      expect(await statPath(dbPath)).toBeUndefined();
+      expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
     });
@@ -484,7 +484,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.cleanup(true);
       expect(fspromises.stat).toHaveBeenCalledTimes(1);
       expect(semver.lt).toHaveBeenCalledTimes(1);
-      expect(await statPath(dbPath)).toBeUndefined();
+      expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
     });
@@ -528,16 +528,16 @@ describe('MongoMemoryServer', () => {
     const mongoServer = await MongoMemoryServer.create();
     const dbPath = mongoServer.instanceInfo!.dbPath;
     await mongoServer.stop(false);
-    expect(await statPath(dbPath)).toBeTruthy();
+    expect(await utils.statPath(dbPath)).toBeTruthy();
     expect(mongoServer.instanceInfo).toBeTruthy();
     await mongoServer.start();
     expect(mongoServer.instanceInfo!.dbPath).toEqual(dbPath);
     await mongoServer.stop(false);
-    expect(await statPath(dbPath)).toBeTruthy();
+    expect(await utils.statPath(dbPath)).toBeTruthy();
     expect(mongoServer.instanceInfo).toBeTruthy();
 
     await mongoServer.cleanup();
-    expect(await statPath(dbPath)).toBeFalsy();
+    expect(await utils.statPath(dbPath)).toBeFalsy();
     expect(mongoServer.instanceInfo).toBeFalsy();
     expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
   });
