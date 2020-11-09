@@ -415,7 +415,6 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @throws if state is "stopped" (cannot wait on something that dosnt start)
    */
   async waitUntilRunning(): Promise<void> {
-    // TODO: this seems like it dosnt catch if an instance fails, and runs forever
     await ensureAsync();
     log('waitUntilRunning:', this._state);
     switch (this._state) {
