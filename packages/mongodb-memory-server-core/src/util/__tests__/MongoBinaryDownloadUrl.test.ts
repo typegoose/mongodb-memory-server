@@ -358,6 +358,19 @@ describe('MongoBinaryDownloadUrl', () => {
       version: '3.6.3',
     });
 
+    it('should throw an error if an version below Linux Mint 17 is given', () => {
+      try {
+        downloadUrl.getMintVersionString({
+          os: 'linux',
+          dist: 'Linux Mint',
+          release: '16',
+        });
+        fail('Expected "getMintVersionString" to throw');
+      } catch (err) {
+        expect(err.message).toEqual('Mint Versions under 17 are not supported!');
+      }
+    });
+
     it('should return a archive name for Linux Mint 17', () => {
       expect(
         downloadUrl.getMintVersionString({
