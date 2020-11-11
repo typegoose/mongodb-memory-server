@@ -1,3 +1,15 @@
+## [7.0.0-beta.11](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.10...v7.0.0-beta.11) (2020-11-11)
+
+
+### Features
+
+* remove cross-spawn ([c67ee8f](https://github.com/nodkz/mongodb-memory-server/commit/c67ee8f9330ade069dd00f9d49dd0f132f908048))
+
+
+### Style
+
+* **MongoInstance:** _launchKiller: remove commented-out code ([132917f](https://github.com/nodkz/mongodb-memory-server/commit/132917fac63745b351dfd73eb30f7f54962ddf37))
+
 ## [7.0.0-beta.10](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.9...v7.0.0-beta.10) (2020-11-06)
 
 
