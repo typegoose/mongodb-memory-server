@@ -345,20 +345,6 @@ export class MongoInstance extends EventEmitter {
       }
     );
 
-    // killer.stdout?.on('data', (data) => {
-    //   this.debug(`[MongoKiller]: ${data}`);
-    // });
-
-    // killer.stderr?.on('data', (data) => {
-    //   this.debug(`[MongoKiller]: ${data}`);
-    // });
-
-    // ['exit', 'message', 'disconnect', 'error'].forEach((type) => {
-    //   killer.on(type, (...args) => {
-    //     this.debug(`[MongoKiller]: ${type} - ${JSON.stringify(args)}`);
-    //   });
-    // });
-
     killer.unref(); // dont force an exit on the fork when parent is exiting
 
     this.emit(MongoInstanceEvents.killerLaunched);
