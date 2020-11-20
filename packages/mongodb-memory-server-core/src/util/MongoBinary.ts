@@ -12,10 +12,6 @@ import { spawnSync } from 'child_process';
 
 const log = debug('MongoMS:MongoBinary');
 
-export interface MongoBinaryCache {
-  [version: string]: string;
-}
-
 export interface MongoBinaryOpts {
   version?: string;
   downloadDir?: string;
