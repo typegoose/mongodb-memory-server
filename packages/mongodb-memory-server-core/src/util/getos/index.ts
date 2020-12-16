@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { promises as fspromises } from 'fs';
 import { platform } from 'os';
 import { execSync } from 'child_process';
 import { join } from 'path';
@@ -127,8 +127,8 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 async function tryLSBRelease(): Promise<LinuxOS | undefined> {
   try {
     // use upstream lsb file if it exists (like in linux mint)
-    if (fs.existsSync('/etc/upstream-release/lsb-release')) {
-      return parseLSB(fs.readFileSync('/etc/upstream-release/lsb-release', 'utf8'));
+    if (await fspromises.stat('/etc/upstream-release/lsb-release')) {
+      return parseLSB(await fspromises.readFile('/etc/upstream-release/lsb-release', 'utf8'));
     }
 
     // exec this for safety, because "/etc/lsb-release" could be changed to another file
@@ -149,7 +149,7 @@ async function tryLSBRelease(): Promise<LinuxOS | undefined> {
  */
 async function tryOSRelease(): Promise<LinuxOS | undefined> {
   try {
-    const os = fs.readFileSync('/etc/os-release', 'utf-8');
+    const os = await fspromises.readFile('/etc/os-release', 'utf-8');
 
     return parseOS(os.toString());
   } catch (err) {
@@ -174,7 +174,7 @@ async function tryOSRelease(): Promise<LinuxOS | undefined> {
  */
 async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
   try {
-    const file = fs.readdirSync('/etc').filter(
+    const file = (await fspromises.readdir('/etc')).filter(
       (v) =>
         // match if file ends with "-release"
         v.match(/.*-release$/im) &&
@@ -186,7 +186,7 @@ async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
       throw new Error('No release file found!');
     }
 
-    const os = fs.readFileSync(join('/etc/', file));
+    const os = await fspromises.readFile(join('/etc/', file));
 
     return parseOS(os.toString());
   } catch (err) {
