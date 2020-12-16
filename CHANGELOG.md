@@ -1,3 +1,31 @@
+## [7.0.0-beta.12](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.11...v7.0.0-beta.12) (2020-12-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **MongoInstance:** remove function "MongoInstance.getPid", replace with "MongoInstance.childProcess?.pid"
+
+### Features
+
+* **MongoInstance:** remove function "getPid" ([f40da9a](https://github.com/nodkz/mongodb-memory-server/commit/f40da9ac167ba0da65459687c5cfcc990d07a9b0))
+
+
+### Fixes
+
+* **MongoMemoryReplSet:** remove unnecessary default to empty array ([2035845](https://github.com/nodkz/mongodb-memory-server/commit/203584526ff4b76f7998dfa12a182b50a206bf28))
+
+
+### Style
+
+* **MongoMemoryReplSet:** remove commented-out case ([8e3ae46](https://github.com/nodkz/mongodb-memory-server/commit/8e3ae46b8f13aaea1ac0e1eac0c1c6f25e484e38))
+* **MongoMemoryReplSet:** remove TODO ([5645a87](https://github.com/nodkz/mongodb-memory-server/commit/5645a8750d0da6cb31425820616d43e234eb4c37)), closes [#392](https://github.com/nodkz/mongodb-memory-server/issues/392)
+
+
+### Refactor
+
+* **MongoBinary:** getSystemPath: return "undefined" instead of empty string ([10039f9](https://github.com/nodkz/mongodb-memory-server/commit/10039f99ceea0321ddfa8a42e5039059cfeba6c4))
+* **MongoBinary:** remove unused interface "MongoBinaryCache" ([025df2e](https://github.com/nodkz/mongodb-memory-server/commit/025df2ea32b0b4233c6d2be57646570311c21139))
+
 ## [7.0.0-beta.11](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.10...v7.0.0-beta.11) (2020-11-11)
 
 
