@@ -150,22 +150,6 @@ export class MongoBinaryDownloadUrl {
    */
   getLinuxOSVersionString(os: LinuxOS): string {
     if (/ubuntu/i.test(os.id_like || os.dist)) {
-      if (/^linux\s?mint\s*$/i.test(os.dist)) {
-        const mintToUbuntuRelease: Record<number, string> = {
-          17: '14.04',
-          18: '16.04',
-          19: '18.04',
-          20: '20.04',
-        };
-
-        return this.getUbuntuVersionString({
-          ...os,
-          dist: 'ubuntu',
-          release:
-            mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[20],
-        });
-      }
-
       return this.getUbuntuVersionString(os);
     }
     if (/suse/i.test(os.dist)) {
@@ -293,6 +277,40 @@ export class MongoBinaryDownloadUrl {
    */
   getUbuntuVersionString(os: LinuxOS): string {
     const ubuntuYear: number = parseInt(os.release.split('.')[0], 10);
+
+    if (/^linux\s?mint\s*$/i.test(os.dist)) {
+      const mintToUbuntuRelease: Record<number, string> = {
+        17: '14.04',
+        18: '16.04',
+        19: '18.04',
+        20: '20.04',
+      };
+
+      return this.getUbuntuVersionString({
+        ...os,
+        dist: 'ubuntu',
+        release: mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[20],
+      });
+    }
+
+    if (/^elementary\s?OS\s*$/i.test(os.dist)) {
+      const elementaryToUbuntuRelease: Record<number, string> = {
+        3: '14.04',
+        4: '16.04',
+        5: '18.04',
+        6: '20.04',
+      };
+
+      // untangle elemenatary versioning from hell https://en.wikipedia.org/wiki/Elementary_OS#Development
+      const [elementaryMajor, elementaryMinor] = os.release.split('.').map((el) => parseInt(el));
+      const realMajor = elementaryMajor || elementaryMinor;
+
+      return this.getUbuntuVersionString({
+        ...os,
+        dist: 'ubuntu',
+        release: elementaryToUbuntuRelease[realMajor] || elementaryToUbuntuRelease[6],
+      });
+    }
 
     if (os.release === '14.10') {
       return 'ubuntu1410-clang';
