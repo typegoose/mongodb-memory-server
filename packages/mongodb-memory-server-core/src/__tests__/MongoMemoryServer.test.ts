@@ -271,7 +271,7 @@ describe('MongoMemoryServer', () => {
           await mongoServer.start();
           fail('Expected "start" to fail');
         } catch (err) {
-          expect(err.message).toEqual('Already in state running/starting or unkown');
+          expect(err.message).toEqual('Already in state running/starting or unknown');
         }
       }
 
@@ -283,7 +283,7 @@ describe('MongoMemoryServer', () => {
           await mongoServer.start();
           fail('Expected "start" to fail');
         } catch (err) {
-          expect(err.message).toEqual('Already in state running/starting or unkown');
+          expect(err.message).toEqual('Already in state running/starting or unknown');
         }
       }
     });

@@ -1,5 +1,4 @@
 import getOS, { AnyOS, LinuxOS } from './getos';
-import { execSync } from 'child_process';
 import resolveConfig, { ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
