@@ -85,6 +85,38 @@ describe('MongoBinaryDownloadUrl', () => {
       );
     });
 
+    it('for manjaro', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '4.4.2',
+        os: {
+          os: 'linux',
+          dist: 'ManjaroLinux',
+          release: '20.2',
+        },
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
+      );
+    });
+
+    it('for arch', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '4.4.2',
+        os: {
+          os: 'linux',
+          dist: 'Arch',
+          release: 'rolling',
+        },
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
+      );
+    });
+
     describe('for win32 & windows', () => {
       it('3.6 (win32)', async () => {
         const du = new MongoBinaryDownloadUrl({

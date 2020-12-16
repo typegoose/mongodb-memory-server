@@ -21,10 +21,14 @@ export class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
   version: string;
+  major: number;
+  minor: number;
   os: AnyOS | undefined;
 
   constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
     this.version = version;
+    this.major = parseInt(this.version.split('.')[0], 10)
+    this.minor = parseInt(this.version.split('.')[1], 10)
     this.platform = this.translatePlatform(platform);
     this.arch = this.translateArch(arch, this.platform);
     this.os = os;
@@ -164,14 +168,22 @@ export class MongoBinaryDownloadUrl {
       return this.getDebianVersionString(os);
     } else if (/^linux\s?mint\s*$/i.test(os.dist)) {
       return this.getMintVersionString(os);
-    } else if (/arch/i.test(os.dist)) {
-      console.warn('There is no offical build of MongoDB for ArchLinux!');
-    } else if (/alpine/i.test(os.dist)) {
-      console.warn('There is no offical build of MongoDB for Alpine!');
-    } else if (/unkown/i.test(os.dist)) {
-      // "unkown" is likely to happen if no release file / command could be found
+    } else if (/(arch|manjarolinux)/i.test(os.dist)) {
       console.warn(
-        'Couldnt parse dist infomation, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
+        `There is no official build of MongoDB for ArchLinux (using ${os.dist}). Falling back to ubuntu release.`
+      );
+      // falling back to ubuntu similar to https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mongodb-bin
+      return this.getUbuntuVersionString({
+        os: 'linux',
+        dist: 'Ubuntu Linux',
+        release: '20.04',
+      });
+    } else if (/alpine/i.test(os.dist)) {
+      console.warn('There is no official build of MongoDB for Alpine!');
+    } else if (/unknown/i.test(os.dist)) {
+      // "unknown" is likely to happen if no release file / command could be found
+      console.warn(
+        "Couldn't parse dist information, please report this to https://github.com/nodkz/mongodb-memory-server/issues"
       );
     } else {
       // warn if no case for the *parsed* distro is found
@@ -179,13 +191,13 @@ export class MongoBinaryDownloadUrl {
     }
 
     // warn for the fallback
-    console.warn(`Falling back to legacy MongoDB build!`);
+    console.warn(`Falling back to legacy MongoDB build for os "${os.dist}"!`);
 
     return this.getLegacyVersionString(os);
   }
 
   /**
-   * Get the version string for Debain
+   * Get the version string for Debian
    * @param os LinuxOS Object
    */
   getDebianVersionString(os: LinuxOS): string {
@@ -220,7 +232,6 @@ export class MongoBinaryDownloadUrl {
     } else if (fedoraVer < 12 && fedoraVer >= 6) {
       name += '55';
     }
-
     return name;
   }
 
@@ -254,14 +265,15 @@ export class MongoBinaryDownloadUrl {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getElementaryOSVersionString(os: LinuxOS): string {
     // Elementary specific - get used ubuntu version
-    const ubuntuVersion = execSync('/usr/bin/lsb_release -u -rs');
+    const cmd = '/usr/bin/lsb_release -u -rs';
+    const ubuntuVersion = execSync(cmd);
     try {
       // confirm it is actually a version, otherwise throw an error
       parseFloat(ubuntuVersion.toString());
 
       return `ubuntu${ubuntuVersion.toString().replace('.', '').trim()}`;
     } catch (err) {
-      console.error('ElementaryOS "lsb_relese -u -rs" couldnt be executed!');
+      console.error(`ElementaryOS "${cmd}" couldn\'t be executed!`);
       throw err;
     }
   }
@@ -330,14 +342,16 @@ export class MongoBinaryDownloadUrl {
     if (os.release === '14.10') {
       version = '1410-clang';
     } else if (majorVer >= 18) {
-      if (this.version && this.version.indexOf('3.') === 0) {
+      if (this.major === 3) {
         // For MongoDB 3.x using 1604 binaries, download distro does not have builds for Ubuntu 1804 AND 2004
         // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
         version = '1604';
-      } else {
-        // See fulllist of versions https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
-        // For MongoDB <4.4 using 1804 binaries, because 2004 dosnt have anything below 4.4
+      } else if ((this.major === 4 && this.minor <= 3) || majorVer === 18) {
+        // See full list of versions https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
+        // For MongoDB <4.4 using 1804 binaries, because 2004 doesn't have anything below 4.4
         version = '1804';
+      } else if (majorVer >= 20) {
+        name += '2004';
       }
     }
 

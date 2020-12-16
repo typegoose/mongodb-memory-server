@@ -247,7 +247,7 @@ export class MongoBinaryDownload {
     } else {
       throw new Error(
         `MongoBinaryDownload: unsupported archive ${mongoDBArchive} (downloaded from ${
-          this._downloadingUrl ?? 'unkown'
+          this._downloadingUrl ?? 'unknown'
         }). Broken archive from MongoDB Provider?`
       );
     }
@@ -255,7 +255,7 @@ export class MongoBinaryDownload {
     if (!(await pathExists(path.resolve(this.downloadDir, this.version, binaryName)))) {
       throw new Error(
         `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${
-          this._downloadingUrl ?? 'unkown'
+          this._downloadingUrl ?? 'unknown'
         }). Broken archive from MongoDB Provider?`
       );
     }
@@ -351,7 +351,7 @@ export class MongoBinaryDownload {
   }
 
   /**
-   * Downlaod given httpOptions to tempDownloadLocation, then move it to downloadLocation
+   * Download given httpOptions to tempDownloadLocation, then move it to downloadLocation
    * @param httpOptions The httpOptions directly passed to https.get
    * @param downloadLocation The location the File should be after the download
    * @param tempDownloadLocation The location the File should be while downloading
