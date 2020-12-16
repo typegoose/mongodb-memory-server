@@ -330,28 +330,27 @@ export class MongoBinaryDownloadUrl {
    * @param os LinuxOS Object
    */
   getUbuntuVersionString(os: LinuxOS): string {
-    let name = 'ubuntu';
-    const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
-    const ubuntuMajor: number = parseInt(ubuntuVer[0], 10);
+    const ubuntuYear: number = parseInt(os.release.split('.')[0], 10);
 
     if (os.release === '14.10') {
-      return (name += '1410-clang');
-    } else if (ubuntuMajor >= 18) {
-      if (semver.satisfies(this.version, '3.x.x')) {
-        // there are no MongoDB 3.x binary distributions for ubuntu > 16.04
-        // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
-        return (name += '1604');
-      }
-      if (semver.satisfies(this.version, '<=4.3.x')) {
-        // there are no MongoDB 4.(x < 4) binary distributions for ubuntu > 18.04
-        // https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
-        return (name += '1804');
-      }
+      return 'ubuntu1410-clang';
+    }
+
+    // there are no MongoDB 3.x binary distributions for ubuntu >= 18
+    // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
+    if (ubuntuYear >= 18 && semver.satisfies(this.version, '3.x.x')) {
+      return 'ubuntu1604';
+    }
+
+    // there are no MongoDB <=4.3.x binary distributions for ubuntu > 18
+    // https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
+    if (ubuntuYear > 18 && semver.satisfies(this.version, '<=4.3.x')) {
+      return 'ubuntu1804';
     }
 
     // for all cases where its just "10.10" -> "1010"
     // and because the "04" version always exists for ubuntu, use that as default
-    return (name += `${ubuntuMajor || 14}04`);
+    return `ubuntu${ubuntuYear || 14}04`;
   }
 
   /**
