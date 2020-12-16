@@ -112,7 +112,7 @@ async function getLinuxInformation(): Promise<LinuxOS> {
     return releaseOut;
   }
 
-  log("Couldn't find an release file");
+  log("Couldn't find a release file");
 
   // if none has worked, return unknown
   return {

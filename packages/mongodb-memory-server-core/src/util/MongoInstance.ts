@@ -427,7 +427,7 @@ export class MongoInstance extends EventEmitter {
       this.emit(MongoInstanceEvents.instancePrimary);
     } else if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
       // "[\d\.:]+" matches "0.0.0.0:0000" (IP:PORT)
-      const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNknown';
+      const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNKNOWN';
       this.emit(MongoInstanceEvents.instanceReplState, state);
 
       if (state !== 'PRIMARY') {

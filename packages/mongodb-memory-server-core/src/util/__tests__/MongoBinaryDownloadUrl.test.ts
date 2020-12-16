@@ -210,7 +210,7 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(await du.getDownloadUrl()).toBe(
         'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
       );
-      expect(console.warn).toHaveBeenCalledTimes(2);
+      expect(console.warn).toHaveBeenCalledTimes(1); // fallback warning
     });
 
     it('should allow overwrite with "ARCHIVE_NAME"', async () => {
@@ -479,7 +479,7 @@ describe('MongoBinaryDownloadUrl', () => {
       })
     ).toBe('');
 
-    expect(console.warn).toHaveBeenCalledTimes(2); // once "Unknown linux distro Peppermint" and once "Falling back to legacy MongoDB build!"
+    expect(console.warn).toHaveBeenCalledTimes(1); // fallback warning
   });
 
   describe('getLegacyVersionString', () => {

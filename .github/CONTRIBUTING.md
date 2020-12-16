@@ -43,7 +43,7 @@ Must be one of the following:
 * **chore**: Changes to the build process or auxiliary tools and libraries such as documentation generation
 * **revert**: Revert an commit
 * **dependencies**: Update field `dependencies` (/ `devDependencies`)
-* **release**: An Release Commit
+* **release**: A Release Commit
 
 look into [releaserc](../.releaserc.js) for corresponding versions
 

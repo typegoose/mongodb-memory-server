@@ -152,43 +152,46 @@ export class MongoBinaryDownloadUrl {
   getLinuxOSVersionString(os: LinuxOS): string {
     if (/ubuntu/i.test(os.dist)) {
       return this.getUbuntuVersionString(os);
-    } else if (/elementary OS/i.test(os.dist)) {
+    }
+    if (/elementary OS/i.test(os.dist)) {
       return this.getElementaryOSVersionString(os);
-    } else if (/suse/i.test(os.dist)) {
+    }
+    if (/suse/i.test(os.dist)) {
       return this.getSuseVersionString(os);
-    } else if (/rhel/i.test(os.dist) || /centos/i.test(os.dist) || /scientific/i.test(os.dist)) {
+    }
+    if (/rhel/i.test(os.dist) || /centos/i.test(os.dist) || /scientific/i.test(os.dist)) {
       return this.getRhelVersionString(os);
-    } else if (/fedora/i.test(os.dist)) {
+    }
+    if (/fedora/i.test(os.dist)) {
       return this.getFedoraVersionString(os);
-    } else if (/^linux\s?mint\s*$/i.test(os.dist)) {
+    }
+    if (/^linux\s?mint\s*$/i.test(os.dist)) {
       return this.getMintVersionString(os);
-    } else if (/debian/i.test(os.id_like || os.dist)) {
+    }
+    if (/debian/i.test(os.id_like || os.dist)) {
       return this.getDebianVersionString(os);
-    } else if (/arch/i.test(os.id_like || os.dist) || /(manjarolinux|arcolinux)/i.test(os.dist)) {
-      console.warn(
+    }
+    if (/arch/i.test(os.id_like || os.dist) || /(manjarolinux|arcolinux)/i.test(os.dist)) {
+      console.debug(
         `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu release.`
       );
 
-      // falling back to ubuntu similar to https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mongodb-bin
       return this.getUbuntuVersionString({
         os: 'linux',
         dist: 'Ubuntu Linux',
         release: '20.04',
       });
-    } else if (/alpine/i.test(os.dist)) {
-      console.warn('There is no official build of MongoDB for Alpine!');
-    } else if (/unknown/i.test(os.dist)) {
+    }
+    if (/unknown/i.test(os.dist)) {
       // "unknown" is likely to happen if no release file / command could be found
       console.warn(
         "Couldn't parse dist information, please report this to https://github.com/nodkz/mongodb-memory-server/issues"
       );
-    } else {
-      // warn if no case for the *parsed* distro is found
-      console.warn(`Unknown linux distro ${os.dist}`);
     }
 
-    // warn for the fallback
-    console.warn(`Falling back to legacy MongoDB build for os "${os.dist}"!`);
+    console.warn(
+      `Unknown/unsupported linux "${os.dist}(${os.id_like})". Falling back to legacy MongoDB build!`
+    );
 
     return this.getLegacyVersionString(os);
   }
