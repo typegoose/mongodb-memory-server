@@ -164,7 +164,7 @@ export class MongoBinaryDownloadUrl {
     if (/debian/i.test(os.id_like || os.dist)) {
       return this.getDebianVersionString(os);
     }
-    if (/arch/i.test(os.id_like || os.dist) || /(manjarolinux|arcolinux)/i.test(os.dist)) {
+    if (/arch/i.test(os.id_like || os.dist) || /(manjaro|arco)linux/i.test(os.dist)) {
       console.debug(
         `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu release.`
       );
