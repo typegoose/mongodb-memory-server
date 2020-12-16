@@ -135,7 +135,7 @@ export class MongoInstance extends EventEmitter {
    * @param msg The Message to log
    */
   private debug(msg: string): void {
-    const port = this.instanceOpts.port ?? 'unkown';
+    const port = this.instanceOpts.port ?? 'unknown';
     log(`Mongo[${port}]: ${msg}`);
   }
 
@@ -427,7 +427,7 @@ export class MongoInstance extends EventEmitter {
       this.emit(MongoInstanceEvents.instancePrimary);
     } else if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
       // "[\d\.:]+" matches "0.0.0.0:0000" (IP:PORT)
-      const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNKOWN';
+      const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNknown';
       this.emit(MongoInstanceEvents.instanceReplState, state);
 
       if (state !== 'PRIMARY') {

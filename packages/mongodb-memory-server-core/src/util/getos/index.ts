@@ -97,6 +97,7 @@ async function getLinuxInformation(): Promise<LinuxOS> {
   const osOut = await tryOSRelease();
 
   if (!isNullOrUndefined(lsbOut)) {
+    // add id_like info if available
     return { ...lsbOut, id_like: osOut?.id_like };
   }
 

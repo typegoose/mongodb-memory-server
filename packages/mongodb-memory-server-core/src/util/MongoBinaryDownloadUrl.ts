@@ -21,14 +21,10 @@ export class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
   version: string;
-  major: number;
-  minor: number;
   os: AnyOS | undefined;
 
   constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
     this.version = version;
-    this.major = parseInt(this.version.split('.')[0], 10)
-    this.minor = parseInt(this.version.split('.')[1], 10)
     this.platform = this.translatePlatform(platform);
     this.arch = this.translateArch(arch, this.platform);
     this.os = os;
@@ -77,7 +73,7 @@ export class MongoBinaryDownloadUrl {
       case 'linux':
         return this.getArchiveNameLinux();
       default:
-        throw new Error(`Unkown Platform "${this.platform}"`);
+        throw new Error(`Unknown Platform "${this.platform}"`);
     }
   }
 
@@ -172,6 +168,7 @@ export class MongoBinaryDownloadUrl {
       console.warn(
         `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu release.`
       );
+
       // falling back to ubuntu similar to https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mongodb-bin
       return this.getUbuntuVersionString({
         os: 'linux',
@@ -232,6 +229,7 @@ export class MongoBinaryDownloadUrl {
     } else if (fedoraVer < 12 && fedoraVer >= 6) {
       name += '55';
     }
+
     return name;
   }
 
@@ -334,30 +332,26 @@ export class MongoBinaryDownloadUrl {
   getUbuntuVersionString(os: LinuxOS): string {
     let name = 'ubuntu';
     const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
-    const majorVer: number = parseInt(ubuntuVer[0], 10);
-    // for all cases where its just "10.10" -> "1010"
-    // and because the "04" version always exists for ubuntu, use that as default
-    let version = `${majorVer || 14}04`;
+    const ubuntuMajor: number = parseInt(ubuntuVer[0], 10);
 
     if (os.release === '14.10') {
-      version = '1410-clang';
-    } else if (majorVer >= 18) {
-      if (this.major === 3) {
-        // For MongoDB 3.x using 1604 binaries, download distro does not have builds for Ubuntu 1804 AND 2004
+      return (name += '1410-clang');
+    } else if (ubuntuMajor >= 18) {
+      if (semver.satisfies(this.version, '3.x.x')) {
+        // there are no MongoDB 3.x binary distributions for ubuntu > 16.04
         // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
-        version = '1604';
-      } else if ((this.major === 4 && this.minor <= 3) || majorVer === 18) {
-        // See full list of versions https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
-        // For MongoDB <4.4 using 1804 binaries, because 2004 doesn't have anything below 4.4
-        version = '1804';
-      } else if (majorVer >= 20) {
-        name += '2004';
+        return (name += '1604');
+      }
+      if (semver.satisfies(this.version, '<=4.3.x')) {
+        // there are no MongoDB 4.(x < 4) binary distributions for ubuntu > 18.04
+        // https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
+        return (name += '1804');
       }
     }
 
-    name += version;
-
-    return name;
+    // for all cases where its just "10.10" -> "1010"
+    // and because the "04" version always exists for ubuntu, use that as default
+    return (name += `${ubuntuMajor || 14}04`);
   }
 
   /**
@@ -384,7 +378,7 @@ export class MongoBinaryDownloadUrl {
       case 'sunos':
         return 'sunos5';
       default:
-        throw new Error(`Unkown Platform "${platform}"`);
+        throw new Error(`Unknown Platform "${platform}"`);
     }
   }
 
