@@ -149,13 +149,29 @@ export class MongoBinaryDownloadUrl {
    * @param os LinuxOS Object
    */
   getLinuxOSVersionString(os: LinuxOS): string {
-    if (/ubuntu/i.test(os.dist)) {
+    if (/ubuntu/i.test(os.id_like || os.dist)) {
+      if (/^linux\s?mint\s*$/i.test(os.dist)) {
+        const mintToUbuntuRelease: Record<number, string> = {
+          17: '14.04',
+          18: '16.04',
+          19: '18.04',
+          20: '20.04',
+        };
+
+        return this.getUbuntuVersionString({
+          ...os,
+          dist: 'ubuntu',
+          release:
+            mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[20],
+        });
+      }
+
       return this.getUbuntuVersionString(os);
     }
     if (/suse/i.test(os.dist)) {
       return this.getSuseVersionString(os);
     }
-    if (/rhel/i.test(os.dist) || /centos/i.test(os.dist) || /scientific/i.test(os.dist)) {
+    if (/(rhel|centos|scientific)/i.test(os.dist)) {
       return this.getRhelVersionString(os);
     }
     if (/fedora/i.test(os.dist)) {

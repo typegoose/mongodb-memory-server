@@ -85,6 +85,82 @@ describe('MongoBinaryDownloadUrl', () => {
       );
     });
 
+    describe('for linux mint', () => {
+      it('should return a archive name for Linux Mint 17', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'x64',
+          version: '4.4.1',
+          os: {
+            os: 'linux',
+            dist: 'Linux Mint',
+            release: '17',
+            id_like: 'ubuntu',
+          },
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-4.4.1.tgz'
+        );
+      });
+
+      it('should return a archive name for Linux Mint 18', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'x64',
+          version: '4.4.1',
+          os: {
+            os: 'linux',
+            dist: 'Linux Mint',
+            release: '18',
+            id_like: 'ubuntu',
+          },
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.4.1.tgz'
+        );
+      });
+
+      it('should return a archive name for Linux Mint 19', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'x64',
+          version: '4.4.1',
+          os: {
+            os: 'linux',
+            dist: 'Linux Mint',
+            release: '19',
+            id_like: 'ubuntu',
+          },
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.1.tgz'
+        );
+      });
+
+      it('should return a archive name for Linux Mint 20', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'x64',
+          version: '4.4.1',
+          os: {
+            os: 'linux',
+            dist: 'Linux Mint',
+            release: '20',
+            id_like: 'ubuntu',
+          },
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.1.tgz'
+        );
+      });
+    });
+
+    describe('for elementary', () => {});
+
     it('for manjaro', async () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',

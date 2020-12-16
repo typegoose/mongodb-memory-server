@@ -10,9 +10,9 @@ const log = debug('MongoMS:getos');
 
 /** Collection of Regexes for "lsb_release -a" or plain lsb file parsing */
 const LSBRegex = {
-  name: /^(distributor id:\s*|DISTRIB_ID=)(.*)$/im,
-  codename: /^(codename:\s*|DISTRIB_CODENAME=)(.*)$/im,
-  release: /^(release:\s*|DISTRIB_RELEASE=)(.*)$/im,
+  name: /^(distributor id:|DISTRIB_ID=)\s*(.*)$/im,
+  codename: /^(codename:|DISTRIB_CODENAME=)\s*(.*)$/im,
+  release: /^(release:|DISTRIB_RELEASE=)\s*(.*)$/im,
 };
 
 /** Collection of Regexes for "/etc/os-release" parsing */
@@ -222,5 +222,6 @@ function parseOS(input: string): LinuxOS {
     dist: input.match(OSRegex.name)?.[1] ?? 'unknown',
     codename: input.match(OSRegex.codename)?.[1],
     release: input.match(OSRegex.release)?.[1] ?? '',
+    id_like: input.match(OSRegex.id_like)?.[1],
   };
 }
