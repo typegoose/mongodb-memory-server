@@ -22,6 +22,7 @@ const OSRegex = {
   /** uses VERSION_CODENAME */
   codename: /^version_codename\s*=\s*(.*)$/im,
   release: /^version_id\s*=\s*"?(.*)"?$/im,
+  id_like: /^id_like\s*=\s*"?(.*)"?$/im,
 };
 
 export interface OtherOS {
@@ -33,6 +34,7 @@ export interface LinuxOS extends OtherOS {
   dist: string;
   release: string;
   codename?: string;
+  id_like?: string;
 }
 
 export type AnyOS = OtherOS | LinuxOS;
@@ -91,13 +93,12 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 
   log('Trying LSB-Release');
   const lsbOut = await tryLSBRelease();
-
-  if (!isNullOrUndefined(lsbOut)) {
-    return lsbOut;
-  }
-
   log('Trying OS-Release');
   const osOut = await tryOSRelease();
+
+  if (!isNullOrUndefined(lsbOut)) {
+    return { ...lsbOut, id_like: osOut?.id_like };
+  }
 
   if (!isNullOrUndefined(osOut)) {
     return osOut;

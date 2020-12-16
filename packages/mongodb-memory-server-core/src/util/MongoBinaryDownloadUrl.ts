@@ -164,13 +164,13 @@ export class MongoBinaryDownloadUrl {
       return this.getRhelVersionString(os);
     } else if (/fedora/i.test(os.dist)) {
       return this.getFedoraVersionString(os);
-    } else if (/debian/i.test(os.dist)) {
-      return this.getDebianVersionString(os);
     } else if (/^linux\s?mint\s*$/i.test(os.dist)) {
       return this.getMintVersionString(os);
-    } else if (/(arch|manjarolinux)/i.test(os.dist)) {
+    } else if (/debian/i.test(os.id_like || os.dist)) {
+      return this.getDebianVersionString(os);
+    } else if (/arch/i.test(os.id_like || os.dist) || /(manjarolinux|arcolinux)/i.test(os.dist)) {
       console.warn(
-        `There is no official build of MongoDB for ArchLinux (using ${os.dist}). Falling back to ubuntu release.`
+        `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu release.`
       );
       // falling back to ubuntu similar to https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mongodb-bin
       return this.getUbuntuVersionString({

@@ -94,6 +94,7 @@ describe('MongoBinaryDownloadUrl', () => {
           os: 'linux',
           dist: 'ManjaroLinux',
           release: '20.2',
+          id_like: 'arch',
         },
       });
       expect(await du.getDownloadUrl()).toBe(
@@ -110,6 +111,24 @@ describe('MongoBinaryDownloadUrl', () => {
           os: 'linux',
           dist: 'Arch',
           release: 'rolling',
+          id_like: 'arch',
+        },
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
+      );
+    });
+
+    it('for unpopular arch', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '4.4.2',
+        os: {
+          os: 'linux',
+          dist: 'ArchStrike',
+          release: 'rolling',
+          id_like: 'arch',
         },
       });
       expect(await du.getDownloadUrl()).toBe(
