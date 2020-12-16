@@ -1,7 +1,6 @@
-import { promises as fspromises } from 'fs';
+import fs from 'fs';
 import { platform } from 'os';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { execSync } from 'child_process';
 import { join } from 'path';
 import resolveConfig, { envToBool, ResolveConfigVariables } from '../resolveConfig';
 import debug from 'debug';
@@ -9,11 +8,11 @@ import { isNullOrUndefined } from '../utils';
 
 const log = debug('MongoMS:getos');
 
-/** Collection of Regexes for "lsb_release -a" parsing */
+/** Collection of Regexes for "lsb_release -a" or plain lsb file parsing */
 const LSBRegex = {
-  name: /^distributor id:\s*(.*)$/im,
-  codename: /^codename:\s*(.*)$/im,
-  release: /^release:\s*(.*)$/im,
+  name: /^(distributor id:\s*|DISTRIB_ID=)(.*)$/im,
+  codename: /^(codename:\s*|DISTRIB_CODENAME=)(.*)$/im,
+  release: /^(release:\s*|DISTRIB_RELEASE=)(.*)$/im,
 };
 
 /** Collection of Regexes for "/etc/os-release" parsing */
@@ -127,9 +126,13 @@ async function getLinuxInformation(): Promise<LinuxOS> {
  */
 async function tryLSBRelease(): Promise<LinuxOS | undefined> {
   try {
-    const lsb = await promisify(exec)('lsb_release -a'); // exec this for safety, because "/etc/lsb-release" could be changed to another file
+    // use upstream lsb file if it exists (like in linux mint)
+    if (fs.existsSync('/etc/upstream-release/lsb-release')) {
+      return parseLSB(fs.readFileSync('/etc/upstream-release/lsb-release', 'utf8'));
+    }
 
-    return parseLSB(lsb.stdout);
+    // exec this for safety, because "/etc/lsb-release" could be changed to another file
+    return parseLSB(execSync('lsb_release -a').toString());
   } catch (err) {
     // check if "USE_LINUX_LSB_RELEASE" is unset, when yes - just return to start the next try
     if (isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_LSB_RELEASE))) {
@@ -146,7 +149,7 @@ async function tryLSBRelease(): Promise<LinuxOS | undefined> {
  */
 async function tryOSRelease(): Promise<LinuxOS | undefined> {
   try {
-    const os = await fspromises.readFile('/etc/os-release');
+    const os = fs.readFileSync('/etc/os-release', 'utf-8');
 
     return parseOS(os.toString());
   } catch (err) {
@@ -171,7 +174,7 @@ async function tryOSRelease(): Promise<LinuxOS | undefined> {
  */
 async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
   try {
-    const file = (await fspromises.readdir('/etc')).filter(
+    const file = fs.readdirSync('/etc').filter(
       (v) =>
         // match if file ends with "-release"
         v.match(/.*-release$/im) &&
@@ -183,7 +186,7 @@ async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
       throw new Error('No release file found!');
     }
 
-    const os = await fspromises.readFile(join('/etc/', file));
+    const os = fs.readFileSync(join('/etc/', file));
 
     return parseOS(os.toString());
   } catch (err) {
@@ -203,7 +206,7 @@ async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
 }
 
 /** Function to outsource "lsb_release -a" parsing */
-function parseLSB(input: string): LinuxOS {
+export function parseLSB(input: string): LinuxOS {
   return {
     os: 'linux',
     dist: input.match(LSBRegex.name)?.[1] ?? 'unknown',

@@ -401,69 +401,7 @@ describe('MongoBinaryDownloadUrl', () => {
       ).toBe('debian92');
     });
   });
-
-  describe('getMintVersionString', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
-    });
-
-    it('should throw an error if an version below Linux Mint 17 is given', () => {
-      try {
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'Linux Mint',
-          release: '16',
-        });
-        fail('Expected "getMintVersionString" to throw');
-      } catch (err) {
-        expect(err.message).toEqual('Mint Versions under 17 are not supported!');
-      }
-    });
-
-    it('should return a archive name for Linux Mint 17', () => {
-      expect(
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'Linux Mint',
-          release: '17',
-        })
-      ).toBe('ubuntu1404');
-    });
-
-    it('should return a archive name for Linux Mint 18', () => {
-      expect(
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'Linux Mint',
-          release: '18',
-        })
-      ).toBe('ubuntu1604');
-    });
-
-    it('should return a archive name for Linux Mint 19', () => {
-      expect(
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'LinuxMint',
-          release: '19',
-        })
-      ).toBe('ubuntu1804');
-    });
-
-    it('should return a archive name for Linux Mint 20', () => {
-      expect(
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'Linux Mint',
-          release: '20',
-        })
-      ).toBe('ubuntu1804');
-    });
-  });
-
-  it('shouldnt detect linux mint when using peppermint', () => {
+  it("shouldn't detect linux mint when using peppermint", () => {
     jest.spyOn(console, 'warn').mockImplementation(() => void 0);
     const downloadUrl = new MongoBinaryDownloadUrl({
       platform: 'linux',

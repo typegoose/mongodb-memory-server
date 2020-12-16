@@ -153,9 +153,6 @@ export class MongoBinaryDownloadUrl {
     if (/ubuntu/i.test(os.dist)) {
       return this.getUbuntuVersionString(os);
     }
-    if (/elementary OS/i.test(os.dist)) {
-      return this.getElementaryOSVersionString(os);
-    }
     if (/suse/i.test(os.dist)) {
       return this.getSuseVersionString(os);
     }
@@ -164,9 +161,6 @@ export class MongoBinaryDownloadUrl {
     }
     if (/fedora/i.test(os.dist)) {
       return this.getFedoraVersionString(os);
-    }
-    if (/^linux\s?mint\s*$/i.test(os.dist)) {
-      return this.getMintVersionString(os);
     }
     if (/debian/i.test(os.id_like || os.dist)) {
       return this.getDebianVersionString(os);
@@ -254,56 +248,6 @@ export class MongoBinaryDownloadUrl {
       } else if (/^5/.test(release)) {
         name += '55';
       }
-    }
-
-    return name;
-  }
-
-  /**
-   * Get the version string for ElementaryOS
-   * @param os LinuxOS Object
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getElementaryOSVersionString(os: LinuxOS): string {
-    // Elementary specific - get used ubuntu version
-    const cmd = '/usr/bin/lsb_release -u -rs';
-    const ubuntuVersion = execSync(cmd);
-    try {
-      // confirm it is actually a version, otherwise throw an error
-      parseFloat(ubuntuVersion.toString());
-
-      return `ubuntu${ubuntuVersion.toString().replace('.', '').trim()}`;
-    } catch (err) {
-      console.error(`ElementaryOS "${cmd}" couldn\'t be executed!`);
-      throw err;
-    }
-  }
-
-  /**
-   * Get the version string for Linux Mint
-   * @param os LinuxOS Object
-   */
-  getMintVersionString(os: LinuxOS): string {
-    let name = 'ubuntu';
-    const mintMajorVer = parseInt(os.release ? os.release.split('.')[0] : os.release);
-
-    if (mintMajorVer < 17) {
-      throw new Error('Mint Versions under 17 are not supported!');
-    }
-
-    switch (mintMajorVer) {
-      case 17:
-        name += '1404';
-        break;
-      case 18:
-        name += '1604';
-        break;
-      case 20: // because "1804" binaries also work on "2004" (and because earlier versions than 4.4 are not available in "2004")
-      case 19:
-      default:
-        // a default to support versions > 19
-        name += '1804';
-        break;
     }
 
     return name;
