@@ -7,6 +7,7 @@ import debug from 'debug';
 import { isNullOrUndefined, readFileAndParseLinuxOs } from '../utils';
 import { promisify } from 'util';
 import { lookpath } from 'lookpath';
+import { FileNotFoundError } from '../errors';
 
 const log = debug('MongoMS:getos');
 
@@ -161,7 +162,7 @@ async function getFirstReleaseFile(): Promise<LinuxOS | undefined> {
   )[0];
 
   if (isNullOrUndefined(file) || file.length <= 0) {
-    throw new Error('No release file found!');
+    throw new FileNotFoundError('No release file found!');
   }
 
   const os = await fspromises.readFile(join('/etc/', file));

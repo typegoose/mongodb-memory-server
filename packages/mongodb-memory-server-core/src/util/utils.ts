@@ -4,6 +4,7 @@ import { ChildProcess } from 'child_process';
 import { AutomaticAuth } from '../MongoMemoryServer';
 import { promises as fspromises, Stats } from 'fs';
 import { LinuxOS } from './getos';
+import { FileNotFoundError } from './errors';
 
 const log = debug('MongoMS:utils');
 
@@ -169,5 +170,5 @@ export async function readFileAndParseLinuxOs(
     return parse(await fspromises.readFile(existingPath, 'utf8'));
   }
 
-  throw new Error('No file found');
+  throw new FileNotFoundError('No file found');
 }

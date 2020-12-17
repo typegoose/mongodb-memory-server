@@ -1,6 +1,7 @@
 import { promises as fsPromises, Stats } from 'fs';
 import getOS, { LinuxOS } from '../getos';
 import os from 'os';
+import { FileNotFoundError } from '../errors';
 
 const UbuntuLSB = `DISTRIB_ID=Ubuntu
 DISTRIB_RELEASE=20.04
@@ -41,9 +42,7 @@ describe('getLinuxInformation', () => {
         });
       }
 
-      return new Promise((_resolve, reject) => {
-        reject('not mocked');
-      });
+      throw new FileNotFoundError();
     });
 
     const result = (await getOS()) as LinuxOS;
@@ -75,9 +74,7 @@ describe('getLinuxInformation', () => {
         });
       }
 
-      return new Promise((_resolve, reject) => {
-        reject('not mocked');
-      });
+      throw new FileNotFoundError();
     });
 
     const result = (await getOS()) as LinuxOS;

@@ -93,7 +93,7 @@ export class MongoBinary {
             ? `MongoBinary: Error when removing download lock ${err}`
             : `MongoBinary: Download lock removed`
         );
-        res(); // we don't care if it was successful or not
+        res(undefined); // we don't care if it was successful or not
       });
     });
 
