@@ -149,7 +149,7 @@ export class MongoBinaryDownloadUrl {
    * @param os LinuxOS Object
    */
   getLinuxOSVersionString(os: LinuxOS): string {
-    if (/ubuntu/i.test(os.id_like || os.dist)) {
+    if (/ubuntu/i.test(os.id_like || '') || /ubuntu/i.test(os.dist)) {
       return this.getUbuntuVersionString(os);
     }
     if (/suse/i.test(os.dist)) {
@@ -161,10 +161,10 @@ export class MongoBinaryDownloadUrl {
     if (/fedora/i.test(os.dist)) {
       return this.getFedoraVersionString(os);
     }
-    if (/debian/i.test(os.id_like || os.dist)) {
+    if (/debian/i.test(os.id_like || '') || /debian/i.test(os.dist)) {
       return this.getDebianVersionString(os);
     }
-    if (/arch/i.test(os.id_like || os.dist) || /(manjaro|arco)linux/i.test(os.dist)) {
+    if (/arch/i.test(os.id_like || '') || /(arch|manjaro|arco)linux/i.test(os.dist)) {
       console.debug(
         `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu release.`
       );
@@ -328,8 +328,7 @@ export class MongoBinaryDownloadUrl {
       return 'ubuntu1804';
     }
 
-    // for all cases where its just "10.10" -> "1010"
-    // and because the "04" version always exists for ubuntu, use that as default
+    // the "04" version always exists for ubuntu, use that as default
     return `ubuntu${ubuntuYear || 14}04`;
   }
 

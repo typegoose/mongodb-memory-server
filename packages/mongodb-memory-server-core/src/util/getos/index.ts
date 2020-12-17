@@ -1,10 +1,11 @@
 import { promises as fspromises } from 'fs';
 import { platform } from 'os';
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
 import { join } from 'path';
 import resolveConfig, { envToBool, ResolveConfigVariables } from '../resolveConfig';
 import debug from 'debug';
-import { isNullOrUndefined } from '../utils';
+import { isNullOrUndefined, pathExists } from '../utils';
+import { promisify } from 'util';
 
 const log = debug('MongoMS:getos');
 
@@ -127,12 +128,14 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 async function tryLSBRelease(): Promise<LinuxOS | undefined> {
   try {
     // use upstream lsb file if it exists (like in linux mint)
-    if (await fspromises.stat('/etc/upstream-release/lsb-release')) {
-      return parseLSB(await fspromises.readFile('/etc/upstream-release/lsb-release', 'utf8'));
+    if (await pathExists('/etc/upstream-release/lsb-release')) {
+      const lsbFile = await fspromises.readFile('/etc/upstream-release/lsb-release', 'utf8');
+
+      return parseLSB(lsbFile);
     }
 
     // exec this for safety, because "/etc/lsb-release" could be changed to another file
-    return parseLSB(execSync('lsb_release -a').toString());
+    return parseLSB(await (await promisify(exec)('lsb_release -a')).stdout);
   } catch (err) {
     // check if "USE_LINUX_LSB_RELEASE" is unset, when yes - just return to start the next try
     if (isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_LSB_RELEASE))) {
@@ -209,9 +212,9 @@ async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
 export function parseLSB(input: string): LinuxOS {
   return {
     os: 'linux',
-    dist: input.match(LSBRegex.name)?.[1] ?? 'unknown',
-    codename: input.match(LSBRegex.codename)?.[1],
-    release: input.match(LSBRegex.release)?.[1] ?? '',
+    dist: input.match(LSBRegex.name)?.[2] ?? 'unknown',
+    codename: input.match(LSBRegex.codename)?.[2],
+    release: input.match(LSBRegex.release)?.[2] ?? '',
   };
 }
 

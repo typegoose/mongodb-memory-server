@@ -33,7 +33,7 @@ describe('MongoMemoryServer', () => {
       expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(1);
     });
 
-    it('"_startUpInstance" should use an different port if address is already in use (use same port for 2 servers)', async () => {
+    it('"_startUpInstance" should use a different port if address is already in use (use same port for 2 servers)', async () => {
       const mongoServer1 = await MongoMemoryServer.create({
         instance: { port: 27444 },
       });
@@ -64,7 +64,6 @@ describe('MongoMemoryServer', () => {
       await expect(mongoServer.start()).rejects.toThrow('unknown error');
 
       expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(1);
-      expect(console.warn).toHaveBeenCalledTimes(1);
     });
 
     it('should make use of "AutomaticAuth" (ephemeralForTest)', async () => {
