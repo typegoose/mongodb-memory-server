@@ -54,6 +54,7 @@
     "get-port": "^5.1.1",
     "https-proxy-agent": "^5.0.0",
     "lockfile": "^1.0.4",
+    "lookpath": "^1.1.0",
     "md5-file": "^5.0.0",
     "mkdirp": "^1.0.4",
     "mongodb": "^3.6.2",

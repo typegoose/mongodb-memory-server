@@ -29,7 +29,6 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
 
 - [Installation](#installation)
   - [Requirements](#requirements)
-    - [Known Incompatibilities](#known-incompatibilities)
   - [mongodb-memory-server](#mongodb-memory-server)
   - [mongodb-memory-server-global](#mongodb-memory-server-global)
     - [mongodb-memory-server-global-x.x](#mongodb-memory-server-global-xx)
@@ -83,11 +82,6 @@ And one of those:
 - having an `/etc/os-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html)
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
 - manually specify which version & system should be used
-
-#### Known Incompatibilities
-
-- [ArchLinux](https://github.com/nodkz/mongodb-memory-server/issues/302) & [Alpine](https://github.com/nodkz/mongodb-memory-server/issues/347) do not have an official mongodb build
-- ArchLinux(Docker) does not have an `/etc/os-release` file by default
 
 ### mongodb-memory-server
 
@@ -288,7 +282,7 @@ MONGOMS_USE_LINUX_LSB_RELEASE=1 # Only try "lsb_release -a"
 MONGOMS_USE_LINUX_OS_RELEASE=1 # Only try to read "/etc/os-release"
 MONGOMS_USE_LINUX_ANYFILE_RELEASE=1 # Only try to read the first file found "/etc/*-release"
 MONGOMS_ARCHIVE_NAME="mongodb-linux-x86_64-4.0.0.tgz" # Specify what file / archive to download
-MONGOMS_SKIP_OS_RELEASE=1 # ignore error thrown in "tryOSRelease"
+MONGOMS_SKIP_OS_RELEASE=1 # ignore error thrown in "getOSRelease"
 ```
 
 ### Options which can be set via package.json's `config` section

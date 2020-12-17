@@ -4,8 +4,9 @@ import { exec } from 'child_process';
 import { join } from 'path';
 import resolveConfig, { envToBool, ResolveConfigVariables } from '../resolveConfig';
 import debug from 'debug';
-import { isNullOrUndefined, pathExists } from '../utils';
+import { isNullOrUndefined, readFileAndParseLinuxOs } from '../utils';
 import { promisify } from 'util';
+import { lookpath } from 'lookpath';
 
 const log = debug('MongoMS:getos');
 
@@ -73,28 +74,28 @@ async function getLinuxInformation(): Promise<LinuxOS> {
   if (envToBool(resolveConfig(ResolveConfigVariables.USE_LINUX_LSB_RELEASE))) {
     log('Forced LSB-Release file!');
 
-    return (await tryLSBRelease()) as LinuxOS;
+    return (await getLSBRelease()) as LinuxOS;
   }
   // Force /etc/os-release to be used
   if (envToBool(resolveConfig(ResolveConfigVariables.USE_LINUX_OS_RELEASE))) {
     log('Forced OS-Release file!');
 
-    return (await tryOSRelease()) as LinuxOS;
+    return (await getOSRelease()) as LinuxOS;
   }
   // Force the first /etc/*-release file to be used
   if (envToBool(resolveConfig(ResolveConfigVariables.USE_LINUX_ANY_RELEASE))) {
     log('Forced First *-Release file!');
 
-    return (await tryFirstReleaseFile()) as LinuxOS;
+    return (await getFirstReleaseFile()) as LinuxOS;
   }
 
   // Try everything
   // Note: these values are stored, because this code should not use "inline value assignment"
 
   log('Trying LSB-Release');
-  const lsbOut = await tryLSBRelease();
+  const lsbOut = await getLSBRelease().catch(() => undefined);
   log('Trying OS-Release');
-  const osOut = await tryOSRelease();
+  const osOut = await getOSRelease().catch(() => undefined);
 
   if (!isNullOrUndefined(lsbOut)) {
     // add id_like info if available
@@ -106,7 +107,7 @@ async function getLinuxInformation(): Promise<LinuxOS> {
   }
 
   log('Trying First *-Release file');
-  const releaseOut = await tryFirstReleaseFile();
+  const releaseOut = await getFirstReleaseFile().catch(() => undefined);
 
   if (!isNullOrUndefined(releaseOut)) {
     return releaseOut;
@@ -125,87 +126,47 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 /**
  * Try the "lsb_release" command, and if it works, parse it
  */
-async function tryLSBRelease(): Promise<LinuxOS | undefined> {
-  try {
-    // use upstream lsb file if it exists (like in linux mint)
-    if (await pathExists('/etc/upstream-release/lsb-release')) {
-      const lsbFile = await fspromises.readFile('/etc/upstream-release/lsb-release', 'utf8');
-
-      return parseLSB(lsbFile);
+async function getLSBRelease(): Promise<LinuxOS | undefined> {
+  // use upstream lsb-release, then regular lsb-release
+  return readFileAndParseLinuxOs(
+    ['/etc/upstream-release/lsb-release', '/etc/lsb-release'],
+    parseLSB
+  ).catch(async (err) => {
+    // using lsb_release if available
+    if (lookpath('lsb_release')) {
+      return parseLSB((await promisify(exec)('lsb_release -a')).stdout);
     }
 
-    // exec this for safety, because "/etc/lsb-release" could be changed to another file
-    return parseLSB(await (await promisify(exec)('lsb_release -a')).stdout);
-  } catch (err) {
-    // check if "USE_LINUX_LSB_RELEASE" is unset, when yes - just return to start the next try
-    if (isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_LSB_RELEASE))) {
-      return;
-    }
-
-    // otherwise throw the error
     throw err;
-  }
+  });
 }
 
 /**
  * Try to read the /etc/os-release file, and if it works, parse it
  */
-async function tryOSRelease(): Promise<LinuxOS | undefined> {
-  try {
-    const os = await fspromises.readFile('/etc/os-release', 'utf-8');
-
-    return parseOS(os.toString());
-  } catch (err) {
-    // check if the error is an "ENOENT" OR "SKIP_OS_RELEASE" is set
-    // AND "USE_LINUX_OS_RELEASE" is unset
-    // and just return
-    if (
-      (err?.code === 'ENOENT' ||
-        envToBool(resolveConfig(ResolveConfigVariables.SKIP_OS_RELEASE))) &&
-      isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_OS_RELEASE))
-    ) {
-      return;
-    }
-
-    // otherwise throw the error
-    throw err;
-  }
+async function getOSRelease(): Promise<LinuxOS | undefined> {
+  return readFileAndParseLinuxOs(['/etc/os-release', '/usr/lib/os-release'], parseOS);
 }
 
 /**
  * Try to read any /etc/*-release file, take the first, and if it works, parse it
  */
-async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
-  try {
-    const file = (await fspromises.readdir('/etc')).filter(
-      (v) =>
-        // match if file ends with "-release"
-        v.match(/.*-release$/im) &&
-        // check if the file does NOT contain "lsb"
-        !v.match(/lsb/im)
-    )[0];
+async function getFirstReleaseFile(): Promise<LinuxOS | undefined> {
+  const file = (await fspromises.readdir('/etc')).filter(
+    (v) =>
+      // match if file ends with "-release"
+      v.match(/.*-release$/im) &&
+      // check if the file does NOT contain "lsb"
+      !v.match(/lsb/im)
+  )[0];
 
-    if (isNullOrUndefined(file) || file.length <= 0) {
-      throw new Error('No release file found!');
-    }
-
-    const os = await fspromises.readFile(join('/etc/', file));
-
-    return parseOS(os.toString());
-  } catch (err) {
-    // check if the error is an "ENOENT" OR "SKIP_RELEASE" is set
-    // AND "USE_LINUX_RELEASE" is unset
-    // and just return
-    if (
-      err?.code === 'ENOENT' &&
-      isNullOrUndefined(resolveConfig(ResolveConfigVariables.USE_LINUX_ANY_RELEASE))
-    ) {
-      return;
-    }
-
-    // otherwise throw the error
-    throw err;
+  if (isNullOrUndefined(file) || file.length <= 0) {
+    throw new Error('No release file found!');
   }
+
+  const os = await fspromises.readFile(join('/etc/', file));
+
+  return parseOS(os.toString());
 }
 
 /** Function to outsource "lsb_release -a" parsing */

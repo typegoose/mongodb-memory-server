@@ -3,6 +3,7 @@ import debug from 'debug';
 import { ChildProcess } from 'child_process';
 import { AutomaticAuth } from '../MongoMemoryServer';
 import { promises as fspromises, Stats } from 'fs';
+import { LinuxOS } from './getos';
 
 const log = debug('MongoMS:utils');
 
@@ -67,7 +68,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
   }
 
   const timeoutTime = 1000 * 10;
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     let timeout = setTimeout(() => {
       log('killProcess timeout triggered, trying SIGKILL');
 
@@ -151,4 +152,22 @@ export async function statPath(path: string): Promise<Stats | undefined> {
  */
 export async function pathExists(path: string): Promise<boolean> {
   return !isNullOrUndefined(await statPath(path));
+}
+
+/**
+ * wraps path checking and parsing
+ * @param path path of the file to read
+ * @param parse function to transform the read file into a linux os info
+ */
+export async function readFileAndParseLinuxOs(
+  paths: string[],
+  parse: (input: string) => LinuxOS
+): Promise<LinuxOS | undefined> {
+  const existingPath = await paths.find(async (path) => await pathExists(path));
+
+  if (existingPath) {
+    return parse(await fspromises.readFile(existingPath, 'utf8'));
+  }
+
+  throw new Error('No file found');
 }
