@@ -29,7 +29,7 @@
     "jest": "26.4.2",
     "lerna": "^3.22.1",
     "lint-staged": "10.4.0",
-    "mongodb": "3.6.2",
+    "mongodb": "^3.6.3",
     "prettier": "2.1.2",
     "semantic-release": "^17.1.2",
     "ts-jest": "26.4.1",
