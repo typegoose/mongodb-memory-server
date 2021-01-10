@@ -448,13 +448,13 @@ export class MongoMemoryServer extends EventEmitter {
     if (isNullOrUndefined(this._instanceInfo)) {
       log('"instanceInfo" is not defined (never ran?)');
 
-      return true;
+      return false;
     }
 
     if (this._state === MongoMemoryServerStates.stopped) {
       log(`stop: state is "stopped", so already stopped`);
 
-      return true;
+      return false;
     }
 
     // assert here, just to be sure

@@ -397,7 +397,7 @@ describe('MongoMemoryServer', () => {
       const mongoServer = new MongoMemoryServer();
       jest.spyOn(utils, 'isNullOrUndefined');
 
-      expect(await mongoServer.stop()).toEqual(true);
+      expect(await mongoServer.stop()).toEqual(false);
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
     });
 
@@ -410,7 +410,7 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(utils, 'isNullOrUndefined');
       jest.spyOn(utils, 'assertion');
 
-      expect(await mongoServer.stop()).toEqual(true);
+      expect(await mongoServer.stop()).toEqual(false);
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
       expect(utils.assertion).not.toHaveBeenCalled();
     });
