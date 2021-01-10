@@ -72,3 +72,11 @@ Highest version (default to) is `20`
 (uses mongodb's `suse` release)<br/>
 Lowest supported Distribution version is `11`<br/>
 Highest version (default to) is `12`
+
+### Arch
+
+There are no official mongodb builds for arch (and because this distro dosnt base on something) but there are some workarounds, like on many systems the `ubuntu` version supposedly works
+
+### Alpine
+
+There are no official mongodb builds alpine, though there are some unoffical build of mongodb build for it which can be used
