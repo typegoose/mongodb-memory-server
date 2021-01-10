@@ -11,8 +11,7 @@ const features = [
     title: 'Easy to Use',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        mongodb-memory-server was build with "easy-to-use" in mind
       </>
     ),
   },
@@ -20,17 +19,16 @@ const features = [
     title: 'Focus on What Matters',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        mongodb-memory-server can be quickly added to projects on many systems
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Supports Many Systems',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        mongodb-memory-server supports many different systems without problems
+        (exceptions are some linux distributions)
       </>
     ),
   },
