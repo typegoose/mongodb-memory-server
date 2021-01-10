@@ -102,3 +102,13 @@ If the interface/type/enum is an "standalone" then it should be named appropriat
 
 Source file names should be `PascalCase` if the main export is an class (example: `MongoBinary`, and not `Mongo-Binary`)
 Source file names should be `camelCase` if there is no "definitive main export" (example: `resolveConfig` & `utils`)
+
+## Documentation
+
+If being new to markdown / docusaurus / Infima styling, look at the following sources:
+
+* [Markdown Basics](https://guides.github.com/features/mastering-markdown/)
+* [Docusaurus](https://v2.docusaurus.io/docs/)
+* [Infima](https://facebookincubator.github.io/infima/) (is currently not up, needs to be run locally)
+
+There is also an File in this project to view basic elements in the projects styles: [Test Page Source](../docs/test.md) [Test Page Website]() <!--TODO: replace with actual website-->
