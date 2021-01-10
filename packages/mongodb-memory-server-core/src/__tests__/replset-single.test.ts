@@ -439,7 +439,7 @@ describe('MongoMemoryReplSet', () => {
     jest.spyOn(instance, 'cleanup');
     expect(await utils.statPath(dbPath)).toBeTruthy();
 
-    await replSet.stop();
+    await replSet.stop(false);
     expect(await utils.statPath(dbPath)).toBeTruthy();
 
     await replSet.cleanup();
