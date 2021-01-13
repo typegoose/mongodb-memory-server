@@ -1,3 +1,10 @@
+## [7.0.0-beta.13](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.12...v7.0.0-beta.13) (2021-01-13)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** handle Debian "testing" release ([#430](https://github.com/nodkz/mongodb-memory-server/issues/430)) ([9c2c834](https://github.com/nodkz/mongodb-memory-server/commit/9c2c834bfc436ce86623e0e8b9f0d0e92fce452e))
+
 ## [7.0.0-beta.12](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.11...v7.0.0-beta.12) (2020-12-16)
 
 
