@@ -1,3 +1,10 @@
+## [6.9.3](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.2...v6.9.3) (2021-01-13)
+
+
+### Bug Fixes
+
+* **MongoBinaryDownloadUrl:** handle Debian "testing" release ([#430](https://github.com/nodkz/mongodb-memory-server/issues/430)) ([e4ffecf](https://github.com/nodkz/mongodb-memory-server/commit/e4ffecf1eb2ceb06931feb90bb3f7fbbe0a6237a))
+
 ## [6.9.2](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.1...v6.9.2) (2020-10-09)
 
 
