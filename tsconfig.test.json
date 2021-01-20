@@ -1,0 +1,7 @@
+{
+  "extends": "./packages/mongodb-memory-server-core/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+  },
+  "include": ["packages/**/*"]
+}

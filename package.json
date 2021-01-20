@@ -1,0 +1,69 @@
+{
+  "name": "lerna-monorepo",
+  "private": true,
+  "version": "0.0.0-development",
+  "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
+  "repository": "https://github.com/nodkz/mongodb-memory-server",
+  "devDependencies": {
+    "@commitlint/cli": "11.0.0",
+    "@commitlint/config-conventional": "11.0.0",
+    "@google/semantic-release-replace-plugin": "1.0.2",
+    "@semantic-release/changelog": "5.0.1",
+    "@semantic-release/commit-analyzer": "8.0.1",
+    "@semantic-release/git": "9.0.0",
+    "@semantic-release/github": "7.1.1",
+    "@semantic-release/npm": "7.0.6",
+    "@semantic-release/release-notes-generator": "9.0.1",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.14.5",
+    "@typescript-eslint/eslint-plugin": "4.6.0",
+    "@typescript-eslint/parser": "4.6.0",
+    "commitlint": "11.0.0",
+    "conventional-changelog-conventionalcommits": "4.4.0",
+    "cross-env": "7.0.2",
+    "doctoc": "1.4.0",
+    "eslint": "7.12.1",
+    "eslint-config-prettier": "6.15.0",
+    "eslint-plugin-prettier": "3.1.4",
+    "husky": "4.3.0",
+    "jest": "26.6.1",
+    "lerna": "3.22.1",
+    "lint-staged": "10.5.1",
+    "prettier": "2.1.2",
+    "semantic-release": "17.2.2",
+    "ts-jest": "26.4.3",
+    "typescript": "4.0.5"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "lint-staged": {
+    "packages/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ],
+    "./README.md": [
+      "doctoc ./README.md",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "scripts": {
+    "test": "yarn --cwd packages/mongodb-memory-server-core run test",
+    "lint": "lerna run lint --stream --npm-client=yarn --no-prefix",
+    "eslint": "eslint 'packages/mongodb-memory-server-core/src/**/*.{js,ts}'",
+    "watch": "jest --env node --watch",
+    "jest": "jest --env node",
+    "build": "tsc --build tsconfig.build.json",
+    "semantic-release": "semantic-release",
+    "readme:toc": "doctoc ./README.md",
+    "postinstall": "yarn build"
+  }
+}

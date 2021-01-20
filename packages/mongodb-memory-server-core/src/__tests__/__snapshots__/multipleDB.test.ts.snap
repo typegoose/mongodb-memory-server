@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Multiple mongoServers should start several servers 1`] = `
+Object {
+  "n": 2,
+  "ok": 1,
+}
+`;
+
+exports[`Multiple mongoServers should start several servers 2`] = `
+Object {
+  "n": 2,
+  "ok": 1,
+}
+`;
