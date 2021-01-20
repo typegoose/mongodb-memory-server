@@ -3,7 +3,7 @@ id: quick-start-guide
 title: 'Quick Start Guide'
 ---
 
-This Guide will show how to setup this package
+This Guide will show how to setup this package for basic use
 
 ## Requirements
 
