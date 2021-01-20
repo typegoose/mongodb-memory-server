@@ -1,3 +1,18 @@
+## [7.0.0-beta.14](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.13...v7.0.0-beta.14) (2021-01-20)
+
+
+### Fixes
+
+* "infomation" to "information" ([da6c89d](https://github.com/nodkz/mongodb-memory-server/commit/da6c89d615f7eba3f083419f69f357eec5a53a21)), closes [#424](https://github.com/nodkz/mongodb-memory-server/issues/424)
+* "unkown" to "unknown" ([798b0db](https://github.com/nodkz/mongodb-memory-server/commit/798b0db03c547a5b1b680d28d8a942e6ba4770b6)), closes [#424](https://github.com/nodkz/mongodb-memory-server/issues/424)
+* **MongoMemoryReplSet:** update when "cleanup" is run and added ([836dc9c](https://github.com/nodkz/mongodb-memory-server/commit/836dc9c5bb162052375b957aec97cb16b0c66759))
+* **MongoMemoryServer:** stop: return "false" if already stopped ([b3c868e](https://github.com/nodkz/mongodb-memory-server/commit/b3c868e4b04281d4f4ca98d88af6ca8899da4a31))
+
+
+### Style
+
+* **MongoBinaryDownloadUrl:** "Debain" to "Debian" ([1879e4b](https://github.com/nodkz/mongodb-memory-server/commit/1879e4bb1241db4fae1a794895fd042cb18fb501)), closes [#424](https://github.com/nodkz/mongodb-memory-server/issues/424)
+
 ## [7.0.0-beta.13](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.12...v7.0.0-beta.13) (2021-01-13)
 
 
