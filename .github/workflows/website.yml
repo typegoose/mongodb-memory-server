@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'beta'
       - '!gh-pages'
     paths: # only run this deploy if an file in the following directories are changed
       - 'docs/**'
