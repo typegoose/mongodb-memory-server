@@ -32,8 +32,38 @@ There are multiple packages for this project, here are the differences:
 
 ## Normal Server
 
-*needs to be extended*
+A Normal Server can be easily started with:
+
+```ts
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
+// This will create an new instance of "MongoMemoryServer" and automatically start it
+const mongod = await MongoMemoryServer.create();
+
+const uri = mongod.getUri();
+
+// The Server can be stopped again with
+await mongod.stop();
+```
 
 ## ReplicaSet
 
-*needs to be extended*
+A ReplicaSet can be easily started with:
+
+```ts
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
+
+// This will create an new instance of "MongoMemoryReplSet" and automatically start all Servers
+const replset = await MongoMemoryReplSet.create({ replSet: { count: 4 } }); // This will create an ReplSet with 4 members
+
+const uri = replset.getUri();
+
+// The ReplSet can be stopped again with
+await replset.stop();
+```
+
+## Final Notes
+
+:::danger
+When not using an global instance for tests and use multi-threaded tests, it can cause Race Conditions
+:::
