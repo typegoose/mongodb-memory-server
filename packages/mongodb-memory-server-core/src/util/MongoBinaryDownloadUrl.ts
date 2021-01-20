@@ -185,7 +185,7 @@ export class MongoBinaryDownloadUrl {
   }
 
   /**
-   * Get the version string for Debain
+   * Get the version string for Debian
    * @param os LinuxOS Object
    */
   getDebianVersionString(os: LinuxOS): string {
