@@ -52,7 +52,7 @@ export async function getOS(): Promise<AnyOS> {
 
   // Linux is a special case.
   if (osName === 'linux') {
-    return await getLinuxInfomation();
+    return await getLinuxInformation();
   }
 
   return { os: osName };
@@ -60,8 +60,8 @@ export async function getOS(): Promise<AnyOS> {
 
 export default getOS;
 
-/** Function to outsource Linux Infomation Parsing */
-async function getLinuxInfomation(): Promise<LinuxOS> {
+/** Function to outsource Linux Information Parsing */
+async function getLinuxInformation(): Promise<LinuxOS> {
   // Structure of this function:
   // 1. try lsb_release
   // (if not 1) 2. try /etc/os-release

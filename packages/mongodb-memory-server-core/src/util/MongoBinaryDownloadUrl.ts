@@ -171,7 +171,7 @@ export class MongoBinaryDownloadUrl {
     } else if (/unknown/i.test(os.dist)) {
       // "unknown" is likely to happen if no release file / command could be found
       console.warn(
-        'Couldnt parse dist infomation, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
+        'Couldnt parse dist information, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
       );
     } else {
       // warn if no case for the *parsed* distro is found

@@ -276,7 +276,7 @@ export class MongoMemoryServer extends EventEmitter {
 
     await this._startUpInstance(forceSamePort).catch((err) => {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
-        console.warn('Starting the instance failed, enable debug for more infomation');
+        console.warn('Starting the instance failed, enable debug for more information');
       }
 
       throw err;
