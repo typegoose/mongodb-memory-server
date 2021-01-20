@@ -49,8 +49,7 @@ look into [releaserc](../.releaserc.js) for corresponding versions
 
 ### Scope
 
-The scope could be anything specifying place of the commit change. For example `$location`,
-`$browser`, `$compile`, `$rootScope`, `ngHref`, `ngClick`, `ngView`, etc...
+The scope should be the file that got modified, if multiple files then use no scope.
 
 You can use `*` when the change affects more than a single scope.
 
