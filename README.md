@@ -52,6 +52,8 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
   - [Enable Debug Mode](#enable-debug-mode)
 - [CI](#ci)
 - [Contributing](#contributing)
+- [Join Our Discord Server](#join-our-discord-server)
+- [Documentation](#documentation)
 - [Credits](#credits)
 - [Maintainers](#maintainers)
 - [Contributors](#contributors)
@@ -575,6 +577,15 @@ script:
 ## Contributing
 
 Contributing Guidelines are setup in [CONTRIBUTING](./.github/CONTRIBUTING.md)
+
+## Join Our Discord Server
+
+To ask questions or just talk with us, [join our Discord Server](https://discord.gg/BpGjTTD).
+
+## Documentation
+
+- [Documentation](https://nodkz.github.io/mongodb-memory-server/docs/api/index-api)
+- [Quick start guide](https://nodkz.github.io/mongodb-memory-server/docs/guides/quick-start-guide/)
 
 ## Credits
 

@@ -271,7 +271,7 @@ describe('MongoMemoryServer', () => {
           await mongoServer.start();
           fail('Expected "start" to fail');
         } catch (err) {
-          expect(err.message).toEqual('Already in state running/starting or unkown');
+          expect(err.message).toEqual('Already in state running/starting or unknown');
         }
       }
 
@@ -283,7 +283,7 @@ describe('MongoMemoryServer', () => {
           await mongoServer.start();
           fail('Expected "start" to fail');
         } catch (err) {
-          expect(err.message).toEqual('Already in state running/starting or unkown');
+          expect(err.message).toEqual('Already in state running/starting or unknown');
         }
       }
     });
@@ -397,7 +397,7 @@ describe('MongoMemoryServer', () => {
       const mongoServer = new MongoMemoryServer();
       jest.spyOn(utils, 'isNullOrUndefined');
 
-      expect(await mongoServer.stop()).toEqual(true);
+      expect(await mongoServer.stop()).toEqual(false);
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
     });
 
@@ -410,7 +410,7 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(utils, 'isNullOrUndefined');
       jest.spyOn(utils, 'assertion');
 
-      expect(await mongoServer.stop()).toEqual(true);
+      expect(await mongoServer.stop()).toEqual(false);
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
       expect(utils.assertion).not.toHaveBeenCalled();
     });

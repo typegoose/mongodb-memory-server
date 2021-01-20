@@ -21,10 +21,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         if: github.event.inputs.git-ref == ''
+        with:
+          fetch-depth: 0 # always fetch everything to be sure for codecov
       - uses: actions/checkout@v2
         if: github.event.inputs.git-ref != ''
         with:
           ref: ${{ github.event.inputs.git-ref }}
+          fetch-depth: 5 # because this is an manual trigger, only fetch the latest 5
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:

@@ -73,7 +73,7 @@ export class MongoBinaryDownloadUrl {
       case 'linux':
         return this.getArchiveNameLinux();
       default:
-        throw new Error(`Unkown Platform "${this.platform}"`);
+        throw new Error(`Unknown Platform "${this.platform}"`);
     }
   }
 
@@ -168,10 +168,10 @@ export class MongoBinaryDownloadUrl {
       console.warn('There is no offical build of MongoDB for ArchLinux!');
     } else if (/alpine/i.test(os.dist)) {
       console.warn('There is no offical build of MongoDB for Alpine!');
-    } else if (/unkown/i.test(os.dist)) {
-      // "unkown" is likely to happen if no release file / command could be found
+    } else if (/unknown/i.test(os.dist)) {
+      // "unknown" is likely to happen if no release file / command could be found
       console.warn(
-        'Couldnt parse dist infomation, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
+        'Couldnt parse dist information, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
       );
     } else {
       // warn if no case for the *parsed* distro is found
@@ -185,7 +185,7 @@ export class MongoBinaryDownloadUrl {
   }
 
   /**
-   * Get the version string for Debain
+   * Get the version string for Debian
    * @param os LinuxOS Object
    */
   getDebianVersionString(os: LinuxOS): string {
@@ -370,7 +370,7 @@ export class MongoBinaryDownloadUrl {
       case 'sunos':
         return 'sunos5';
       default:
-        throw new Error(`Unkown Platform "${platform}"`);
+        throw new Error(`Unknown Platform "${platform}"`);
     }
   }
 

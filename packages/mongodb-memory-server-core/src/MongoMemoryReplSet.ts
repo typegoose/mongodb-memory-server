@@ -335,7 +335,15 @@ export class MongoMemoryReplSet extends EventEmitter {
     log('init');
     await this.initAllServers();
     await this._initReplSet();
-    process.once('beforeExit', this.stop);
+
+    // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
+    if (
+      process
+        .listeners('beforeExit')
+        .findIndex((f: (...args: any[]) => any) => f === this.cleanup) <= -1
+    ) {
+      process.on('beforeExit', this.cleanup);
+    }
   }
 
   protected async initAllServers(): Promise<void> {
@@ -366,16 +374,16 @@ export class MongoMemoryReplSet extends EventEmitter {
 
   /**
    * Stop the underlying `mongod` instance(s).
+   * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
    */
-  async stop(): Promise<boolean> {
+  async stop(runCleanup: boolean = true): Promise<boolean> {
     log('stop' + isNullOrUndefined(process.exitCode) ? '' : ': called by process-event');
-    process.removeListener('beforeExit', this.stop); // many accumulate inside tests
 
     if (this._state === MongoMemoryReplSetStates.stopped) {
       return false;
     }
 
-    return Promise.all(this.servers.map((s) => s.stop(false)))
+    const bool = await Promise.all(this.servers.map((s) => s.stop(false)))
       .then(() => {
         this.stateChange(MongoMemoryReplSetStates.stopped);
 
@@ -387,6 +395,17 @@ export class MongoMemoryReplSet extends EventEmitter {
 
         return false;
       });
+
+    // return early if the instances failed to stop
+    if (!bool) {
+      return bool;
+    }
+
+    if (runCleanup) {
+      await this.cleanup(false);
+    }
+
+    return true;
   }
 
   /**
@@ -403,6 +422,8 @@ export class MongoMemoryReplSet extends EventEmitter {
       new Error('Cannot run cleanup when state is not "stopped"')
     );
     log(`cleanup for "${this.servers.length}" servers`);
+    process.removeListener('beforeExit', this.cleanup);
+
     await Promise.all(this.servers.map((s) => s.cleanup(force)));
 
     this.servers = [];
@@ -499,7 +520,7 @@ export class MongoMemoryReplSet extends EventEmitter {
           if (primary.opts.instance?.storageEngine !== 'ephemeralForTest') {
             log('_initReplSet: closing connection for restart');
             await con.close(); // close connection in preparation for "stop"
-            await this.stop(); // stop all servers for enabling auth
+            await this.stop(false); // stop all servers for enabling auth
             log('_initReplSet: starting all server again with auth');
             await this.initAllServers(); // start all servers again with "auth" enabled
 

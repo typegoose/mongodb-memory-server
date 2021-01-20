@@ -130,7 +130,7 @@
 * **MongoBinaryDownloadUrl:** add case for Linux Mint 20 ([01a6bc6](https://github.com/nodkz/mongodb-memory-server/commit/01a6bc63f0e13a4528ee39ccae64390a8de48582))
 * **MongoBinaryDownloadUrl:** detect "linuxmint" and "linux mint" as linux mint ([fda4f72](https://github.com/nodkz/mongodb-memory-server/commit/fda4f7224d156680ac68c743c5a5a963070171dd)), closes [#403](https://github.com/nodkz/mongodb-memory-server/issues/403)
 * **MongoBinaryDownloadUrl:** fix win32 download generation ([d62b489](https://github.com/nodkz/mongodb-memory-server/commit/d62b4891a01fe40b5f00c21ee02f08b24a55d80c)), closes [#399](https://github.com/nodkz/mongodb-memory-server/issues/399)
-* **MongoBinaryDownloadUrl:** getArchiveName: throw error if platform is unkown ([9fc358b](https://github.com/nodkz/mongodb-memory-server/commit/9fc358b9b2997333b2121eabff16e91e543f3897))
+* **MongoBinaryDownloadUrl:** getArchiveName: throw error if platform is unknown ([9fc358b](https://github.com/nodkz/mongodb-memory-server/commit/9fc358b9b2997333b2121eabff16e91e543f3897))
 * **MongoInstance:** handle code "12" on windows ([718aed7](https://github.com/nodkz/mongodb-memory-server/commit/718aed7281c25c7198ea068a87b06924d77de8ba)), closes [#411](https://github.com/nodkz/mongodb-memory-server/issues/411)
 
 

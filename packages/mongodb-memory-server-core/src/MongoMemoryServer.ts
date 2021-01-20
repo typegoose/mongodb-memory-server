@@ -256,7 +256,7 @@ export class MongoMemoryServer extends EventEmitter {
       case MongoMemoryServerStates.running:
       case MongoMemoryServerStates.starting:
       default:
-        throw new Error('Already in state running/starting or unkown');
+        throw new Error('Already in state running/starting or unknown');
     }
 
     if (!isNullOrUndefined(this._instanceInfo?.instance.childProcess)) {
@@ -276,7 +276,7 @@ export class MongoMemoryServer extends EventEmitter {
 
     await this._startUpInstance(forceSamePort).catch((err) => {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
-        console.warn('Starting the instance failed, enable debug for more infomation');
+        console.warn('Starting the instance failed, enable debug for more information');
       }
 
       throw err;
@@ -448,13 +448,13 @@ export class MongoMemoryServer extends EventEmitter {
     if (isNullOrUndefined(this._instanceInfo)) {
       log('"instanceInfo" is not defined (never ran?)');
 
-      return true;
+      return false;
     }
 
     if (this._state === MongoMemoryServerStates.stopped) {
       log(`stop: state is "stopped", so already stopped`);
 
-      return true;
+      return false;
     }
 
     // assert here, just to be sure
