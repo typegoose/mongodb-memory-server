@@ -256,7 +256,7 @@ export class MongoMemoryServer extends EventEmitter {
       case MongoMemoryServerStates.running:
       case MongoMemoryServerStates.starting:
       default:
-        throw new Error('Already in state running/starting or unkown');
+        throw new Error('Already in state running/starting or unknown');
     }
 
     if (!isNullOrUndefined(this._instanceInfo?.instance.childProcess)) {

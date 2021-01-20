@@ -112,10 +112,10 @@ async function getLinuxInfomation(): Promise<LinuxOS> {
 
   log('Couldnt find an release file');
 
-  // if none has worked, return unkown
+  // if none has worked, return unknown
   return {
     os: 'linux',
-    dist: 'unkown',
+    dist: 'unknown',
     release: '',
   };
 }
@@ -204,7 +204,7 @@ async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
 function parseLSB(input: string): LinuxOS {
   return {
     os: 'linux',
-    dist: input.match(LSBRegex.name)?.[1] ?? 'unkown',
+    dist: input.match(LSBRegex.name)?.[1] ?? 'unknown',
     codename: input.match(LSBRegex.codename)?.[1],
     release: input.match(LSBRegex.release)?.[1] ?? '',
   };
@@ -214,7 +214,7 @@ function parseLSB(input: string): LinuxOS {
 function parseOS(input: string): LinuxOS {
   return {
     os: 'linux',
-    dist: input.match(OSRegex.name)?.[1] ?? 'unkown',
+    dist: input.match(OSRegex.name)?.[1] ?? 'unknown',
     codename: input.match(OSRegex.codename)?.[1],
     release: input.match(OSRegex.release)?.[1] ?? '',
   };

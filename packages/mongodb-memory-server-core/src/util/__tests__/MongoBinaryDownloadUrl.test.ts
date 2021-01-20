@@ -174,33 +174,33 @@ describe('MongoBinaryDownloadUrl', () => {
       defaultValues.delete(ResolveConfigVariables.ARCHIVE_NAME);
     });
 
-    it('should throw an error if platform is unkown (getArchiveName)', async () => {
+    it('should throw an error if platform is unknown (getArchiveName)', async () => {
       // this is to test the default case in "getArchiveName"
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
         version: '4.0.0',
       });
-      du.platform = 'unkown';
+      du.platform = 'unknown';
       try {
         await du.getArchiveName();
         fail('Expected "getArchiveName" to throw');
       } catch (err) {
-        expect(err.message).toEqual('Unkown Platform "unkown"');
+        expect(err.message).toEqual('Unknown Platform "unknown"');
       }
     });
 
-    it('should throw an error if platform is unkown (translatePlatform)', async () => {
+    it('should throw an error if platform is unknown (translatePlatform)', async () => {
       // this is to test the default case in "translatePlatform"
       try {
         new MongoBinaryDownloadUrl({
-          platform: 'unkown',
+          platform: 'unknown',
           arch: 'x64',
           version: '4.0.0',
         });
         fail('Expected "translatePlatform" to throw');
       } catch (err) {
-        expect(err.message).toEqual('Unkown Platform "unkown"');
+        expect(err.message).toEqual('Unknown Platform "unknown"');
       }
     });
   });
