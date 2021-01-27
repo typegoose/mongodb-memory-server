@@ -71,21 +71,18 @@ async function getLinuxInformation(): Promise<LinuxOS> {
   // Try everything
   // Note: these values are stored, because this code should not use "inline value assignment"
 
-  log('Trying LSB-Release');
   const lsbOut = await tryLSBRelease();
 
   if (!isNullOrUndefined(lsbOut)) {
     return lsbOut;
   }
 
-  log('Trying OS-Release');
   const osOut = await tryOSRelease();
 
   if (!isNullOrUndefined(osOut)) {
     return osOut;
   }
 
-  log('Trying First *-Release file');
   const releaseOut = await tryFirstReleaseFile();
 
   if (!isNullOrUndefined(releaseOut)) {
@@ -106,6 +103,7 @@ async function getLinuxInformation(): Promise<LinuxOS> {
  * Try the "lsb_release" command, and if it works, parse it
  */
 async function tryLSBRelease(): Promise<LinuxOS | undefined> {
+  log('Trying LSB-Release');
   try {
     const lsb = await promisify(exec)('lsb_release -a'); // exec this for safety, because "/etc/lsb-release" could be changed to another file
 
@@ -121,6 +119,7 @@ async function tryLSBRelease(): Promise<LinuxOS | undefined> {
  * Try to read the /etc/os-release file, and if it works, parse it
  */
 async function tryOSRelease(): Promise<LinuxOS | undefined> {
+  log('Trying OS-Release');
   try {
     const os = await fspromises.readFile('/etc/os-release');
 
@@ -136,17 +135,17 @@ async function tryOSRelease(): Promise<LinuxOS | undefined> {
  * Try to read any /etc/*-release file, take the first, and if it works, parse it
  */
 async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
+  log('Trying First *-Release file');
   try {
-    const file = (await fspromises.readdir('/etc')).filter(
-      (v) =>
-        // match if file ends with "-release"
-        v.match(/.*-release$/im) &&
-        // check if the file does NOT contain "lsb"
-        !v.match(/lsb/im)
+    const file = (await fspromises.readdir('/etc')).filter((v) =>
+      // match if file ends with "-release"
+      v.match(/.*-release$/im)
     )[0];
 
     if (isNullOrUndefined(file) || file.length <= 0) {
-      throw new Error('No release file found!');
+      log('tryFirstReleaseFile: no matching file found!');
+
+      return undefined;
     }
 
     const os = await fspromises.readFile(join('/etc/', file));
