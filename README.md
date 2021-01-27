@@ -283,14 +283,8 @@ MONGOMS_DOWNLOAD_URL=url # full URL to download the mongodb binary
 MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
 MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
 MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
-# Passed constructor parameter `binary.checkMD5` has higher priority.
-
-# GetOS specific ones (for linux only)
-MONGOMS_USE_LINUX_LSB_RELEASE=1 # Only try "lsb_release -a"
-MONGOMS_USE_LINUX_OS_RELEASE=1 # Only try to read "/etc/os-release"
-MONGOMS_USE_LINUX_ANYFILE_RELEASE=1 # Only try to read the first file found "/etc/*-release"
+# ^ Passed constructor parameter `binary.checkMD5` has higher priority.
 MONGOMS_ARCHIVE_NAME="mongodb-linux-x86_64-4.0.0.tgz" # Specify what file / archive to download
-MONGOMS_SKIP_OS_RELEASE=1 # ignore error thrown in "tryOSRelease"
 ```
 
 ### Options which can be set via package.json's `config` section
