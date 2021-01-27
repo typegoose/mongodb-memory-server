@@ -67,7 +67,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
   }
 
   const timeoutTime = 1000 * 10;
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     let timeout = setTimeout(() => {
       log('killProcess timeout triggered, trying SIGKILL');
 

@@ -589,7 +589,15 @@ export class MongoMemoryServer extends EventEmitter {
                   `"ensureInstance" waited for "running" but got an different state: "${state}"`
                 )
               );
+
+              return;
             }
+
+            // this assertion is mainly for types (typescript otherwise would complain that "_instanceInfo" might be "undefined")
+            assertion(
+              !isNullOrUndefined(this._instanceInfo),
+              new Error('InstanceInfo is undefined!')
+            );
 
             res(this._instanceInfo);
           })

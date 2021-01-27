@@ -57,7 +57,7 @@ export class MongoBinary {
     // wait to get a lock
     // downloading of binaries may be quite long procedure
     // that's why we are using so big wait/stale periods
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((res, rej) => {
       LockFile.lock(
         lockfile,
         {
@@ -68,7 +68,7 @@ export class MongoBinary {
           retryWait: 100,
         },
         (err: any) => {
-          return err ? reject(err) : resolve();
+          return err ? rej(err) : res();
         }
       );
     });
@@ -86,7 +86,7 @@ export class MongoBinary {
     }
 
     // remove lock
-    await new Promise((res) => {
+    await new Promise<void>((res) => {
       LockFile.unlock(lockfile, (err) => {
         log(
           err

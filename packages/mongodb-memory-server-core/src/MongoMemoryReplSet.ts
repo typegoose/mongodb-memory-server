@@ -444,7 +444,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         return;
       case MongoMemoryReplSetStates.init:
         // wait for event "running"
-        await new Promise((res) => {
+        await new Promise<void>((res) => {
           // the use of "this" here can be done because "on" either binds "this" or uses an arrow function
           function waitRunning(this: MongoMemoryReplSet, state: MongoMemoryReplSetStates) {
             // this is because other states can be emitted multiple times (like stopped & init for auth creation)
@@ -592,7 +592,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     await Promise.race([
       ...this.servers.map(
         (server) =>
-          new Promise((res, rej) => {
+          new Promise<void>((res, rej) => {
             const instanceInfo = server.instanceInfo;
 
             if (!instanceInfo) {
