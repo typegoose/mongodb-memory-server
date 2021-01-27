@@ -1,10 +1,6 @@
-import { promises as fspromises } from 'fs';
 import { platform } from 'os';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import { join } from 'path';
 import debug from 'debug';
-import { isNullOrUndefined } from '../utils';
+import { isNullOrUndefined, tryReleaseFile } from '../utils';
 
 const log = debug('MongoMS:getos');
 
@@ -64,32 +60,44 @@ export default getOS;
 /** Function to outsource Linux Information Parsing */
 async function getLinuxInformation(): Promise<LinuxOS> {
   // Structure of this function:
-  // 1. try lsb_release
-  // (if not 1) 2. try /etc/os-release
-  // (if not 2) 3. try read dir /etc and filter any file "-release" and try to parse the first file found
+  // 1. get upstream release, if possible
+  // 2. get os release (etc) because it has an "id_like"
+  // 3. get os release (usr) because it has an "id_like"
+  // 4. get lsb-release (etc) as fallback
 
-  // Try everything
-  // Note: these values are stored, because this code should not use "inline value assignment"
+  const upstreamLSB = await tryReleaseFile('/etc/upstream-release/lsb-release', parseLSB);
 
-  const lsbOut = await tryLSBRelease();
+  if (!isNullOrUndefined(upstreamLSB)) {
+    log('getLinuxInformation: Using UpstreamLSB');
 
-  if (!isNullOrUndefined(lsbOut)) {
-    return lsbOut;
+    return upstreamLSB;
   }
 
-  const osOut = await tryOSRelease();
+  const etcOsRelease = await tryReleaseFile('/etc/os-release', parseOS);
 
-  if (!isNullOrUndefined(osOut)) {
-    return osOut;
+  if (!isNullOrUndefined(etcOsRelease)) {
+    log('getLinuxInformation: Using etcOsRelease');
+
+    return etcOsRelease;
   }
 
-  const releaseOut = await tryFirstReleaseFile();
+  const usrOsRelease = await tryReleaseFile('/usr/lib/os-release', parseOS);
 
-  if (!isNullOrUndefined(releaseOut)) {
-    return releaseOut;
+  if (!isNullOrUndefined(usrOsRelease)) {
+    log('getLinuxInformation: Using usrOsRelease');
+
+    return usrOsRelease;
   }
 
-  log('Couldnt find an release file');
+  const etcLSBRelease = await tryReleaseFile('/etc/lsb-release', parseLSB);
+
+  if (!isNullOrUndefined(etcLSBRelease)) {
+    log('getLinuxInformation: Using etcLSBRelease');
+
+    return etcLSBRelease;
+  }
+
+  console.warn('Could not find any Release File, using fallback binary');
 
   // if none has worked, return unknown
   return {
@@ -100,65 +108,8 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 }
 
 /**
- * Try the "lsb_release" command, and if it works, parse it
+ * Parse LSB-like output (either command or file)
  */
-async function tryLSBRelease(): Promise<LinuxOS | undefined> {
-  log('Trying LSB-Release');
-  try {
-    const lsb = await promisify(exec)('lsb_release -a'); // exec this for safety, because "/etc/lsb-release" could be changed to another file
-
-    return parseLSB(lsb.stdout);
-  } catch (err) {
-    log('tryLSBRelease Error:', err);
-
-    return undefined;
-  }
-}
-
-/**
- * Try to read the /etc/os-release file, and if it works, parse it
- */
-async function tryOSRelease(): Promise<LinuxOS | undefined> {
-  log('Trying OS-Release');
-  try {
-    const os = await fspromises.readFile('/etc/os-release');
-
-    return parseOS(os.toString());
-  } catch (err) {
-    log('tryOSRelease Error:', err);
-
-    return undefined;
-  }
-}
-
-/**
- * Try to read any /etc/*-release file, take the first, and if it works, parse it
- */
-async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
-  log('Trying First *-Release file');
-  try {
-    const file = (await fspromises.readdir('/etc')).filter((v) =>
-      // match if file ends with "-release"
-      v.match(/.*-release$/im)
-    )[0];
-
-    if (isNullOrUndefined(file) || file.length <= 0) {
-      log('tryFirstReleaseFile: no matching file found!');
-
-      return undefined;
-    }
-
-    const os = await fspromises.readFile(join('/etc/', file));
-
-    return parseOS(os.toString());
-  } catch (err) {
-    log('tryFirstReleaseFile Error:', err);
-
-    return undefined;
-  }
-}
-
-/** Function to outsource "lsb_release -a" parsing */
 function parseLSB(input: string): LinuxOS {
   return {
     os: 'linux',
@@ -168,7 +119,9 @@ function parseLSB(input: string): LinuxOS {
   };
 }
 
-/** Function to outsource "/etc/os-release" parsing */
+/**
+ * Parse OSRelease-like output
+ */
 function parseOS(input: string): LinuxOS {
   return {
     os: 'linux',

@@ -58,11 +58,53 @@ describe('utils', () => {
       jest.spyOn(process, 'kill').mockImplementationOnce(() => {
         throw new Error('hello');
       });
-      jest.useFakeTimers(); // fake times to have spys on "setTimeout" (and ensure they never get run)
+      jest.useFakeTimers(); // fake times to have spies on "setTimeout" (and ensure they never get run)
 
       await utils.killProcess({ pid: 1001 } as ChildProcess, 'test');
       expect(process.kill).toHaveBeenCalledWith(1001, 0);
       expect(setTimeout).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('tryReleaseFile', () => {
+    it('should return an Parsed Output', async () => {
+      expect.assertions(2);
+      const shouldOutput = 'HelloThere';
+      jest.spyOn(fspromises, 'readFile').mockResolvedValueOnce(shouldOutput);
+
+      await expect(
+        utils.tryReleaseFile('/some/path', (output) => {
+          expect(output).toEqual(shouldOutput);
+
+          return { hello: output } as any;
+        })
+      ).resolves.toEqual({ hello: shouldOutput });
+    });
+
+    it('should return "undefined" if "ENOENT"', async () => {
+      const retError = new Error();
+      // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
+      retError.code = 'ENOENT';
+      jest.spyOn(fspromises, 'readFile').mockRejectedValueOnce(retError);
+
+      await expect(
+        utils.tryReleaseFile('/some/path', () => {
+          fail('This Function should never run');
+        })
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw an error if error is not "ENOENT"', async () => {
+      const retError = new Error();
+      // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
+      retError.code = 'EPERM';
+      jest.spyOn(fspromises, 'readFile').mockRejectedValueOnce(retError);
+
+      await expect(
+        utils.tryReleaseFile('/some/path', () => {
+          fail('This Function should never run');
+        })
+      ).rejects.toThrow(retError);
     });
   });
 });
