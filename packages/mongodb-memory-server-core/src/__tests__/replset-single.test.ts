@@ -424,10 +424,11 @@ describe('MongoMemoryReplSet', () => {
   it('"getInstanceOpts" should return "storageEngine" if in baseOpts', () => {
     const replSet = new MongoMemoryReplSet();
 
-    // @ts-expect-error because "getInstanceOpts" is protected
-    expect(replSet.getInstanceOpts({ storageEngine: 'wiredTiger' })).toMatchObject<
-      MongoMemoryInstanceProp // this is needed, otherwise no ts error when "storageEngine" might get changed
-    >({
+    expect(
+      // @ts-expect-error because "getInstanceOpts" is protected
+      replSet.getInstanceOpts({ storageEngine: 'wiredTiger' })
+    ).toMatchObject<MongoMemoryInstanceProp>({
+      // this is needed, otherwise no ts error when "storageEngine" might get changed
       storageEngine: 'wiredTiger',
     });
   });
