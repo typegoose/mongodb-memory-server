@@ -7,16 +7,16 @@ const log = debug('MongoMS:getos');
 /** Collection of Regexes for "lsb_release -a" parsing */
 const LSBRegex = {
   // regex format is "lsb_release" (command output) and then "lsb-release" (file output)
-  name: /^(distributor id:|DISTRIB_ID=)\s*(.*)$/im,
-  codename: /^(codename:|DISTRIB_CODENAME=)\s*(.*)$/im,
-  release: /^(release:|DISTRIB_RELEASE=)\s*(.*)$/im,
+  name: /^(?:distributor id:|DISTRIB_ID=)\s*(.*)$/im,
+  codename: /^(?:codename:|DISTRIB_CODENAME=)\s*(.*)$/im,
+  release: /^(?:release:|DISTRIB_RELEASE=)\s*(.*)$/im,
 };
 
 /** Collection of Regexes for "/etc/os-release" parsing */
 const OSRegex = {
   name: /^id\s*=\s*"?(.*)"?$/im,
   codename: /^version_codename\s*=\s*(.*)$/im,
-  release: /^version_id\s*=\s*"?(.*)"?$/im,
+  release: /^version_id\s*=\s*"?(\d*(?:\.\d*)?)"?$/im,
   id_like: /^id_like\s*=\s*"?(.*)"?$/im,
 };
 
@@ -110,23 +110,24 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 /**
  * Parse LSB-like output (either command or file)
  */
-function parseLSB(input: string): LinuxOS {
+export function parseLSB(input: string): LinuxOS {
   return {
     os: 'linux',
-    dist: input.match(LSBRegex.name)?.[1] ?? 'unknown',
-    codename: input.match(LSBRegex.codename)?.[1],
-    release: input.match(LSBRegex.release)?.[1] ?? '',
+    dist: input.match(LSBRegex.name)?.[1].toLocaleLowerCase() ?? 'unknown',
+    codename: input.match(LSBRegex.codename)?.[1].toLocaleLowerCase(),
+    release: input.match(LSBRegex.release)?.[1].toLocaleLowerCase() ?? '',
   };
 }
 
 /**
  * Parse OSRelease-like output
  */
-function parseOS(input: string): LinuxOS {
+export function parseOS(input: string): LinuxOS {
   return {
     os: 'linux',
-    dist: input.match(OSRegex.name)?.[1] ?? 'unknown',
-    codename: input.match(OSRegex.codename)?.[1],
-    release: input.match(OSRegex.release)?.[1] ?? '',
+    dist: input.match(OSRegex.name)?.[1].toLocaleLowerCase() ?? 'unknown',
+    codename: input.match(OSRegex.codename)?.[1].toLocaleLowerCase(),
+    release: input.match(OSRegex.release)?.[1].toLocaleLowerCase() ?? '',
+    id_like: input.match(OSRegex.id_like)?.[1].toLocaleLowerCase(),
   };
 }
