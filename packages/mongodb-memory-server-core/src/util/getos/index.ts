@@ -11,17 +11,18 @@ const log = debug('MongoMS:getos');
 
 /** Collection of Regexes for "lsb_release -a" parsing */
 const LSBRegex = {
-  name: /^distributor id:\s*(.*)$/im,
-  codename: /^codename:\s*(.*)$/im,
-  release: /^release:\s*(.*)$/im,
+  // regex format is "lsb_release" (command output) and then "lsb-release" (file output)
+  name: /^(distributor id:|DISTRIB_ID=)\s*(.*)$/im,
+  codename: /^(codename:|DISTRIB_CODENAME=)\s*(.*)$/im,
+  release: /^(release:|DISTRIB_RELEASE=)\s*(.*)$/im,
 };
 
 /** Collection of Regexes for "/etc/os-release" parsing */
 const OSRegex = {
   name: /^id\s*=\s*"?(.*)"?$/im,
-  /** uses VERSION_CODENAME */
   codename: /^version_codename\s*=\s*(.*)$/im,
   release: /^version_id\s*=\s*"?(.*)"?$/im,
+  id_like: /^id_like\s*=\s*"?(.*)"?$/im,
 };
 
 export interface OtherOS {
@@ -33,6 +34,7 @@ export interface LinuxOS extends OtherOS {
   dist: string;
   release: string;
   codename?: string;
+  id_like?: string;
 }
 
 export type AnyOS = OtherOS | LinuxOS;
