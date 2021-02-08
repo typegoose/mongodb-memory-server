@@ -580,7 +580,7 @@ Contributing Guidelines are setup in [CONTRIBUTING](./.github/CONTRIBUTING.md)
 
 ## Join Our Discord Server
 
-To ask questions or just talk with us, [join our Discord Server](https://discord.gg/BpGjTTD).
+To ask questions or just talk with us, [join our Discord Server](https://discord.gg/bgCrRP9).
 
 ## Documentation
 
