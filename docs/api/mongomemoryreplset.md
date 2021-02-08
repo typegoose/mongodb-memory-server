@@ -65,9 +65,11 @@ Used by [`start`](#start) and to restart without fully running everything again
 
 ### stop
 
-Typings: `async stop(): Promise<boolean>`
+Typings: `async stop(runCleanup: boolean = true): Promise<boolean>`
 
 Stop an running instance
+
+This function will by default run [`.cleanup`](#cleanup), this must be set to `false` to be able to restart (and an engine other than `ephemeralForTest` must be used)
 
 :::caution
 Will not Error if instance is not running
