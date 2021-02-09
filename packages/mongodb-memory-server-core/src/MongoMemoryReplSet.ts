@@ -332,7 +332,6 @@ export class MongoMemoryReplSet extends EventEmitter {
     }
     this.stateChange(MongoMemoryReplSetStates.init); // this needs to be executed before "setImmediate"
     await ensureAsync();
-    log('init');
     await this.initAllServers();
     await this._initReplSet();
 
@@ -347,6 +346,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   protected async initAllServers(): Promise<void> {
+    log('initAllServers');
     this.stateChange(MongoMemoryReplSetStates.init);
 
     if (this.servers.length > 0) {
@@ -368,6 +368,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       this.servers.push(this._initServer(this.getInstanceOpts()));
     }
 
+    log('initAllServers: waiting for all servers to finish starting');
     // ensures all servers are listening for connection
     await Promise.all(this.servers.map((s) => s.start()));
   }
