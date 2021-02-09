@@ -1,7 +1,6 @@
 import { promises as fspromises, constants } from 'fs';
 import os from 'os';
 import path from 'path';
-import LockFile from 'lockfile';
 import mkdirp from 'mkdirp';
 import findCacheDir from 'find-cache-dir';
 import MongoBinaryDownload from './MongoBinaryDownload';
@@ -9,6 +8,7 @@ import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfi
 import debug from 'debug';
 import { assertion, isNullOrUndefined, pathExists } from './utils';
 import { spawnSync } from 'child_process';
+import { LockFile } from './lockfile';
 
 const log = debug('MongoMS:MongoBinary');
 
@@ -59,21 +59,7 @@ export class MongoBinary {
     // wait to get a lock
     // downloading of binaries may be quite long procedure
     // that's why we are using so big wait/stale periods
-    await new Promise<void>((res, rej) => {
-      LockFile.lock(
-        lockfile,
-        {
-          wait: 1000 * 120, // 120 seconds
-          pollPeriod: 100,
-          stale: 1000 * 110, // 110 seconds
-          retries: 3,
-          retryWait: 100,
-        },
-        (err: any) => {
-          return err ? rej(err) : res();
-        }
-      );
-    });
+    const lock = await LockFile.lock(lockfile);
     log('getDownloadPath: Download lock acquired');
 
     // check cache if it got already added to the cache
@@ -91,16 +77,8 @@ export class MongoBinary {
 
     log('getDownloadPath: Removing Download lock');
     // remove lock
-    await new Promise<void>((res) => {
-      LockFile.unlock(lockfile, (err) => {
-        log(
-          err
-            ? `getDownloadPath: Error when removing download lock ${err}`
-            : `getDownloadPath: Download lock removed`
-        );
-        res(); // we don't care if it was successful or not
-      });
-    });
+    await lock.unlock();
+    log('getDownloadPath: Download lock removed');
 
     const cachePath = this.cache.get(version);
     // ensure that "path" exists, so the return type does not change
