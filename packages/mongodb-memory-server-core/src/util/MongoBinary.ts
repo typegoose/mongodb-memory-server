@@ -32,11 +32,11 @@ export class MongoBinary {
     try {
       await fspromises.access(systemBinary, constants.X_OK); // check if the provided path exists and has the execute bit for current user
 
-      log(`MongoBinary: found system binary path at "${systemBinary}"`);
+      log(`getSystemPath: found system binary path at "${systemBinary}"`);
 
       return systemBinary; // returns if "access" is successful
     } catch (err) {
-      log(`MongoBinary: can't find system binary at "${systemBinary}".\n${err.message}`);
+      log(`getSystemPath: can't find system binary at "${systemBinary}".\n${err.message}`);
     }
 
     return undefined;
@@ -48,12 +48,14 @@ export class MongoBinary {
    * @returns The BinaryPath the binary has been downloaded to
    */
   static async getDownloadPath(options: Required<MongoBinaryOpts>): Promise<string> {
+    log('getDownloadPath');
     const { downloadDir, platform, arch, version, checkMD5 } = options;
     // create downloadDir
     await mkdirp(downloadDir);
 
     /** Lockfile path */
     const lockfile = path.resolve(downloadDir, `${version}.lock`);
+    log('getDownloadPath: Waiting to acquire Download lock');
     // wait to get a lock
     // downloading of binaries may be quite long procedure
     // that's why we are using so big wait/stale periods
@@ -72,9 +74,11 @@ export class MongoBinary {
         }
       );
     });
+    log('getDownloadPath: Download lock acquired');
 
     // check cache if it got already added to the cache
     if (!this.cache.get(version)) {
+      log(`getDownloadPath: Adding version ${version} to cache`);
       const downloader = new MongoBinaryDownload({
         downloadDir,
         platform,
@@ -85,13 +89,14 @@ export class MongoBinary {
       this.cache.set(version, await downloader.getMongodPath());
     }
 
+    log('getDownloadPath: Removing Download lock');
     // remove lock
     await new Promise<void>((res) => {
       LockFile.unlock(lockfile, (err) => {
         log(
           err
-            ? `MongoBinary: Error when removing download lock ${err}`
-            : `MongoBinary: Download lock removed`
+            ? `getDownloadPath: Error when removing download lock ${err}`
+            : `getDownloadPath: Download lock removed`
         );
         res(); // we don't care if it was successful or not
       });
@@ -114,6 +119,7 @@ export class MongoBinary {
    * @return The first found BinaryPath
    */
   static async getPath(opts: MongoBinaryOpts = {}): Promise<string> {
+    log('getPath');
     const legacyDLDir = path.resolve(os.homedir(), '.cache/mongodb-binaries');
 
     // if we're in postinstall script, npm will set the cwd too deep
@@ -144,7 +150,7 @@ export class MongoBinary {
 
     /** Provided Options combined with the Default Options */
     const options = { ...defaultOptions, ...opts };
-    log(`MongoBinary options:`, JSON.stringify(options, null, 2));
+    log(`getPath: MongoBinary options:`, JSON.stringify(options, null, 2));
 
     let binaryPath: string | undefined;
 
@@ -152,21 +158,21 @@ export class MongoBinary {
       binaryPath = await this.getSystemPath(options.systemBinary);
 
       if (binaryPath) {
-        log(`Spawning binaryPath "${binaryPath}" to get version`);
+        log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
         const binaryVersion = spawnSync(binaryPath, ['--version'])
           .toString()
           .split('\n')[0]
           .split(' ')[2];
 
         if (isNullOrUndefined(options.version) || options.version.length <= 0) {
-          log('Using SystemBinary version as options.version');
+          log('getPath: Using SystemBinary version as options.version');
           options.version = binaryVersion;
         }
 
         if (options.version !== binaryVersion) {
           // we will log the version number of the system binary and the version requested so the user can see the difference
           log(
-            'MongoMemoryServer: Possible version conflict\n' +
+            'getPath: MongoMemoryServer: Possible version conflict\n' +
               `  SystemBinary version: ${binaryVersion}\n` +
               `  Requested version:    ${options.version}\n\n` +
               '  Using SystemBinary!'
@@ -194,7 +200,7 @@ export class MongoBinary {
       );
     }
 
-    log(`MongoBinary: Mongod binary path: "${binaryPath}"`);
+    log(`getPath: Mongod binary path: "${binaryPath}"`);
 
     return binaryPath;
   }
