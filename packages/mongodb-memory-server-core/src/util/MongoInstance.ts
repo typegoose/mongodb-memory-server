@@ -195,6 +195,7 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceStarted
    */
   async run(): Promise<this> {
+    this.debug('run');
     this.isInstancePrimary = false;
     this.isInstanceReady = false;
     this.isReplSet = false;
@@ -217,11 +218,13 @@ export class MongoInstance extends EventEmitter {
       );
       throw err;
     }
+    this.debug('run: Starting Processes');
     this.childProcess = this._launchMongod(mongoBin);
     this.killerProcess = this._launchKiller(process.pid, this.childProcess.pid);
 
     await launch;
     this.emit(MongoInstanceEvents.instanceStarted);
+    this.debug('run: Processes Started');
 
     return this;
   }
@@ -230,7 +233,7 @@ export class MongoInstance extends EventEmitter {
    * Shutdown all related processes (Mongod Instance & Killer Process)
    */
   async kill(): Promise<MongoInstance> {
-    this.debug('Called MongoInstance.kill():');
+    this.debug('kill: Called .kill():');
 
     if (!isNullOrUndefined(this.childProcess)) {
       // try to run "replSetStepDown" before running "killProcess" (gracefull "SIGINT")
@@ -282,16 +285,16 @@ export class MongoInstance extends EventEmitter {
       await killProcess(this.childProcess, 'childProcess');
       this.childProcess = undefined; // reset reference to the childProcess for "mongod"
     } else {
-      this.debug('- childProcess: nothing to shutdown, skipping.');
+      this.debug('kill: childProcess: nothing to shutdown, skipping');
     }
     if (!isNullOrUndefined(this.killerProcess)) {
       await killProcess(this.killerProcess, 'killerProcess');
       this.killerProcess = undefined; // reset reference to the childProcess for "mongo_killer"
     } else {
-      this.debug('- killerProcess: nothing to shutdown, skipping.');
+      this.debug('kill: killerProcess: nothing to shutdown, skipping');
     }
 
-    this.debug('Instance Finished Shutdown');
+    this.debug('kill: Instance Finished Shutdown');
 
     return this;
   }
@@ -302,6 +305,7 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceLaunched
    */
   _launchMongod(mongoBin: string): ChildProcess {
+    this.debug('_launchMongod: Launching Mongod Process');
     const childProcess = spawn(resolve(mongoBin), this.prepareCommandArgs(), {
       ...this.spawnOpts,
       stdio: 'pipe', // ensure that stdio is always an pipe, regardless of user input
@@ -322,12 +326,14 @@ export class MongoInstance extends EventEmitter {
 
   /**
    * Spawn an child to kill the parent and the mongod instance if both are Dead
-   * @param parentPid Parent to kill
+   * @param parentPid Parent nodejs process
    * @param childPid Mongod process to kill
    * @fires MongoInstance#killerLaunched
    */
   _launchKiller(parentPid: number, childPid: number): ChildProcess {
-    this.debug(`Called MongoInstance._launchKiller(parent: ${parentPid}, child: ${childPid}):`);
+    this.debug(
+      `_launchKiller: Launching Killer Process (parent: ${parentPid}, child: ${childPid})`
+    );
     // spawn process which kills itself and mongo process if current process is dead
     const killer = fork(
       path.resolve(__dirname, '../../scripts/mongo_killer.js'),
@@ -393,8 +399,8 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceReplState
    */
   stdoutHandler(message: string | Buffer): void {
-    const line: string = message.toString();
-    this.debug(`STDOUT: ${line}`);
+    const line: string = message.toString().trim(); // trimming to remove extra new lines and spaces around the message
+    this.debug(`STDOUT: ""${line}""`); // denoting the STDOUT string with double quotes, because the stdout might also use quotes
     this.emit(MongoInstanceEvents.instanceSTDOUT, line);
 
     if (/waiting for connections/i.test(line)) {
