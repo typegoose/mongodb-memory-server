@@ -34,6 +34,7 @@ export class LockFile {
   static files: Set<string> = new Set();
   /** Listen for events from this process */
   static events: LockFileEventsClass = new LockFileEventsClass();
+  /** Mutex to stop same-process race conditions */
   static mutex: Mutex = new Mutex();
 
   /**
@@ -89,7 +90,9 @@ export class LockFile {
    */
   protected static async waitForLock(file: string): Promise<LockFile> {
     log(`waitForLock: Starting to wait for file "${file}"`);
+    /** Store the interval id to be cleared later */
     let interval: NodeJS.Timeout | undefined = undefined;
+    /** Store the function in an value to be cleared later, without having to use an class-external or class function */
     let eventCB: ((val: any) => any) | undefined = undefined;
     await new Promise<void>((res) => {
       eventCB = (unlockedFile) => {
@@ -161,14 +164,20 @@ export class LockFile {
     return new this(file);
   }
 
-  /** File locked by this instance */
+  // Below here are instance functions & values
+
+  /**
+   * File locked by this instance
+   */
   public file?: string;
 
   constructor(file: string) {
     this.file = file;
   }
 
-  /** Unlock the File that is locked by this instance */
+  /**
+   * Unlock the File that is locked by this instance
+   */
   async unlock(): Promise<void> {
     await utils.ensureAsync();
     log(`unlock: Unlocking file "${this.file}"`);
@@ -214,7 +223,7 @@ export class LockFile {
     LockFile.files.delete(this.file);
     LockFile.events.emit(LockFileEvents.unlock, this.file);
 
-    // making this instance unusable (to prevent double calling)
+    // make this LockFile instance unusable (to prevent double unlock calling)
     this.file = undefined;
 
     await utils.ensureAsync();
