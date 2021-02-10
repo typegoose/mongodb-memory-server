@@ -1,3 +1,32 @@
+## [7.0.0-beta.15](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.14...v7.0.0-beta.15) (2021-02-10)
+
+
+### Features
+
+* **lockfile:** add custom lockfile implementation ([e6a2237](https://github.com/nodkz/mongodb-memory-server/commit/e6a223713277f6f3eae2fc6f0d620f3ded04b8bb))
+
+
+### Dependencies
+
+* **eslint:** upgrade to 7.18.0 ([6dc0b75](https://github.com/nodkz/mongodb-memory-server/commit/6dc0b751f26d2bc2e32f5e703b94a6cbb9c29c81))
+* **jest:** upgrade to 26.6.3 ([8adf360](https://github.com/nodkz/mongodb-memory-server/commit/8adf3600180480e1f83d8544214224d0cd7ac504))
+* **ts-jest:** upgrade to 26.4.4 ([b8f1fae](https://github.com/nodkz/mongodb-memory-server/commit/b8f1fae86b48f8be93783335ebff9b66840f0084))
+* **typescript:** upgrade to 4.1.3 ([30ea057](https://github.com/nodkz/mongodb-memory-server/commit/30ea057253c69b00cdbcb62810004b78ce35b94d))
+
+
+### Fixes
+
+* **MongoBinary:** add more logs ([e980a79](https://github.com/nodkz/mongodb-memory-server/commit/e980a795a39c8fcaf17e5f8048c032d64852329b)), closes [#434](https://github.com/nodkz/mongodb-memory-server/issues/434)
+* **MongoInstance:** add more logs ([e8d2d4b](https://github.com/nodkz/mongodb-memory-server/commit/e8d2d4bae36f424233d9d877c697172f356d7e1c)), closes [#434](https://github.com/nodkz/mongodb-memory-server/issues/434)
+* **MongoMemoryReplSet:** add more logs ([41a0be0](https://github.com/nodkz/mongodb-memory-server/commit/41a0be0b3784b4326b8c46fa3c7c44e888a140b4)), closes [#434](https://github.com/nodkz/mongodb-memory-server/issues/434)
+* **MongoMemoryServer:** add more logs ([9d12b04](https://github.com/nodkz/mongodb-memory-server/commit/9d12b041ff42557da53fc5a6803958e34077bfd7)), closes [#434](https://github.com/nodkz/mongodb-memory-server/issues/434)
+
+
+### Style
+
+* **lockfile:** add more commentation ([6d4576a](https://github.com/nodkz/mongodb-memory-server/commit/6d4576ae64ba92526854836ed41624f8f05743a8))
+* **lockfile.test:** increase timeouts ([c541b0e](https://github.com/nodkz/mongodb-memory-server/commit/c541b0e83989d6513b334f0e57f4d05035d37878))
+
 ## [7.0.0-beta.14](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.13...v7.0.0-beta.14) (2021-01-20)
 
 
