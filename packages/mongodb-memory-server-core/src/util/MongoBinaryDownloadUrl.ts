@@ -152,8 +152,6 @@ export class MongoBinaryDownloadUrl {
   getLinuxOSVersionString(os: LinuxOS): string {
     if (regexHelper(/ubuntu/i, os)) {
       return this.getUbuntuVersionString(os);
-    } else if (regexHelper(/elementary OS/i, os)) {
-      return this.getElementaryOSVersionString(os);
     } else if (regexHelper(/suse/i, os)) {
       return this.getSuseVersionString(os);
     } else if (regexHelper(/(rhel|centos|scientific)/i, os)) {
@@ -256,52 +254,11 @@ export class MongoBinaryDownloadUrl {
   }
 
   /**
-   * Get the version string for ElementaryOS
-   * @param os LinuxOS Object
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getElementaryOSVersionString(os: LinuxOS): string {
-    // Elementary specific - get used ubuntu version
-    const ubuntuVersion = execSync('/usr/bin/lsb_release -u -rs');
-    try {
-      // confirm it is actually a version, otherwise throw an error
-      parseFloat(ubuntuVersion.toString());
-
-      return `ubuntu${ubuntuVersion.toString().replace('.', '').trim()}`;
-    } catch (err) {
-      console.error('ElementaryOS "lsb_relese -u -rs" couldnt be executed!');
-      throw err;
-    }
-  }
-
-  /**
    * Get the version string for Linux Mint
    * @param os LinuxOS Object
    */
   getMintVersionString(os: LinuxOS): string {
-    let name = 'ubuntu';
-    const mintMajorVer = parseInt(os.release ? os.release.split('.')[0] : os.release);
-
-    if (mintMajorVer < 17) {
-      throw new Error('Mint Versions under 17 are not supported!');
-    }
-
-    switch (mintMajorVer) {
-      case 17:
-        name += '1404';
-        break;
-      case 18:
-        name += '1604';
-        break;
-      case 20: // because "1804" binaries also work on "2004" (and because earlier versions than 4.4 are not available in "2004")
-      case 19:
-      default:
-        // a default to support versions > 19
-        name += '1804';
-        break;
-    }
-
-    return name;
+    return this.getUbuntuVersionString(os);
   }
 
   /**
@@ -328,36 +285,69 @@ export class MongoBinaryDownloadUrl {
    * @param os LinuxOS Object
    */
   getUbuntuVersionString(os: LinuxOS): string {
-    let name = 'ubuntu';
+    const ubuntuOS: LinuxOS = {
+      ...os,
+      dist: 'ubuntu',
+    };
 
-    // quick fix to not use "os.release" if it is an "id_like" case
-    if (!/ubuntu/i.test(os.dist)) {
-      os.release = '';
-    }
+    // "id_like" processing (version conversion) [this is an block to be collapsible]
+    {
+      if (/^linux\s?mint\s*$/i.test(os.dist)) {
+        const mintToUbuntuRelease: Record<number, string> = {
+          17: '14.04',
+          18: '16.04',
+          19: '18.04',
+          20: '20.04',
+        };
 
-    const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
-    const majorVer: number = parseInt(ubuntuVer[0], 10);
-    // for all cases where its just "10.10" -> "1010"
-    // and because the "04" version always exists for ubuntu, use that as default
-    let version = `${majorVer || 14}04`;
+        ubuntuOS.release =
+          mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[20];
+      }
 
-    if (os.release === '14.10') {
-      version = '1410-clang';
-    } else if (majorVer >= 18) {
-      if (this.version && this.version.indexOf('3.') === 0) {
-        // For MongoDB 3.x using 1604 binaries, download distro does not have builds for Ubuntu 1804 AND 2004
-        // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
-        version = '1604';
-      } else {
-        // See fulllist of versions https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
-        // For MongoDB <4.4 using 1804 binaries, because 2004 dosnt have anything below 4.4
-        version = '1804';
+      if (/^elementary\s?OS\s*$/i.test(os.dist)) {
+        const elementaryToUbuntuRelease: Record<number, string> = {
+          3: '14.04',
+          4: '16.04',
+          5: '18.04',
+          6: '20.04',
+        };
+
+        // untangle elemenatary versioning from hell https://en.wikipedia.org/wiki/Elementary_OS#Development
+        const [elementaryMajor, elementaryMinor] = os.release.split('.').map((el) => parseInt(el));
+        const realMajor = elementaryMajor || elementaryMinor;
+
+        ubuntuOS.release = elementaryToUbuntuRelease[realMajor] || elementaryToUbuntuRelease[6];
       }
     }
 
-    name += version;
+    const ubuntuYear: number = parseInt(ubuntuOS.release.split('.')[0], 10);
 
-    return name;
+    if (ubuntuOS.release === '14.10') {
+      return 'ubuntu1410-clang';
+    }
+
+    // there are no MongoDB 3.x binary distributions for ubuntu >= 18
+    // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
+    if (ubuntuYear >= 18 && semver.satisfies(this.version, '3.x.x')) {
+      log(
+        `getUbuntuVersionString: ubuntuYear is "${ubuntuYear}", which dosnt have an 3.x.x version, defaulting to "1604"`
+      );
+
+      return 'ubuntu1604';
+    }
+
+    // there are no MongoDB <=4.3.x binary distributions for ubuntu > 18
+    // https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
+    if (ubuntuYear > 18 && semver.satisfies(this.version, '<=4.3.x')) {
+      log(
+        `getUbuntuVersionString: ubuntuYear is "${ubuntuYear}", which dosnt have an "<=4.3.x" version, defaulting to "1804"`
+      );
+
+      return 'ubuntu1804';
+    }
+
+    // the "04" version always exists for ubuntu, use that as default
+    return `ubuntu${ubuntuYear || 14}04`;
   }
 
   /**

@@ -219,7 +219,7 @@ describe('MongoBinaryDownloadUrl', () => {
         },
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.2.tgz'
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
       );
       expect(console.warn).toHaveBeenCalledTimes(1);
     });
@@ -239,7 +239,7 @@ describe('MongoBinaryDownloadUrl', () => {
         },
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.2.tgz'
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
       );
       expect(console.warn).toHaveBeenCalledTimes(1);
     });
@@ -259,7 +259,7 @@ describe('MongoBinaryDownloadUrl', () => {
         },
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.2.tgz'
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
       );
       expect(console.warn).toHaveBeenCalledTimes(1);
     });
@@ -297,7 +297,7 @@ describe('MongoBinaryDownloadUrl', () => {
         });
 
         expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-4.4.1.tgz'
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.1.tgz'
         );
       });
     });
@@ -453,20 +453,17 @@ describe('MongoBinaryDownloadUrl', () => {
     const downloadUrl = new MongoBinaryDownloadUrl({
       platform: 'linux',
       arch: 'x64',
-      version: '3.6.3',
+      version: '4.0.20',
     });
 
-    it('should throw an error if an version below Linux Mint 17 is given', () => {
-      try {
+    it('should default to Mint Version 20, if version cannot be found in lookup table', () => {
+      expect(
         downloadUrl.getMintVersionString({
           os: 'linux',
           dist: 'Linux Mint',
           release: '16',
-        });
-        fail('Expected "getMintVersionString" to throw');
-      } catch (err) {
-        expect(err.message).toEqual('Mint Versions under 17 are not supported!');
-      }
+        })
+      ).toBe('ubuntu1804');
     });
 
     it('should return a archive name for Linux Mint 17', () => {
