@@ -159,7 +159,7 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(await du.getDownloadUrl()).toBe(
         'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
       );
-      expect(console.warn).toHaveBeenCalledTimes(2);
+      expect(console.warn).toHaveBeenCalledTimes(1);
     });
 
     it('should allow overwrite with "ARCHIVE_NAME"', async () => {
@@ -204,7 +204,9 @@ describe('MongoBinaryDownloadUrl', () => {
       }
     });
 
-    it.skip('for manjaro', async () => {
+    it('for manjaro', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
@@ -217,11 +219,14 @@ describe('MongoBinaryDownloadUrl', () => {
         },
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.2.tgz'
       );
+      expect(console.warn).toHaveBeenCalledTimes(1);
     });
 
-    it.skip('for arch', async () => {
+    it('for arch', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
@@ -234,11 +239,14 @@ describe('MongoBinaryDownloadUrl', () => {
         },
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.2.tgz'
       );
+      expect(console.warn).toHaveBeenCalledTimes(1);
     });
 
-    it.skip('for unpopular arch', async () => {
+    it('for unpopular arch', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
@@ -251,11 +259,12 @@ describe('MongoBinaryDownloadUrl', () => {
         },
       });
       expect(await du.getDownloadUrl()).toBe(
-        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.2.tgz'
       );
+      expect(console.warn).toHaveBeenCalledTimes(1);
     });
 
-    describe.skip('for elementary', () => {
+    describe('for elementary', () => {
       it('should return a archive name for elementary 0.3', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'linux',
@@ -288,7 +297,7 @@ describe('MongoBinaryDownloadUrl', () => {
         });
 
         expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.1.tgz'
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-4.4.1.tgz'
         );
       });
     });
@@ -517,7 +526,7 @@ describe('MongoBinaryDownloadUrl', () => {
       })
     ).toBe('');
 
-    expect(console.warn).toHaveBeenCalledTimes(2); // once "Unknown linux distro Peppermint" and once "Falling back to legacy MongoDB build!"
+    expect(console.warn).toHaveBeenCalledTimes(1);
   });
 
   describe('getLegacyVersionString', () => {

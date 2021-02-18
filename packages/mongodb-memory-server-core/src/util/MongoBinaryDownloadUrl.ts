@@ -164,22 +164,30 @@ export class MongoBinaryDownloadUrl {
       return this.getDebianVersionString(os);
     } else if (regexHelper(/^linux\s?mint\s*$/i, os)) {
       return this.getMintVersionString(os);
-    } else if (regexHelper(/arch/i, os)) {
-      console.warn('There is no offical build of MongoDB for ArchLinux!');
     } else if (regexHelper(/alpine/i, os)) {
       console.warn('There is no offical build of MongoDB for Alpine!');
+      // Match "arch", "archlinux", "manjaro", "manjarolinux", "arco", "arcolinux"
+    } else if (regexHelper(/(arch|manjaro|arco)(?:linux)?$/i, os)) {
+      console.warn(
+        `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu 20.04 release.`
+      );
+
+      return this.getUbuntuVersionString({
+        os: 'linux',
+        dist: 'Ubuntu Linux',
+        release: '20.04',
+      });
     } else if (regexHelper(/unknown/i, os)) {
       // "unknown" is likely to happen if no release file / command could be found
       console.warn(
         'Couldnt parse dist information, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
       );
-    } else {
-      // warn if no case for the *parsed* distro is found
-      console.warn(`Unknown linux distro ${os.dist}`);
     }
 
     // warn for the fallback
-    console.warn(`Falling back to legacy MongoDB build!`);
+    console.warn(
+      `Unknown/unsupported linux "${os.dist}(${os.id_like})". Falling back to legacy MongoDB build!`
+    );
 
     return this.getLegacyVersionString(os);
   }
@@ -321,6 +329,12 @@ export class MongoBinaryDownloadUrl {
    */
   getUbuntuVersionString(os: LinuxOS): string {
     let name = 'ubuntu';
+
+    // quick fix to not use "os.release" if it is an "id_like" case
+    if (!/ubuntu/i.test(os.dist)) {
+      os.release = '';
+    }
+
     const ubuntuVer: string[] = os.release ? os.release.split('.') : [];
     const majorVer: number = parseInt(ubuntuVer[0], 10);
     // for all cases where its just "10.10" -> "1010"
