@@ -203,6 +203,95 @@ describe('MongoBinaryDownloadUrl', () => {
         expect(err.message).toEqual('Unknown Platform "unknown"');
       }
     });
+
+    it.skip('for manjaro', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '4.4.2',
+        os: {
+          os: 'linux',
+          dist: 'ManjaroLinux',
+          release: '20.2',
+          id_like: 'arch',
+        },
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
+      );
+    });
+
+    it.skip('for arch', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '4.4.2',
+        os: {
+          os: 'linux',
+          dist: 'Arch',
+          release: 'rolling',
+          id_like: 'arch',
+        },
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
+      );
+    });
+
+    it.skip('for unpopular arch', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '4.4.2',
+        os: {
+          os: 'linux',
+          dist: 'ArchStrike',
+          release: 'rolling',
+          id_like: 'arch',
+        },
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
+      );
+    });
+
+    describe.skip('for elementary', () => {
+      it('should return a archive name for elementary 0.3', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'x64',
+          version: '4.4.1',
+          os: {
+            os: 'linux',
+            dist: 'elementary OS',
+            release: '0.3',
+            id_like: 'ubuntu',
+          },
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-4.4.1.tgz'
+        );
+      });
+
+      it('should return a archive name for elementary 5', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'x64',
+          version: '4.4.1',
+          os: {
+            os: 'linux',
+            dist: 'elementary OS',
+            release: '5.1',
+            id_like: 'ubuntu',
+          },
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.1.tgz'
+        );
+      });
+    });
   });
 
   describe('getUbuntuVersionString()', () => {
