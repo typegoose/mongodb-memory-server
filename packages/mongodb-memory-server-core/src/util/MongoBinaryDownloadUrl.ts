@@ -150,25 +150,25 @@ export class MongoBinaryDownloadUrl {
    * @param os LinuxOS Object
    */
   getLinuxOSVersionString(os: LinuxOS): string {
-    if (/ubuntu/i.test(os.dist)) {
+    if (regexHelper(/ubuntu/i, os)) {
       return this.getUbuntuVersionString(os);
-    } else if (/elementary OS/i.test(os.dist)) {
+    } else if (regexHelper(/elementary OS/i, os)) {
       return this.getElementaryOSVersionString(os);
-    } else if (/suse/i.test(os.dist)) {
+    } else if (regexHelper(/suse/i, os)) {
       return this.getSuseVersionString(os);
-    } else if (/rhel/i.test(os.dist) || /centos/i.test(os.dist) || /scientific/i.test(os.dist)) {
+    } else if (regexHelper(/(rhel|centos|scientific)/i, os)) {
       return this.getRhelVersionString(os);
-    } else if (/fedora/i.test(os.dist)) {
+    } else if (regexHelper(/fedora/i, os)) {
       return this.getFedoraVersionString(os);
-    } else if (/debian/i.test(os.dist)) {
+    } else if (regexHelper(/debian/i, os)) {
       return this.getDebianVersionString(os);
-    } else if (/^linux\s?mint\s*$/i.test(os.dist)) {
+    } else if (regexHelper(/^linux\s?mint\s*$/i, os)) {
       return this.getMintVersionString(os);
-    } else if (/arch/i.test(os.dist)) {
+    } else if (regexHelper(/arch/i, os)) {
       console.warn('There is no offical build of MongoDB for ArchLinux!');
-    } else if (/alpine/i.test(os.dist)) {
+    } else if (regexHelper(/alpine/i, os)) {
       console.warn('There is no offical build of MongoDB for Alpine!');
-    } else if (/unknown/i.test(os.dist)) {
+    } else if (regexHelper(/unknown/i, os)) {
       // "unknown" is likely to happen if no release file / command could be found
       console.warn(
         'Couldnt parse dist information, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
@@ -398,3 +398,10 @@ export class MongoBinaryDownloadUrl {
 }
 
 export default MongoBinaryDownloadUrl;
+
+/**
+ * Helper function to reduce code / regex duplication
+ */
+function regexHelper(regex: RegExp, os: LinuxOS): boolean {
+  return regex.test(os.dist) || (!isNullOrUndefined(os.id_like) ? regex.test(os.id_like) : false);
+}
