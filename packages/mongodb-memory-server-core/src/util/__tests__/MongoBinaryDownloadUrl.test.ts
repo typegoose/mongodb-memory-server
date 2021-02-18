@@ -1,3 +1,4 @@
+import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { defaultValues, ResolveConfigVariables, setDefaultValue } from '../resolveConfig';
 
@@ -200,6 +201,58 @@ describe('MongoBinaryDownloadUrl', () => {
 
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.1.tgz'
+          );
+        });
+      });
+
+      describe('for LinuxMint', () => {
+        let downloadUrl: MongoBinaryDownloadUrl;
+        beforeEach(() => {
+          downloadUrl = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.20',
+            os: {
+              os: 'linux',
+              dist: 'Linux Mint',
+              release: '',
+              id_like: 'ubuntu',
+            },
+          });
+        });
+
+        it('should default to Mint Version 20, if version cannot be found in lookup table', async () => {
+          (downloadUrl.os as LinuxOS).release = '16';
+          expect(await downloadUrl.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.20.tgz'
+          );
+        });
+
+        it('should return a archive name for Linux Mint 17', async () => {
+          (downloadUrl.os as LinuxOS).release = '17';
+          expect(await downloadUrl.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-4.0.20.tgz'
+          );
+        });
+
+        it('should return a archive name for Linux Mint 18', async () => {
+          (downloadUrl.os as LinuxOS).release = '18';
+          expect(await downloadUrl.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz'
+          );
+        });
+
+        it('should return a archive name for Linux Mint 19', async () => {
+          (downloadUrl.os as LinuxOS).release = '19';
+          expect(await downloadUrl.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.20.tgz'
+          );
+        });
+
+        it('should return a archive name for Linux Mint 20', async () => {
+          (downloadUrl.os as LinuxOS).release = '20';
+          expect(await downloadUrl.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.20.tgz'
           );
         });
       });
@@ -451,84 +504,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
   });
 
-  describe('getMintVersionString', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '4.0.20',
-    });
-
-    it('should default to Mint Version 20, if version cannot be found in lookup table', () => {
-      expect(
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'Linux Mint',
-          release: '16',
-        })
-      ).toBe('ubuntu1804');
-    });
-
-    it('should return a archive name for Linux Mint 17', () => {
-      expect(
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'Linux Mint',
-          release: '17',
-        })
-      ).toBe('ubuntu1404');
-    });
-
-    it('should return a archive name for Linux Mint 18', () => {
-      expect(
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'Linux Mint',
-          release: '18',
-        })
-      ).toBe('ubuntu1604');
-    });
-
-    it('should return a archive name for Linux Mint 19', () => {
-      expect(
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'LinuxMint',
-          release: '19',
-        })
-      ).toBe('ubuntu1804');
-    });
-
-    it('should return a archive name for Linux Mint 20', () => {
-      expect(
-        downloadUrl.getMintVersionString({
-          os: 'linux',
-          dist: 'Linux Mint',
-          release: '20',
-        })
-      ).toBe('ubuntu1804');
-    });
-  });
-
-  it('shouldnt detect linux mint when using peppermint', () => {
-    jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
-    });
-
-    expect(
-      downloadUrl.getLinuxOSVersionString({
-        os: 'linux',
-        dist: 'Peppermint',
-        release: '10',
-      })
-    ).toBe('');
-
-    expect(console.warn).toHaveBeenCalledTimes(1);
-  });
-
-  describe('getLegacyVersionString', () => {
+  describe('getLegacyVersionString()', () => {
     const downloadUrl = new MongoBinaryDownloadUrl({
       platform: 'linux',
       arch: 'x64',

@@ -1,5 +1,4 @@
 import getOS, { AnyOS, LinuxOS } from './getos';
-import { execSync } from 'child_process';
 import resolveConfig, { ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
@@ -160,8 +159,6 @@ export class MongoBinaryDownloadUrl {
       return this.getFedoraVersionString(os);
     } else if (regexHelper(/debian/i, os)) {
       return this.getDebianVersionString(os);
-    } else if (regexHelper(/^linux\s?mint\s*$/i, os)) {
-      return this.getMintVersionString(os);
     } else if (regexHelper(/alpine/i, os)) {
       console.warn('There is no offical build of MongoDB for Alpine!');
       // Match "arch", "archlinux", "manjaro", "manjarolinux", "arco", "arcolinux"
@@ -254,14 +251,6 @@ export class MongoBinaryDownloadUrl {
   }
 
   /**
-   * Get the version string for Linux Mint
-   * @param os LinuxOS Object
-   */
-  getMintVersionString(os: LinuxOS): string {
-    return this.getUbuntuVersionString(os);
-  }
-
-  /**
    * Linux Fallback
    * @param os LinuxOS Object
    */
@@ -304,7 +293,7 @@ export class MongoBinaryDownloadUrl {
           mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[20];
       }
 
-      if (/^elementary\s?OS\s*$/i.test(os.dist)) {
+      if (/^elementary\s?os\s*$/i.test(os.dist)) {
         const elementaryToUbuntuRelease: Record<number, string> = {
           3: '14.04',
           4: '16.04',
