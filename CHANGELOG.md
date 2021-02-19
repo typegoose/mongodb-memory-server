@@ -1,3 +1,30 @@
+## [7.0.0-beta.16](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.15...v7.0.0-beta.16) (2021-02-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **getos:** All "USE*" and "SKIP*" Environment Variables got removed in favor of an better handling
+
+### Features
+
+* **getos:** remove all "USE*" and "SKIP*" environment variables ([e389c3e](https://github.com/nodkz/mongodb-memory-server/commit/e389c3e68715f38e9012a7a758dd1dbaad38a3e6))
+* **getos:** simplify reading an release file ([e5e6521](https://github.com/nodkz/mongodb-memory-server/commit/e5e6521eb339e54de481c532062dd143bfb33a61))
+* **MongoBinaryDownloadUrl:** add support for "arch/manjaro" (ubuntu workaround) ([21449d6](https://github.com/nodkz/mongodb-memory-server/commit/21449d64e53204cb60b43451be5ed551420a0af3))
+* **MongoBinaryDownloadUrl:** refactor getUbuntuVersionString ([fc08c25](https://github.com/nodkz/mongodb-memory-server/commit/fc08c25d95964cffd6eee83037d60b228c38e2a4))
+* **MongoBinaryDownloadUrl:** remove function "getMintVersionString" ([d66e28a](https://github.com/nodkz/mongodb-memory-server/commit/d66e28ade0eeeaf3bc9b8bcc276c9e560920d439))
+
+
+### Fixes
+
+* **getos:** add lsb-release file pattern to regex ([0cc7dd5](https://github.com/nodkz/mongodb-memory-server/commit/0cc7dd5e8e05b223a7ed3231b36f5dd46efe0364))
+* **getos:** add tests for "parseOS" and "parseLSB" ([6cdf482](https://github.com/nodkz/mongodb-memory-server/commit/6cdf4823341446c4b7c2f1ed2b97c03992ca29ea))
+* **getos:** tryFirstReleaseFile: simplify file match ([7a46fac](https://github.com/nodkz/mongodb-memory-server/commit/7a46fac70f3a1c8b398d4c9d6bc07499a84f7343))
+
+
+### Refactor
+
+* **MongoBinaryDownloadUrl:** add helper function for regex de-duplication ([3d96e5e](https://github.com/nodkz/mongodb-memory-server/commit/3d96e5effbb0fced5c408633623fb8d360659494))
+
 ## [7.0.0-beta.15](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.14...v7.0.0-beta.15) (2021-02-10)
 
 
