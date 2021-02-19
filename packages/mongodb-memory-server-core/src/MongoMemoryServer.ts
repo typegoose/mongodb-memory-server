@@ -226,7 +226,7 @@ export class MongoMemoryServer extends EventEmitter {
    * @param opts Mongo-Memory-Sever Options
    */
   static async create(opts?: MongoMemoryServerOpts): Promise<MongoMemoryServer> {
-    log('Called MongoMemoryServer.create() method');
+    log('create: Called .create() method');
     const instance = new MongoMemoryServer({ ...opts });
     await instance.start();
 
@@ -247,7 +247,7 @@ export class MongoMemoryServer extends EventEmitter {
    * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
    */
   async start(forceSamePort: boolean = false): Promise<boolean> {
-    log('Called MongoMemoryServer.start() method');
+    log('start: Called .start() method');
 
     switch (this._state) {
       case MongoMemoryServerStates.new:
@@ -283,6 +283,7 @@ export class MongoMemoryServer extends EventEmitter {
     });
 
     this.stateChange(MongoMemoryServerStates.running);
+    log('start: Instance fully Started');
 
     return true;
   }
@@ -296,7 +297,7 @@ export class MongoMemoryServer extends EventEmitter {
 
     // only log this message if an custom port was provided
     if (port != newPort && typeof port === 'number') {
-      log(`starting with port ${newPort}, since ${port} was locked`);
+      log(`getNewPort: starting with port ${newPort}, since ${port} was locked`);
     }
 
     return newPort;
@@ -377,7 +378,7 @@ export class MongoMemoryServer extends EventEmitter {
    * @private
    */
   async _startUpInstance(forceSamePort: boolean = false): Promise<void> {
-    log('Called MongoMemoryServer._startUpInstance() method');
+    log('_startUpInstance: Called MongoMemoryServer._startUpInstance() method');
 
     if (!isNullOrUndefined(this._instanceInfo)) {
       log('_startUpInstance: "instanceInfo" already defined, reusing instance');
@@ -394,22 +395,27 @@ export class MongoMemoryServer extends EventEmitter {
     }
 
     const { mongodOptions, createAuth, data } = await this.getStartOptions();
-    log(`Creating new MongoDB instance with options: ${JSON.stringify(mongodOptions)}`);
+    log(
+      `_startUpInstance: Creating new MongoDB instance with options: ${JSON.stringify(
+        mongodOptions
+      )}`
+    );
 
     // After that startup MongoDB instance
     let instance = await MongoInstance.run(mongodOptions);
+    log('_startUpInstance: Instance Started');
 
     // another "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
     if (!isNullOrUndefined(this.auth) && createAuth) {
-      log(`Running "createAuth" (force: "${this.auth.force}")`);
+      log(`_startUpInstance: Running "createAuth" (force: "${this.auth.force}")`);
       await this.createAuth(data);
 
       if (data.storageEngine !== 'ephemeralForTest') {
-        log('Killing No-Auth instance');
+        log('_startUpInstance: Killing No-Auth instance');
         await instance.kill();
 
         // TODO: change this to just change the options instead of an new instance after adding getters & setters
-        log('Starting Auth Instance');
+        log('_startUpInstance: Starting Auth Instance');
         instance = await MongoInstance.run({
           ...mongodOptions,
           instance: {
@@ -426,7 +432,7 @@ export class MongoMemoryServer extends EventEmitter {
     } else {
       // extra "if" to log when "disable" is set to "true"
       if (this.opts.auth?.disable) {
-        log('AutomaticAuth.disable is set to "true" skipping "createAuth"');
+        log('_startUpInstance: AutomaticAuth.disable is set to "true" skipping "createAuth"');
       }
     }
 
@@ -442,11 +448,11 @@ export class MongoMemoryServer extends EventEmitter {
    * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
    */
   async stop(runCleanup: boolean = true): Promise<boolean> {
-    log('Called MongoMemoryServer.stop() method');
+    log('stop: Called .stop() method');
 
     // just return "true" if there was never an instance
     if (isNullOrUndefined(this._instanceInfo)) {
-      log('"instanceInfo" is not defined (never ran?)');
+      log('stop: "instanceInfo" is not defined (never ran?)');
 
       return false;
     }
@@ -464,7 +470,7 @@ export class MongoMemoryServer extends EventEmitter {
     );
 
     log(
-      `Shutdown MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.childProcess?.pid}` // "undefined" would say more than ""
+      `stop: Shutdown MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.childProcess?.pid}` // "undefined" would say more than ""
     );
     await this._instanceInfo.instance.kill();
 
@@ -568,7 +574,7 @@ export class MongoMemoryServer extends EventEmitter {
    * -> throws if instance cannot be started
    */
   async ensureInstance(): Promise<MongoInstanceData> {
-    log('Called MongoMemoryServer.ensureInstance() method');
+    log('ensureInstance: Called .ensureInstance() method');
 
     switch (this._state) {
       case MongoMemoryServerStates.running:
@@ -589,7 +595,15 @@ export class MongoMemoryServer extends EventEmitter {
                   `"ensureInstance" waited for "running" but got an different state: "${state}"`
                 )
               );
+
+              return;
             }
+
+            // this assertion is mainly for types (typescript otherwise would complain that "_instanceInfo" might be "undefined")
+            assertion(
+              !isNullOrUndefined(this._instanceInfo),
+              new Error('InstanceInfo is undefined!')
+            );
 
             res(this._instanceInfo);
           })
@@ -598,9 +612,9 @@ export class MongoMemoryServer extends EventEmitter {
         throw new Error(`"ensureInstance" does not have an case for "${this._state}"`);
     }
 
-    log(' - no running instance, calling `start()` command');
+    log('ensureInstance: no running instance, calling `start()` command');
     await this.start();
-    log(' - `start()` command was succesfully resolved');
+    log('ensureInstance: `start()` command was succesfully resolved');
 
     // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
     if (!this._instanceInfo) {
@@ -640,7 +654,7 @@ export class MongoMemoryServer extends EventEmitter {
       !isNullOrUndefined(this.auth),
       new Error('"createAuth" got called, but "this.auth" is undefined!')
     );
-    log('createAuth, options:', this.auth);
+    log('createAuth: options:', this.auth);
     const con: MongoClient = await MongoClient.connect(uriTemplate(data.ip, data.port, 'admin'), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -649,7 +663,7 @@ export class MongoMemoryServer extends EventEmitter {
     let db = con.db('admin'); // just to ensure it is actually the "admin" database AND to have the "Db" data
 
     // Create the root user
-    log(`Creating Root user, name: "${this.auth.customRootName}"`);
+    log(`createAuth: Creating Root user, name: "${this.auth.customRootName}"`);
     await db.command({
       createUser: this.auth.customRootName,
       pwd: 'rootuser',
@@ -662,7 +676,7 @@ export class MongoMemoryServer extends EventEmitter {
     } as CreateUserMongoDB);
 
     if (this.auth.extraUsers.length > 0) {
-      log(`Creating "${this.auth.extraUsers.length}" Custom Users`);
+      log(`createAuth: Creating "${this.auth.extraUsers.length}" Custom Users`);
       this.auth.extraUsers.sort((a, b) => {
         if (a.database === 'admin') {
           return -1; // try to make all "admin" at the start of the array
@@ -679,7 +693,7 @@ export class MongoMemoryServer extends EventEmitter {
           db = con.db(user.database);
         }
 
-        log('Creating User: ', user);
+        log('createAuth: Creating User: ', user);
         await db.command({
           createUser: user.createUser,
           pwd: user.pwd,

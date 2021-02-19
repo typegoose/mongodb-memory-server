@@ -332,7 +332,6 @@ export class MongoMemoryReplSet extends EventEmitter {
     }
     this.stateChange(MongoMemoryReplSetStates.init); // this needs to be executed before "setImmediate"
     await ensureAsync();
-    log('init');
     await this.initAllServers();
     await this._initReplSet();
 
@@ -347,6 +346,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   protected async initAllServers(): Promise<void> {
+    log('initAllServers');
     this.stateChange(MongoMemoryReplSetStates.init);
 
     if (this.servers.length > 0) {
@@ -368,6 +368,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       this.servers.push(this._initServer(this.getInstanceOpts()));
     }
 
+    log('initAllServers: waiting for all servers to finish starting');
     // ensures all servers are listening for connection
     await Promise.all(this.servers.map((s) => s.start()));
   }
@@ -444,7 +445,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         return;
       case MongoMemoryReplSetStates.init:
         // wait for event "running"
-        await new Promise((res) => {
+        await new Promise<void>((res) => {
           // the use of "this" here can be done because "on" either binds "this" or uses an arrow function
           function waitRunning(this: MongoMemoryReplSet, state: MongoMemoryReplSetStates) {
             // this is because other states can be emitted multiple times (like stopped & init for auth creation)
@@ -592,7 +593,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     await Promise.race([
       ...this.servers.map(
         (server) =>
-          new Promise((res, rej) => {
+          new Promise<void>((res, rej) => {
             const instanceInfo = server.instanceInfo;
 
             if (!instanceInfo) {

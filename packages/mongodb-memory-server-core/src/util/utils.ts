@@ -3,6 +3,7 @@ import debug from 'debug';
 import { ChildProcess } from 'child_process';
 import { AutomaticAuth } from '../MongoMemoryServer';
 import { promises as fspromises, Stats } from 'fs';
+import { LinuxOS } from './getos';
 
 const log = debug('MongoMS:utils');
 
@@ -67,7 +68,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
   }
 
   const timeoutTime = 1000 * 10;
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     let timeout = setTimeout(() => {
       log('killProcess timeout triggered, trying SIGKILL');
 
@@ -151,4 +152,28 @@ export async function statPath(path: string): Promise<Stats | undefined> {
  */
 export async function pathExists(path: string): Promise<boolean> {
   return !isNullOrUndefined(await statPath(path));
+}
+
+/**
+ * Try to read an release file path and apply an parser to the output
+ * @param path The Path to read for an release file
+ * @param parser An function to parse the output of the file
+ */
+export async function tryReleaseFile(
+  path: string,
+  parser: (output: string) => LinuxOS | undefined
+): Promise<LinuxOS | undefined> {
+  try {
+    const output = await fspromises.readFile(path);
+
+    return parser(output.toString());
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw err;
+    }
+
+    log(`tryReleaseFile: "${path}" does not exist`);
+
+    return undefined;
+  }
 }

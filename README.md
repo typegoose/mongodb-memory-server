@@ -88,12 +88,12 @@ And one of those:
 
 #### Known Incompatibilities
 
-- [ArchLinux](https://github.com/nodkz/mongodb-memory-server/issues/302) & [Alpine](https://github.com/nodkz/mongodb-memory-server/issues/347) do not have an official mongodb build
+- [Alpine](https://github.com/nodkz/mongodb-memory-server/issues/347) does not have an official mongodb build
 - ArchLinux(Docker) does not have an `/etc/os-release` file by default
 
 ### mongodb-memory-server
 
-Auto-downloads version ~~`latest`~~`4.0.14` `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.
+Auto-downloads version ~~`latest`~~`4.0.20` `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.
 
 ```bash
 yarn add mongodb-memory-server --dev
@@ -103,7 +103,7 @@ npm install mongodb-memory-server --save-dev
 
 ### mongodb-memory-server-global
 
-Auto-downloads version ~~`latest`~~`4.0.14` `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
+Auto-downloads version ~~`latest`~~`4.0.20` `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
 
 ```bash
 yarn add mongodb-memory-server-global --dev
@@ -133,7 +133,7 @@ _Note: the package does try to download `mongod` upon server start if it cannot 
 
 ### Configuring which mongod binary to use
 
-The default behaviour is that version ~~`latest`~~`4.0.14` for your OS will be downloaded. By setting [ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables) you are able to specify which version and binary will be downloaded:
+The default behaviour is that version ~~`latest`~~`4.0.20` for your OS will be downloaded. By setting [ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables) you are able to specify which version and binary will be downloaded:
 
 ```bash
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
@@ -187,7 +187,7 @@ const mongod = new MongoMemoryServer({
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },
   binary: {
-    version?: string, // by default '4.0.14'
+    version?: string, // by default '4.0.20'
     downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
@@ -283,14 +283,8 @@ MONGOMS_DOWNLOAD_URL=url # full URL to download the mongodb binary
 MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
 MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
 MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
-# Passed constructor parameter `binary.checkMD5` has higher priority.
-
-# GetOS specific ones (for linux only)
-MONGOMS_USE_LINUX_LSB_RELEASE=1 # Only try "lsb_release -a"
-MONGOMS_USE_LINUX_OS_RELEASE=1 # Only try to read "/etc/os-release"
-MONGOMS_USE_LINUX_ANYFILE_RELEASE=1 # Only try to read the first file found "/etc/*-release"
+# ^ Passed constructor parameter `binary.checkMD5` has higher priority.
 MONGOMS_ARCHIVE_NAME="mongodb-linux-x86_64-4.0.0.tgz" # Specify what file / archive to download
-MONGOMS_SKIP_OS_RELEASE=1 # ignore error thrown in "tryOSRelease"
 ```
 
 ### Options which can be set via package.json's `config` section

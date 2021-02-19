@@ -35,7 +35,10 @@ Depends on the distribution, many common ones should just work right out of the 
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `1404`<br/>
-Highest version (default to) is `1804` (because there dont exist higher-dist versions of mongod's lower versions)
+Highest version (default to) is `2004`
+:::note
+Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an lower version of mongodb for an higher version of ubuntu
+:::
 
 ### Debian
 
@@ -58,8 +61,8 @@ Highest version (default to) is `8`
 ### ElementaryOS
 
 (uses mongodb's `ubuntu` release)<br/>
-Lowest supported Distribution version is `?` (direct translation of lsb_release)<br/>
-Highest version (default to) is `?` (direct translation of lsb_release)
+Lowest supported Distribution version is `3` (or `0.3`)<br/>
+Highest version (default to) is `6`
 
 ### Linux Mint
 
@@ -75,7 +78,10 @@ Highest version (default to) is `12`
 
 ### Arch
 
-There are no official mongodb builds for arch (and because this distro dosnt base on something) but there are some workarounds, like on many systems the `ubuntu` version supposedly works
+There are no official mongodb builds for Arch Distributions, but the `ubuntu` binaries work on most Arch systems, so they are used<br/>
+:::note
+Because Arch* dosnt base on ubuntu, there is no specific ubuntu version associated with an arch version, so it defaults to highest supported `ubuntu` version
+:::
 
 ### Alpine
 
