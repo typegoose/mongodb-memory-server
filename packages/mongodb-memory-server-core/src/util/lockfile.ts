@@ -217,7 +217,9 @@ export class LockFile {
     }
 
     if (fileio) {
-      await fspromises.unlink(this.file);
+      await fspromises.unlink(this.file).catch((reason) => {
+        log(`unlockCleanup: lock file unlink failed: "${reason}"`);
+      });
     }
 
     LockFile.files.delete(this.file);
