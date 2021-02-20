@@ -34,17 +34,17 @@ export function setDefaultValue(key: ResolveConfigVariables, value: string): voi
   defaultValues.set(key, value);
 }
 
-let packageJsonConfig: {
-  [key: string]: string;
-} = {};
+let packageJsonConfig: Record<string, string> = {};
 /**
  * Find the nearest package.json for the provided directory
  * @param directory Set an custom directory to search the config in (default: process.cwd())
  */
-export function findPackageJson(directory?: string): void {
+export function findPackageJson(directory?: string): Record<string, string> {
   const finderIterator = finder(directory || process.cwd()).next();
   log(`Using package.json at "${finderIterator.filename}"`);
   packageJsonConfig = finderIterator.value?.config?.mongodbMemoryServer ?? {};
+
+  return packageJsonConfig;
 }
 findPackageJson();
 
