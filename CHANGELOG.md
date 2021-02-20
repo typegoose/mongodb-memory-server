@@ -1,3 +1,12 @@
+## [7.0.0-beta.17](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.16...v7.0.0-beta.17) (2021-02-20)
+
+
+### Fixes
+
+* **lockfile:** ignore lockfile unlink fail ([ceea1a7](https://github.com/nodkz/mongodb-memory-server/commit/ceea1a770299dcc18473eb1a3389d063fe34d7af))
+* **resolveConfig:** findPackageJson: resolve file paths directly ([0bec0bf](https://github.com/nodkz/mongodb-memory-server/commit/0bec0bf1b63904e82e357dc6dc646db3c0fa6df4)), closes [#440](https://github.com/nodkz/mongodb-memory-server/issues/440)
+* **resolveConfig:** simplify packageJson type ([fac363d](https://github.com/nodkz/mongodb-memory-server/commit/fac363d27b8af34072752a12d2bb1e1e060af54d))
+
 ## [7.0.0-beta.16](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.15...v7.0.0-beta.16) (2021-02-19)
 
 
