@@ -1,6 +1,7 @@
 import camelCase from 'camelcase';
 import finder from 'find-package-json';
 import debug from 'debug';
+import * as path from 'path';
 
 const log = debug('MongoMS:ResolveConfig');
 
@@ -43,6 +44,22 @@ export function findPackageJson(directory?: string): Record<string, string> {
   const finderIterator = finder(directory || process.cwd()).next();
   log(`Using package.json at "${finderIterator.filename}"`);
   packageJsonConfig = finderIterator.value?.config?.mongodbMemoryServer ?? {};
+
+  // block for all file-path resolving
+  {
+    // These are so that "camelCase" dosnt get executed much & de-duplicate code
+    // "cc*" means "camelcase"
+    const ccDownloadDir = camelCase(ResolveConfigVariables.DOWNLOAD_DIR);
+    const ccSystemBinary = camelCase(ResolveConfigVariables.SYSTEM_BINARY);
+
+    if (ccDownloadDir in packageJsonConfig) {
+      packageJsonConfig[ccDownloadDir] = path.resolve(packageJsonConfig[ccDownloadDir]);
+    }
+
+    if (ccSystemBinary in packageJsonConfig) {
+      packageJsonConfig[ccSystemBinary] = path.resolve(packageJsonConfig[ccSystemBinary]);
+    }
+  }
 
   return packageJsonConfig;
 }
