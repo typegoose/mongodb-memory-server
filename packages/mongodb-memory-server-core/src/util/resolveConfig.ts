@@ -47,10 +47,12 @@ let packageJsonConfig: Record<string, string> = {};
  */
 export function findPackageJson(directory?: string): Record<string, string> {
   for (const found of finder(directory || process.cwd()) as CustomFinderIterator) {
-    log(`findPackageJson: Found package.json"`);
+    // This is an hidden property, using this because an "for..of" loop dosnt return the "filename" value that is besides the "done" and "value" value
+    const filename = found.__path as string;
+    log(`findPackageJson: Found package.json at "${filename}"`);
 
     if (Object.keys(found?.config?.mongodbMemoryServer ?? {}).length > 0) {
-      log(`findPackageJson: Found package with non-empty config field"`);
+      log(`findPackageJson: Found package with non-empty config field at "${filename}"`);
 
       // the optional chaining is needed, because typescript wont accept an "isNullOrUndefined" in the if with "&& Object.keys"
       packageJsonConfig = found?.config?.mongodbMemoryServer;
