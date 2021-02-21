@@ -1,9 +1,14 @@
 import camelCase from 'camelcase';
-import finder from 'find-package-json';
+import finder, { FinderIterator, Package } from 'find-package-json';
 import debug from 'debug';
 import * as path from 'path';
 
 const log = debug('MongoMS:ResolveConfig');
+
+// Workaround, because that package dosnt implement the default iterator
+interface CustomFinderIterator extends FinderIterator {
+  [Symbol.iterator](): Iterator<Package>;
+}
 
 export enum ResolveConfigVariables {
   DOWNLOAD_DIR = 'DOWNLOAD_DIR',
@@ -41,9 +46,17 @@ let packageJsonConfig: Record<string, string> = {};
  * @param directory Set an custom directory to search the config in (default: process.cwd())
  */
 export function findPackageJson(directory?: string): Record<string, string> {
-  const finderIterator = finder(directory || process.cwd()).next();
-  log(`Using package.json at "${finderIterator.filename}"`);
-  packageJsonConfig = finderIterator.value?.config?.mongodbMemoryServer ?? {};
+  for (const found of finder(directory || process.cwd()) as CustomFinderIterator) {
+    log(`findPackageJson: Found package.json"`);
+
+    if (Object.keys(found?.config?.mongodbMemoryServer ?? {}).length > 0) {
+      log(`findPackageJson: Found package with non-empty config field"`);
+
+      // the optional chaining is needed, because typescript wont accept an "isNullOrUndefined" in the if with "&& Object.keys"
+      packageJsonConfig = found?.config?.mongodbMemoryServer;
+      break;
+    }
+  }
 
   // block for all file-path resolving
   {
