@@ -1,3 +1,15 @@
+## [7.0.0-beta.18](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.17...v7.0.0-beta.18) (2021-02-22)
+
+
+### Fixes
+
+* **resolveConfig:** change to use the first found package.json with an non-empty config field ([4d9de37](https://github.com/nodkz/mongodb-memory-server/commit/4d9de376cea99eee2c7c2a500edb94cbb13b8980)), closes [#439](https://github.com/nodkz/mongodb-memory-server/issues/439)
+
+
+### Style
+
+* **resolveConfig:** add "filename" to logs ([7809fcd](https://github.com/nodkz/mongodb-memory-server/commit/7809fcdda809350784816342d2c1d0f69b9bb1a3))
+
 ## [7.0.0-beta.17](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.16...v7.0.0-beta.17) (2021-02-20)
 
 
