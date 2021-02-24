@@ -25,7 +25,7 @@ Should just work out of the box
 ## MacOS
 
 On x64 systems, it should work right out of the box<br/>
-On Arm64 systems, the architecture needs to be overwritten with `MONGOMS_ARCH=x64`
+On Arm64 systems, the architecture needs to be overwritten with `MONGOMS_ARCH=x64`, only exception being (and based on) `ubuntu`
 
 ## Linux
 
@@ -38,6 +38,9 @@ Lowest supported Distribution version is `1404`<br/>
 Highest version (default to) is `2004`
 :::note
 Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an lower version of mongodb for an higher version of ubuntu
+:::
+:::note
+For Arm64 MongoDB only provides binaries for `ubuntu1604`
 :::
 
 ### Debian
