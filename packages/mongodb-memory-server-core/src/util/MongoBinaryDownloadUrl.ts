@@ -306,6 +306,13 @@ export default class MongoBinaryDownloadUrl {
     const majorVer: number = parseInt(ubuntuVer[0], 10);
     // const minorVer: string = ubuntuVer[1];
 
+    // this is, because currently mongodb only really provides arm64 binaries for "ubuntu1604"
+    if (this.arch === 'arm64') {
+      log('getUbuntuVersionString: architecture "arm64" detected, using ubuntu1604');
+
+      return 'ubuntu1604';
+    }
+
     if (os.release === '12.04') {
       name += '1204';
     } else if (os.release === '14.04') {
@@ -366,17 +373,23 @@ export default class MongoBinaryDownloadUrl {
    * @param platform The Platform to translate
    */
   translateArch(arch: string, mongoPlatform: string): string {
-    if (arch === 'ia32') {
-      if (mongoPlatform === 'linux') {
-        return 'i686';
-      } else if (mongoPlatform === 'win32') {
-        return 'i386';
-      }
-      throw new Error('unsupported architecture');
-    } else if (arch === 'x64') {
-      return 'x86_64';
-    } else {
-      throw new Error('unsupported architecture, ia32 and x64 are the only valid options');
+    switch (arch) {
+      case 'ia32':
+        if (mongoPlatform === 'linux') {
+          return 'i686';
+        } else if (mongoPlatform === 'win32') {
+          return 'i386';
+        }
+
+        throw new Error(
+          `Unsupported Architecture-Platform combination: arch: "${arch}", platform: "${mongoPlatform}"`
+        );
+      case 'x64':
+        return 'x86_64';
+      case 'arm64':
+        return 'arm64';
+      default:
+        throw new Error(`Unsupported Architecture: arch: "${arch}"`);
     }
   }
 }
