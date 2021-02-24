@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { promises as fspromises } from 'fs';
 import { MongoClient } from 'mongodb';
 import * as tmp from 'tmp';
 import MongoMemoryServer, {
@@ -461,7 +460,7 @@ describe('MongoMemoryServer', () => {
   describe('cleanup()', () => {
     // "beforeAll" dosnt work here, thanks to the top-level "afterAll" hook
     beforeEach(() => {
-      jest.spyOn(fspromises, 'stat');
+      jest.spyOn(utils, 'statPath');
       // @ts-expect-error because "default" dosnt exist in the definitions
       jest.spyOn(semver.default, 'lt'); // it needs to be ".default" otherwise "lt" is only an getter
     });
@@ -471,7 +470,7 @@ describe('MongoMemoryServer', () => {
       const dbPath = mongoServer.instanceInfo!.dbPath;
       await mongoServer.stop(false);
       await mongoServer.cleanup();
-      expect(fspromises.stat).not.toHaveBeenCalled();
+      expect(utils.statPath).toHaveBeenCalledTimes(0);
       expect(semver.lt).not.toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
@@ -483,7 +482,7 @@ describe('MongoMemoryServer', () => {
       const dbPath = mongoServer.instanceInfo!.dbPath;
       await mongoServer.stop(false);
       await mongoServer.cleanup(true);
-      expect(fspromises.stat).toHaveBeenCalledTimes(1);
+      expect(utils.statPath).toHaveBeenCalledTimes(1);
       expect(semver.lt).not.toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
@@ -496,7 +495,7 @@ describe('MongoMemoryServer', () => {
       const dbPath = mongoServer.instanceInfo!.dbPath;
       await mongoServer.stop(false);
       await mongoServer.cleanup(true);
-      expect(fspromises.stat).toHaveBeenCalledTimes(1);
+      expect(utils.statPath).toHaveBeenCalledTimes(1);
       expect(semver.lt).toHaveBeenCalledTimes(1);
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);

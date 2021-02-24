@@ -69,12 +69,21 @@ export class MongoBinaryDownload {
   }
 
   /**
+   * Get the full path with filename
+   * @return Absoulte Path with FileName
+   */
+  protected getPath(): string {
+    const addExe = this.platform === 'win32' ? '.exe' : '';
+
+    return path.resolve(this.downloadDir, this.version, `mongod${addExe}`);
+  }
+
+  /**
    * Get the path of the already downloaded "mongod" file
    * otherwise download it and then return the path
    */
   async getMongodPath(): Promise<string> {
-    const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
-    const mongodPath = path.resolve(this.downloadDir, this.version, binaryName);
+    const mongodPath = this.getPath();
 
     if (await pathExists(mongodPath)) {
       return mongodPath;
@@ -222,12 +231,12 @@ export class MongoBinaryDownload {
    * @returns extracted directory location
    */
   async extract(mongoDBArchive: string): Promise<string> {
-    const binaryName = this.platform === 'win32' ? 'mongod.exe' : 'mongod';
-    const extractDir = path.resolve(this.downloadDir, this.version);
-    log(`extract(): ${extractDir}`);
+    const mongodbFullPath = this.getPath();
+    const mongodbDirPath = path.dirname(mongodbFullPath);
+    log(`extract: ${mongodbFullPath}`);
 
-    if (!(await pathExists(extractDir))) {
-      fspromises.mkdir(extractDir);
+    if (!(await pathExists(mongodbDirPath))) {
+      await fspromises.mkdir(mongodbDirPath);
     }
 
     let filter: (file: string) => boolean;
@@ -240,10 +249,10 @@ export class MongoBinaryDownload {
       filter = (file: string) => /bin\/mongod$/.test(file);
     }
 
-    if (/(.tar.gz|.tgz)$/.test(path.extname(mongoDBArchive))) {
-      await this.extractTarGz(mongoDBArchive, extractDir, filter);
-    } else if (/.zip$/.test(path.extname(mongoDBArchive))) {
-      await this.extractZip(mongoDBArchive, extractDir, filter);
+    if (/(.tar.gz|.tgz)$/.test(mongoDBArchive)) {
+      await this.extractTarGz(mongoDBArchive, mongodbFullPath, filter);
+    } else if (/.zip$/.test(mongoDBArchive)) {
+      await this.extractZip(mongoDBArchive, mongodbFullPath, filter);
     } else {
       throw new Error(
         `MongoBinaryDownload: unsupported archive ${mongoDBArchive} (downloaded from ${
@@ -252,7 +261,7 @@ export class MongoBinaryDownload {
       );
     }
 
-    if (!(await pathExists(path.resolve(this.downloadDir, this.version, binaryName)))) {
+    if (!(await pathExists(mongodbFullPath))) {
       throw new Error(
         `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${
           this._downloadingUrl ?? 'unknown'
@@ -260,25 +269,25 @@ export class MongoBinaryDownload {
       );
     }
 
-    return extractDir;
+    return mongodbFullPath;
   }
 
   /**
    * Extract a .tar.gz archive
    * @param mongoDBArchive Archive location
-   * @param extractDir Directory to extract to
+   * @param extractPath Directory to extract to
    * @param filter Method to determine which files to extract
    */
   async extractTarGz(
     mongoDBArchive: string,
-    extractDir: string,
+    extractPath: string,
     filter: (file: string) => boolean
   ): Promise<void> {
     const extract = tar.extract();
     extract.on('entry', (header, stream, next) => {
       if (filter(header.name)) {
         stream.pipe(
-          createWriteStream(path.resolve(extractDir, path.basename(header.name)), {
+          createWriteStream(extractPath, {
             mode: 0o775,
           })
         );
@@ -310,12 +319,12 @@ export class MongoBinaryDownload {
   /**
    * Extract a .zip archive
    * @param mongoDBArchive Archive location
-   * @param extractDir Directory to extract to
+   * @param extractPath Directory to extract to
    * @param filter Method to determine which files to extract
    */
   async extractZip(
     mongoDBArchive: string,
-    extractDir: string,
+    extractPath: string,
     filter: (file: string) => boolean
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -340,7 +349,7 @@ export class MongoBinaryDownload {
 
             r.on('end', () => zipfile.readEntry());
             r.pipe(
-              createWriteStream(path.resolve(extractDir, path.basename(entry.fileName)), {
+              createWriteStream(extractPath, {
                 mode: 0o775,
               })
             );

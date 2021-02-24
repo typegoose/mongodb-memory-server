@@ -1,3 +1,64 @@
+## [7.0.0-beta.19](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.18...v7.0.0-beta.19) (2021-02-24)
+
+
+### Fixes
+
+* **global:** use an absolute module path to core in global index scripts ([2428fd8](https://github.com/nodkz/mongodb-memory-server/commit/2428fd805e1389e6374435a238749a1d654dee2e))
+* **postinstall:** use an absolute module path to core in postinstall scripts ([d71ea48](https://github.com/nodkz/mongodb-memory-server/commit/d71ea48293d4beab94a373b6f0a2b38733a4f98a))
+
+
+### Dependencies
+
+* **tslib:** include tslib dependency in non-core packages ([6125d2f](https://github.com/nodkz/mongodb-memory-server/commit/6125d2f83cf791833c09a5a590613072929cecf5))
+
+## [7.0.0-beta.18](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.17...v7.0.0-beta.18) (2021-02-22)
+
+
+### Fixes
+
+* **resolveConfig:** change to use the first found package.json with an non-empty config field ([4d9de37](https://github.com/nodkz/mongodb-memory-server/commit/4d9de376cea99eee2c7c2a500edb94cbb13b8980)), closes [#439](https://github.com/nodkz/mongodb-memory-server/issues/439)
+
+
+### Style
+
+* **resolveConfig:** add "filename" to logs ([7809fcd](https://github.com/nodkz/mongodb-memory-server/commit/7809fcdda809350784816342d2c1d0f69b9bb1a3))
+
+## [7.0.0-beta.17](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.16...v7.0.0-beta.17) (2021-02-20)
+
+
+### Fixes
+
+* **lockfile:** ignore lockfile unlink fail ([ceea1a7](https://github.com/nodkz/mongodb-memory-server/commit/ceea1a770299dcc18473eb1a3389d063fe34d7af))
+* **resolveConfig:** findPackageJson: resolve file paths directly ([0bec0bf](https://github.com/nodkz/mongodb-memory-server/commit/0bec0bf1b63904e82e357dc6dc646db3c0fa6df4)), closes [#440](https://github.com/nodkz/mongodb-memory-server/issues/440)
+* **resolveConfig:** simplify packageJson type ([fac363d](https://github.com/nodkz/mongodb-memory-server/commit/fac363d27b8af34072752a12d2bb1e1e060af54d))
+
+## [7.0.0-beta.16](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.15...v7.0.0-beta.16) (2021-02-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **getos:** All "USE*" and "SKIP*" Environment Variables got removed in favor of an better handling
+
+### Features
+
+* **getos:** remove all "USE*" and "SKIP*" environment variables ([e389c3e](https://github.com/nodkz/mongodb-memory-server/commit/e389c3e68715f38e9012a7a758dd1dbaad38a3e6))
+* **getos:** simplify reading an release file ([e5e6521](https://github.com/nodkz/mongodb-memory-server/commit/e5e6521eb339e54de481c532062dd143bfb33a61))
+* **MongoBinaryDownloadUrl:** add support for "arch/manjaro" (ubuntu workaround) ([21449d6](https://github.com/nodkz/mongodb-memory-server/commit/21449d64e53204cb60b43451be5ed551420a0af3))
+* **MongoBinaryDownloadUrl:** refactor getUbuntuVersionString ([fc08c25](https://github.com/nodkz/mongodb-memory-server/commit/fc08c25d95964cffd6eee83037d60b228c38e2a4))
+* **MongoBinaryDownloadUrl:** remove function "getMintVersionString" ([d66e28a](https://github.com/nodkz/mongodb-memory-server/commit/d66e28ade0eeeaf3bc9b8bcc276c9e560920d439))
+
+
+### Fixes
+
+* **getos:** add lsb-release file pattern to regex ([0cc7dd5](https://github.com/nodkz/mongodb-memory-server/commit/0cc7dd5e8e05b223a7ed3231b36f5dd46efe0364))
+* **getos:** add tests for "parseOS" and "parseLSB" ([6cdf482](https://github.com/nodkz/mongodb-memory-server/commit/6cdf4823341446c4b7c2f1ed2b97c03992ca29ea))
+* **getos:** tryFirstReleaseFile: simplify file match ([7a46fac](https://github.com/nodkz/mongodb-memory-server/commit/7a46fac70f3a1c8b398d4c9d6bc07499a84f7343))
+
+
+### Refactor
+
+* **MongoBinaryDownloadUrl:** add helper function for regex de-duplication ([3d96e5e](https://github.com/nodkz/mongodb-memory-server/commit/3d96e5effbb0fced5c408633623fb8d360659494))
+
 ## [7.0.0-beta.15](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.14...v7.0.0-beta.15) (2021-02-10)
 
 

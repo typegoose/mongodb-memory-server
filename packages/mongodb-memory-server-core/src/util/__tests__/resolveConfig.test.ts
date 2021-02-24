@@ -7,6 +7,7 @@ tmp.setGracefulCleanup();
 const outerPackageJson = {
   config: {
     mongodbMemoryServer: {
+      inner: false,
       version: '3.0.0',
     },
   },
@@ -14,6 +15,7 @@ const outerPackageJson = {
 const innerPackageJson = {
   config: {
     mongodbMemoryServer: {
+      inner: true,
       version: '4.0.0',
     },
   },
@@ -57,24 +59,27 @@ describe('resolveConfig', () => {
     });
 
     test('in project', () => {
+      // expect to get the outer package.json
       process.chdir(`${tmpObj.name}/project`);
-      findPackageJson();
-      const got = resolveConfig(ResolveConfigVariables.VERSION);
-      expect(got).toBe('3.0.0');
+      const out = findPackageJson();
+      expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('3.0.0');
+      expect(out.inner).toBe(false);
     });
 
     test('in subproject', () => {
+      // expect to get the inner package.json
       process.chdir(`${tmpObj.name}/project/subproject`);
-      findPackageJson();
-      const got = resolveConfig(ResolveConfigVariables.VERSION);
-      expect(got).toBe('4.0.0');
+      const out = findPackageJson();
+      expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('4.0.0');
+      expect(out.inner).toBe(true);
     });
 
     test('with explicit directory in reInitializePackageJson', () => {
+      // expect to get the inner package.json
       process.chdir(`${tmpObj.name}/project`);
-      findPackageJson(`${tmpObj.name}/project/subproject`);
-      const got = resolveConfig(ResolveConfigVariables.VERSION);
-      expect(got).toBe('4.0.0');
+      const out = findPackageJson(`${tmpObj.name}/project/subproject`);
+      expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('4.0.0');
+      expect(out.inner).toBe(true);
     });
   });
 });

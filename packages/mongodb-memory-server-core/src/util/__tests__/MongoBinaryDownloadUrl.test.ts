@@ -55,7 +55,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     describe('for linux', () => {
-      it('for ubuntu', async () => {
+      it('for ubuntu x64', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'linux',
           arch: 'x64',
@@ -68,6 +68,22 @@ describe('MongoBinaryDownloadUrl', () => {
         });
         expect(await du.getDownloadUrl()).toBe(
           'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz'
+        );
+      });
+
+      it('for ubuntu arm64', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'arm64',
+          version: '4.0.20',
+          os: {
+            os: 'linux',
+            dist: 'Ubuntu Linux',
+            release: '20.04',
+          },
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/linux/mongodb-linux-arm64-ubuntu1604-4.0.20.tgz'
         );
       });
 

@@ -62,23 +62,26 @@ export class MongoBinary {
     const lock = await LockFile.lock(lockfile);
     log('getDownloadPath: Download lock acquired');
 
-    // check cache if it got already added to the cache
-    if (!this.cache.get(version)) {
-      log(`getDownloadPath: Adding version ${version} to cache`);
-      const downloader = new MongoBinaryDownload({
-        downloadDir,
-        platform,
-        arch,
-        version,
-        checkMD5,
-      });
-      this.cache.set(version, await downloader.getMongodPath());
+    // this is to ensure that the lockfile gets removed in case of an error
+    try {
+      // check cache if it got already added to the cache
+      if (!this.cache.has(version)) {
+        log(`getDownloadPath: Adding version ${version} to cache`);
+        const downloader = new MongoBinaryDownload({
+          downloadDir,
+          platform,
+          arch,
+          version,
+          checkMD5,
+        });
+        this.cache.set(version, await downloader.getMongodPath());
+      }
+    } finally {
+      log('getDownloadPath: Removing Download lock');
+      // remove lock
+      await lock.unlock();
+      log('getDownloadPath: Download lock removed');
     }
-
-    log('getDownloadPath: Removing Download lock');
-    // remove lock
-    await lock.unlock();
-    log('getDownloadPath: Download lock removed');
 
     const cachePath = this.cache.get(version);
     // ensure that "path" exists, so the return type does not change
