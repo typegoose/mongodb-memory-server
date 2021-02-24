@@ -1,3 +1,26 @@
+## [7.0.0-beta.20](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.19...v7.0.0-beta.20) (2021-02-24)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** add support for ubuntu-arm64 ([5733a0f](https://github.com/nodkz/mongodb-memory-server/commit/5733a0f391453d7375ee1046722f744a049ea339)), closes [#443](https://github.com/nodkz/mongodb-memory-server/issues/443)
+
+
+### Style
+
+* **lockfile:** add log when "readout" is for not for self ([1b669ad](https://github.com/nodkz/mongodb-memory-server/commit/1b669ad310075a9ea3ba876fb89701e2d9c95b69))
+
+
+### Refactor
+
+* **MongoBinaryDownload:** unify path resolving ([4258eb7](https://github.com/nodkz/mongodb-memory-server/commit/4258eb7a5d6c4db1e51523de2c2681316f5b8d8f))
+
+
+### Fixes
+
+* **lockfile:** checkLock: handle ENOENT ([7d3e998](https://github.com/nodkz/mongodb-memory-server/commit/7d3e998fca6f964e0f4100ec920125b2acb0a4f2))
+* **MongoBinary:** ensure lockfile gets unlocked in case of error ([e81db43](https://github.com/nodkz/mongodb-memory-server/commit/e81db4345dd0b3dd5bcad0100fb4f995456252b4))
+
 ## [7.0.0-beta.19](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.18...v7.0.0-beta.19) (2021-02-24)
 
 
