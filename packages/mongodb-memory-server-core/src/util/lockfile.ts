@@ -73,17 +73,27 @@ export class LockFile {
       return LockFileStatus.available;
     }
 
-    const readout = parseInt((await fspromises.readFile(file)).toString().trim());
+    try {
+      const readout = parseInt((await fspromises.readFile(file)).toString().trim());
 
-    if (readout === process.pid) {
-      log('checkLock: Lock File Already exists, and is for *this* process');
+      if (readout === process.pid) {
+        log('checkLock: Lock File Already exists, and is for *this* process');
 
-      return !this.files.has(file) ? LockFileStatus.available : LockFileStatus.lockedSelf;
+        return !this.files.has(file) ? LockFileStatus.available : LockFileStatus.lockedSelf;
+      }
+
+      log(`checkLock: Lock File Aready exists, for an different process: "${readout}"`);
+
+      return utils.isAlive(readout) ? LockFileStatus.lockedDifferent : LockFileStatus.available;
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        log('checkLock: reading file failed with ENOENT');
+
+        return LockFileStatus.available;
+      }
+
+      throw err;
     }
-
-    log(`checkLock: Lock File Aready exists, for an different process: "${readout}"`);
-
-    return utils.isAlive(readout) ? LockFileStatus.lockedDifferent : LockFileStatus.available;
   }
 
   /**
