@@ -81,6 +81,8 @@ export class LockFile {
       return !this.files.has(file) ? LockFileStatus.available : LockFileStatus.lockedSelf;
     }
 
+    log(`checkLock: Lock File Aready exists, for an different process: "${readout}"`);
+
     return utils.isAlive(readout) ? LockFileStatus.lockedDifferent : LockFileStatus.available;
   }
 
