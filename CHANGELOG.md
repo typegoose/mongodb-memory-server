@@ -1,3 +1,16 @@
+## [7.0.0-beta.19](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.18...v7.0.0-beta.19) (2021-02-24)
+
+
+### Fixes
+
+* **global:** use an absolute module path to core in global index scripts ([2428fd8](https://github.com/nodkz/mongodb-memory-server/commit/2428fd805e1389e6374435a238749a1d654dee2e))
+* **postinstall:** use an absolute module path to core in postinstall scripts ([d71ea48](https://github.com/nodkz/mongodb-memory-server/commit/d71ea48293d4beab94a373b6f0a2b38733a4f98a))
+
+
+### Dependencies
+
+* **tslib:** include tslib dependency in non-core packages ([6125d2f](https://github.com/nodkz/mongodb-memory-server/commit/6125d2f83cf791833c09a5a590613072929cecf5))
+
 ## [7.0.0-beta.18](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.17...v7.0.0-beta.18) (2021-02-22)
 
 
