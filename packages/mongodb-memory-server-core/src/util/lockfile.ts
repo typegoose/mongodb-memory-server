@@ -5,12 +5,35 @@ import * as path from 'path';
 import mkdirp from 'mkdirp';
 import { promises as fspromises } from 'fs';
 import { Mutex } from 'async-mutex';
+import { v4 as uuidv4 } from 'uuid';
 
 const log = debug('MongoMS:LockFile');
 
+/**
+ * Error used to cause an promise to stop and re-wait for an lockfile
+ */
+class RepeatError extends Error {
+  constructor(public repeat: boolean) {
+    super();
+  }
+}
+
 export enum LockFileStatus {
+  /**
+   * Status is "available" to be grabbed (lockfile not existing or being invalid)
+   */
   available,
+  /**
+   * Status is "available for asking instance" (instance that asked has the lock)
+   */
+  availableInstance,
+  /**
+   * Status is "locked by another instance in this process"
+   */
   lockedSelf,
+  /**
+   * Status is "locked by another process"
+   */
   lockedDifferent,
 }
 
@@ -65,8 +88,8 @@ export class LockFile {
    * Check the status of the lockfile
    * @param file The file to use as the LockFile
    */
-  protected static async checkLock(file: string): Promise<LockFileStatus> {
-    log(`checkLock: for file "${file}"`);
+  protected static async checkLock(file: string, uuid?: string): Promise<LockFileStatus> {
+    log(`checkLock: for file "${file}" with uuid: "${uuid}"`);
 
     // if file / path does not exist, directly acquire lock
     if (!(await utils.pathExists(file))) {
@@ -74,12 +97,28 @@ export class LockFile {
     }
 
     try {
-      const readout = parseInt((await fspromises.readFile(file)).toString().trim());
+      const fileData = (await fspromises.readFile(file)).toString().trim().split(' ');
+      const readout = parseInt(fileData[0]);
 
       if (readout === process.pid) {
-        log('checkLock: Lock File Already exists, and is for *this* process');
+        log(
+          `checkLock: Lock File Already exists, and is for *this* process, with uuid: "${fileData[1]}"`
+        );
 
-        return !this.files.has(file) ? LockFileStatus.available : LockFileStatus.lockedSelf;
+        // early return if "file"(input) dosnt exists within the files Map anymore
+        if (!this.files.has(file)) {
+          return LockFileStatus.available;
+        }
+
+        // check if "uuid"(input) matches the filereadout, if yes say "available" (for unlock check)
+        if (!utils.isNullOrUndefined(uuid)) {
+          return uuid === fileData[1]
+            ? LockFileStatus.availableInstance
+            : LockFileStatus.lockedSelf;
+        }
+
+        // as fallback say "lockedSelf"
+        return LockFileStatus.lockedSelf;
       }
 
       log(`checkLock: Lock File Aready exists, for an different process: "${readout}"`);
@@ -156,24 +195,35 @@ export class LockFile {
    */
   protected static async createLock(file: string): Promise<LockFile> {
     // this function only gets called by processed "file" input, so no re-checking
-    log(`createLock: Creating lock file "${file}"`);
+    log(`createLock: trying to create a lock file for "${file}"`);
+    const uuid = uuidv4();
 
-    if (this.files.has(file)) {
-      log(`createLock: Set already has file "${file}", ignoring`);
+    // This is not an ".catch" because in an callback running "return" dosnt "return" the parent function
+    try {
+      await this.mutex.runExclusive(async () => {
+        // this may cause "Stack Size" errors, because of an infinite loop if too many times this gets called
+        if (this.files.has(file)) {
+          log(`createLock: Map already has file "${file}"`);
+
+          throw new RepeatError(true);
+        }
+
+        await mkdirp(path.dirname(file));
+
+        await fspromises.writeFile(file, `${process.pid.toString()} ${uuid}`);
+
+        this.files.add(file);
+        this.events.emit(LockFileEvents.lock, file);
+      });
+    } catch (err) {
+      if (err instanceof RepeatError && err.repeat) {
+        return this.waitForLock(file);
+      }
     }
 
-    await this.mutex.runExclusive(async () => {
-      await mkdirp(path.dirname(file));
+    log(`createLock: Lock File Created for file "${file}"`);
 
-      await fspromises.writeFile(file, process.pid.toString());
-
-      this.files.add(file);
-      this.events.emit(LockFileEvents.lock, file);
-    });
-
-    log('createLock: Lock File Created');
-
-    return new this(file);
+    return new this(file, uuid);
   }
 
   // Below here are instance functions & values
@@ -182,9 +232,14 @@ export class LockFile {
    * File locked by this instance
    */
   public file?: string;
+  /**
+   * UUID Unique to this lock instance
+   */
+  public uuid?: string;
 
-  constructor(file: string) {
+  constructor(file: string, uuid: string) {
     this.file = file;
+    this.uuid = uuid;
   }
 
   /**
@@ -200,16 +255,22 @@ export class LockFile {
       return;
     }
 
-    switch (await LockFile.checkLock(this.file)) {
+    // No "case-fallthrough" because this is more clear (and no linter will complain)
+    switch (await LockFile.checkLock(this.file, this.uuid)) {
       case LockFileStatus.available:
-        log(`unlock: Lock Status was already "available" for file "${this.file}", ignoring`);
-        await LockFile.mutex.runExclusive(this.unlockCleanup.bind(this, false));
+        log(`unlock: Lock Status was already "available" for file "${this.file}"`);
+        await this.unlockCleanup(false);
+
+        return;
+      case LockFileStatus.availableInstance:
+        log(`unlock: Lock Status was "availableInstance" for file "${this.file}"`);
+        await this.unlockCleanup(true);
 
         return;
       case LockFileStatus.lockedSelf:
-        await LockFile.mutex.runExclusive(this.unlockCleanup.bind(this, true));
-
-        return;
+        throw new Error(
+          `Cannot unlock file "${this.file}", because it is not locked by this instance!`
+        );
       default:
         throw new Error(
           `Cannot unlock Lock File "${this.file}" because it is not locked by this process!`
@@ -222,24 +283,25 @@ export class LockFile {
    * @param fileio Unlink the file?
    */
   protected async unlockCleanup(fileio: boolean = true): Promise<void> {
-    log(`unlockCleanup: for file "${this.file}"`);
+    return await LockFile.mutex.runExclusive(async () => {
+      log(`unlockCleanup: for file "${this.file}"`);
 
-    if (utils.isNullOrUndefined(this.file)) {
-      return;
-    }
+      if (utils.isNullOrUndefined(this.file)) {
+        return;
+      }
 
-    if (fileio) {
-      await fspromises.unlink(this.file).catch((reason) => {
-        log(`unlockCleanup: lock file unlink failed: "${reason}"`);
-      });
-    }
+      if (fileio) {
+        await fspromises.unlink(this.file).catch((reason) => {
+          log(`unlockCleanup: lock file unlink failed: "${reason}"`);
+        });
+      }
 
-    LockFile.files.delete(this.file);
-    LockFile.events.emit(LockFileEvents.unlock, this.file);
+      LockFile.files.delete(this.file);
+      LockFile.events.emit(LockFileEvents.unlock, this.file);
 
-    // make this LockFile instance unusable (to prevent double unlock calling)
-    this.file = undefined;
-
-    await utils.ensureAsync();
+      // make this LockFile instance unusable (to prevent double unlock calling)
+      this.file = undefined;
+      this.uuid = undefined;
+    });
   }
 }
