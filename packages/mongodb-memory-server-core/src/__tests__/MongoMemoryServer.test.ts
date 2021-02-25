@@ -67,7 +67,7 @@ describe('MongoMemoryServer', () => {
     });
 
     it('should make use of "AutomaticAuth" (ephemeralForTest)', async () => {
-      jest.spyOn(MongoInstance.prototype, 'run');
+      jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
         auth: {},
@@ -99,7 +99,7 @@ describe('MongoMemoryServer', () => {
       });
       expect(users.users).toHaveLength(1);
       expect(users.users[0].user).toEqual(mongoServer.auth.customRootName);
-      expect(MongoInstance.prototype.run).toHaveBeenCalledTimes(1);
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledTimes(1);
 
       await con.close();
@@ -107,7 +107,7 @@ describe('MongoMemoryServer', () => {
     });
 
     it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
-      jest.spyOn(MongoInstance.prototype, 'run');
+      jest.spyOn(MongoInstance.prototype, 'start');
       const mongoServer = await MongoMemoryServer.create({
         auth: {},
         instance: {
@@ -138,14 +138,14 @@ describe('MongoMemoryServer', () => {
       });
       expect(users.users).toHaveLength(1);
       expect(users.users[0].user).toEqual(mongoServer.auth.customRootName);
-      expect(MongoInstance.prototype.run).toHaveBeenCalledTimes(2);
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(2);
 
       await con.close();
       await mongoServer.stop();
     });
 
     it('should make use of "AutomaticAuth" with extra users (ephemeralForTest)', async () => {
-      jest.spyOn(MongoInstance.prototype, 'run');
+      jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
         auth: {
@@ -214,7 +214,7 @@ describe('MongoMemoryServer', () => {
       });
       expect(usersOtherDb.users).toHaveLength(1);
       expect(usersOtherDb.users.filter((v) => v.user === 'OtherDBUser').length > 0).toEqual(true);
-      expect(MongoInstance.prototype.run).toHaveBeenCalledTimes(1);
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledTimes(1);
 
       await con.close();
@@ -222,7 +222,7 @@ describe('MongoMemoryServer', () => {
     });
 
     it('"createAuth" should not be called if "disabled" is true', async () => {
-      jest.spyOn(MongoInstance.prototype, 'run');
+      jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(MongoMemoryServer.prototype, 'createAuth');
       const mongoServer = await MongoMemoryServer.create({
         auth: {
@@ -253,7 +253,7 @@ describe('MongoMemoryServer', () => {
       } catch (err) {
         expect(err.codeName).toEqual('Unauthorized');
       }
-      expect(MongoInstance.prototype.run).toHaveBeenCalledTimes(1);
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
       expect(MongoMemoryServer.prototype.createAuth).not.toHaveBeenCalled();
 
       await con.close();

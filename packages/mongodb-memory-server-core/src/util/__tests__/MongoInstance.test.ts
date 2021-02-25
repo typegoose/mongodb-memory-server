@@ -125,34 +125,34 @@ describe('MongodbInstance', () => {
   });
 
   it('should start instance on port 27333', async () => {
-    const mongod = await MongodbInstance.run({
+    const mongod = await MongodbInstance.create({
       instance: { port: 27333, dbPath: tmpDir.name },
       binary: { version },
     });
 
     expect(mongod.childProcess!.pid).toBeGreaterThan(0);
 
-    await mongod.kill();
+    await mongod.stop();
   });
 
   it('should throw error if port is busy', async () => {
-    const mongod = await MongodbInstance.run({
+    const mongod = await MongodbInstance.create({
       instance: { port: 27444, dbPath: tmpDir.name },
       binary: { version },
     });
 
     await expect(
-      MongodbInstance.run({
+      MongodbInstance.create({
         instance: { port: 27444, dbPath: tmpDir.name },
         binary: { version },
       })
     ).rejects.toEqual('Port 27444 already in use');
 
-    await mongod.kill();
+    await mongod.stop();
   });
 
   it('should wait until childprocess and killerprocess are killed', async () => {
-    const mongod: MongodbInstance = await MongodbInstance.run({
+    const mongod: MongodbInstance = await MongodbInstance.create({
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version },
     });
@@ -163,24 +163,24 @@ describe('MongodbInstance', () => {
 
     expect(dbUtil.isAlive(pid)).toBeTruthy();
     expect(dbUtil.isAlive(killerPid)).toBeTruthy();
-    await mongod.kill();
+    await mongod.stop();
     expect(dbUtil.isAlive(pid)).toBeFalsy();
     expect(dbUtil.isAlive(killerPid)).toBeFalsy();
   });
 
   it('should work with mongodb 4.0.3', async () => {
-    const mongod = await MongodbInstance.run({
+    const mongod = await MongodbInstance.create({
       instance: { port: 27445, dbPath: tmpDir.name },
       binary: { version: '4.0.3' },
     });
     expect(mongod.childProcess!.pid).toBeGreaterThan(0);
-    await mongod.kill();
+    await mongod.stop();
   });
 
   it('"kill" should not call "killProcess" if no childProcesses are not running', async () => {
     const mongod = new MongodbInstance({});
     jest.spyOn(dbUtil, 'killProcess');
-    await mongod.kill();
+    await mongod.stop();
 
     expect(dbUtil.killProcess).not.toBeCalled();
   });

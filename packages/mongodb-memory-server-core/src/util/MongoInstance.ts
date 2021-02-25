@@ -126,7 +126,7 @@ export class MongoInstance extends EventEmitter {
       this.isInstanceReady = false;
       this.isInstancePrimary = false;
 
-      await this.kill();
+      await this.stop();
     });
   }
 
@@ -143,10 +143,10 @@ export class MongoInstance extends EventEmitter {
    * Create an new instance an call method "run"
    * @param opts Options passed to the new instance
    */
-  static async run(opts: Partial<MongodOpts>): Promise<MongoInstance> {
+  static async create(opts: Partial<MongodOpts>): Promise<MongoInstance> {
     const instance = new this(opts);
 
-    return instance.run();
+    return instance.start();
   }
 
   /**
@@ -194,7 +194,7 @@ export class MongoInstance extends EventEmitter {
    * Create the mongod process
    * @fires MongoInstance#instanceStarted
    */
-  async run(): Promise<this> {
+  async start(): Promise<this> {
     this.debug('run');
     this.isInstancePrimary = false;
     this.isInstanceReady = false;
@@ -232,7 +232,7 @@ export class MongoInstance extends EventEmitter {
   /**
    * Shutdown all related processes (Mongod Instance & Killer Process)
    */
-  async kill(): Promise<MongoInstance> {
+  async stop(): Promise<MongoInstance> {
     this.debug('kill: Called .kill():');
 
     if (!isNullOrUndefined(this.childProcess)) {

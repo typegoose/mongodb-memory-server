@@ -389,7 +389,7 @@ export class MongoMemoryServer extends EventEmitter {
         this._instanceInfo.port = newPort;
       }
 
-      await this._instanceInfo.instance.run();
+      await this._instanceInfo.instance.start();
 
       return;
     }
@@ -402,7 +402,7 @@ export class MongoMemoryServer extends EventEmitter {
     );
 
     // After that startup MongoDB instance
-    let instance = await MongoInstance.run(mongodOptions);
+    let instance = await MongoInstance.create(mongodOptions);
     log('_startUpInstance: Instance Started');
 
     // another "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
@@ -412,11 +412,11 @@ export class MongoMemoryServer extends EventEmitter {
 
       if (data.storageEngine !== 'ephemeralForTest') {
         log('_startUpInstance: Killing No-Auth instance');
-        await instance.kill();
+        await instance.stop();
 
         // TODO: change this to just change the options instead of an new instance after adding getters & setters
         log('_startUpInstance: Starting Auth Instance');
-        instance = await MongoInstance.run({
+        instance = await MongoInstance.create({
           ...mongodOptions,
           instance: {
             ...mongodOptions.instance,
@@ -472,7 +472,7 @@ export class MongoMemoryServer extends EventEmitter {
     log(
       `stop: Shutdown MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.childProcess?.pid}` // "undefined" would say more than ""
     );
-    await this._instanceInfo.instance.kill();
+    await this._instanceInfo.instance.stop();
 
     this.stateChange(MongoMemoryServerStates.stopped);
 
