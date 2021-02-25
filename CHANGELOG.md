@@ -1,3 +1,32 @@
+## [7.0.0-beta.21](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.20...v7.0.0-beta.21) (2021-02-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **MongoInstance:** MongoInstance's functions got renamed to make more clear what they do
+(create,start,stop - instead of run,run,kill)
+
+### Features
+
+* **MongoInstance:** rename functions to unify all classes ([655d295](https://github.com/nodkz/mongodb-memory-server/commit/655d29575aa2a39c4edee91d0f5771e25ab5b83b))
+
+
+### Dependencies
+
+* update lockfile ([7ca52da](https://github.com/nodkz/mongodb-memory-server/commit/7ca52da78809aea23739ca6e64c7a8b433079cc8))
+* **cross-env:** upgrade to 7.0.3 ([b412ce2](https://github.com/nodkz/mongodb-memory-server/commit/b412ce2e8cdbfd08e13971d547ce5b64ec19fbec))
+* **doctoc:** upgrade to 2.0.0 ([8e1a091](https://github.com/nodkz/mongodb-memory-server/commit/8e1a091de229531c0be945e8637d33f7d4133e84))
+* **eslint:** upgrade to 7.20.0 (and related) ([715fdbd](https://github.com/nodkz/mongodb-memory-server/commit/715fdbd21afd35f9bf4939dd4b8bb9e0d9b2de10))
+* **husky:** upgrade to 5.1.1 ([4e93d29](https://github.com/nodkz/mongodb-memory-server/commit/4e93d29c5f376a0ab22199fa65fe338267829879))
+* **semantic-release:** upgrade to 17.3.9 (and related) ([d433278](https://github.com/nodkz/mongodb-memory-server/commit/d43327878ca0de52f54cf81bfe052cedca9f2d4e))
+* **ts-jest:** upgrade to 26.5.2 ([5c07ee7](https://github.com/nodkz/mongodb-memory-server/commit/5c07ee744ef9b663cc67c8346277cde001db2046))
+
+
+### Fixes
+
+* **lockfile:** add uuid to lock instance ([75574a1](https://github.com/nodkz/mongodb-memory-server/commit/75574a173a326dc9688677e93f1fb74e2f49ff64))
+* **MongoInstance:** give better error reporting when library file is missing ([692455a](https://github.com/nodkz/mongodb-memory-server/commit/692455ab30e30c8ed9964ca0281fd6a6f5ec4f05)), closes [#408](https://github.com/nodkz/mongodb-memory-server/issues/408)
+
 ## [7.0.0-beta.20](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.19...v7.0.0-beta.20) (2021-02-24)
 
 
