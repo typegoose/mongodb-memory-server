@@ -311,6 +311,20 @@ describe('MongodbInstance', () => {
         expect(events.get(MongoInstanceEvents.instanceReplState)).toEqual('STARTUP');
         expect(mongod.isInstancePrimary).toEqual(false);
       });
+
+      it('should emit "instanceError" when library is missing', () => {
+        // actual line copied from mongod 4.?.? (from https://github.com/nodkz/mongodb-memory-server/issues/408)
+        // TODO: when finding an actual line, please replace the one below
+        const line = 'libcrypto.so.10: cannot open shared object';
+
+        mongod.stdoutHandler(line);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceError)).toEqual(
+          'Instance Failed to start because an library file is missing: "libcrypto.so.10"'
+        );
+      });
     });
   });
 });

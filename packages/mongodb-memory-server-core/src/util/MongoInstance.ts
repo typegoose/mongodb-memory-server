@@ -425,6 +425,13 @@ export class MongoInstance extends EventEmitter {
         'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
           'You need to manually install libcurl4\n'
       );
+    } else if (/lib.*: cannot open shared object/i.test(line)) {
+      const lib =
+        line.match(/(lib.*): cannot open shared object/i)?.[1].toLocaleLowerCase() ?? 'unknown';
+      this.emit(
+        MongoInstanceEvents.instanceError,
+        `Instance Failed to start because an library file is missing: "${lib}"`
+      );
     } else if (/\*\*\*aborting after/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod internal error');
     } else if (/transition to primary complete; database writes are now permitted/i.test(line)) {
