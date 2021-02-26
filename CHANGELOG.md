@@ -1,3 +1,10 @@
+## [7.0.0-beta.22](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.21...v7.0.0-beta.22) (2021-02-26)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** support macos arm64 to x64 archive translation ([2aa9b38](https://github.com/nodkz/mongodb-memory-server/commit/2aa9b38c6ea49035eaf9ee64cc772a364e2ad2fe))
+
 ## [7.0.0-beta.21](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.20...v7.0.0-beta.21) (2021-02-25)
 
 
