@@ -12,6 +12,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import { assertion, pathExists } from './utils';
+import { DryMongoBinary } from './DryMongoBinary';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -73,9 +74,11 @@ export class MongoBinaryDownload {
    * @return Absoulte Path with FileName
    */
   protected getPath(): string {
-    const addExe = this.platform === 'win32' ? '.exe' : '';
-
-    return path.resolve(this.downloadDir, this.version, `mongod${addExe}`);
+    return DryMongoBinary.combineBinaryName(
+      { version: this.version },
+      this.downloadDir,
+      DryMongoBinary.getBinaryName()
+    );
   }
 
   /**

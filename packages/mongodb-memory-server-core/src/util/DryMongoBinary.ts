@@ -10,6 +10,7 @@ const log = debug('MongoMS:DryMongoBinary');
 
 export interface DryMongoBinaryOptions {
   version: string;
+  downloadDir?: string;
 }
 
 export interface DryMongoBinaryPaths {
@@ -155,7 +156,8 @@ export class DryMongoBinary {
     }
 
     // Resolve the config value "DOWNLOAD_DIR" if provided, otherwise remove from list
-    const resolveConfigValue = resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR);
+    const resolveConfigValue =
+      resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) || opts.downloadDir;
 
     if (!isNullOrUndefined(resolveConfigValue)) {
       log(`generateDownloadPath: resolveConfigValue is not empty`);

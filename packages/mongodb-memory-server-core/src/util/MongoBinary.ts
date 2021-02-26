@@ -1,14 +1,13 @@
-import { promises as fspromises, constants } from 'fs';
 import os from 'os';
 import path from 'path';
 import mkdirp from 'mkdirp';
-import findCacheDir from 'find-cache-dir';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
-import { assertion, isNullOrUndefined, pathExists } from './utils';
+import { assertion, isNullOrUndefined } from './utils';
 import { spawnSync } from 'child_process';
 import { LockFile } from './lockfile';
+import { DryMongoBinary } from './DryMongoBinary';
 
 const log = debug('MongoMS:MongoBinary');
 
@@ -21,27 +20,6 @@ export interface MongoBinaryOpts {
 }
 
 export class MongoBinary {
-  static cache: Map<string, string> = new Map();
-
-  /**
-   * Probe if the provided "systemBinary" is an existing path
-   * @param systemBinary The Path to probe for an System-Binary
-   * @return System Binary path or undefined
-   */
-  static async getSystemPath(systemBinary: string): Promise<string | undefined> {
-    try {
-      await fspromises.access(systemBinary, constants.X_OK); // check if the provided path exists and has the execute bit for current user
-
-      log(`getSystemPath: found system binary path at "${systemBinary}"`);
-
-      return systemBinary; // returns if "access" is successful
-    } catch (err) {
-      log(`getSystemPath: can't find system binary at "${systemBinary}".\n${err.message}`);
-    }
-
-    return undefined;
-  }
-
   /**
    * Probe download path and download the binary
    * @param options Options Configuring which binary to download and to which path
@@ -49,7 +27,7 @@ export class MongoBinary {
    */
   static async getDownloadPath(options: Required<MongoBinaryOpts>): Promise<string> {
     log('getDownloadPath');
-    const { downloadDir, platform, arch, version, checkMD5 } = options;
+    const { downloadDir, version } = options;
     // create downloadDir
     await mkdirp(downloadDir);
 
@@ -65,16 +43,10 @@ export class MongoBinary {
     // this is to ensure that the lockfile gets removed in case of an error
     try {
       // check cache if it got already added to the cache
-      if (!this.cache.has(version)) {
+      if (!DryMongoBinary.binaryCache.has(version)) {
         log(`getDownloadPath: Adding version ${version} to cache`);
-        const downloader = new MongoBinaryDownload({
-          downloadDir,
-          platform,
-          arch,
-          version,
-          checkMD5,
-        });
-        this.cache.set(version, await downloader.getMongodPath());
+        const downloader = new MongoBinaryDownload(options);
+        DryMongoBinary.binaryCache.set(version, await downloader.getMongodPath());
       }
     } finally {
       log('getDownloadPath: Removing Download lock');
@@ -83,7 +55,7 @@ export class MongoBinary {
       log('getDownloadPath: Download lock removed');
     }
 
-    const cachePath = this.cache.get(version);
+    const cachePath = DryMongoBinary.binaryCache.get(version);
     // ensure that "path" exists, so the return type does not change
     assertion(
       typeof cachePath === 'string',
@@ -101,33 +73,20 @@ export class MongoBinary {
    */
   static async getPath(opts: MongoBinaryOpts = {}): Promise<string> {
     log('getPath');
-    const legacyDLDir = path.resolve(os.homedir(), '.cache/mongodb-binaries');
-
-    // if we're in postinstall script, npm will set the cwd too deep
-    let nodeModulesDLDir = process.cwd();
-    while (nodeModulesDLDir.endsWith(`node_modules${path.sep}mongodb-memory-server`)) {
-      nodeModulesDLDir = path.resolve(nodeModulesDLDir, '..', '..');
-    }
 
     // "||" is still used here, because it should default if the value is false-y (like an empty string)
     const defaultOptions = {
-      downloadDir:
-        resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) ||
-        ((await pathExists(legacyDLDir))
-          ? legacyDLDir
-          : path.resolve(
-              findCacheDir({
-                name: 'mongodb-memory-server',
-                cwd: nodeModulesDLDir,
-              }) || '',
-              'mongodb-binaries'
-            )),
+      downloadDir: '',
       platform: resolveConfig(ResolveConfigVariables.PLATFORM) || os.platform(),
       arch: resolveConfig(ResolveConfigVariables.ARCH) || os.arch(),
-      version: resolveConfig(ResolveConfigVariables.VERSION),
+      version: resolveConfig(ResolveConfigVariables.VERSION) ?? '4.0.20',
       systemBinary: resolveConfig(ResolveConfigVariables.SYSTEM_BINARY),
       checkMD5: envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK)),
     };
+
+    const downloadBinary = await DryMongoBinary.generateDownloadPath(defaultOptions);
+    // quick workaround because the "generateDownloadPath" is already fully assembled (base/version/binary)
+    defaultOptions.downloadDir = path.resolve(path.dirname(downloadBinary[1]), '..');
 
     /** Provided Options combined with the Default Options */
     const options = { ...defaultOptions, ...opts };
@@ -135,8 +94,16 @@ export class MongoBinary {
 
     let binaryPath: string | undefined;
 
+    const locatedBinary = await DryMongoBinary.locateBinary({
+      version: options.version ?? '4.0.20',
+    });
+
+    if (!isNullOrUndefined(locatedBinary)) {
+      binaryPath = locatedBinary;
+    }
+
     if (options.systemBinary) {
-      binaryPath = await this.getSystemPath(options.systemBinary);
+      binaryPath = await DryMongoBinary.getSystemPath(options.systemBinary);
 
       if (binaryPath) {
         log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
@@ -166,10 +133,6 @@ export class MongoBinary {
       typeof options.version === 'string',
       new Error('"MongoBinary.options.version" is not an string!')
     );
-
-    if (!binaryPath) {
-      binaryPath = this.cache.get(options.version);
-    }
 
     if (!binaryPath) {
       binaryPath = await this.getDownloadPath(options as Required<MongoBinaryOpts>); // casting because "string" is asserted above (assertion is not reflected in type)
