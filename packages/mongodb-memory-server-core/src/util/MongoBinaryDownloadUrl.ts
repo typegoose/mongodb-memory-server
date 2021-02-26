@@ -25,7 +25,7 @@ export class MongoBinaryDownloadUrl {
   constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
     this.version = version;
     this.platform = this.translatePlatform(platform);
-    this.arch = this.translateArch(arch, this.platform);
+    this.arch = MongoBinaryDownloadUrl.translateArch(arch, this.platform);
     this.os = os;
   }
 
@@ -385,7 +385,7 @@ export class MongoBinaryDownloadUrl {
    * x64 -> x86_64
    * @param platform The Platform to translate
    */
-  translateArch(arch: string, mongoPlatform: string): string {
+  static translateArch(arch: string, mongoPlatform: string): string {
     switch (arch) {
       case 'ia32':
         if (mongoPlatform === 'linux') {
