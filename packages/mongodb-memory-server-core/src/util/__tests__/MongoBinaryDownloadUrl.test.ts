@@ -52,6 +52,17 @@ describe('MongoBinaryDownloadUrl', () => {
           'https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.0.0.tgz'
         );
       });
+
+      it('arm64 should use the x64 binary', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'arm64',
+          version: '4.4.0',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.4.0.tgz'
+        );
+      });
     });
 
     describe('for linux', () => {

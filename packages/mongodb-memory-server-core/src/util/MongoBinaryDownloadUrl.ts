@@ -112,6 +112,11 @@ export class MongoBinaryDownloadUrl {
       name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
 
+    if (this.arch === 'arm64') {
+      log('getArchiveNameOsx: Arch is "arm64", using x64 binary');
+      this.arch = 'x86_64';
+    }
+
     name += `-${this.arch}`;
     name += `-${this.version}.tgz`;
 
