@@ -3,14 +3,23 @@ import debug from 'debug';
 import { envToBool, resolveConfig, ResolveConfigVariables } from './resolveConfig';
 import { isNullOrUndefined, pathExists } from './utils';
 import * as path from 'path';
-import { homedir, platform } from 'os';
+import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
+import getOS, { AnyOS } from './getos';
+import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 
 const log = debug('MongoMS:DryMongoBinary');
 
-export interface DryMongoBinaryOptions {
-  version: string;
+export interface BaseDryMongoBinaryOptions {
+  version?: string;
   downloadDir?: string;
+  os?: AnyOS;
+  arch?: string;
+  systemBinary?: string;
+}
+
+export interface DryMongoBinaryOptions extends BaseDryMongoBinaryOptions {
+  version: string;
 }
 
 export interface DryMongoBinaryPaths {
@@ -28,6 +37,10 @@ export class DryMongoBinary {
    * Binaries already found, values are: [Version, Path]
    */
   static binaryCache: Map<string, string> = new Map();
+  /**
+   * Cache the "getOS" call, so that not much has to be re-executed over and over
+   */
+  static cachedGetOs: AnyOS;
 
   /**
    * Try to locate an existing binary
@@ -35,9 +48,9 @@ export class DryMongoBinary {
    */
   static async locateBinary(opts: DryMongoBinaryOptions): Promise<string | undefined> {
     log(`locateBinary: Trying to locate Binary for version "${opts.version}"`);
-    const systemBinary = resolveConfig(ResolveConfigVariables.SYSTEM_BINARY);
+    const systemBinary = opts.systemBinary ?? (await this.generateOptions()).systemBinary;
 
-    if (!isNullOrUndefined(systemBinary)) {
+    if (!isNullOrUndefined(systemBinary) && systemBinary.length > 0) {
       log(`locateBinary: env "SYSTEM_BINARY" was provided with value: "${systemBinary}"`);
 
       const systemReturn = await this.getSystemPath(systemBinary);
@@ -71,6 +84,35 @@ export class DryMongoBinary {
     this.binaryCache.set(opts.version, returnValue[1]);
 
     return returnValue[1];
+  }
+
+  /**
+   * Generate All required options for the binary name / path generation
+   */
+  static async generateOptions(
+    opts?: DryMongoBinaryOptions
+  ): Promise<Required<DryMongoBinaryOptions>> {
+    const defaultVersion = resolveConfig(ResolveConfigVariables.VERSION) ?? '4.0.20';
+    const ensuredOpts: DryMongoBinaryOptions = isNullOrUndefined(opts)
+      ? { version: defaultVersion }
+      : opts;
+
+    if (isNullOrUndefined(this.cachedGetOs)) {
+      this.cachedGetOs = await getOS();
+    }
+
+    const final: Required<DryMongoBinaryOptions> = {
+      version: ensuredOpts.version || defaultVersion,
+      downloadDir: opts?.downloadDir || '',
+      os: opts?.os ?? this.cachedGetOs,
+      arch: opts?.arch || MongoBinaryDownloadUrl.translateArch(arch(), platform()),
+      systemBinary: resolveConfig(ResolveConfigVariables.SYSTEM_BINARY) || '',
+    };
+
+    // fix the path, because what gets returned is the full path to the binary (base/version/binary)
+    final.downloadDir = path.resolve((await this.generateDownloadPath(final))[1], '..', '..');
+
+    return final;
   }
 
   /**
