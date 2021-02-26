@@ -18,6 +18,7 @@ export enum ResolveConfigVariables {
   DEBUG = 'DEBUG',
   DOWNLOAD_MIRROR = 'DOWNLOAD_MIRROR',
   DOWNLOAD_URL = 'DOWNLOAD_URL',
+  PREFER_GLOBAL_PATH = 'PREFER_GLOBAL_PATH',
   DISABLE_POSTINSTALL = 'DISABLE_POSTINSTALL',
   SYSTEM_BINARY = 'SYSTEM_BINARY',
   MD5_CHECK = 'MD5_CHECK',
@@ -28,6 +29,7 @@ export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
   [ResolveConfigVariables.VERSION, '4.0.20'],
+  [ResolveConfigVariables.PREFER_GLOBAL_PATH, 'true'],
 ]);
 
 /**
