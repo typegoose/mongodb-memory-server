@@ -7,11 +7,11 @@ import debug from 'debug';
 import { assertion, isNullOrUndefined } from './utils';
 import { spawnSync } from 'child_process';
 import { LockFile } from './lockfile';
-import { DryMongoBinary } from './DryMongoBinary';
+import { DryMongoBinary, BaseDryMongoBinaryOptions } from './DryMongoBinary';
 
 const log = debug('MongoMS:MongoBinary');
 
-export interface MongoBinaryOpts {
+export interface MongoBinaryOpts extends BaseDryMongoBinaryOptions {
   version?: string;
   downloadDir?: string;
   platform?: string;
@@ -25,34 +25,34 @@ export class MongoBinary {
    * @param options Options Configuring which binary to download and to which path
    * @returns The BinaryPath the binary has been downloaded to
    */
-  static async getDownloadPath(options: Required<MongoBinaryOpts>): Promise<string> {
-    log('getDownloadPath');
+  static async download(options: Required<MongoBinaryOpts>): Promise<string> {
+    log('download');
     const { downloadDir, version } = options;
     // create downloadDir
     await mkdirp(downloadDir);
 
     /** Lockfile path */
     const lockfile = path.resolve(downloadDir, `${version}.lock`);
-    log('getDownloadPath: Waiting to acquire Download lock');
+    log('download: Waiting to acquire Download lock');
     // wait to get a lock
     // downloading of binaries may be quite long procedure
     // that's why we are using so big wait/stale periods
     const lock = await LockFile.lock(lockfile);
-    log('getDownloadPath: Download lock acquired');
+    log('download: Download lock acquired');
 
     // this is to ensure that the lockfile gets removed in case of an error
     try {
       // check cache if it got already added to the cache
       if (!DryMongoBinary.binaryCache.has(version)) {
-        log(`getDownloadPath: Adding version ${version} to cache`);
+        log(`download: Adding version ${version} to cache`);
         const downloader = new MongoBinaryDownload(options);
         DryMongoBinary.binaryCache.set(version, await downloader.getMongodPath());
       }
     } finally {
-      log('getDownloadPath: Removing Download lock');
+      log('download: Removing Download lock');
       // remove lock
       await lock.unlock();
-      log('getDownloadPath: Download lock removed');
+      log('download: Download lock removed');
     }
 
     const cachePath = DryMongoBinary.binaryCache.get(version);
@@ -75,21 +75,14 @@ export class MongoBinary {
     log('getPath');
 
     // "||" is still used here, because it should default if the value is false-y (like an empty string)
-    const defaultOptions = {
-      downloadDir: '',
+    const defaultOptions: Required<MongoBinaryOpts> = {
+      ...(await DryMongoBinary.generateOptions(opts as Required<MongoBinaryOpts>)),
       platform: resolveConfig(ResolveConfigVariables.PLATFORM) || os.platform(),
-      arch: resolveConfig(ResolveConfigVariables.ARCH) || os.arch(),
-      version: resolveConfig(ResolveConfigVariables.VERSION) ?? '4.0.20',
-      systemBinary: resolveConfig(ResolveConfigVariables.SYSTEM_BINARY),
       checkMD5: envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK)),
     };
 
-    const downloadBinary = await DryMongoBinary.generateDownloadPath(defaultOptions);
-    // quick workaround because the "generateDownloadPath" is already fully assembled (base/version/binary)
-    defaultOptions.downloadDir = path.resolve(path.dirname(downloadBinary[1]), '..');
-
     /** Provided Options combined with the Default Options */
-    const options = { ...defaultOptions, ...opts };
+    const options: Required<MongoBinaryOpts> = { ...defaultOptions, ...opts };
     log(`getPath: MongoBinary options:`, JSON.stringify(options, null, 2));
 
     let binaryPath: string | undefined;
@@ -102,10 +95,9 @@ export class MongoBinary {
       binaryPath = locatedBinary;
     }
 
-    if (options.systemBinary) {
-      binaryPath = await DryMongoBinary.getSystemPath(options.systemBinary);
-
-      if (binaryPath) {
+    // check if the system binary has the same version as requested
+    if (options.systemBinary.length > 0) {
+      if (!isNullOrUndefined(binaryPath)) {
         log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
         const binaryVersion = spawnSync(binaryPath, ['--version'])
           .toString()
@@ -119,13 +111,17 @@ export class MongoBinary {
 
         if (options.version !== binaryVersion) {
           // we will log the version number of the system binary and the version requested so the user can see the difference
-          log(
+          console.warn(
             'getPath: MongoMemoryServer: Possible version conflict\n' +
               `  SystemBinary version: ${binaryVersion}\n` +
               `  Requested version:    ${options.version}\n\n` +
               '  Using SystemBinary!'
           );
         }
+      } else {
+        throw new Error(
+          'Option "SYSTEM_BINARY" was set, but binaryPath was empty! (system binary could not be found?)'
+        );
       }
     }
 
@@ -135,7 +131,7 @@ export class MongoBinary {
     );
 
     if (!binaryPath) {
-      binaryPath = await this.getDownloadPath(options as Required<MongoBinaryOpts>); // casting because "string" is asserted above (assertion is not reflected in type)
+      binaryPath = await this.download(options as Required<MongoBinaryOpts>); // casting because "string" is asserted above (assertion is not reflected in type)
     }
 
     if (!binaryPath) {

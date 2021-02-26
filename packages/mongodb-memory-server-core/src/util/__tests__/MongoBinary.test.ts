@@ -37,7 +37,7 @@ describe('MongoBinary', () => {
     it('should download binary and keep it in cache', async () => {
       const version = resolveConfig(ResolveConfigVariables.VERSION);
       assertion(typeof version === 'string', new Error('Expected "version" to be an string'));
-      const binPath = await MongoBinary.getDownloadPath({
+      const binPath = await MongoBinary.download({
         downloadDir: tmpDir.name,
         version,
         arch: 'x64',

@@ -6,7 +6,6 @@ import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
 import getOS, { AnyOS } from './getos';
-import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 
 const log = debug('MongoMS:DryMongoBinary');
 
@@ -105,7 +104,7 @@ export class DryMongoBinary {
       version: ensuredOpts.version || defaultVersion,
       downloadDir: opts?.downloadDir || '',
       os: opts?.os ?? this.cachedGetOs,
-      arch: opts?.arch || MongoBinaryDownloadUrl.translateArch(arch(), platform()),
+      arch: opts?.arch || arch(),
       systemBinary: resolveConfig(ResolveConfigVariables.SYSTEM_BINARY) || '',
     };
 
