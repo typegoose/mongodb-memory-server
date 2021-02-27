@@ -90,13 +90,20 @@ findPackageJson();
  */
 export function resolveConfig(variableName: ResolveConfigVariables): string | undefined {
   return (
-    process.env[`${ENV_CONFIG_PREFIX}${variableName}`] ??
+    process.env[envName(variableName)] ??
     packageJsonConfig[camelCase(variableName)] ??
     defaultValues.get(variableName)
   );
 }
 
 export default resolveConfig;
+
+/**
+ * Helper Function to add the prefix for "process.env[]"
+ */
+export function envName(variableName: ResolveConfigVariables): string {
+  return `${ENV_CONFIG_PREFIX}${variableName}`;
+}
 
 /**
  * Convert "1, on, yes, true" to true (otherwise false)

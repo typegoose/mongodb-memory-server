@@ -1,14 +1,14 @@
 import { promises as fspromises } from 'fs';
 import md5file from 'md5-file';
 import MongoBinaryDownload from '../MongoBinaryDownload';
-import { ENV_CONFIG_PREFIX, ResolveConfigVariables } from '../resolveConfig';
+import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
 
 jest.mock('md5-file');
 
 describe('MongoBinaryDownload', () => {
   afterEach(() => {
-    delete process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.MD5_CHECK];
+    delete process.env[envName(ResolveConfigVariables.MD5_CHECK)];
   });
 
   it('checkMD5 attribute can be set via constructor parameter', () => {
@@ -18,7 +18,7 @@ describe('MongoBinaryDownload', () => {
 
   it('if checkMD5 input parameter is missing, then it checks "MONGOMS_MD5_CHECK" environment variable', () => {
     expect(new MongoBinaryDownload({}).checkMD5).toBe(false);
-    process.env[ENV_CONFIG_PREFIX + ResolveConfigVariables.MD5_CHECK] = '1';
+    process.env[envName(ResolveConfigVariables.MD5_CHECK)] = '1';
     expect(new MongoBinaryDownload({}).checkMD5).toBe(true);
   });
 
