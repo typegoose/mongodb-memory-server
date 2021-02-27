@@ -33,7 +33,7 @@ export class MongoBinary {
 
     /** Lockfile path */
     const lockfile = path.resolve(downloadDir, `${version}.lock`);
-    log('download: Waiting to acquire Download lock');
+    log(`download: Waiting to acquire Download lock for file "${lockfile}"`);
     // wait to get a lock
     // downloading of binaries may be quite long procedure
     // that's why we are using so big wait/stale periods
@@ -87,9 +87,7 @@ export class MongoBinary {
 
     let binaryPath: string | undefined;
 
-    const locatedBinary = await DryMongoBinary.locateBinary({
-      version: options.version ?? '4.0.20',
-    });
+    const locatedBinary = await DryMongoBinary.locateBinary(options);
 
     if (!isNullOrUndefined(locatedBinary)) {
       binaryPath = locatedBinary;
@@ -113,8 +111,8 @@ export class MongoBinary {
           // we will log the version number of the system binary and the version requested so the user can see the difference
           console.warn(
             'getPath: MongoMemoryServer: Possible version conflict\n' +
-              `  SystemBinary version: ${binaryVersion}\n` +
-              `  Requested version:    ${options.version}\n\n` +
+              `  SystemBinary version: "${binaryVersion}"\n` +
+              `  Requested version:    "${options.version}"\n\n` +
               '  Using SystemBinary!'
           );
         }
@@ -131,7 +129,12 @@ export class MongoBinary {
     );
 
     if (!binaryPath) {
-      binaryPath = await this.download(options as Required<MongoBinaryOpts>); // casting because "string" is asserted above (assertion is not reflected in type)
+      if (envToBool(resolveConfig(ResolveConfigVariables.RUNTIME_DOWNLOAD))) {
+        log('getPath: "RUNTIME_DOWNLOAD" is "true", trying to download');
+        binaryPath = await this.download(options);
+      } else {
+        log('getPath: "RUNTIME_DOWNLOAD" is "false", not downloading');
+      }
     }
 
     if (!binaryPath) {

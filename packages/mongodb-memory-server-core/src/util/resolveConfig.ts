@@ -23,6 +23,7 @@ export enum ResolveConfigVariables {
   SYSTEM_BINARY = 'SYSTEM_BINARY',
   MD5_CHECK = 'MD5_CHECK',
   ARCHIVE_NAME = 'ARCHIVE_NAME',
+  RUNTIME_DOWNLOAD = 'RUNTIME_DOWNLOAD',
 }
 
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
@@ -30,6 +31,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
   [ResolveConfigVariables.VERSION, '4.0.20'],
   [ResolveConfigVariables.PREFER_GLOBAL_PATH, 'true'],
+  [ResolveConfigVariables.RUNTIME_DOWNLOAD, 'true'],
 ]);
 
 /**

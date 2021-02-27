@@ -52,6 +52,8 @@ export async function postInstallEnsureBinary(
     setDefaultValue(ResolveConfigVariables.VERSION, version);
   }
 
+  process.env[ResolveConfigVariables.RUNTIME_DOWNLOAD] = 'true'; // To make sure to actually download in an postinstall
+
   const binPath = await MongoBinary.getPath().catch((err) => {
     console.warn('Mongodb-Memory-Server* failed to find an binary:\n', err.message);
     process.exit(0); // Exiting with "0" to not fail the install (because it is an problem that can be solved otherwise)
