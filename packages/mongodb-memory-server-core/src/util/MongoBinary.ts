@@ -19,6 +19,9 @@ export interface MongoBinaryOpts extends BaseDryMongoBinaryOptions {
   checkMD5?: boolean;
 }
 
+/**
+ * Class used to combine "DryMongoBinary" & "MongoBinaryDownload"
+ */
 export class MongoBinary {
   /**
    * Probe download path and download the binary
