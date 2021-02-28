@@ -14,6 +14,7 @@ import debug from 'debug';
 import { assertion, pathExists } from './utils';
 import { DryMongoBinary } from './DryMongoBinary';
 import mkdirp from 'mkdirp';
+import { MongoBinaryOpts } from './MongoBinary';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -22,14 +23,6 @@ export interface MongoBinaryDownloadProgress {
   length: number;
   totalMb: number;
   lastPrintedAt: number;
-}
-
-export interface MongoBinaryDownloadOpts {
-  version?: string;
-  downloadDir?: string;
-  platform?: string;
-  arch?: string;
-  checkMD5?: boolean;
 }
 
 /**
@@ -45,11 +38,14 @@ export class MongoBinaryDownload {
   version: string;
   platform: string;
 
-  constructor({ platform, arch, downloadDir, version, checkMD5 }: MongoBinaryDownloadOpts) {
+  constructor({ platform, arch, downloadDir, version, checkMD5 }: MongoBinaryOpts) {
     this.platform = platform ?? os.platform();
     this.arch = arch ?? os.arch();
     version = version ?? resolveConfig(ResolveConfigVariables.VERSION);
-    assertion(typeof version === 'string', new Error('"version" is not an string!'));
+    assertion(
+      typeof version === 'string',
+      new Error('An MongoDB Binary version must be specified!')
+    );
     this.version = version;
     this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
     this.checkMD5 = checkMD5 ?? envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK));
