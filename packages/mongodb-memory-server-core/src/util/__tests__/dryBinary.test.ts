@@ -1,9 +1,9 @@
 import * as binary from '../DryMongoBinary';
-import * as debug from 'debug';
 import * as path from 'path';
 import * as tmp from 'tmp';
 import { constants, promises as fspromises } from 'fs';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
+import * as utils from '../utils';
 import mkdirp from 'mkdirp';
 
 tmp.setGracefulCleanup();
@@ -175,7 +175,150 @@ describe('DryBinary', () => {
     });
   });
 
-  describe('generateDownloadPath', () => {}); // TODO: add tests for "DryMongoBinary.generateDownloadPath"
+  describe('generateDownloadPath', () => {
+    const filesExist: Set<string> = new Set();
+    const version = '4.0.20';
+    let expectedPaths: binary.DryMongoBinaryPaths;
+    beforeAll(() => {
+      delete process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)];
+      jest.spyOn(utils, 'pathExists').mockImplementation((file) => {
+        // this is to ensure it is returning an promise
+        return new Promise((res) => {
+          return res(filesExist.has(file));
+        });
+      });
+      jest.spyOn(binary.DryMongoBinary, 'generatePaths').mockImplementation(() => {
+        return new Promise((res) => {
+          return res(expectedPaths);
+        });
+      });
+    });
+    afterAll(() => {
+      (utils.pathExists as jest.Mock).mockClear();
+      (binary.DryMongoBinary.generatePaths as jest.Mock).mockClear();
+    });
+
+    afterEach(() => {
+      delete process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)];
+      filesExist.clear();
+      (binary.DryMongoBinary.generatePaths as jest.Mock).mockClear();
+    });
+
+    describe('should return exists', () => {
+      it('should return the DOWNLOAD_DIR when provided', async () => {
+        const expectedPath = '/some/custom/path/binary';
+        expectedPaths = {
+          legacyHomeCache: '',
+          modulesCache: '',
+          relative: '',
+          resolveConfig: expectedPath,
+        };
+        filesExist.add(expectedPath);
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({ version });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([true, expectedPath]);
+      });
+
+      it('should return the legacyHome when provided', async () => {
+        const expectedPath = '/some/home/path/binary';
+        expectedPaths = {
+          legacyHomeCache: expectedPath,
+          modulesCache: '',
+          relative: '',
+          resolveConfig: '/no',
+        };
+        filesExist.add(expectedPath);
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({ version });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([true, expectedPath]);
+      });
+
+      it('should return the modulesCache when provided', async () => {
+        const expectedPath = '/some/.cache/path/binary';
+        expectedPaths = {
+          legacyHomeCache: '/no',
+          modulesCache: expectedPath,
+          relative: '',
+          resolveConfig: '/no',
+        };
+        filesExist.add(expectedPath);
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({ version });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([true, expectedPath]);
+      });
+
+      it('should return the relative when provided', async () => {
+        const expectedPath = '/some/relative/path/binary';
+        expectedPaths = {
+          legacyHomeCache: '/no',
+          modulesCache: '/no',
+          relative: expectedPath,
+          resolveConfig: '/no',
+        };
+        filesExist.add(expectedPath);
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({ version });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([true, expectedPath]);
+      });
+    });
+
+    describe('should return not exists', () => {
+      it('should return the DOWNLOAD_DIR when provided', async () => {
+        const expectedPath = '/some/custom/path/binary';
+        expectedPaths = {
+          legacyHomeCache: '',
+          modulesCache: '',
+          relative: '',
+          resolveConfig: expectedPath,
+        };
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({ version });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([false, expectedPath]);
+      });
+
+      it('should return the legacyHome when provided with PREFER_GLOBAL "true"', async () => {
+        process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)] = 'true';
+        const expectedPath = '/some/home/path/binary';
+        expectedPaths = {
+          legacyHomeCache: expectedPath,
+          modulesCache: '',
+          relative: '',
+          resolveConfig: '',
+        };
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({ version });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([false, expectedPath]);
+      });
+
+      it('should return the modulesCache when provided with PREFER_GLOBAL "false"', async () => {
+        process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)] = 'false';
+        const expectedPath = '/some/.cache/path/binary';
+        expectedPaths = {
+          legacyHomeCache: '',
+          modulesCache: expectedPath,
+          relative: '',
+          resolveConfig: '',
+        };
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({ version });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([false, expectedPath]);
+      });
+
+      it('should return the relative when provided with PREFER_GLOBAL "false"', async () => {
+        process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)] = 'false';
+        const expectedPath = '/some/relative/path/binary';
+        expectedPaths = {
+          legacyHomeCache: '',
+          modulesCache: '',
+          relative: expectedPath,
+          resolveConfig: '',
+        };
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({ version });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([false, expectedPath]);
+      });
+    });
+  });
 
   describe('locateBinary', () => {
     beforeEach(() => {
@@ -248,11 +391,5 @@ describe('DryBinary', () => {
       expect(binary.DryMongoBinary.binaryCache.has).toBeCalledTimes(2); // it seems like ".set" also calls ".has"
       expect(binary.DryMongoBinary.generateDownloadPath).toHaveBeenCalled();
     });
-  });
-
-  it.skip('TEST', async () => {
-    debug.enable('*');
-    const returnvalue = await binary.DryMongoBinary.locateBinary({ version: '4.0.20' });
-    console.log('returnvalue', returnvalue);
   });
 });
