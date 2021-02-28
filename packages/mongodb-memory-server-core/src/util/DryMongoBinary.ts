@@ -188,7 +188,7 @@ export class DryMongoBinary {
     const legacyHomeCache = path.resolve(this.homedir(), '.cache/mongodb-binaries');
 
     if (await pathExists(legacyHomeCache)) {
-      log(`generateDownloadPath: legacy home cache exist ("${legacyHomeCache}")`);
+      log(`generatePaths: legacy home cache exist ("${legacyHomeCache}")`);
       final.legacyHomeCache = this.combineBinaryName(opts, legacyHomeCache, binaryName);
     }
 
@@ -196,8 +196,8 @@ export class DryMongoBinary {
     const resolveConfigValue =
       resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) || opts.downloadDir;
 
-    if (!isNullOrUndefined(resolveConfigValue)) {
-      log(`generateDownloadPath: resolveConfigValue is not empty`);
+    if (!isNullOrUndefined(resolveConfigValue) && resolveConfigValue.length > 0) {
+      log(`generatePaths: resolveConfigValue is not empty`);
       final.resolveConfig = this.combineBinaryName(opts, resolveConfigValue, binaryName);
     }
 
