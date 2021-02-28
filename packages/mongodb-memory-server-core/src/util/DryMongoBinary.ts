@@ -175,21 +175,17 @@ export class DryMongoBinary {
       nodeModulesDLDir = path.resolve(nodeModulesDLDir, '..', '..');
     }
 
-    const modulesCache = findCacheDir({
+    const tmpModulesCache = findCacheDir({
       name: 'mongodb-memory-server',
       cwd: nodeModulesDLDir,
     });
 
-    if (!isNullOrUndefined(modulesCache)) {
-      final.modulesCache = this.combineBinaryName(
-        opts,
-        path.resolve(modulesCache, 'mongodb-binaries'),
-        binaryName
-      );
+    if (!isNullOrUndefined(tmpModulesCache)) {
+      final.modulesCache = this.combineBinaryName(opts, path.resolve(tmpModulesCache), binaryName);
     }
 
     // Probe if the legacy Home Cache exists, if not remove it from the list
-    const legacyHomeCache = path.resolve(homedir(), '.cache/mongodb-binaries');
+    const legacyHomeCache = path.resolve(this.homedir(), '.cache/mongodb-binaries');
 
     if (await pathExists(legacyHomeCache)) {
       log(`generateDownloadPath: legacy home cache exist ("${legacyHomeCache}")`);
@@ -273,5 +269,13 @@ export class DryMongoBinary {
     log(`generateDownloadPath: using relative "${paths.relative}"`);
 
     return [false, paths.relative];
+  }
+
+  /**
+   * This function is used, because jest just dosnt want "os.homedir" to be mocked
+   * if someone can find an way to actually mock this in an test, please change it
+   */
+  private static homedir(): string {
+    return homedir();
   }
 }
