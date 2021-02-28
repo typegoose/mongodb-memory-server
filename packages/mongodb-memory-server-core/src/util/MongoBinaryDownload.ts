@@ -1,5 +1,5 @@
 import os from 'os';
-import url from 'url';
+import { URL } from 'url';
 import path from 'path';
 import { promises as fspromises, createWriteStream, createReadStream, constants } from 'fs';
 import md5File from 'md5-file';
@@ -30,15 +30,6 @@ export interface MongoBinaryDownloadOpts {
   platform?: string;
   arch?: string;
   checkMD5?: boolean;
-}
-
-interface HttpDownloadOptions {
-  hostname: string;
-  port: string;
-  path: string;
-  method: 'GET' | 'POST';
-  rejectUnauthorized?: boolean;
-  agent: HttpsProxyAgent | undefined;
 }
 
 /**
@@ -187,22 +178,16 @@ export class MongoBinaryDownload {
 
     const strictSsl = process.env.npm_config_strict_ssl === 'true';
 
-    const urlObject = url.parse(downloadUrl);
+    const urlObject = new URL(downloadUrl);
+    urlObject.port = urlObject.port || '443';
 
-    if (!urlObject.hostname || !urlObject.path) {
-      throw new Error(`Provided incorrect download url: ${downloadUrl}`);
-    }
-
-    const downloadOptions: HttpDownloadOptions = {
-      hostname: urlObject.hostname,
-      port: urlObject.port || '443',
-      path: urlObject.path,
+    const requestOptions: https.RequestOptions = {
       method: 'GET',
       rejectUnauthorized: strictSsl,
       agent: proxy ? new HttpsProxyAgent(proxy) : undefined,
     };
 
-    const filename = (urlObject.pathname || '').split('/').pop();
+    const filename = urlObject.pathname.split('/').pop();
 
     if (!filename) {
       throw new Error(`MongoBinaryDownload: missing filename for url ${downloadUrl}`);
@@ -221,7 +206,8 @@ export class MongoBinaryDownload {
     this._downloadingUrl = downloadUrl;
 
     const downloadedFile = await this.httpDownload(
-      downloadOptions,
+      urlObject,
+      requestOptions,
       downloadLocation,
       tempDownloadLocation
     );
@@ -368,24 +354,24 @@ export class MongoBinaryDownload {
    * @param tempDownloadLocation The location the File should be while downloading
    */
   async httpDownload(
-    httpOptions: HttpDownloadOptions,
+    url: URL,
+    httpOptions: https.RequestOptions,
     downloadLocation: string,
     tempDownloadLocation: string
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       const fileStream = createWriteStream(tempDownloadLocation);
 
-      log(`trying to download https://${httpOptions.hostname}${httpOptions.path}`);
+      log(`trying to download https://${url.hostname}${url.pathname}`);
       https
-        .get(httpOptions as any, (response) => {
-          // "as any" because otherwise the "agent" wouldnt match
+        .get(url, httpOptions, (response) => {
           if (response.statusCode != 200) {
             if (response.statusCode === 403) {
               reject(
                 new Error(
                   "Status Code is 403 (MongoDB's 404)\n" +
                     "This means that the requested version-platform combination doesn't exist\n" +
-                    `  Used Url: "https://${httpOptions.hostname}${httpOptions.path}"\n` +
+                    `  Used Url: "https://${url.hostname}${url.pathname}"\n` +
                     "Try to use different version 'new MongoMemoryServer({ binary: { version: 'X.Y.Z' } })'\n" +
                     'List of available versions can be found here:\n' +
                     '  https://www.mongodb.org/dl/linux for Linux\n' +
@@ -416,10 +402,9 @@ export class MongoBinaryDownload {
           fileStream.on('finish', async () => {
             if (
               this.dlProgress.current < this.dlProgress.length &&
-              !httpOptions.path.endsWith('.md5')
+              !httpOptions.path?.endsWith('.md5')
             ) {
-              const downloadUrl =
-                this._downloadingUrl || `https://${httpOptions.hostname}/${httpOptions.path}`;
+              const downloadUrl = this._downloadingUrl || `https://${url.hostname}${url.pathname}`;
               reject(
                 new Error(
                   `Too small (${this.dlProgress.current} bytes) mongod binary downloaded from ${downloadUrl}`
