@@ -230,15 +230,7 @@ export class MongoBinaryDownload {
 
     await mkdirp(mongodbDirPath);
 
-    let filter: (file: string) => boolean;
-
-    if (this.platform === 'win32') {
-      filter = (file: string) => {
-        return /bin\/(?:mongod\.exe)|(?:.*\.dll)$/i.test(file);
-      };
-    } else {
-      filter = (file: string) => /bin\/mongod$/.test(file);
-    }
+    const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?)|(?:.*\.dll))$/i.test(file);
 
     if (/(.tar.gz|.tgz)$/.test(mongoDBArchive)) {
       await this.extractTarGz(mongoDBArchive, mongodbFullPath, filter);
