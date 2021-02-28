@@ -75,6 +75,7 @@ export class MongoBinaryDownload {
    * otherwise download it and then return the path
    */
   async getMongodPath(): Promise<string> {
+    log('getMongodPath');
     const mongodPath = this.getPath();
 
     if (await pathExists(mongodPath)) {
@@ -97,6 +98,7 @@ export class MongoBinaryDownload {
    * @returns The MongoDB Archive location
    */
   async startDownload(): Promise<string> {
+    log('startDownload');
     const mbdUrl = new MongoBinaryDownloadUrl({
       platform: this.platform,
       arch: this.arch,
@@ -137,19 +139,20 @@ export class MongoBinaryDownload {
     urlForReferenceMD5: string,
     mongoDBArchive: string
   ): Promise<boolean | undefined> {
+    log('makeMD5check: Checking MD5 of downloaded binary...');
+
     if (!this.checkMD5) {
       log('makeMD5check: checkMD5 is disabled');
 
       return undefined;
     }
 
-    log('Checking MD5 of downloaded binary...');
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
     const signatureContent = (await fspromises.readFile(mongoDBArchiveMd5)).toString('utf-8');
     const regexMatch = signatureContent.match(/^\s*([\w\d]+)\s*/i);
     const md5Remote = regexMatch ? regexMatch[1] : null;
     const md5Local = md5File.sync(mongoDBArchive);
-    log(`Local MD5: ${md5Local}, Remote MD5: ${md5Remote}`);
+    log(`makeMD5check: Local MD5: ${md5Local}, Remote MD5: ${md5Remote}`);
 
     if (md5Remote !== md5Local) {
       throw new Error('MongoBinaryDownload: md5 check failed');
@@ -163,6 +166,7 @@ export class MongoBinaryDownload {
    * @param downloadUrl URL to download a File
    */
   async download(downloadUrl: string): Promise<string> {
+    log('download');
     const proxy =
       process.env['yarn_https-proxy'] ||
       process.env.yarn_proxy ||
@@ -193,10 +197,10 @@ export class MongoBinaryDownload {
 
     const downloadLocation = path.resolve(this.downloadDir, filename);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
-    log(`Downloading${proxy ? ` via proxy ${proxy}` : ''}: "${downloadUrl}"`);
+    log(`download: Downloading${proxy ? ` via proxy ${proxy}` : ''}: "${downloadUrl}"`);
 
     if (await pathExists(downloadLocation)) {
-      log('Already downloaded archive found, skipping download');
+      log('download: Already downloaded archive found, skipping download');
 
       return downloadLocation;
     }
@@ -219,9 +223,10 @@ export class MongoBinaryDownload {
    * @returns extracted directory location
    */
   async extract(mongoDBArchive: string): Promise<string> {
+    log('extract');
     const mongodbFullPath = this.getPath();
     const mongodbDirPath = path.dirname(mongodbFullPath);
-    log(`extract: ${mongodbFullPath}`);
+    log(`extract: archive: "${mongoDBArchive}" final: "${mongodbFullPath}"`);
 
     await mkdirp(mongodbDirPath);
 
@@ -269,6 +274,7 @@ export class MongoBinaryDownload {
     extractPath: string,
     filter: (file: string) => boolean
   ): Promise<void> {
+    log('extractTarGz');
     const extract = tar.extract();
     extract.on('entry', (header, stream, next) => {
       if (filter(header.name)) {
@@ -313,6 +319,8 @@ export class MongoBinaryDownload {
     extractPath: string,
     filter: (file: string) => boolean
   ): Promise<void> {
+    log('extractZip');
+
     return new Promise((resolve, reject) => {
       yauzl.open(mongoDBArchive, { lazyEntries: true }, (e, zipfile) => {
         if (e || !zipfile) {
@@ -357,10 +365,12 @@ export class MongoBinaryDownload {
     downloadLocation: string,
     tempDownloadLocation: string
   ): Promise<string> {
+    log('httpDownload');
+
     return new Promise((resolve, reject) => {
       const fileStream = createWriteStream(tempDownloadLocation);
 
-      log(`trying to download https://${url.hostname}${url.pathname}`);
+      log(`httpDownload: trying to download https://${url.hostname}${url.pathname}`);
       https
         .get(url, httpOptions, (response) => {
           if (response.statusCode != 200) {
@@ -414,7 +424,7 @@ export class MongoBinaryDownload {
 
             fileStream.close();
             await fspromises.rename(tempDownloadLocation, downloadLocation);
-            log(`moved ${tempDownloadLocation} to ${downloadLocation}`);
+            log(`httpDownload: moved "${tempDownloadLocation}" to "${downloadLocation}"`);
 
             resolve(downloadLocation);
           });
