@@ -13,6 +13,7 @@ import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfi
 import debug from 'debug';
 import { assertion, pathExists } from './utils';
 import { DryMongoBinary } from './DryMongoBinary';
+import mkdirp from 'mkdirp';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -114,9 +115,7 @@ export class MongoBinaryDownload {
       version: this.version,
     });
 
-    if (!(await pathExists(this.downloadDir))) {
-      await fspromises.mkdir(this.downloadDir);
-    }
+    await mkdirp(this.downloadDir);
 
     try {
       await fspromises.access(this.downloadDir, constants.X_OK | constants.W_OK); // check that this process has permissions to create files & modify file contents & read file contents
@@ -238,9 +237,7 @@ export class MongoBinaryDownload {
     const mongodbDirPath = path.dirname(mongodbFullPath);
     log(`extract: ${mongodbFullPath}`);
 
-    if (!(await pathExists(mongodbDirPath))) {
-      await fspromises.mkdir(mongodbDirPath);
-    }
+    await mkdirp(mongodbDirPath);
 
     let filter: (file: string) => boolean;
 
