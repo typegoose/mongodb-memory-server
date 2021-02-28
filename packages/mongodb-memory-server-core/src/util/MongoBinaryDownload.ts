@@ -181,6 +181,7 @@ export class MongoBinaryDownload {
     const requestOptions: https.RequestOptions = {
       method: 'GET',
       rejectUnauthorized: strictSsl,
+      protocol: envToBool(resolveConfig(ResolveConfigVariables.USE_HTTP)) ? 'http:' : 'https:',
       agent: proxy ? new HttpsProxyAgent(proxy) : undefined,
     };
 

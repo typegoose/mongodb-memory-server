@@ -287,6 +287,7 @@ MONGOMS_MD5_CHECK = 1 # if you want to make MD5 check of downloaded binary. (Def
 MONGOMS_ARCHIVE_NAME = "mongodb-linux-x86_64-4.0.0.tgz" # Specify what file / archive to download
 PREFER_GLOBAL_PATH = true # Specify wheter an the global or an local path should be chosen for the download location (Default: true)
 RUNTIME_DOWNLOAD = true # Specify wheter to download the binary automatically on runtime (Default: true)
+USE_HTTP = false # Specify what protocol should be used for downloads (Default: false)
 ```
 
 ### Options which can be set via package.json's `config` section
