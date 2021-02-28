@@ -46,8 +46,9 @@ export class MongoBinaryDownload {
       typeof version === 'string',
       new Error('An MongoDB Binary version must be specified!')
     );
+    assertion(typeof downloadDir === 'string', new Error('An DownloadDir must be specified!'));
     this.version = version;
-    this.downloadDir = path.resolve(downloadDir || 'mongodb-download');
+    this.downloadDir = downloadDir;
     this.checkMD5 = checkMD5 ?? envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK));
     this.dlProgress = {
       current: 0,
