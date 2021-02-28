@@ -229,7 +229,7 @@ export class MongoBinaryDownload {
 
     if (this.platform === 'win32') {
       filter = (file: string) => {
-        return /bin\/mongod.exe$/.test(file) || /.dll$/.test(file);
+        return /bin\/(?:mongod\.exe)|(?:.*\.dll)$/i.test(file);
       };
     } else {
       filter = (file: string) => /bin\/mongod$/.test(file);
