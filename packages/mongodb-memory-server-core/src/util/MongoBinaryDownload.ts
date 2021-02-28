@@ -150,14 +150,16 @@ export class MongoBinaryDownload {
     mongoDBArchive: string
   ): Promise<boolean | undefined> {
     if (!this.checkMD5) {
+      log('makeMD5check: checkMD5 is disabled');
+
       return undefined;
     }
 
     log('Checking MD5 of downloaded binary...');
     const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
     const signatureContent = (await fspromises.readFile(mongoDBArchiveMd5)).toString('utf-8');
-    const m = signatureContent.match(/(.*?)\s/);
-    const md5Remote = m ? m[1] : null;
+    const regexMatch = signatureContent.match(/^\s*([\w\d]+)\s*/i);
+    const md5Remote = regexMatch ? regexMatch[1] : null;
     const md5Local = md5File.sync(mongoDBArchive);
     log(`Local MD5: ${md5Local}, Remote MD5: ${md5Remote}`);
 
