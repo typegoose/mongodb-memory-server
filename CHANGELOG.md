@@ -1,3 +1,46 @@
+## [7.0.0-beta.23](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.22...v7.0.0-beta.23) (2021-03-02)
+
+
+### Features
+
+* **DryMongoBinary:** add new "DryMongoBinary" ([3841312](https://github.com/nodkz/mongodb-memory-server/commit/3841312fd414df47223c0f9d59636f910bc2bc8b))
+* **DryMongoBinary:** add new function "generateOptions" ([2d89ba1](https://github.com/nodkz/mongodb-memory-server/commit/2d89ba1df74a90e9663228e7a1101c8d3222dd86))
+* **MongoBinary:** add option to disable automatic download ([2c0639b](https://github.com/nodkz/mongodb-memory-server/commit/2c0639b0d860c0f9f1cea0f8b7fd15bdd78f9317))
+* **MongoBinary:** implement usage of "DryMongoBinary" ([4a13cea](https://github.com/nodkz/mongodb-memory-server/commit/4a13cead837e6f6005c07c741cb64ad704c5d4ca))
+* **MongoBinaryDownload:** add option to use "http" over "https" ([b178a97](https://github.com/nodkz/mongodb-memory-server/commit/b178a970239e7a40398c4bf085ab09b9d63b7e7e)), closes [#172](https://github.com/nodkz/mongodb-memory-server/issues/172)
+
+
+### Refactor
+
+* **MongoBinary:** use "DryMongoBinary.generateOptions" ([0e7e73f](https://github.com/nodkz/mongodb-memory-server/commit/0e7e73f9d3d00f4427411a75f3ffa92158f39979))
+* **MongoBinaryDownload:** enhance md5 regex ([becac06](https://github.com/nodkz/mongodb-memory-server/commit/becac06f1a81a6d4f1cb5f21810e1784c13dce1a))
+* **MongoBinaryDownload:** extract: combine win32 and linux regex ([702eaa9](https://github.com/nodkz/mongodb-memory-server/commit/702eaa93570df5429ef7503cc97f6bcc7dff3c8a))
+* **MongoBinaryDownload:** extract: combine win32 filter regex ([28cfc7c](https://github.com/nodkz/mongodb-memory-server/commit/28cfc7ccf480512672af33ecd4e8010d9aba9f8c))
+* **MongoBinaryDownloadUrl:** change "translateArch" to be static ([ba87378](https://github.com/nodkz/mongodb-memory-server/commit/ba873789e37f87ebcdc56cbe9ae85506c0ae8872))
+
+
+### Style
+
+* **MongoBinary:** add tsdoc to describe what the class is for ([36f1118](https://github.com/nodkz/mongodb-memory-server/commit/36f1118bc548edc33241eebd91f07dd86886564d))
+* **MongoBinary:** remove duplicated definitions from interface ([87a3ca8](https://github.com/nodkz/mongodb-memory-server/commit/87a3ca86601db1efe317b02653709053750b1710))
+
+
+### Fixes
+
+* **DryBinary:** use "modulesCache/version/binary" instead of "modulesCache/mongodb-binaries/version/binary" ([072abde](https://github.com/nodkz/mongodb-memory-server/commit/072abdeb3c0504c9a5bf17547274f78db141356e))
+* **DryMongoBinary:** only use "resolveConfigValue" when not empty ([08e71cf](https://github.com/nodkz/mongodb-memory-server/commit/08e71cfa82bb2a4f41021579339f72f6c3e1f9c5))
+* **MongoBinaryDownload:** add more logging ([b63f629](https://github.com/nodkz/mongodb-memory-server/commit/b63f6291359fb7c29c0dbf1022c5caadb1864da9))
+* **MongoBinaryDownload:** change "downloadDir" to be required ([d2f2e30](https://github.com/nodkz/mongodb-memory-server/commit/d2f2e306b857fba08f6478f27731b0c2808a596f))
+* **MongoBinaryDownload:** enhance progress message ([ada4f2a](https://github.com/nodkz/mongodb-memory-server/commit/ada4f2ae7b09c278594f89b356477dc1bc06816b))
+* **MongoBinaryDownload:** force an status print on download finish ([62337fd](https://github.com/nodkz/mongodb-memory-server/commit/62337fd509b63396e85ae210811e1e84b07fe14c))
+* **MongoBinaryDownload:** unify how the downloadUrl is represented ([23f057e](https://github.com/nodkz/mongodb-memory-server/commit/23f057edb735ebd0b7140a207ff6fbf581f0075e))
+* **MongoBinaryDownload:** use "mkdirp" over "fs.mkdir" ([c64a321](https://github.com/nodkz/mongodb-memory-server/commit/c64a3211363be5fb3f6f4dbeccac426605fb49df))
+* **MongoBinaryDownload:** use "MongoBinaryOpts" over "MongoBinaryDownloadOpts" ([ce193ce](https://github.com/nodkz/mongodb-memory-server/commit/ce193ce4758eb31ab670c829ea4f3ebf975371cd))
+* **MongoBinaryDownload:** use new "URL" class instead of deprecated "url.parse" ([70af5d2](https://github.com/nodkz/mongodb-memory-server/commit/70af5d28b98738b733c075d3eeeb674233d04751))
+* **MongoBinaryDownloadUrl:** remove unused parameter ([d72ed42](https://github.com/nodkz/mongodb-memory-server/commit/d72ed42a16d19e71b2b98168d896bb76736a6e98))
+* **MongoBinaryDownloadUrl:** use DryBinary.generateOptions's "os" instead of calling "getOS" directly ([ac025d9](https://github.com/nodkz/mongodb-memory-server/commit/ac025d98393125533a02f0143036108f23769f43))
+* **resolveConfig:** add helper function to add the prefix to an variable name ([8334c45](https://github.com/nodkz/mongodb-memory-server/commit/8334c4598cc3a8e3032a6333b2de976b1f3aaf36))
+
 ## [7.0.0-beta.22](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.21...v7.0.0-beta.22) (2021-02-26)
 
 
