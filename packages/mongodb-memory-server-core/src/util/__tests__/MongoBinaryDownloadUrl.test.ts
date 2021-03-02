@@ -538,10 +538,8 @@ describe('MongoBinaryDownloadUrl', () => {
       version: '3.6.3',
     });
 
-    it('should return an archive name for Gentoo Linux', () => {
-      expect(
-        downloadUrl.getLegacyVersionString({ os: 'linux', dist: 'Gentoo Linux', release: '' })
-      ).toBe('');
+    it('should return an empty string', () => {
+      expect(downloadUrl.getLegacyVersionString()).toBe('');
     });
   });
 });

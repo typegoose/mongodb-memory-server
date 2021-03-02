@@ -189,7 +189,7 @@ export class MongoBinaryDownloadUrl {
       `Unknown/unsupported linux "${os.dist}(${os.id_like})". Falling back to legacy MongoDB build!`
     );
 
-    return this.getLegacyVersionString(os);
+    return this.getLegacyVersionString();
   }
 
   /**
@@ -259,8 +259,7 @@ export class MongoBinaryDownloadUrl {
    * Linux Fallback
    * @param os LinuxOS Object
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getLegacyVersionString(os: AnyOS): string {
+  getLegacyVersionString(): string {
     return '';
   }
 
