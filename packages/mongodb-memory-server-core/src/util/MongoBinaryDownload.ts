@@ -205,7 +205,7 @@ export class MongoBinaryDownload {
       return downloadLocation;
     }
 
-    this._downloadingUrl = downloadUrl;
+    this.assignDownloadingURL(urlObject);
 
     const downloadedFile = await this.httpDownload(
       urlObject,
@@ -358,11 +358,12 @@ export class MongoBinaryDownload {
     tempDownloadLocation: string
   ): Promise<string> {
     log('httpDownload');
+    const downloadUrl = this.assignDownloadingURL(url);
 
     return new Promise((resolve, reject) => {
       const fileStream = createWriteStream(tempDownloadLocation);
 
-      log(`httpDownload: trying to download https://${url.hostname}${url.pathname}`);
+      log(`httpDownload: trying to download ${downloadUrl}`);
       https
         .get(url, httpOptions, (response) => {
           if (response.statusCode != 200) {
@@ -371,7 +372,7 @@ export class MongoBinaryDownload {
                 new Error(
                   "Status Code is 403 (MongoDB's 404)\n" +
                     "This means that the requested version-platform combination doesn't exist\n" +
-                    `  Used Url: "https://${url.hostname}${url.pathname}"\n` +
+                    `  Used Url: "${downloadUrl}"\n` +
                     "Try to use different version 'new MongoMemoryServer({ binary: { version: 'X.Y.Z' } })'\n" +
                     'List of available versions can be found here:\n' +
                     '  https://www.mongodb.org/dl/linux for Linux\n' +
@@ -404,7 +405,6 @@ export class MongoBinaryDownload {
               this.dlProgress.current < this.dlProgress.length &&
               !httpOptions.path?.endsWith('.md5')
             ) {
-              const downloadUrl = this._downloadingUrl || `https://${url.hostname}${url.pathname}`;
               reject(
                 new Error(
                   `Too small (${this.dlProgress.current} bytes) mongod binary downloaded from ${downloadUrl}`
@@ -429,7 +429,7 @@ export class MongoBinaryDownload {
         })
         .on('error', (e: Error) => {
           // log it without having debug enabled
-          console.error(`Couldnt download ${httpOptions.path}!`, e.message);
+          console.error(`Couldnt download "${downloadUrl}"!`, e.message);
           reject(e);
         });
     });
@@ -463,6 +463,15 @@ export class MongoBinaryDownload {
     } else {
       console.log(message);
     }
+  }
+
+  /**
+   * Helper function to de-duplicate assigning "_downloadingUrl"
+   */
+  assignDownloadingURL(url: URL): string {
+    this._downloadingUrl = url.href;
+
+    return this._downloadingUrl;
   }
 }
 
