@@ -414,6 +414,8 @@ export class MongoBinaryDownload {
               return;
             }
 
+            this.printDownloadProgress({ length: 0 }, true);
+
             fileStream.close();
             await fspromises.rename(tempDownloadLocation, downloadLocation);
             log(`httpDownload: moved "${tempDownloadLocation}" to "${downloadLocation}"`);
@@ -437,12 +439,12 @@ export class MongoBinaryDownload {
    * Print the Download Progress to STDOUT
    * @param chunk A chunk to get the length
    */
-  printDownloadProgress(chunk: { length: number }): void {
+  printDownloadProgress(chunk: { length: number }, forcePrint: boolean = false): void {
     this.dlProgress.current += chunk.length;
 
     const now = Date.now();
 
-    if (now - this.dlProgress.lastPrintedAt < 2000) {
+    if (now - this.dlProgress.lastPrintedAt < 2000 && !forcePrint) {
       return;
     }
 
