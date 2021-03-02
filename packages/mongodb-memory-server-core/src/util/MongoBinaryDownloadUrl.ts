@@ -1,16 +1,16 @@
-import getOS, { AnyOS, LinuxOS } from './getos';
+import { AnyOS, LinuxOS } from './getos';
 import resolveConfig, { ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
+import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
-export interface MongoBinaryDownloadUrlOpts {
+export interface MongoBinaryDownloadUrlOpts extends BaseDryMongoBinaryOptions {
   version: string;
   platform: string;
   arch: string;
-  os?: AnyOS;
 }
 
 /**
@@ -20,7 +20,7 @@ export class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
   version: string;
-  os: AnyOS | undefined;
+  os?: AnyOS;
 
   constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
     this.version = version;
@@ -135,7 +135,7 @@ export class MongoBinaryDownloadUrl {
 
     if (this.arch !== 'i686') {
       if (!this.os) {
-        this.os = await getOS();
+        this.os = (await DryMongoBinary.generateOptions()).os;
       }
 
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
