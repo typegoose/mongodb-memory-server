@@ -455,7 +455,7 @@ export class MongoBinaryDownload {
     const mbComplete = Math.round((this.dlProgress.current / 1048576) * 10) / 10;
 
     const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
-    const message = `Downloading MongoDB ${this.version}: ${percentComplete} % (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`;
+    const message = `Downloading MongoDB "${this.version}": ${percentComplete}% (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`;
 
     if (process.stdout.isTTY) {
       // if TTY overwrite last line over and over until finished
