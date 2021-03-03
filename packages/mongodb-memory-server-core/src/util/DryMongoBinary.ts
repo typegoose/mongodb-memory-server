@@ -5,7 +5,7 @@ import { isNullOrUndefined, pathExists } from './utils';
 import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
-import getOS, { AnyOS } from './getos';
+import getOS, { AnyOS, isLinuxOS } from './getos';
 
 const log = debug('MongoMS:DryMongoBinary');
 
@@ -18,7 +18,13 @@ export interface BaseDryMongoBinaryOptions {
 }
 
 export interface DryMongoBinaryOptions extends BaseDryMongoBinaryOptions {
-  version: string;
+  version: NonNullable<BaseDryMongoBinaryOptions['version']>;
+}
+
+export interface DryMongoBinaryNameOptions {
+  version: NonNullable<DryMongoBinaryOptions['version']>;
+  arch: NonNullable<DryMongoBinaryOptions['arch']>;
+  os: NonNullable<DryMongoBinaryOptions['os']>;
 }
 
 export interface DryMongoBinaryPaths {
@@ -47,16 +53,16 @@ export class DryMongoBinary {
    */
   static async locateBinary(opts: DryMongoBinaryOptions): Promise<string | undefined> {
     log(`locateBinary: Trying to locate Binary for version "${opts.version}"`);
-    const systemBinary = opts.systemBinary ?? (await this.generateOptions()).systemBinary;
+    const useOpts = await this.generateOptions(opts);
 
-    if (!isNullOrUndefined(systemBinary) && systemBinary.length > 0) {
-      log(`locateBinary: env "SYSTEM_BINARY" was provided with value: "${systemBinary}"`);
+    if (!isNullOrUndefined(useOpts.systemBinary) && useOpts.systemBinary.length > 0) {
+      log(`locateBinary: env "SYSTEM_BINARY" was provided with value: "${useOpts.systemBinary}"`);
 
-      const systemReturn = await this.getSystemPath(systemBinary);
+      const systemReturn = await this.getSystemPath(useOpts.systemBinary);
 
       if (isNullOrUndefined(systemReturn)) {
         throw new Error(
-          `Config option "SYSTEM_BINARY" was provided with value "${systemBinary}", but no binary could be found!`
+          `Config option "SYSTEM_BINARY" was provided with value "${useOpts.systemBinary}", but no binary could be found!`
         );
       }
 
@@ -71,7 +77,7 @@ export class DryMongoBinary {
     }
 
     log('locateBinary: running generateDownloadPath');
-    const returnValue = await this.generateDownloadPath(opts);
+    const returnValue = await this.generateDownloadPath(useOpts);
 
     if (!returnValue[0]) {
       log('locateBinary: could not find an existing binary');
@@ -108,8 +114,7 @@ export class DryMongoBinary {
       systemBinary: resolveConfig(ResolveConfigVariables.SYSTEM_BINARY) || '',
     };
 
-    // fix the path, because what gets returned is the full path to the binary (base/version/binary)
-    final.downloadDir = path.resolve((await this.generateDownloadPath(final))[1], '..', '..');
+    final.downloadDir = path.dirname((await this.generateDownloadPath(final))[1]);
 
     return final;
   }
@@ -118,10 +123,11 @@ export class DryMongoBinary {
    * Get the full path with filename
    * @return Absoulte Path with FileName
    */
-  static getBinaryName(): string {
+  static getBinaryName(opts: DryMongoBinaryNameOptions): string {
     const addExe = platform() === 'win32' ? '.exe' : '';
+    const dist = isLinuxOS(opts.os) ? opts.os.dist : opts.os?.os;
 
-    return `mongod${addExe}`;
+    return `mongod-${opts.arch}-${dist}-${opts.version}${addExe}`;
   }
 
   /**
@@ -133,7 +139,7 @@ export class DryMongoBinary {
     basePath: string,
     binaryName: string
   ): string {
-    return path.resolve(basePath, opts.version, binaryName);
+    return path.resolve(basePath, binaryName);
   }
 
   /**
@@ -159,14 +165,16 @@ export class DryMongoBinary {
    * Generate an "MongoBinaryPaths" object
    * @return an finished "MongoBinaryPaths" object
    */
-  static async generatePaths(opts: DryMongoBinaryOptions): Promise<DryMongoBinaryPaths> {
+  static async generatePaths(
+    opts: DryMongoBinaryOptions & DryMongoBinaryNameOptions
+  ): Promise<DryMongoBinaryPaths> {
     const final: DryMongoBinaryPaths = {
       legacyHomeCache: '',
       modulesCache: '',
       relative: '',
       resolveConfig: '',
     };
-    const binaryName = this.getBinaryName();
+    const binaryName = this.getBinaryName(opts);
     // Assign "node_modules/.cache" to modulesCache
 
     // if we're in postinstall script, npm will set the cwd too deep
@@ -194,7 +202,7 @@ export class DryMongoBinary {
 
     // Resolve the config value "DOWNLOAD_DIR" if provided, otherwise remove from list
     const resolveConfigValue =
-      resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) || opts.downloadDir;
+      opts.downloadDir || resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR);
 
     if (!isNullOrUndefined(resolveConfigValue) && resolveConfigValue.length > 0) {
       log(`generatePaths: resolveConfigValue is not empty`);
@@ -215,7 +223,9 @@ export class DryMongoBinary {
    * Generate the Path where an Binary will be located
    * @return "boolean" indicating if the binary exists at the provided path, and "string" the path to use for the binary
    */
-  static async generateDownloadPath(opts: DryMongoBinaryOptions): Promise<[boolean, string]> {
+  static async generateDownloadPath(
+    opts: DryMongoBinaryOptions & DryMongoBinaryNameOptions
+  ): Promise<[boolean, string]> {
     const preferGlobal = envToBool(resolveConfig(ResolveConfigVariables.PREFER_GLOBAL_PATH));
     log(`generateDownloadPath: Generating Download Path, preferGlobal: "${preferGlobal}"`);
     const paths = await this.generatePaths(opts);
