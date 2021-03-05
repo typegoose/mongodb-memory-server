@@ -18,4 +18,5 @@ module.exports = {
     '<rootDir>/src/**/*.ts', // include all files, even files that have no tests yet (or are never called)
     '!<rootDir>/src/util/postinstallHelper.ts', // exclude this file, because it is only made for postInstall, not tests
   ],
+  globalSetup: '<rootDir>/src/__tests__/testUtils/globalSetup.ts',
 };
