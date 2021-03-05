@@ -27,101 +27,103 @@ describe('MongodbInstance', () => {
     version = tmpVersion;
   });
 
-  it('should prepare command args', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27333,
-        dbPath: tmpDir.name,
-        storageEngine: 'ephemeralForTest',
-      },
+  describe('prepareCommandArgs', () => {
+    it('should prepare command args', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27333,
+          dbPath: tmpDir.name,
+          storageEngine: 'ephemeralForTest',
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual([
+        '--port',
+        '27333',
+        '--dbpath',
+        tmpDir.name,
+        '--storageEngine',
+        'ephemeralForTest',
+        '--noauth',
+      ]);
     });
-    expect(inst.prepareCommandArgs()).toEqual([
-      '--port',
-      '27333',
-      '--dbpath',
-      tmpDir.name,
-      '--storageEngine',
-      'ephemeralForTest',
-      '--noauth',
-    ]);
-  });
 
-  it('should allow specifying replSet', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27555,
-        dbPath: tmpDir.name,
-        replSet: 'testset',
-      },
+    it('should allow specifying replSet', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+          dbPath: tmpDir.name,
+          replSet: 'testset',
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual([
+        '--port',
+        '27555',
+        '--dbpath',
+        tmpDir.name,
+        '--noauth',
+        '--replSet',
+        'testset',
+      ]);
     });
-    expect(inst.prepareCommandArgs()).toEqual([
-      '--port',
-      '27555',
-      '--dbpath',
-      tmpDir.name,
-      '--noauth',
-      '--replSet',
-      'testset',
-    ]);
-  });
 
-  it('should be able to enable auth', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27555,
-        dbPath: tmpDir.name,
-        auth: true,
-      },
+    it('should be able to enable auth', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+          dbPath: tmpDir.name,
+          auth: true,
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual([
+        '--port',
+        '27555',
+        '--dbpath',
+        tmpDir.name,
+        '--auth',
+      ]);
     });
-    expect(inst.prepareCommandArgs()).toEqual([
-      '--port',
-      '27555',
-      '--dbpath',
-      tmpDir.name,
-      '--auth',
-    ]);
-  });
 
-  it('should be able to pass arbitrary args', () => {
-    const args = ['--notablescan', '--nounixsocket'];
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27555,
-        dbPath: tmpDir.name,
-        args,
-      },
+    it('should be able to pass arbitrary args', () => {
+      const args = ['--notablescan', '--nounixsocket'];
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+          dbPath: tmpDir.name,
+          args,
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual(
+        ['--port', '27555', '--dbpath', tmpDir.name, '--noauth'].concat(args)
+      );
     });
-    expect(inst.prepareCommandArgs()).toEqual(
-      ['--port', '27555', '--dbpath', tmpDir.name, '--noauth'].concat(args)
-    );
-  });
 
-  it('should throw an error if no port is provided', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        dbPath: tmpDir.name,
-      },
+    it('should throw an error if no port is provided', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          dbPath: tmpDir.name,
+        },
+      });
+      try {
+        inst.prepareCommandArgs();
+        fail('Expected prepareCommandArgs to throw');
+      } catch (err) {
+        expect(err.message).toEqual('"instanceOpts.port" is required to be set!');
+      }
     });
-    try {
-      inst.prepareCommandArgs();
-      fail('Expected prepareCommandArgs to throw');
-    } catch (err) {
-      expect(err.message).toEqual('"instanceOpts.port" is required to be set!');
-    }
-  });
 
-  it('should throw an error if no dbpath is provided', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27555,
-      },
+    it('should throw an error if no dbpath is provided', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+        },
+      });
+      try {
+        inst.prepareCommandArgs();
+        fail('Expected prepareCommandArgs to throw');
+      } catch (err) {
+        expect(err.message).toEqual('"instanceOpts.dbPath" is required to be set!');
+      }
     });
-    try {
-      inst.prepareCommandArgs();
-      fail('Expected prepareCommandArgs to throw');
-    } catch (err) {
-      expect(err.message).toEqual('"instanceOpts.dbPath" is required to be set!');
-    }
   });
 
   it('should start instance on port 27333', async () => {
