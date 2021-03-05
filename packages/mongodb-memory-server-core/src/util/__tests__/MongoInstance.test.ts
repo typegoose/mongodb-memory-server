@@ -3,6 +3,7 @@ import * as tmp from 'tmp';
 import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
+import getPort from 'get-port';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 tmp.setGracefulCleanup();
@@ -126,9 +127,10 @@ describe('MongodbInstance', () => {
     });
   });
 
-  it('should start instance on port 27333', async () => {
+  it('should start instance on port specific port', async () => {
+    const gotPort = await getPort({ port: 27333 });
     const mongod = await MongodbInstance.create({
-      instance: { port: 27333, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version },
     });
 
@@ -138,24 +140,26 @@ describe('MongodbInstance', () => {
   });
 
   it('should throw error if port is busy', async () => {
+    const gotPort = await getPort({ port: 27444 });
     const mongod = await MongodbInstance.create({
-      instance: { port: 27444, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version },
     });
 
     await expect(
       MongodbInstance.create({
-        instance: { port: 27444, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir.name },
         binary: { version },
       })
-    ).rejects.toEqual('Port 27444 already in use');
+    ).rejects.toEqual(`Port ${gotPort} already in use`);
 
     await mongod.stop();
   });
 
   it('should wait until childprocess and killerprocess are killed', async () => {
+    const gotPort = await getPort({ port: 27445 });
     const mongod: MongodbInstance = await MongodbInstance.create({
-      instance: { port: 27445, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version },
     });
     const pid: any = mongod.childProcess!.pid;
@@ -171,8 +175,9 @@ describe('MongodbInstance', () => {
   });
 
   it('should work with mongodb 4.0.3', async () => {
+    const gotPort = await getPort({ port: 27445 });
     const mongod = await MongodbInstance.create({
-      instance: { port: 27445, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version: '4.0.3' },
     });
     expect(mongod.childProcess!.pid).toBeGreaterThan(0);
