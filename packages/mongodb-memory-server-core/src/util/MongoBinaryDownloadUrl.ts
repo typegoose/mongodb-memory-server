@@ -201,7 +201,14 @@ export class MongoBinaryDownloadUrl {
     const release: number = parseFloat(os.release);
 
     if (release >= 10 || ['unstable', 'testing'].includes(os.release)) {
-      name += '10';
+      if (semver.lte(this.version, '4.2.0')) {
+        log(
+          `getDebianVersionString: requested version "${this.version}" not available for osrelease "${release}", using "92"`
+        );
+        name += '92';
+      } else {
+        name += '10';
+      }
     } else if (release >= 9) {
       name += '92';
     } else if (release >= 8.1) {
