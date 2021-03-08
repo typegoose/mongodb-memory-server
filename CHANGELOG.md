@@ -1,3 +1,10 @@
+## [7.0.0-beta.25](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.24...v7.0.0-beta.25) (2021-03-08)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** use debian92 for versions <4.2.0 ([79306c5](https://github.com/nodkz/mongodb-memory-server/commit/79306c59917f96ddf6e997670c2cc848e873746d)), closes [#448](https://github.com/nodkz/mongodb-memory-server/issues/448)
+
 ## [7.0.0-beta.24](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.23...v7.0.0-beta.24) (2021-03-08)
 
 
