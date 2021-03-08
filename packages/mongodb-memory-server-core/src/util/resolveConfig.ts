@@ -1,14 +1,9 @@
 import camelCase from 'camelcase';
-import finder, { FinderIterator, Package } from 'find-package-json';
+import finder from 'find-package-json';
 import debug from 'debug';
 import * as path from 'path';
 
 const log = debug('MongoMS:ResolveConfig');
-
-// Workaround, because that package dosnt implement the default iterator
-interface CustomFinderIterator extends FinderIterator {
-  [Symbol.iterator](): Iterator<Package>;
-}
 
 export enum ResolveConfigVariables {
   DOWNLOAD_DIR = 'DOWNLOAD_DIR',
@@ -52,7 +47,7 @@ let packageJsonConfig: Record<string, string> = {};
  * @param directory Set an custom directory to search the config in (default: process.cwd())
  */
 export function findPackageJson(directory?: string): Record<string, string> {
-  for (const found of finder(directory || process.cwd()) as CustomFinderIterator) {
+  for (const found of finder(directory || process.cwd())) {
     // This is an hidden property, using this because an "for..of" loop dosnt return the "filename" value that is besides the "done" and "value" value
     const filename = found.__path as string;
     log(`findPackageJson: Found package.json at "${filename}"`);
