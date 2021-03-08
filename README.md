@@ -273,18 +273,21 @@ const replSet = new MongoMemoryReplSet({
 *`=1` means booleans, allowed values for booleans are: (case-insensitive) `1 on yes true`*
 
 ```sh
-MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
-MONGOMS_PLATFORM=linux
-MONGOMS_ARCH=x64
-MONGOMS_VERSION=3
-MONGOMS_DEBUG=1 # enable debug for all MongoMS files
-MONGOMS_DOWNLOAD_MIRROR=host # your mirror host to download the mongodb binary
-MONGOMS_DOWNLOAD_URL=url # full URL to download the mongodb binary
-MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
-MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
-MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
+MONGOMS_DOWNLOAD_DIR = /path/to/mongodb/binaries # Specify where to download the binaries to, and prefer binaries from there
+MONGOMS_PLATFORM = linux # Specify for which platform should be downloaded (Valid options are: https://nodejs.org/api/os.html#os_os_platform)
+MONGOMS_ARCH = x64 # Specify which Architecture should be download, if no native for current exists
+MONGOMS_VERSION = "4.0.20" # Sepcify what version of mongodb should be downloaded (Default: "4.0.20")
+MONGOMS_DEBUG = 1 # enable debug for all MongoMS files
+MONGOMS_DOWNLOAD_MIRROR = host # your mirror host to download the mongodb binary
+MONGOMS_DOWNLOAD_URL = url # full URL to download the mongodb binary
+MONGOMS_DISABLE_POSTINSTALL = 1 # if you want to skip download binaries on `npm i` command
+MONGOMS_SYSTEM_BINARY = /usr/local/bin/mongod # if you want to use an existing binary already on your system.
+MONGOMS_MD5_CHECK = 1 # if you want to make MD5 check of downloaded binary. (Default: false)
 # ^ Passed constructor parameter `binary.checkMD5` has higher priority.
-MONGOMS_ARCHIVE_NAME="mongodb-linux-x86_64-4.0.0.tgz" # Specify what file / archive to download
+MONGOMS_ARCHIVE_NAME = "mongodb-linux-x86_64-4.0.0.tgz" # Specify what file / archive to download
+PREFER_GLOBAL_PATH = true # Specify wheter an the global or an local path should be chosen for the download location (Default: true)
+RUNTIME_DOWNLOAD = true # Specify wheter to download the binary automatically on runtime (Default: true)
+USE_HTTP = false # Specify what protocol should be used for downloads (Default: false)
 ```
 
 ### Options which can be set via package.json's `config` section

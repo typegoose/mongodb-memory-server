@@ -1,14 +1,9 @@
 import camelCase from 'camelcase';
-import finder, { FinderIterator, Package } from 'find-package-json';
+import finder from 'find-package-json';
 import debug from 'debug';
 import * as path from 'path';
 
 const log = debug('MongoMS:ResolveConfig');
-
-// Workaround, because that package dosnt implement the default iterator
-interface CustomFinderIterator extends FinderIterator {
-  [Symbol.iterator](): Iterator<Package>;
-}
 
 export enum ResolveConfigVariables {
   DOWNLOAD_DIR = 'DOWNLOAD_DIR',
@@ -18,16 +13,22 @@ export enum ResolveConfigVariables {
   DEBUG = 'DEBUG',
   DOWNLOAD_MIRROR = 'DOWNLOAD_MIRROR',
   DOWNLOAD_URL = 'DOWNLOAD_URL',
+  PREFER_GLOBAL_PATH = 'PREFER_GLOBAL_PATH',
   DISABLE_POSTINSTALL = 'DISABLE_POSTINSTALL',
   SYSTEM_BINARY = 'SYSTEM_BINARY',
   MD5_CHECK = 'MD5_CHECK',
   ARCHIVE_NAME = 'ARCHIVE_NAME',
+  RUNTIME_DOWNLOAD = 'RUNTIME_DOWNLOAD',
+  USE_HTTP = 'USE_HTTP',
 }
 
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
   [ResolveConfigVariables.VERSION, '4.0.20'],
+  [ResolveConfigVariables.PREFER_GLOBAL_PATH, 'true'],
+  [ResolveConfigVariables.RUNTIME_DOWNLOAD, 'true'],
+  [ResolveConfigVariables.USE_HTTP, 'false'],
 ]);
 
 /**
@@ -46,7 +47,7 @@ let packageJsonConfig: Record<string, string> = {};
  * @param directory Set an custom directory to search the config in (default: process.cwd())
  */
 export function findPackageJson(directory?: string): Record<string, string> {
-  for (const found of finder(directory || process.cwd()) as CustomFinderIterator) {
+  for (const found of finder(directory || process.cwd())) {
     // This is an hidden property, using this because an "for..of" loop dosnt return the "filename" value that is besides the "done" and "value" value
     const filename = found.__path as string;
     log(`findPackageJson: Found package.json at "${filename}"`);
@@ -86,13 +87,20 @@ findPackageJson();
  */
 export function resolveConfig(variableName: ResolveConfigVariables): string | undefined {
   return (
-    process.env[`${ENV_CONFIG_PREFIX}${variableName}`] ??
+    process.env[envName(variableName)] ??
     packageJsonConfig[camelCase(variableName)] ??
     defaultValues.get(variableName)
   );
 }
 
 export default resolveConfig;
+
+/**
+ * Helper Function to add the prefix for "process.env[]"
+ */
+export function envName(variableName: ResolveConfigVariables): string {
+  return `${ENV_CONFIG_PREFIX}${variableName}`;
+}
 
 /**
  * Convert "1, on, yes, true" to true (otherwise false)

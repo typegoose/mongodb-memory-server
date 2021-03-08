@@ -3,6 +3,7 @@ import * as tmp from 'tmp';
 import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
+import getPort from 'get-port';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 tmp.setGracefulCleanup();
@@ -27,133 +28,138 @@ describe('MongodbInstance', () => {
     version = tmpVersion;
   });
 
-  it('should prepare command args', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27333,
-        dbPath: tmpDir.name,
-        storageEngine: 'ephemeralForTest',
-      },
+  describe('prepareCommandArgs', () => {
+    it('should prepare command args', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27333,
+          dbPath: tmpDir.name,
+          storageEngine: 'ephemeralForTest',
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual([
+        '--port',
+        '27333',
+        '--dbpath',
+        tmpDir.name,
+        '--storageEngine',
+        'ephemeralForTest',
+        '--noauth',
+      ]);
     });
-    expect(inst.prepareCommandArgs()).toEqual([
-      '--port',
-      '27333',
-      '--dbpath',
-      tmpDir.name,
-      '--storageEngine',
-      'ephemeralForTest',
-      '--noauth',
-    ]);
+
+    it('should allow specifying replSet', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+          dbPath: tmpDir.name,
+          replSet: 'testset',
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual([
+        '--port',
+        '27555',
+        '--dbpath',
+        tmpDir.name,
+        '--noauth',
+        '--replSet',
+        'testset',
+      ]);
+    });
+
+    it('should be able to enable auth', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+          dbPath: tmpDir.name,
+          auth: true,
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual([
+        '--port',
+        '27555',
+        '--dbpath',
+        tmpDir.name,
+        '--auth',
+      ]);
+    });
+
+    it('should be able to pass arbitrary args', () => {
+      const args = ['--notablescan', '--nounixsocket'];
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+          dbPath: tmpDir.name,
+          args,
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual(
+        ['--port', '27555', '--dbpath', tmpDir.name, '--noauth'].concat(args)
+      );
+    });
+
+    it('should throw an error if no port is provided', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          dbPath: tmpDir.name,
+        },
+      });
+      try {
+        inst.prepareCommandArgs();
+        fail('Expected prepareCommandArgs to throw');
+      } catch (err) {
+        expect(err.message).toEqual('"instanceOpts.port" is required to be set!');
+      }
+    });
+
+    it('should throw an error if no dbpath is provided', () => {
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+        },
+      });
+      try {
+        inst.prepareCommandArgs();
+        fail('Expected prepareCommandArgs to throw');
+      } catch (err) {
+        expect(err.message).toEqual('"instanceOpts.dbPath" is required to be set!');
+      }
+    });
   });
 
-  it('should allow specifying replSet', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27555,
-        dbPath: tmpDir.name,
-        replSet: 'testset',
-      },
-    });
-    expect(inst.prepareCommandArgs()).toEqual([
-      '--port',
-      '27555',
-      '--dbpath',
-      tmpDir.name,
-      '--noauth',
-      '--replSet',
-      'testset',
-    ]);
-  });
-
-  it('should be able to enable auth', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27555,
-        dbPath: tmpDir.name,
-        auth: true,
-      },
-    });
-    expect(inst.prepareCommandArgs()).toEqual([
-      '--port',
-      '27555',
-      '--dbpath',
-      tmpDir.name,
-      '--auth',
-    ]);
-  });
-
-  it('should be able to pass arbitrary args', () => {
-    const args = ['--notablescan', '--nounixsocket'];
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27555,
-        dbPath: tmpDir.name,
-        args,
-      },
-    });
-    expect(inst.prepareCommandArgs()).toEqual(
-      ['--port', '27555', '--dbpath', tmpDir.name, '--noauth'].concat(args)
-    );
-  });
-
-  it('should throw an error if no port is provided', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        dbPath: tmpDir.name,
-      },
-    });
-    try {
-      inst.prepareCommandArgs();
-      fail('Expected prepareCommandArgs to throw');
-    } catch (err) {
-      expect(err.message).toEqual('"instanceOpts.port" is required to be set!');
-    }
-  });
-
-  it('should throw an error if no dbpath is provided', () => {
-    const inst = new MongodbInstance({
-      instance: {
-        port: 27555,
-      },
-    });
-    try {
-      inst.prepareCommandArgs();
-      fail('Expected prepareCommandArgs to throw');
-    } catch (err) {
-      expect(err.message).toEqual('"instanceOpts.dbPath" is required to be set!');
-    }
-  });
-
-  it('should start instance on port 27333', async () => {
-    const mongod = await MongodbInstance.run({
-      instance: { port: 27333, dbPath: tmpDir.name },
+  it('should start instance on port specific port', async () => {
+    const gotPort = await getPort({ port: 27333 });
+    const mongod = await MongodbInstance.create({
+      instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version },
     });
 
     expect(mongod.childProcess!.pid).toBeGreaterThan(0);
 
-    await mongod.kill();
+    await mongod.stop();
   });
 
   it('should throw error if port is busy', async () => {
-    const mongod = await MongodbInstance.run({
-      instance: { port: 27444, dbPath: tmpDir.name },
+    const gotPort = await getPort({ port: 27444 });
+    const mongod = await MongodbInstance.create({
+      instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version },
     });
 
     await expect(
-      MongodbInstance.run({
-        instance: { port: 27444, dbPath: tmpDir.name },
+      MongodbInstance.create({
+        instance: { port: gotPort, dbPath: tmpDir.name },
         binary: { version },
       })
-    ).rejects.toEqual('Port 27444 already in use');
+    ).rejects.toEqual(`Port ${gotPort} already in use`);
 
-    await mongod.kill();
+    await mongod.stop();
   });
 
   it('should wait until childprocess and killerprocess are killed', async () => {
-    const mongod: MongodbInstance = await MongodbInstance.run({
-      instance: { port: 27445, dbPath: tmpDir.name },
+    const gotPort = await getPort({ port: 27445 });
+    const mongod: MongodbInstance = await MongodbInstance.create({
+      instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version },
     });
     const pid: any = mongod.childProcess!.pid;
@@ -163,24 +169,25 @@ describe('MongodbInstance', () => {
 
     expect(dbUtil.isAlive(pid)).toBeTruthy();
     expect(dbUtil.isAlive(killerPid)).toBeTruthy();
-    await mongod.kill();
+    await mongod.stop();
     expect(dbUtil.isAlive(pid)).toBeFalsy();
     expect(dbUtil.isAlive(killerPid)).toBeFalsy();
   });
 
   it('should work with mongodb 4.0.3', async () => {
-    const mongod = await MongodbInstance.run({
-      instance: { port: 27445, dbPath: tmpDir.name },
+    const gotPort = await getPort({ port: 27445 });
+    const mongod = await MongodbInstance.create({
+      instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version: '4.0.3' },
     });
     expect(mongod.childProcess!.pid).toBeGreaterThan(0);
-    await mongod.kill();
+    await mongod.stop();
   });
 
   it('"kill" should not call "killProcess" if no childProcesses are not running', async () => {
     const mongod = new MongodbInstance({});
     jest.spyOn(dbUtil, 'killProcess');
-    await mongod.kill();
+    await mongod.stop();
 
     expect(dbUtil.killProcess).not.toBeCalled();
   });
@@ -310,6 +317,20 @@ describe('MongodbInstance', () => {
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
         expect(events.get(MongoInstanceEvents.instanceReplState)).toEqual('STARTUP');
         expect(mongod.isInstancePrimary).toEqual(false);
+      });
+
+      it('should emit "instanceError" when library is missing', () => {
+        // actual line copied from mongod 4.?.? (from https://github.com/nodkz/mongodb-memory-server/issues/408)
+        // TODO: when finding an actual line, please replace the one below
+        const line = 'libcrypto.so.10: cannot open shared object';
+
+        mongod.stdoutHandler(line);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceError)).toEqual(
+          'Instance Failed to start because an library file is missing: "libcrypto.so.10"'
+        );
       });
     });
   });

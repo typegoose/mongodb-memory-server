@@ -5,6 +5,7 @@ import { homedir } from 'os';
 import { resolve } from 'path';
 import { MongoBinary } from './MongoBinary';
 import {
+  envName,
   envToBool,
   findPackageJson,
   resolveConfig,
@@ -51,6 +52,8 @@ export async function postInstallEnsureBinary(
     // if "version" is defined, apply it
     setDefaultValue(ResolveConfigVariables.VERSION, version);
   }
+
+  process.env[envName(ResolveConfigVariables.RUNTIME_DOWNLOAD)] = 'true'; // To make sure to actually download in an postinstall
 
   const binPath = await MongoBinary.getPath().catch((err) => {
     console.warn('Mongodb-Memory-Server* failed to find an binary:\n', err.message);

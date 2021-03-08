@@ -26,7 +26,7 @@ describe('LockFile', () => {
     expect(lockFile.LockFile.files.size).toBe(1);
     expect(lockFile.LockFile.files.has(lockPath)).toBeTruthy();
 
-    const lockReadout = parseInt((await fspromises.readFile(lockPath)).toString());
+    const lockReadout = parseInt((await fspromises.readFile(lockPath)).toString().split(' ')[0]);
     expect(lockReadout).toEqual(process.pid);
 
     await lock.unlock();

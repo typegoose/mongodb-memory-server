@@ -52,6 +52,17 @@ describe('MongoBinaryDownloadUrl', () => {
           'https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.0.0.tgz'
         );
       });
+
+      it('arm64 should use the x64 binary', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'arm64',
+          version: '4.4.0',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.4.0.tgz'
+        );
+      });
     });
 
     describe('for linux', () => {
@@ -87,20 +98,38 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('for debian', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'linux',
-          arch: 'x64',
-          version: '3.6.3',
-          os: {
-            os: 'linux',
-            dist: 'debian',
-            release: '8.1',
-          },
+      describe('for debian', () => {
+        it('for debian 81 for 3.6.3', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '3.6.3',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '8.1',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian81-3.6.3.tgz'
+          );
         });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian81-3.6.3.tgz'
-        );
+
+        it('for debian 10 for 4.0.20 should use debian 92 [#448]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.20',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '10',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian92-4.0.20.tgz'
+          );
+        });
       });
 
       it('fallback', async () => {
@@ -527,10 +556,8 @@ describe('MongoBinaryDownloadUrl', () => {
       version: '3.6.3',
     });
 
-    it('should return an archive name for Gentoo Linux', () => {
-      expect(
-        downloadUrl.getLegacyVersionString({ os: 'linux', dist: 'Gentoo Linux', release: '' })
-      ).toBe('');
+    it('should return an empty string', () => {
+      expect(downloadUrl.getLegacyVersionString()).toBe('');
     });
   });
 });

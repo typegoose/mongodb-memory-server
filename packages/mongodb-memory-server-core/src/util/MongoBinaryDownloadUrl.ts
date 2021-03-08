@@ -1,16 +1,16 @@
-import getOS, { AnyOS, LinuxOS } from './getos';
+import { AnyOS, LinuxOS } from './getos';
 import resolveConfig, { ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
+import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
-export interface MongoBinaryDownloadUrlOpts {
+export interface MongoBinaryDownloadUrlOpts extends BaseDryMongoBinaryOptions {
   version: string;
   platform: string;
   arch: string;
-  os?: AnyOS;
 }
 
 /**
@@ -20,12 +20,12 @@ export class MongoBinaryDownloadUrl {
   platform: string;
   arch: string;
   version: string;
-  os: AnyOS | undefined;
+  os?: AnyOS;
 
   constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
     this.version = version;
     this.platform = this.translatePlatform(platform);
-    this.arch = this.translateArch(arch, this.platform);
+    this.arch = MongoBinaryDownloadUrl.translateArch(arch, this.platform);
     this.os = os;
   }
 
@@ -112,6 +112,11 @@ export class MongoBinaryDownloadUrl {
       name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
 
+    if (this.arch === 'arm64') {
+      log('getArchiveNameOsx: Arch is "arm64", using x64 binary');
+      this.arch = 'x86_64';
+    }
+
     name += `-${this.arch}`;
     name += `-${this.version}.tgz`;
 
@@ -130,7 +135,7 @@ export class MongoBinaryDownloadUrl {
 
     if (this.arch !== 'i686') {
       if (!this.os) {
-        this.os = await getOS();
+        this.os = (await DryMongoBinary.generateOptions()).os;
       }
 
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
@@ -184,7 +189,7 @@ export class MongoBinaryDownloadUrl {
       `Unknown/unsupported linux "${os.dist}(${os.id_like})". Falling back to legacy MongoDB build!`
     );
 
-    return this.getLegacyVersionString(os);
+    return this.getLegacyVersionString();
   }
 
   /**
@@ -196,7 +201,14 @@ export class MongoBinaryDownloadUrl {
     const release: number = parseFloat(os.release);
 
     if (release >= 10 || ['unstable', 'testing'].includes(os.release)) {
-      name += '10';
+      if (semver.lte(this.version, '4.2.0')) {
+        log(
+          `getDebianVersionString: requested version "${this.version}" not available for osrelease "${release}", using "92"`
+        );
+        name += '92';
+      } else {
+        name += '10';
+      }
     } else if (release >= 9) {
       name += '92';
     } else if (release >= 8.1) {
@@ -254,8 +266,7 @@ export class MongoBinaryDownloadUrl {
    * Linux Fallback
    * @param os LinuxOS Object
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getLegacyVersionString(os: AnyOS): string {
+  getLegacyVersionString(): string {
     return '';
   }
 
@@ -380,7 +391,7 @@ export class MongoBinaryDownloadUrl {
    * x64 -> x86_64
    * @param platform The Platform to translate
    */
-  translateArch(arch: string, mongoPlatform: string): string {
+  static translateArch(arch: string, mongoPlatform: string): string {
     switch (arch) {
       case 'ia32':
         if (mongoPlatform === 'linux') {
