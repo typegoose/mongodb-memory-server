@@ -64,7 +64,7 @@ describe('MongoBinaryDownloadUrl', () => {
       );
     });
 
-    it('for debian', async () => {
+    it('for debian 81 for 3.6.3', async () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
@@ -77,6 +77,22 @@ describe('MongoBinaryDownloadUrl', () => {
       });
       expect(await du.getDownloadUrl()).toBe(
         'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian81-3.6.3.tgz'
+      );
+    });
+
+    it('for debian 10 for 4.0.20 should use debian 92 [#448]', async () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '4.0.20',
+        os: {
+          os: 'linux',
+          dist: 'debian',
+          release: '10',
+        },
+      });
+      expect(await du.getDownloadUrl()).toBe(
+        'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian92-4.0.20.tgz'
       );
     });
 
