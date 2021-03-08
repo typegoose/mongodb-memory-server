@@ -39,8 +39,8 @@
     "@types/lockfile": "^1.0.1",
     "@types/md5-file": "^4.0.2",
     "@types/mkdirp": "^1.0.1",
-    "@types/mongodb": "3.5.27",
-    "@types/semver": "7.3.4",
+    "@types/mongodb": "^3.5.27",
+    "@types/semver": "^7.3.4",
     "@types/tar-stream": "^2.1.0",
     "@types/uuid": "^8.0.0",
     "@types/yauzl": "^2.9.1"
@@ -60,11 +60,11 @@
     "semver": "^7.3.2",
     "tar-stream": "^2.1.4",
     "tmp": "^0.2.1",
-    "uuid": "8.3.0",
+    "uuid": "^8.3.0",
     "yauzl": "^2.10.0"
   },
   "optionalDependencies": {
-    "mongodb": "3.6.2"
+    "mongodb": "^3.6.2"
   },
   "scripts": {
     "clean": "rimraf tmp lib coverage node_modules/.cache",
