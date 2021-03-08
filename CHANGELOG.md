@@ -1,3 +1,10 @@
+## [7.0.0-beta.24](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.23...v7.0.0-beta.24) (2021-03-08)
+
+
+### Dependencies
+
+* **@types/find-package-json:** upgrade to 1.2.0 ([d2dc5c6](https://github.com/nodkz/mongodb-memory-server/commit/d2dc5c6305377170f291ca0a6c0caa395fd5c791))
+
 ## [7.0.0-beta.23](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.22...v7.0.0-beta.23) (2021-03-02)
 
 
