@@ -1,3 +1,10 @@
+## [6.9.5](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.4...v6.9.5) (2021-03-08)
+
+
+### Bug Fixes
+
+* **MongoBinaryDownloadUrl:** add support for ubuntu-arm64 ([c432e24](https://github.com/nodkz/mongodb-memory-server/commit/c432e24c9c28ee08b2995d3da32909996f6582c7)), closes [#443](https://github.com/nodkz/mongodb-memory-server/issues/443)
+
 ## [6.9.4](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.3...v6.9.4) (2021-03-08)
 
 
