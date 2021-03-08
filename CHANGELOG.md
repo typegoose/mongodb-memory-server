@@ -1,3 +1,10 @@
+## [6.9.6](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.5...v6.9.6) (2021-03-08)
+
+
+### Bug Fixes
+
+* **dependencies:** allow patch versions ([237177b](https://github.com/nodkz/mongodb-memory-server/commit/237177b82baf11610cf695bca9f3a81d8cbfb51f)), closes [#433](https://github.com/nodkz/mongodb-memory-server/issues/433)
+
 ## [6.9.5](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.4...v6.9.5) (2021-03-08)
 
 
