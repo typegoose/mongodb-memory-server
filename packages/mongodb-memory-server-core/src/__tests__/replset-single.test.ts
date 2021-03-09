@@ -7,6 +7,7 @@ import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 import * as utils from '../util/utils';
 import { MongoMemoryInstanceProp } from '../util/MongoInstance';
+import { inspect } from 'util';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
@@ -242,40 +243,46 @@ describe('single server replset', () => {
   });
 
   it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
-    // @ts-expect-error because "initAllServers" is protected
-    jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
-    const replSet = await MongoMemoryReplSet.create({
-      replSet: { auth: {}, count: 3, storageEngine: 'wiredTiger' },
-    });
+    try {
+      // @ts-expect-error because "initAllServers" is protected
+      jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
+      const replSet = await MongoMemoryReplSet.create({
+        replSet: { auth: {}, count: 3, storageEngine: 'wiredTiger' },
+      });
 
-    utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth));
-    utils.assertion(typeof replSet.replSetOpts.auth === 'object');
+      utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth));
+      utils.assertion(typeof replSet.replSetOpts.auth === 'object');
 
-    utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootName));
-    utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootPwd));
+      utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootName));
+      utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootPwd));
 
-    const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      authSource: 'admin',
-      authMechanism: 'SCRAM-SHA-256',
-      auth: {
-        user: replSet.replSetOpts.auth.customRootName,
-        password: replSet.replSetOpts.auth.customRootPwd,
-      },
-    });
+      const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        authSource: 'admin',
+        authMechanism: 'SCRAM-SHA-256',
+        auth: {
+          user: replSet.replSetOpts.auth.customRootName,
+          password: replSet.replSetOpts.auth.customRootPwd,
+        },
+      });
 
-    const db = con.db('admin');
-    const users: { users: { user: string }[] } = await db.command({
-      usersInfo: replSet.replSetOpts.auth.customRootName,
-    });
-    expect(users.users).toHaveLength(1);
-    expect(users.users[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
-    // @ts-expect-error because "initAllServers" is protected
-    expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(2);
+      const db = con.db('admin');
+      const users: { users: { user: string }[] } = await db.command({
+        usersInfo: replSet.replSetOpts.auth.customRootName,
+      });
+      expect(users.users).toHaveLength(1);
+      expect(users.users[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
+      // @ts-expect-error because "initAllServers" is protected
+      expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(2);
 
-    await con.close();
-    await replSet.stop();
+      await con.close();
+      await replSet.stop();
+    } catch (err) {
+      console.log('Test failed, printing in-detail error');
+      console.log(inspect(err, true, 5));
+      fail(err);
+    }
   });
 });
 
