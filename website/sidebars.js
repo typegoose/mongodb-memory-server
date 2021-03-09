@@ -1,6 +1,6 @@
 module.exports = {
   api: {
-    "Start": ["api/index-api"],
+    "Start": ["api/index-api", "api/config-options"],
     "Classes": ["api/mongo-memory-server", "api/mongo-memory-replset", "api/mongo-instance", "api/mongo-binary"]
   },
   guides: {
