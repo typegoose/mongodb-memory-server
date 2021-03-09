@@ -589,6 +589,9 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
     let timeoutId: NodeJS.Timeout | undefined;
+    // This is needed, because somehow, the timeout dosnt get always cleared (in time?), so this is an extra fail-save
+    // https://github.com/nodkz/mongodb-memory-server/issues/431
+    let foundPrimary = false;
 
     await Promise.race([
       ...this.servers.map(
@@ -608,12 +611,20 @@ export class MongoMemoryReplSet extends EventEmitter {
             }
           })
       ),
-      new Promise((_res, rej) => {
+      new Promise<void>((res, rej) => {
         timeoutId = setTimeout(() => {
-          rej(new Error(`Timed out after ${timeout}ms while waiting for an Primary`));
+          if (foundPrimary) {
+            log('_waitForPrimary: timeout didnt get cleared, but primary found');
+
+            return res();
+          }
+
+          return rej(new Error(`Timed out after ${timeout}ms while waiting for an Primary`));
         }, timeout);
       }),
     ]);
+
+    foundPrimary = true;
 
     if (!isNullOrUndefined(timeoutId)) {
       clearTimeout(timeoutId);
