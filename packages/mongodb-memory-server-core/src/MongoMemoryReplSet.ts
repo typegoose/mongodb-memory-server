@@ -588,6 +588,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @throws if timeout is reached
    */
   protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
+    log('_waitForPrimary: Waiting for an Primary');
     let timeoutId: NodeJS.Timeout | undefined;
 
     await Promise.race([
