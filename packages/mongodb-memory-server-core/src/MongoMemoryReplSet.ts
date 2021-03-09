@@ -588,6 +588,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @throws if timeout is reached
    */
   protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
+    log('_waitForPrimary: Waiting for an Primary');
     let timeoutId: NodeJS.Timeout | undefined;
 
     await Promise.race([
@@ -597,7 +598,7 @@ export class MongoMemoryReplSet extends EventEmitter {
             const instanceInfo = server.instanceInfo;
 
             if (!instanceInfo) {
-              return rej(new Error('_waitForPrimary - instanceInfo not present '));
+              return rej(new Error('_waitForPrimary - instanceInfo not present'));
             }
 
             instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);
@@ -608,7 +609,7 @@ export class MongoMemoryReplSet extends EventEmitter {
             }
           })
       ),
-      new Promise((res, rej) => {
+      new Promise((_res, rej) => {
         timeoutId = setTimeout(() => {
           rej(new Error(`Timed out after ${timeout}ms while waiting for an Primary`));
         }, timeout);

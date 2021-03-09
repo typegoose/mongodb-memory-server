@@ -1,3 +1,21 @@
+## [7.0.0-beta.26](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.25...v7.0.0-beta.26) (2021-03-09)
+
+
+### Reverts
+
+* "test(replset-single): add in-detail error printing on error" ([7989082](https://github.com/nodkz/mongodb-memory-server/commit/7989082f9572e55b85ee934691a9bd404d6ed883))
+
+
+### Style
+
+* **MongoMemoryReplSet:** _waitForPrimary: add log that function got called ([c5f66a3](https://github.com/nodkz/mongodb-memory-server/commit/c5f66a38122fedba3d42f47178c4b5f470ce955e))
+* **MongoMemoryReplSet:** trim error message & add "_" to unused parameter ([6be0c00](https://github.com/nodkz/mongodb-memory-server/commit/6be0c00449d7050b38ed58cd222d07c935b9f6e5))
+
+
+### Fixes
+
+* **MongoInstance:** stdoutHandler: dont use "else if" ([03184d4](https://github.com/nodkz/mongodb-memory-server/commit/03184d47e7e3f54d96834711c028a9fb43454441))
+
 ## [7.0.0-beta.25](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.24...v7.0.0-beta.25) (2021-03-08)
 
 
