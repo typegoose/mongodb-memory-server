@@ -1,5 +1,7 @@
 import MongoMemoryReplSet, { MongoMemoryReplSetOpts } from '../MongoMemoryReplSet';
 import * as tmp from 'tmp';
+import { inspect } from 'util';
+import * as debug from 'debug';
 
 let tmpDir: tmp.DirResult;
 beforeEach(() => {
@@ -28,7 +30,18 @@ describe('single-member replica set', () => {
       ],
     } as MongoMemoryReplSetOpts;
 
-    const replSetBefore = await MongoMemoryReplSet.create(opts);
+    let replSetBefore: MongoMemoryReplSet;
+
+    try {
+      debug.enable('MongoMS:*');
+      replSetBefore = await MongoMemoryReplSet.create(opts);
+    } catch (err) {
+      console.log('Test failed, printing in-depth error');
+      console.log(inspect(err, true, 5));
+      fail(err);
+    } finally {
+      debug.disable();
+    }
 
     // Write real port to config (because 27017 may be busy, we need to get real port)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
