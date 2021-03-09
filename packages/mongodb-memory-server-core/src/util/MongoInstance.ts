@@ -403,42 +403,53 @@ export class MongoInstance extends EventEmitter {
     this.debug(`STDOUT: ""${line}""`); // denoting the STDOUT string with double quotes, because the stdout might also use quotes
     this.emit(MongoInstanceEvents.instanceSTDOUT, line);
 
+    // dont use "else if", because input can be multiple lines and match multiple things
     if (/waiting for connections/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceReady);
-    } else if (/address already in use/i.test(line)) {
+    }
+    if (/address already in use/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, `Port ${this.instanceOpts.port} already in use`);
-    } else if (/mongod instance already running/i.test(line)) {
+    }
+    if (/mongod instance already running/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod already running');
-    } else if (/permission denied/i.test(line)) {
+    }
+    if (/permission denied/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod permission denied');
-    } else if (/Data directory .*? not found/i.test(line)) {
+    }
+    if (/Data directory .*? not found/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Data directory not found');
-    } else if (/CURL_OPENSSL_3.*not found/i.test(line)) {
+    }
+    if (/CURL_OPENSSL_3.*not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
         'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
           'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
       );
-    } else if (/CURL_OPENSSL_4.*not found/i.test(line)) {
+    }
+    if (/CURL_OPENSSL_4.*not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
         'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
           'You need to manually install libcurl4\n'
       );
-    } else if (/lib.*: cannot open shared object/i.test(line)) {
+    }
+    if (/lib.*: cannot open shared object/i.test(line)) {
       const lib =
         line.match(/(lib.*): cannot open shared object/i)?.[1].toLocaleLowerCase() ?? 'unknown';
       this.emit(
         MongoInstanceEvents.instanceError,
         `Instance Failed to start because an library file is missing: "${lib}"`
       );
-    } else if (/\*\*\*aborting after/i.test(line)) {
+    }
+    if (/\*\*\*aborting after/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod internal error');
-    } else if (/transition to primary complete; database writes are now permitted/i.test(line)) {
+    }
+    if (/transition to primary complete; database writes are now permitted/i.test(line)) {
       this.isInstancePrimary = true;
       this.debug('Calling all waitForPrimary resolve functions');
       this.emit(MongoInstanceEvents.instancePrimary);
-    } else if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
+    }
+    if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
       // "[\d\.:]+" matches "0.0.0.0:0000" (IP:PORT)
       const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNKNOWN';
       this.emit(MongoInstanceEvents.instanceReplState, state);
