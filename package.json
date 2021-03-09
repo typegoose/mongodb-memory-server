@@ -49,12 +49,6 @@
       "git add"
     ]
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged"
-    }
-  },
   "scripts": {
     "test": "yarn --cwd packages/mongodb-memory-server-core run test",
     "lint": "lerna run lint --stream --npm-client=yarn --no-prefix",
@@ -64,6 +58,6 @@
     "build": "tsc --build tsconfig.build.json",
     "semantic-release": "semantic-release",
     "readme:toc": "doctoc ./README.md",
-    "postinstall": "yarn build"
+    "postinstall": "husky install"
   }
 }
