@@ -44,8 +44,7 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
   - [Simple test with MongoClient](#simple-test-with-mongoclient)
   - [Provide connection string to mongoose](#provide-connection-string-to-mongoose)
   - [Several mongoose connections simultaneously](#several-mongoose-connections-simultaneously)
-  - [Simple Mocha/Chai test example](#simple-mochachai-test-example)
-  - [Simple Jest test example](#simple-jest-test-example)
+  - [Integration Examples](#integration-examples)
   - [AVA test runner](#ava-test-runner)
   - [Docker Alpine](#docker-alpine)
   - [Enable Debug Mode](#enable-debug-mode)
@@ -403,75 +402,9 @@ mongoose.connect(uri, opts);
 const User = mongoose.model('User', new mongoose.Schema({ name: String })); // define model
 ```
 
-### Simple Mocha/Chai test example
+### Integration Examples
 
-Start Mocha with `--timeout 60000` cause first download of MongoDB binaries may take a time.
-
-```js
-import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-
-let mongoServer;
-const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
-
-before(async () => {
-  mongoServer = new MongoMemoryServer();
-  const mongoUri = await mongoServer.getUri();
-  await mongoose.connect(mongoUri, opts);
-});
-
-after(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
-
-describe('...', () => {
-  it('...', async () => {
-    const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-    const cnt = await User.count();
-    expect(cnt).to.equal(0);
-  });
-});
-```
-
-### Simple Jest test example
-
-```js
-import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-
-// May require additional time for downloading MongoDB binaries
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
-
-let mongoServer;
-const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
-
-beforeAll(async () => {
-  mongoServer = new MongoMemoryServer();
-  const mongoUri = await mongoServer.getUri();
-  await mongoose.connect(mongoUri, opts, (err) => {
-    if (err) console.error(err);
-  });
-});
-
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
-
-describe('...', () => {
-  it('...', async () => {
-    const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-    const count = await User.count();
-    expect(count).toEqual(0);
-  });
-});
-```
-
-Additional examples of Jest tests:
-
-- simple example with `mongodb` in [tests in current package](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/)
-- more complex example with `mongoose` in [graphql-compose-mongoose](https://github.com/nodkz/graphql-compose-mongoose/blob/master/src/__mocks__/mongooseCommon.js)
+[Documentation for Integration Examples](https://nodkz.github.io/mongodb-memory-server/docs/guides/integration-examples)
 
 ### AVA test runner
 
