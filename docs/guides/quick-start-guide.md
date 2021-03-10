@@ -25,10 +25,10 @@ When on Linux, one of the following are required:
 
 There are multiple packages for this project, here are the differences:
 
-- `mongodb-memory-server-core` is the main package, which dosnt have any hooks
-- `mongodb-memory-server` adds hooks to install on `yarn install` or `npm install` to install the latest package locally
-- `mongodb-memory-server-global` adds hooks to install on `yarn install` or `npm install` to install the latest package globally (into $HOME)
-- `mongodb-memory-server-global-X.X` adds hooks to install on `yarn install` or `npm install` to install MongoDB with version `X.X` globally (into $HOME)
+- `mongodb-memory-server-core` is the main package, which does not have any hooks on install
+- `mongodb-memory-server` adds hooks to install on `yarn install` or `npm install` to install the *latest package locally*
+- `mongodb-memory-server-global` adds hooks to install on `yarn install` or `npm install` to install the *latest package globally* (into $HOME)
+- `mongodb-memory-server-global-X.X` adds hooks to install on `yarn install` or `npm install` to install *MongoDB with version `X.X` globally* (into $HOME)
 
 ## Normal Server
 
