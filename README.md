@@ -130,9 +130,9 @@ _Note: the package does try to download `mongod` upon server start if it cannot 
 
 ### Configuring which mongod binary to use
 
-The default behaviour is that version ~~`latest`~~`4.0.20` for your OS will be downloaded. By setting [ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables) you are able to specify which version and binary will be downloaded:
+The default behaviour is that version ~~`latest`~~`4.0.20` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
 
-```bash
+```sh
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
 export MONGOMS_VERSION=4.2.8
 ```
