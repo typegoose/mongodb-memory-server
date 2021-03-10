@@ -125,7 +125,7 @@ export class DryMongoBinary {
    */
   static getBinaryName(opts: DryMongoBinaryNameOptions): string {
     const addExe = platform() === 'win32' ? '.exe' : '';
-    const dist = isLinuxOS(opts.os) ? opts.os.dist : opts.os?.os;
+    const dist = isLinuxOS(opts.os) ? opts.os.dist : opts.os.os;
 
     return `mongod-${opts.arch}-${dist}-${opts.version}${addExe}`;
   }
