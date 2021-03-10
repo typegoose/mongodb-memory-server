@@ -30,10 +30,7 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
 - [Installation](#installation)
   - [Requirements](#requirements)
     - [Known Issues](#known-issues)
-  - [mongodb-memory-server](#mongodb-memory-server)
-  - [mongodb-memory-server-global](#mongodb-memory-server-global)
-    - [mongodb-memory-server-global-x.x](#mongodb-memory-server-global-xx)
-  - [mongodb-memory-server-core](#mongodb-memory-server-core)
+  - [Choose the Correct Package](#choose-the-correct-package)
   - [Configuring which mongod binary to use](#configuring-which-mongod-binary-to-use)
 - [Usage](#usage)
   - [Simple server start](#simple-server-start)
@@ -88,45 +85,9 @@ And one of those:
 
 [Known Issues in the Documentation](https://nodkz.github.io/mongodb-memory-server/docs/guides/known-issues)
 
-### mongodb-memory-server
+### Choose the Correct Package
 
-Auto-downloads version ~~`latest`~~`4.0.20` `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.
-
-```bash
-yarn add mongodb-memory-server --dev
-# OR
-npm install mongodb-memory-server --save-dev
-```
-
-### mongodb-memory-server-global
-
-Auto-downloads version ~~`latest`~~`4.0.20` `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
-
-```bash
-yarn add mongodb-memory-server-global --dev
-# OR
-npm install mongodb-memory-server-global --save-dev
-```
-
-#### mongodb-memory-server-global-x.x
-
-This Repository provides stub packages that set an MongoDB version, currently available are:
-
-`3.6, 4.2, 4.4`
-
-Note: **The packages below 4.2 have been deprecated**
-
-### mongodb-memory-server-core
-
-Does NOT auto-download `mongod` on npm install.
-
-```bash
-yarn add mongodb-memory-server-core --dev
-# OR
-npm install mongodb-memory-server-core --save-dev
-```
-
-_Note: the package does try to download `mongod` upon server start if it cannot find the binary._
+[Choose the right package for the task](https://nodkz.github.io/mongodb-memory-server/docs/guides/quick-start-guide#choose-the-right-package)
 
 ### Configuring which mongod binary to use
 
