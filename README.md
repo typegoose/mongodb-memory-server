@@ -29,7 +29,7 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
 
 - [Installation](#installation)
   - [Requirements](#requirements)
-    - [Known Incompatibilities](#known-incompatibilities)
+    - [Known Issues](#known-issues)
   - [mongodb-memory-server](#mongodb-memory-server)
   - [mongodb-memory-server-global](#mongodb-memory-server-global)
     - [mongodb-memory-server-global-x.x](#mongodb-memory-server-global-xx)
@@ -84,10 +84,9 @@ And one of those:
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
 - manually specify which version & system should be used
 
-#### Known Incompatibilities
+#### Known Issues
 
-- [Alpine](https://github.com/nodkz/mongodb-memory-server/issues/347) does not have an official mongodb build
-- ArchLinux(Docker) does not have an `/etc/os-release` file by default
+[Known Issues in the Documentation](https://nodkz.github.io/mongodb-memory-server/docs/guides/known-issues)
 
 ### mongodb-memory-server
 
