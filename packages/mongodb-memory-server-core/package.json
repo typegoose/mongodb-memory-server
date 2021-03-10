@@ -34,7 +34,6 @@
     "@types/debug": "^4.1.5",
     "@types/find-cache-dir": "^3.2.0",
     "@types/find-package-json": "^1.2.0",
-    "@types/lockfile": "^1.0.1",
     "@types/md5-file": "^4.0.2",
     "@types/mkdirp": "^1.0.1",
     "@types/mongodb": "^3.5.31",
