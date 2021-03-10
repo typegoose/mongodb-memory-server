@@ -132,3 +132,5 @@ process.chdir('/custom/path'); // not recommended
 For Environment Variables an config option must be prefixed with `MONGOMS_`
 
 Example: `MONGOMS_DOWNLOAD_DIR`
+
+For boolean Variables, the following will be interpreted as `true`: `true 1 on yes`

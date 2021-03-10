@@ -30,10 +30,7 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
 - [Installation](#installation)
   - [Requirements](#requirements)
     - [Known Issues](#known-issues)
-  - [mongodb-memory-server](#mongodb-memory-server)
-  - [mongodb-memory-server-global](#mongodb-memory-server-global)
-    - [mongodb-memory-server-global-x.x](#mongodb-memory-server-global-xx)
-  - [mongodb-memory-server-core](#mongodb-memory-server-core)
+  - [Choose the Correct Package](#choose-the-correct-package)
   - [Configuring which mongod binary to use](#configuring-which-mongod-binary-to-use)
 - [Usage](#usage)
   - [Simple server start](#simple-server-start)
@@ -88,51 +85,15 @@ And one of those:
 
 [Known Issues in the Documentation](https://nodkz.github.io/mongodb-memory-server/docs/guides/known-issues)
 
-### mongodb-memory-server
+### Choose the Correct Package
 
-Auto-downloads version ~~`latest`~~`4.0.20` `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.
-
-```bash
-yarn add mongodb-memory-server --dev
-# OR
-npm install mongodb-memory-server --save-dev
-```
-
-### mongodb-memory-server-global
-
-Auto-downloads version ~~`latest`~~`4.0.20` `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
-
-```bash
-yarn add mongodb-memory-server-global --dev
-# OR
-npm install mongodb-memory-server-global --save-dev
-```
-
-#### mongodb-memory-server-global-x.x
-
-This Repository provides stub packages that set an MongoDB version, currently available are:
-
-`3.6, 4.2, 4.4`
-
-Note: **The packages below 4.2 have been deprecated**
-
-### mongodb-memory-server-core
-
-Does NOT auto-download `mongod` on npm install.
-
-```bash
-yarn add mongodb-memory-server-core --dev
-# OR
-npm install mongodb-memory-server-core --save-dev
-```
-
-_Note: the package does try to download `mongod` upon server start if it cannot find the binary._
+[Choose the right package for the task](https://nodkz.github.io/mongodb-memory-server/docs/guides/quick-start-guide#choose-the-right-package)
 
 ### Configuring which mongod binary to use
 
-The default behaviour is that version ~~`latest`~~`4.0.20` for your OS will be downloaded. By setting [ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables) you are able to specify which version and binary will be downloaded:
+The default behaviour is that version ~~`latest`~~`4.0.20` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
 
-```bash
+```sh
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
 export MONGOMS_VERSION=4.2.8
 ```

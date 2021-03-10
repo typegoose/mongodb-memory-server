@@ -62,11 +62,13 @@ export class MongoBinaryDownload {
    * Get the full path with filename
    * @return Absoulte Path with FileName
    */
-  protected getPath(): string {
+  protected async getPath(): Promise<string> {
+    const opts = await DryMongoBinary.generateOptions({ version: this.version });
+
     return DryMongoBinary.combineBinaryName(
       { version: this.version },
       this.downloadDir,
-      DryMongoBinary.getBinaryName()
+      DryMongoBinary.getBinaryName(opts)
     );
   }
 
@@ -76,7 +78,7 @@ export class MongoBinaryDownload {
    */
   async getMongodPath(): Promise<string> {
     log('getMongodPath');
-    const mongodPath = this.getPath();
+    const mongodPath = await this.getPath();
 
     if (await pathExists(mongodPath)) {
       return mongodPath;
@@ -224,7 +226,7 @@ export class MongoBinaryDownload {
    */
   async extract(mongoDBArchive: string): Promise<string> {
     log('extract');
-    const mongodbFullPath = this.getPath();
+    const mongodbFullPath = await this.getPath();
     const mongodbDirPath = path.dirname(mongodbFullPath);
     log(`extract: archive: "${mongoDBArchive}" final: "${mongodbFullPath}"`);
 
