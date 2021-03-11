@@ -1,3 +1,24 @@
+## [7.0.0-beta.28](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.27...v7.0.0-beta.28) (2021-03-10)
+
+
+### Dependencies
+
+* **@types/dedent:** remove unused dependency ([1cb479d](https://github.com/nodkz/mongodb-memory-server/commit/1cb479d21030f910fb414e470d56a447151a091f))
+* **@types/lockfile:** remove unused dependency ([fa3d6c8](https://github.com/nodkz/mongodb-memory-server/commit/fa3d6c8313362991d25a6630dc277cb4c1212d26))
+* **os:** remove unused dependency ([ab027c7](https://github.com/nodkz/mongodb-memory-server/commit/ab027c795120a16b20d055976bba7b6cdd797f4f))
+
+## [7.0.0-beta.27](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.26...v7.0.0-beta.27) (2021-03-10)
+
+
+### Features
+
+* change binary from "base/version/mongod" to "base/mongod-arch-dist-version" ([2682704](https://github.com/nodkz/mongodb-memory-server/commit/26827045298dc9b2bdecda024fabab2b7e8e8fec)), closes [#256](https://github.com/nodkz/mongodb-memory-server/issues/256)
+
+
+### Style
+
+* **DryMongoBinary:** remove unused optional chaning ([06cfccb](https://github.com/nodkz/mongodb-memory-server/commit/06cfccb2e242983465af550a5579227590bddbed))
+
 ## [7.0.0-beta.26](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.25...v7.0.0-beta.26) (2021-03-09)
 
 

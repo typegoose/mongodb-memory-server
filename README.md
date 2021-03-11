@@ -29,7 +29,7 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
 
 - [Installation](#installation)
   - [Requirements](#requirements)
-    - [Known Issues](#known-issues)
+  - [Known Issues](#known-issues)
   - [Choose the Correct Package](#choose-the-correct-package)
   - [Configuring which mongod binary to use](#configuring-which-mongod-binary-to-use)
 - [Usage](#usage)
@@ -81,7 +81,7 @@ And one of those:
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
 - manually specify which version & system should be used
 
-#### Known Issues
+### Known Issues
 
 [Known Issues in the Documentation](https://nodkz.github.io/mongodb-memory-server/docs/guides/known-issues)
 
