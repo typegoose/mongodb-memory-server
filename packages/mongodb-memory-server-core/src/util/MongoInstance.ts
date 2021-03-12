@@ -27,7 +27,10 @@ export interface MongoMemoryInstanceOptsBase {
 export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
   auth?: boolean;
   dbName?: string;
-  ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
+  /**
+   * for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
+   */
+  ip?: string;
   replSet?: string;
   storageEngine?: StorageEngine;
 }
