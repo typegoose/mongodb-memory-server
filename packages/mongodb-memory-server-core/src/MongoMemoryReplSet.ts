@@ -346,6 +346,9 @@ export class MongoMemoryReplSet extends EventEmitter {
     }
   }
 
+  /**
+   * Initialize & start all servers in the replSet
+   */
   protected async initAllServers(): Promise<void> {
     log('initAllServers');
     this.stateChange(MongoMemoryReplSetStates.init);
