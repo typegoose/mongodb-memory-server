@@ -1,3 +1,30 @@
+## [7.0.0-beta.29](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.28...v7.0.0-beta.29) (2021-03-12)
+
+
+### Features
+
+* **utils:** uriTemplate: allow "port" to be undefined so that "host" can be an list of hosts ([e101162](https://github.com/nodkz/mongodb-memory-server/commit/e101162c2ca870ed34d420b2b7a8fa5cc47bb5db))
+
+
+### Fixes
+
+* **MongoInstance:** remove interface "MongoInstanceOpts" in favor of "MongoMemoryInstanceProp" ([7efb4ff](https://github.com/nodkz/mongodb-memory-server/commit/7efb4ffe19ae676de4f69be283ac6a51f04c49c2))
+* **MongoMemoryReplSet:** dont generate an "otherDb" if "othereDb" is false ([63497c0](https://github.com/nodkz/mongodb-memory-server/commit/63497c0ae4d8a67cfcab36beb8727a02eae7711e))
+* **MongoMemoryReplSet:** getUri: loop over less arrays ([dec9bac](https://github.com/nodkz/mongodb-memory-server/commit/dec9bac889e334317f872d51109c27e268ae58c8))
+* **MongoMemoryReplSet:** getUri: use "uriTemplate" instead of re-doing ([c6c9321](https://github.com/nodkz/mongodb-memory-server/commit/c6c9321cdcd55b4f305280b4f5783513200870ff))
+* **MongoMemoryServer:** dont trigger "otherDb" if "otherDbName" is false ([ffb096d](https://github.com/nodkz/mongodb-memory-server/commit/ffb096dd3530fb4fb98d8660e1c0fc88f645a66e))
+
+
+### Style
+
+* **MongoInstance:** move comment into tsdoc ([d749abb](https://github.com/nodkz/mongodb-memory-server/commit/d749abbd756436c2eff7cdca80622531557992bb))
+* **MongoInstance:** remove "null" from "port" ([75d805f](https://github.com/nodkz/mongodb-memory-server/commit/75d805f1472e570bc1a081a7593ad94cc2b1fe5d))
+* **MongoInstance:** rename interface to have an better name ([60858b1](https://github.com/nodkz/mongodb-memory-server/commit/60858b10264389605cd698d87d95fff79edd0033))
+* **MongoInstance:** rename interface to have an better name ([916aa11](https://github.com/nodkz/mongodb-memory-server/commit/916aa1127ff22b5b52bebfec75c899b351c2799c))
+* **MongoMemoryReplSet:** add tsdoc to "initAllServers" ([ba46aee](https://github.com/nodkz/mongodb-memory-server/commit/ba46aee6efbff6228279d60e0ac260214b2ea331))
+* **MongoMemoryServer:** change "StartupInstanceData" to depend on "MongoMemoryInstanceOpts" ([26af098](https://github.com/nodkz/mongodb-memory-server/commit/26af098e25707aff1976eb7ba06a9aa6fa8b6514))
+* **MongoMemoryServer:** inherit type instead of redefining ([eb41f81](https://github.com/nodkz/mongodb-memory-server/commit/eb41f8112e40a810b6c675b89083db737be7b458))
+
 ## [7.0.0-beta.28](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.27...v7.0.0-beta.28) (2021-03-10)
 
 
