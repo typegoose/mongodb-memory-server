@@ -27,11 +27,20 @@ export function getHost(uri: string): string {
 
 /**
  * Basic MongoDB Connection string
+ * @param host the host ip or an list of hosts
+ * @param port the host port or undefined if "host" is an list of hosts
+ * @param dbName the db to use by default
+ * @param query extra uri-query options
  */
-export function uriTemplate(host: string, port: number, dbName: string, query?: string[]): string {
-  return (
-    `mongodb://${host}:${port}/${dbName}` + (!isNullOrUndefined(query) ? `?${query.join('&')}` : '')
-  );
+export function uriTemplate(
+  host: string,
+  port: number | undefined,
+  dbName: string,
+  query?: string[]
+): string {
+  const hosts = !isNullOrUndefined(port) ? `${host}:${port}` : host;
+
+  return `mongodb://${hosts}/${dbName}` + (!isNullOrUndefined(query) ? `?${query.join('&')}` : '');
 }
 
 /**
