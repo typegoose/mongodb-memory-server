@@ -9,11 +9,7 @@ import {
   authDefault,
   statPath,
 } from './util/utils';
-import MongoInstance, {
-  MongodOpts,
-  MongoMemoryInstanceOpts,
-  StorageEngine,
-} from './util/MongoInstance';
+import MongoInstance, { MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { EventEmitter } from 'events';
@@ -70,12 +66,12 @@ export interface AutomaticAuth {
  * Data used by _startUpInstance's "data" variable
  */
 export interface StartupInstanceData {
-  port: number;
-  dbPath?: string;
-  dbName: string;
-  ip: string;
-  storageEngine: StorageEngine;
-  replSet?: string;
+  port: NonNullable<MongoMemoryInstanceOpts['port']>;
+  dbPath?: MongoMemoryInstanceOpts['dbPath'];
+  dbName: NonNullable<MongoMemoryInstanceOpts['dbName']>;
+  ip: NonNullable<MongoMemoryInstanceOpts['ip']>;
+  storageEngine: NonNullable<MongoMemoryInstanceOpts['storageEngine']>;
+  replSet?: NonNullable<MongoMemoryInstanceOpts['replSet']>;
   tmpDir?: tmp.DirResult;
 }
 
