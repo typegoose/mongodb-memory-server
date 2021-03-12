@@ -11,7 +11,7 @@ import {
 } from './util/utils';
 import MongoInstance, {
   MongodOpts,
-  MongoMemoryInstanceProp,
+  MongoMemoryInstanceOpts,
   StorageEngine,
 } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -29,7 +29,7 @@ tmp.setGracefulCleanup();
  * MongoMemoryServer Stored Options
  */
 export interface MongoMemoryServerOpts {
-  instance?: MongoMemoryInstanceProp;
+  instance?: MongoMemoryInstanceOpts;
   binary?: MongoBinaryOpts;
   spawn?: SpawnOptions;
   /**

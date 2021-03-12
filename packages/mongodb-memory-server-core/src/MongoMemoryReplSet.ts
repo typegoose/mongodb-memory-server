@@ -15,7 +15,7 @@ import debug from 'debug';
 import { MongoClient, MongoError } from 'mongodb';
 import {
   MongoInstanceEvents,
-  MongoMemoryInstanceProp,
+  MongoMemoryInstanceOpts,
   MongoMemoryInstanceOptsBase,
   StorageEngine,
 } from './util/MongoInstance';
@@ -253,8 +253,8 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Returns instance options suitable for a MongoMemoryServer.
    * @param baseOpts Options to merge with
    */
-  protected getInstanceOpts(baseOpts: MongoMemoryInstanceOptsBase = {}): MongoMemoryInstanceProp {
-    const opts: MongoMemoryInstanceProp = {
+  protected getInstanceOpts(baseOpts: MongoMemoryInstanceOptsBase = {}): MongoMemoryInstanceOpts {
+    const opts: MongoMemoryInstanceOpts = {
       // disable "auth" if replsetopts has an object-auth
       auth:
         typeof this._replSetOpts.auth === 'object' && !this._ranCreateAuth
@@ -576,7 +576,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Create the one Instance (without starting them)
    * @param instanceOpts Instance Options to use for this instance
    */
-  protected _initServer(instanceOpts: MongoMemoryInstanceProp): MongoMemoryServer {
+  protected _initServer(instanceOpts: MongoMemoryInstanceOpts): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOpts = {
       binary: this._binaryOpts,
       instance: instanceOpts,

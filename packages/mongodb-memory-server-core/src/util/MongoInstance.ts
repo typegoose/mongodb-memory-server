@@ -24,9 +24,7 @@ export interface MongoMemoryInstanceOptsBase {
   storageEngine?: StorageEngine;
 }
 
-// TODO: find an better name for this interface
-// TODO: find a way to unify with "MongoInstanceOpts"
-export interface MongoMemoryInstanceProp extends MongoMemoryInstanceOptsBase {
+export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
   auth?: boolean;
   dbName?: string;
   ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
@@ -52,7 +50,7 @@ export enum MongoInstanceEvents {
 
 export interface MongodOpts {
   // instance options
-  instance: MongoMemoryInstanceProp;
+  instance: MongoMemoryInstanceOpts;
 
   // mongo binary options
   binary: MongoBinaryOpts;
@@ -75,7 +73,7 @@ export interface MongoInstance extends EventEmitter {
 export class MongoInstance extends EventEmitter {
   // Mark these values as "readonly" & "Readonly" because modifying them after starting will have no effect
   // readonly is required otherwise the property can still be changed on the root level
-  instanceOpts: MongoMemoryInstanceProp;
+  instanceOpts: MongoMemoryInstanceOpts;
   readonly binaryOpts: Readonly<MongoBinaryOpts>;
   readonly spawnOpts: Readonly<SpawnOptions>;
 
