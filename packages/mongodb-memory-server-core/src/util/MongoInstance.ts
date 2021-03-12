@@ -50,19 +50,9 @@ export enum MongoInstanceEvents {
   instanceStarted = 'instanceStarted',
 }
 
-export interface MongoInstanceOpts {
-  port?: number;
-  ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
-  storageEngine?: StorageEngine;
-  dbPath?: string;
-  replSet?: string;
-  args?: string[];
-  auth?: boolean;
-}
-
 export interface MongodOpts {
   // instance options
-  instance: MongoInstanceOpts;
+  instance: MongoMemoryInstanceProp;
 
   // mongo binary options
   binary: MongoBinaryOpts;
@@ -85,7 +75,7 @@ export interface MongoInstance extends EventEmitter {
 export class MongoInstance extends EventEmitter {
   // Mark these values as "readonly" & "Readonly" because modifying them after starting will have no effect
   // readonly is required otherwise the property can still be changed on the root level
-  instanceOpts: MongoInstanceOpts;
+  instanceOpts: MongoMemoryInstanceProp;
   readonly binaryOpts: Readonly<MongoBinaryOpts>;
   readonly spawnOpts: Readonly<SpawnOptions>;
 
