@@ -8,6 +8,7 @@ import {
   generateDbName,
   getHost,
   isNullOrUndefined,
+  uriTemplate,
 } from './util/utils';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
@@ -315,7 +316,7 @@ export class MongoMemoryReplSet extends EventEmitter {
     });
     const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
 
-    return `mongodb://${hosts}/${dbName}?replicaSet=${this._replSetOpts.name}`;
+    return uriTemplate(hosts, undefined, dbName, [`replicaSet=${this._replSetOpts.name}`]);
   }
 
   /**
