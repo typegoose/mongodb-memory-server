@@ -635,7 +635,8 @@ export class MongoMemoryServer extends EventEmitter {
     let dbName: string = this._instanceInfo.dbName;
 
     // using "if" instead of nested "?:"
-    if (!isNullOrUndefined(otherDbName)) {
+    // Using "!!" to convert string into boolean, and that if "otherDbName" is fale, to not trigger this
+    if (!!otherDbName) {
       // use "otherDbName" if string, otherwise generate an db-name
       dbName = typeof otherDbName === 'string' ? otherDbName : generateDbName();
     }
