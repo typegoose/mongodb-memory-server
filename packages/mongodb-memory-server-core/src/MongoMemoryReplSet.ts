@@ -301,11 +301,12 @@ export class MongoMemoryReplSet extends EventEmitter {
         throw new Error('Replica Set is not running. Use debug for more info.');
     }
 
-    const dbName: string = isNullOrUndefined(otherDb)
-      ? this._replSetOpts.dbName
-      : typeof otherDb === 'string'
-      ? otherDb
-      : generateDbName();
+    let dbName = this._replSetOpts.dbName;
+
+    if (!!otherDb) {
+      dbName = typeof otherDb === 'string' ? otherDb : generateDbName();
+    }
+
     const ports = this.servers.map((s) => {
       const port = s.instanceInfo?.port;
       assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
