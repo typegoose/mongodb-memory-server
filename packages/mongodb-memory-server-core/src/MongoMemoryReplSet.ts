@@ -308,13 +308,14 @@ export class MongoMemoryReplSet extends EventEmitter {
       dbName = typeof otherDb === 'string' ? otherDb : generateDbName();
     }
 
-    const ports = this.servers.map((s) => {
-      const port = s.instanceInfo?.port;
-      assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
+    const hosts = this.servers
+      .map((s) => {
+        const port = s.instanceInfo?.port;
+        assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
 
-      return port;
-    });
-    const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
+        return `127.0.0.1:${port}`;
+      })
+      .join(',');
 
     return uriTemplate(hosts, undefined, dbName, [`replicaSet=${this._replSetOpts.name}`]);
   }
