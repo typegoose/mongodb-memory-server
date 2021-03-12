@@ -83,7 +83,7 @@ export interface StartupInstanceData {
  * Information about the currently running instance
  */
 export interface MongoInstanceData extends StartupInstanceData {
-  dbPath: string; // re-declare, because in this interface it is *not* optional
+  dbPath: NonNullable<StartupInstanceData['dbPath']>;
   instance: MongoInstance;
 }
 
@@ -131,6 +131,7 @@ export type UserRoles =
  * Interface options for "db.createUser" (used for this package)
  * This interface is WITHOUT the custom options from this package
  * (Some text copied from https://docs.mongodb.com/manual/reference/method/db.createUser/#definition)
+ * This interface only exists, because mongodb dosnt provide such an interface for "createUser" (or as just very basic types)
  */
 export interface CreateUserMongoDB {
   /**
