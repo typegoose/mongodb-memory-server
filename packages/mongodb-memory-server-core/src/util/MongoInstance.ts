@@ -19,7 +19,7 @@ export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTi
 
 export interface MongoMemoryInstanceOptsBase {
   args?: string[];
-  port?: number | null;
+  port?: number;
   dbPath?: string;
   storageEngine?: StorageEngine;
 }
