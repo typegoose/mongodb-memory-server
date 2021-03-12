@@ -17,7 +17,7 @@ const log = debug('MongoMS:MongoInstance');
 
 export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
 
-export interface MongoMemoryInstancePropBase {
+export interface MongoMemoryInstanceOptsBase {
   args?: string[];
   port?: number | null;
   dbPath?: string;
@@ -26,7 +26,7 @@ export interface MongoMemoryInstancePropBase {
 
 // TODO: find an better name for this interface
 // TODO: find a way to unify with "MongoInstanceOpts"
-export interface MongoMemoryInstanceProp extends MongoMemoryInstancePropBase {
+export interface MongoMemoryInstanceProp extends MongoMemoryInstanceOptsBase {
   auth?: boolean;
   dbName?: string;
   ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
