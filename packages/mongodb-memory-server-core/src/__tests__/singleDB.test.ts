@@ -4,7 +4,9 @@ import { MongoMemoryServer } from '../index';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
-describe('Single mongoServer', () => {
+// This is an Example test, do not merge it with others and do not delete this file
+
+describe('Single MongoMemoryServer', () => {
   let con: MongoClient;
   let mongoServer: MongoMemoryServer;
 
@@ -25,7 +27,7 @@ describe('Single mongoServer', () => {
     }
   });
 
-  it('should start mongo server', async () => {
+  it('should successfully set & get information from the database', async () => {
     const db = con.db(mongoServer.instanceInfo!.dbName);
 
     expect(db).toBeDefined();

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Single mongoServer should start mongo server 1`] = `
+exports[`Single MongoMemoryServer should successfully set & get information from the database 1`] = `
 Object {
   "n": 2,
   "ok": 1,
