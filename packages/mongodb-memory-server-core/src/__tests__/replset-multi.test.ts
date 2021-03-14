@@ -1,7 +1,7 @@
 import MongoMemoryReplSet from '../MongoMemoryReplSet';
 import { MongoClient } from 'mongodb';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 
 describe('multi-member replica set', () => {
   it('should enter running state', async () => {
