@@ -1,6 +1,6 @@
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
-import { defaultValues, ResolveConfigVariables, setDefaultValue } from '../resolveConfig';
+import { envName, ResolveConfigVariables } from '../resolveConfig';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -360,16 +360,32 @@ describe('MongoBinaryDownloadUrl', () => {
       });
     });
 
-    it('should allow overwrite with "ARCHIVE_NAME"', async () => {
+    it('should allow archive overwrite with "ARCHIVE_NAME"', async () => {
       const archiveName = 'mongodb-linux-x86_64-4.0.0.tgz';
-      setDefaultValue(ResolveConfigVariables.ARCHIVE_NAME, archiveName);
+      process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)] = archiveName;
+
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
         version: '3.6.3',
       });
       expect(await du.getDownloadUrl()).toBe(`https://fastdl.mongodb.org/linux/${archiveName}`);
-      defaultValues.delete(ResolveConfigVariables.ARCHIVE_NAME);
+      delete process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)];
+    });
+
+    it('should allow full url overwrite with "DOWNLOAD_URL"', async () => {
+      const downloadUrl = 'https://custom.org/customarchive.tgz';
+      process.env[envName(ResolveConfigVariables.DOWNLOAD_URL)] = downloadUrl;
+
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
+      jest.spyOn(du, 'getArchiveName');
+      expect(await du.getDownloadUrl()).toBe(downloadUrl);
+      expect(du.getArchiveName).not.toHaveBeenCalled();
+      delete process.env[envName(ResolveConfigVariables.DOWNLOAD_URL)];
     });
 
     it('should throw an error if platform is unknown (getArchiveName)', async () => {
