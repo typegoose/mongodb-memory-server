@@ -34,9 +34,6 @@ export class MongoBinaryDownloadUrl {
    * Calls all the necessary functions to determine the URL
    */
   async getDownloadUrl(): Promise<string> {
-    const archive = await this.getArchiveName();
-    log(`Using "${archive}" as the Archive String`);
-
     const downloadUrl = resolveConfig(ResolveConfigVariables.DOWNLOAD_URL);
 
     if (downloadUrl) {
@@ -44,6 +41,9 @@ export class MongoBinaryDownloadUrl {
 
       return downloadUrl;
     }
+
+    const archive = await this.getArchiveName();
+    log(`Using "${archive}" as the Archive String`);
 
     const mirror =
       resolveConfig(ResolveConfigVariables.DOWNLOAD_MIRROR) ?? 'https://fastdl.mongodb.org';
