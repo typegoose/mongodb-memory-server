@@ -388,6 +388,21 @@ describe('MongoBinaryDownloadUrl', () => {
       delete process.env[envName(ResolveConfigVariables.DOWNLOAD_URL)];
     });
 
+    it('should allow mirror overwrite with "DOWNLOAD_MIRROR"', async () => {
+      const archiveName = 'mongodb-linux-x86_64-4.0.0.tgz';
+      const mirror = 'https://custom.org';
+      process.env[envName(ResolveConfigVariables.DOWNLOAD_MIRROR)] = mirror;
+
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
+      jest.spyOn(du, 'getArchiveName').mockImplementationOnce(() => Promise.resolve(archiveName));
+      expect(await du.getDownloadUrl()).toBe(`${mirror}/linux/${archiveName}`);
+      delete process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)];
+    });
+
     it('should throw an error if platform is unknown (getArchiveName)', async () => {
       // this is to test the default case in "getArchiveName"
       const du = new MongoBinaryDownloadUrl({
