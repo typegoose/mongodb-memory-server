@@ -49,7 +49,7 @@ Option `DEBUG` is used to enable Debug Output
 
 Option `DOWNLOAD_MIRROR` is used to set which mirror to use
 
-Default / Format: `https://fastdl.mongodb.org`
+Default / Format: `https://fastdl.mongodb.org` (protocol needs to be included)
 
 ### DOWNLOAD_URL
 

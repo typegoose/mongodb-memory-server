@@ -8,14 +8,15 @@ import {
   generateDbName,
   getHost,
   isNullOrUndefined,
+  uriTemplate,
 } from './util/utils';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { MongoClient, MongoError } from 'mongodb';
 import {
   MongoInstanceEvents,
-  MongoMemoryInstanceProp,
-  MongoMemoryInstancePropBase,
+  MongoMemoryInstanceOpts,
+  MongoMemoryInstanceOptsBase,
   StorageEngine,
 } from './util/MongoInstance';
 import { SpawnOptions } from 'child_process';
@@ -95,7 +96,7 @@ export interface MongoMemoryReplSetOpts {
   /**
    * Specific Options to use for some instances
    */
-  instanceOpts: MongoMemoryInstancePropBase[];
+  instanceOpts: MongoMemoryInstanceOptsBase[];
   /**
    * Binary Options used for all instances
    */
@@ -140,7 +141,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   servers: MongoMemoryServer[] = [];
 
   // "!" is used, because the getters are used instead of the "_" values
-  protected _instanceOpts!: MongoMemoryInstancePropBase[];
+  protected _instanceOpts!: MongoMemoryInstanceOptsBase[];
   protected _binaryOpts!: MongoBinaryOpts;
   protected _replSetOpts!: Required<ReplSetOpts>;
 
@@ -186,11 +187,11 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Get & Set "instanceOpts"
    * @throws if "state" is not "stopped"
    */
-  get instanceOpts(): MongoMemoryInstancePropBase[] {
+  get instanceOpts(): MongoMemoryInstanceOptsBase[] {
     return this._instanceOpts;
   }
 
-  set instanceOpts(val: MongoMemoryInstancePropBase[]) {
+  set instanceOpts(val: MongoMemoryInstanceOptsBase[]) {
     assertion(
       this._state === MongoMemoryReplSetStates.stopped,
       new Error('Cannot change instance Options while "state" is not "stopped"!')
@@ -252,8 +253,8 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Returns instance options suitable for a MongoMemoryServer.
    * @param baseOpts Options to merge with
    */
-  protected getInstanceOpts(baseOpts: MongoMemoryInstancePropBase = {}): MongoMemoryInstanceProp {
-    const opts: MongoMemoryInstanceProp = {
+  protected getInstanceOpts(baseOpts: MongoMemoryInstanceOptsBase = {}): MongoMemoryInstanceOpts {
+    const opts: MongoMemoryInstanceOpts = {
       // disable "auth" if replsetopts has an object-auth
       auth:
         typeof this._replSetOpts.auth === 'object' && !this._ranCreateAuth
@@ -301,20 +302,22 @@ export class MongoMemoryReplSet extends EventEmitter {
         throw new Error('Replica Set is not running. Use debug for more info.');
     }
 
-    const dbName: string = isNullOrUndefined(otherDb)
-      ? this._replSetOpts.dbName
-      : typeof otherDb === 'string'
-      ? otherDb
-      : generateDbName();
-    const ports = this.servers.map((s) => {
-      const port = s.instanceInfo?.port;
-      assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
+    let dbName = this._replSetOpts.dbName;
 
-      return port;
-    });
-    const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
+    if (!!otherDb) {
+      dbName = typeof otherDb === 'string' ? otherDb : generateDbName();
+    }
 
-    return `mongodb://${hosts}/${dbName}?replicaSet=${this._replSetOpts.name}`;
+    const hosts = this.servers
+      .map((s) => {
+        const port = s.instanceInfo?.port;
+        assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
+
+        return `127.0.0.1:${port}`;
+      })
+      .join(',');
+
+    return uriTemplate(hosts, undefined, dbName, [`replicaSet=${this._replSetOpts.name}`]);
   }
 
   /**
@@ -345,6 +348,9 @@ export class MongoMemoryReplSet extends EventEmitter {
     }
   }
 
+  /**
+   * Initialize & start all servers in the replSet
+   */
   protected async initAllServers(): Promise<void> {
     log('initAllServers');
     this.stateChange(MongoMemoryReplSetStates.init);
@@ -570,7 +576,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Create the one Instance (without starting them)
    * @param instanceOpts Instance Options to use for this instance
    */
-  protected _initServer(instanceOpts: MongoMemoryInstanceProp): MongoMemoryServer {
+  protected _initServer(instanceOpts: MongoMemoryInstanceOpts): MongoMemoryServer {
     const serverOpts: MongoMemoryServerOpts = {
       binary: this._binaryOpts,
       instance: instanceOpts,

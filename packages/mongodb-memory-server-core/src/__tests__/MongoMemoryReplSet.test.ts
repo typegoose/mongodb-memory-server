@@ -6,9 +6,9 @@ import MongoMemoryReplSet, {
 import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 import * as utils from '../util/utils';
-import { MongoMemoryInstanceProp } from '../util/MongoInstance';
+import { MongoMemoryInstanceOpts } from '../util/MongoInstance';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -427,7 +427,7 @@ describe('MongoMemoryReplSet', () => {
     expect(
       // @ts-expect-error because "getInstanceOpts" is protected
       replSet.getInstanceOpts({ storageEngine: 'wiredTiger' })
-    ).toMatchObject<MongoMemoryInstanceProp>({
+    ).toMatchObject<MongoMemoryInstanceOpts>({
       // this is needed, otherwise no ts error when "storageEngine" might get changed
       storageEngine: 'wiredTiger',
     });

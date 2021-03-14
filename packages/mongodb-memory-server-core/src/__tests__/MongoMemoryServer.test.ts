@@ -10,7 +10,7 @@ import * as utils from '../util/utils';
 import * as semver from 'semver';
 
 tmp.setGracefulCleanup();
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 
 afterEach(() => {
   jest.restoreAllMocks();

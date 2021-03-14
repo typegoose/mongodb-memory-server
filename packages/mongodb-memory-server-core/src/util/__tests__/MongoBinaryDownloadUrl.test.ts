@@ -1,6 +1,6 @@
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
-import { defaultValues, ResolveConfigVariables, setDefaultValue } from '../resolveConfig';
+import { envName, ResolveConfigVariables } from '../resolveConfig';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -360,16 +360,47 @@ describe('MongoBinaryDownloadUrl', () => {
       });
     });
 
-    it('should allow overwrite with "ARCHIVE_NAME"', async () => {
+    it('should allow archive overwrite with "ARCHIVE_NAME"', async () => {
       const archiveName = 'mongodb-linux-x86_64-4.0.0.tgz';
-      setDefaultValue(ResolveConfigVariables.ARCHIVE_NAME, archiveName);
+      process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)] = archiveName;
+
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
         version: '3.6.3',
       });
       expect(await du.getDownloadUrl()).toBe(`https://fastdl.mongodb.org/linux/${archiveName}`);
-      defaultValues.delete(ResolveConfigVariables.ARCHIVE_NAME);
+      delete process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)];
+    });
+
+    it('should allow full url overwrite with "DOWNLOAD_URL"', async () => {
+      const downloadUrl = 'https://custom.org/customarchive.tgz';
+      process.env[envName(ResolveConfigVariables.DOWNLOAD_URL)] = downloadUrl;
+
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
+      jest.spyOn(du, 'getArchiveName');
+      expect(await du.getDownloadUrl()).toBe(downloadUrl);
+      expect(du.getArchiveName).not.toHaveBeenCalled();
+      delete process.env[envName(ResolveConfigVariables.DOWNLOAD_URL)];
+    });
+
+    it('should allow mirror overwrite with "DOWNLOAD_MIRROR"', async () => {
+      const archiveName = 'mongodb-linux-x86_64-4.0.0.tgz';
+      const mirror = 'https://custom.org';
+      process.env[envName(ResolveConfigVariables.DOWNLOAD_MIRROR)] = mirror;
+
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
+      jest.spyOn(du, 'getArchiveName').mockImplementationOnce(() => Promise.resolve(archiveName));
+      expect(await du.getDownloadUrl()).toBe(`${mirror}/linux/${archiveName}`);
+      delete process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)];
     });
 
     it('should throw an error if platform is unknown (getArchiveName)', async () => {
@@ -482,10 +513,13 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getDebianVersionString()', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
     });
 
     it('should return a archive name for debian 6.2', () => {
@@ -547,6 +581,17 @@ describe('MongoBinaryDownloadUrl', () => {
         })
       ).toBe('debian92');
     });
+
+    it('should return debian10 release-archive for debian 10.0 and mongodb 4.4', () => {
+      downloadUrl.version = '4.4.0';
+      expect(
+        downloadUrl.getDebianVersionString({
+          os: 'linux',
+          dist: 'debian',
+          release: '10.0',
+        })
+      ).toBe('debian10');
+    });
   });
 
   describe('getLegacyVersionString()', () => {
@@ -558,6 +603,78 @@ describe('MongoBinaryDownloadUrl', () => {
 
     it('should return an empty string', () => {
       expect(downloadUrl.getLegacyVersionString()).toBe('');
+    });
+  });
+
+  describe('getLinuxOSVersionString()', () => {
+    it('should give an warning about "alpine"', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+        os: {
+          os: 'linux',
+          dist: 'alpine',
+          release: '0',
+          codename: 'alpine',
+        },
+      });
+      jest.spyOn(du, 'getLegacyVersionString');
+      const ret = du.getLinuxOSVersionString(du.os as LinuxOS);
+      expect(console.warn).toHaveBeenCalledTimes(2);
+      expect(du.getLegacyVersionString).toHaveBeenCalledTimes(1);
+      expect(ret).toBe('');
+    });
+
+    it('should give an warning about "unknown"', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+        os: {
+          os: 'linux',
+          dist: 'unknown',
+          release: '0',
+          codename: 'unknown',
+        },
+      });
+      jest.spyOn(du, 'getLegacyVersionString');
+      const ret = du.getLinuxOSVersionString(du.os as LinuxOS);
+      expect(console.warn).toHaveBeenCalledTimes(2);
+      expect(du.getLegacyVersionString).toHaveBeenCalledTimes(1);
+      expect(ret).toBe('');
+    });
+  });
+
+  describe('translateArch()', () => {
+    it('should translate "ia32" and linux to "i686"', () => {
+      expect(MongoBinaryDownloadUrl.translateArch('ia32', 'linux')).toBe('i686');
+    });
+
+    it('should translate "ia32" and win32 to "i386"', () => {
+      expect(MongoBinaryDownloadUrl.translateArch('ia32', 'win32')).toBe('i386');
+    });
+
+    it('should throw an error for "ia32" and unsupported platform', () => {
+      try {
+        MongoBinaryDownloadUrl.translateArch('ia32', 'darwin');
+        fail('Expected "translateArch" to fail');
+      } catch (err) {
+        expect(err.message).toBe(
+          'Unsupported Architecture-Platform combination: arch: "ia32", platform: "darwin"'
+        );
+      }
+    });
+
+    it('should throw an error for an unsupported architecture', () => {
+      try {
+        MongoBinaryDownloadUrl.translateArch('risc', 'linux');
+        fail('Expected "translateArch" to fail');
+      } catch (err) {
+        expect(err.message).toBe('Unsupported Architecture: arch: "risc"');
+      }
     });
   });
 });

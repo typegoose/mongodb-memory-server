@@ -9,11 +9,7 @@ import {
   authDefault,
   statPath,
 } from './util/utils';
-import MongoInstance, {
-  MongodOpts,
-  MongoMemoryInstanceProp,
-  StorageEngine,
-} from './util/MongoInstance';
+import MongoInstance, { MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { EventEmitter } from 'events';
@@ -29,7 +25,7 @@ tmp.setGracefulCleanup();
  * MongoMemoryServer Stored Options
  */
 export interface MongoMemoryServerOpts {
-  instance?: MongoMemoryInstanceProp;
+  instance?: MongoMemoryInstanceOpts;
   binary?: MongoBinaryOpts;
   spawn?: SpawnOptions;
   /**
@@ -70,12 +66,12 @@ export interface AutomaticAuth {
  * Data used by _startUpInstance's "data" variable
  */
 export interface StartupInstanceData {
-  port: number;
-  dbPath?: string;
-  dbName: string;
-  ip: string;
-  storageEngine: StorageEngine;
-  replSet?: string;
+  port: NonNullable<MongoMemoryInstanceOpts['port']>;
+  dbPath?: MongoMemoryInstanceOpts['dbPath'];
+  dbName: NonNullable<MongoMemoryInstanceOpts['dbName']>;
+  ip: NonNullable<MongoMemoryInstanceOpts['ip']>;
+  storageEngine: NonNullable<MongoMemoryInstanceOpts['storageEngine']>;
+  replSet?: NonNullable<MongoMemoryInstanceOpts['replSet']>;
   tmpDir?: tmp.DirResult;
 }
 
@@ -83,7 +79,7 @@ export interface StartupInstanceData {
  * Information about the currently running instance
  */
 export interface MongoInstanceData extends StartupInstanceData {
-  dbPath: string; // re-declare, because in this interface it is *not* optional
+  dbPath: NonNullable<StartupInstanceData['dbPath']>;
   instance: MongoInstance;
 }
 
@@ -131,6 +127,7 @@ export type UserRoles =
  * Interface options for "db.createUser" (used for this package)
  * This interface is WITHOUT the custom options from this package
  * (Some text copied from https://docs.mongodb.com/manual/reference/method/db.createUser/#definition)
+ * This interface only exists, because mongodb dosnt provide such an interface for "createUser" (or as just very basic types)
  */
 export interface CreateUserMongoDB {
   /**
@@ -634,7 +631,8 @@ export class MongoMemoryServer extends EventEmitter {
     let dbName: string = this._instanceInfo.dbName;
 
     // using "if" instead of nested "?:"
-    if (!isNullOrUndefined(otherDbName)) {
+    // Using "!!" to convert string into boolean, and that if "otherDbName" is fale, to not trigger this
+    if (!!otherDbName) {
       // use "otherDbName" if string, otherwise generate an db-name
       dbName = typeof otherDbName === 'string' ? otherDbName : generateDbName();
     }

@@ -7,7 +7,6 @@ import { assertion } from '../utils';
 import { DryMongoBinary } from '../DryMongoBinary';
 
 tmp.setGracefulCleanup();
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 5; // 5 seconds
 
 const mockGetMongodPath = jest.fn().mockResolvedValue('/temp/path');
 

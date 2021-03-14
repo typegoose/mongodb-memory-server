@@ -17,19 +17,20 @@ const log = debug('MongoMS:MongoInstance');
 
 export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
 
-export interface MongoMemoryInstancePropBase {
+export interface MongoMemoryInstanceOptsBase {
   args?: string[];
-  port?: number | null;
+  port?: number;
   dbPath?: string;
   storageEngine?: StorageEngine;
 }
 
-// TODO: find an better name for this interface
-// TODO: find a way to unify with "MongoInstanceOpts"
-export interface MongoMemoryInstanceProp extends MongoMemoryInstancePropBase {
+export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
   auth?: boolean;
   dbName?: string;
-  ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
+  /**
+   * for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
+   */
+  ip?: string;
   replSet?: string;
   storageEngine?: StorageEngine;
 }
@@ -50,19 +51,9 @@ export enum MongoInstanceEvents {
   instanceStarted = 'instanceStarted',
 }
 
-export interface MongoInstanceOpts {
-  port?: number;
-  ip?: string; // for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
-  storageEngine?: StorageEngine;
-  dbPath?: string;
-  replSet?: string;
-  args?: string[];
-  auth?: boolean;
-}
-
 export interface MongodOpts {
   // instance options
-  instance: MongoInstanceOpts;
+  instance: MongoMemoryInstanceOpts;
 
   // mongo binary options
   binary: MongoBinaryOpts;
@@ -85,7 +76,7 @@ export interface MongoInstance extends EventEmitter {
 export class MongoInstance extends EventEmitter {
   // Mark these values as "readonly" & "Readonly" because modifying them after starting will have no effect
   // readonly is required otherwise the property can still be changed on the root level
-  instanceOpts: MongoInstanceOpts;
+  instanceOpts: MongoMemoryInstanceOpts;
   readonly binaryOpts: Readonly<MongoBinaryOpts>;
   readonly spawnOpts: Readonly<SpawnOptions>;
 
