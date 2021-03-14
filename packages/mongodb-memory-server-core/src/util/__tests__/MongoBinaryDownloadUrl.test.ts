@@ -576,4 +576,26 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(downloadUrl.getLegacyVersionString()).toBe('');
     });
   });
+
+  describe('getLinuxOSVersionString()', () => {
+    it('should give an warning about "alpine"', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+        os: {
+          os: 'linux',
+          dist: 'alpine',
+          release: '0',
+          codename: 'alpine',
+        },
+      });
+      jest.spyOn(du, 'getLegacyVersionString');
+      const ret = du.getLinuxOSVersionString(du.os as LinuxOS);
+      expect(console.warn).toHaveBeenCalledTimes(2);
+      expect(du.getLegacyVersionString).toHaveBeenCalledTimes(1);
+      expect(ret).toBe('');
+    });
+  });
 });
