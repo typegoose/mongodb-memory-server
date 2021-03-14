@@ -647,4 +647,34 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(ret).toBe('');
     });
   });
+
+  describe('translateArch()', () => {
+    it('should translate "ia32" and linux to "i686"', () => {
+      expect(MongoBinaryDownloadUrl.translateArch('ia32', 'linux')).toBe('i686');
+    });
+
+    it('should translate "ia32" and win32 to "i386"', () => {
+      expect(MongoBinaryDownloadUrl.translateArch('ia32', 'win32')).toBe('i386');
+    });
+
+    it('should throw an error for "ia32" and unsupported platform', () => {
+      try {
+        MongoBinaryDownloadUrl.translateArch('ia32', 'darwin');
+        fail('Expected "translateArch" to fail');
+      } catch (err) {
+        expect(err.message).toBe(
+          'Unsupported Architecture-Platform combination: arch: "ia32", platform: "darwin"'
+        );
+      }
+    });
+
+    it('should throw an error for an unsupported architecture', () => {
+      try {
+        MongoBinaryDownloadUrl.translateArch('risc', 'linux');
+        fail('Expected "translateArch" to fail');
+      } catch (err) {
+        expect(err.message).toBe('Unsupported Architecture: arch: "risc"');
+      }
+    });
+  });
 });
