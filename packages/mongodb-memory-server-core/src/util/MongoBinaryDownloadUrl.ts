@@ -4,6 +4,7 @@ import debug from 'debug';
 import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
 import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
+import { URL } from 'url';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -39,7 +40,9 @@ export class MongoBinaryDownloadUrl {
     if (downloadUrl) {
       log(`Using "${downloadUrl}" as the Download-URL`);
 
-      return downloadUrl;
+      const url = new URL(downloadUrl); // check if this is an valid url
+
+      return url.toString();
     }
 
     const archive = await this.getArchiveName();
@@ -49,7 +52,10 @@ export class MongoBinaryDownloadUrl {
       resolveConfig(ResolveConfigVariables.DOWNLOAD_MIRROR) ?? 'https://fastdl.mongodb.org';
     log(`Using "${mirror}" as the mirror`);
 
-    return `${mirror}/${this.platform}/${archive}`;
+    const url = new URL(mirror);
+    url.pathname = `/${this.platform}/${archive}`;
+
+    return url.toString();
   }
 
   /**
