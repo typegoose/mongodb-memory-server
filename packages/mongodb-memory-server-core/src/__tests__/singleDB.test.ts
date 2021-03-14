@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MongoClient } from 'mongodb';
-import MongoMemoryServer from '../MongoMemoryServer';
+import { MongoMemoryServer } from '../index';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
