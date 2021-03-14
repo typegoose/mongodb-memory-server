@@ -2,9 +2,9 @@
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from '../index';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
+// This is an Example test, do not merge it with others and do not delete this file
 
-describe('Multiple mongoServers', () => {
+describe('Multiple MongoMemoryServer', () => {
   let con1: MongoClient;
   let con2: MongoClient;
   let mongoServer1: MongoMemoryServer;
