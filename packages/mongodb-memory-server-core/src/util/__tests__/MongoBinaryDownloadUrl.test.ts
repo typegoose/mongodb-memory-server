@@ -597,5 +597,25 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(du.getLegacyVersionString).toHaveBeenCalledTimes(1);
       expect(ret).toBe('');
     });
+
+    it('should give an warning about "unknown"', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+        os: {
+          os: 'linux',
+          dist: 'unknown',
+          release: '0',
+          codename: 'unknown',
+        },
+      });
+      jest.spyOn(du, 'getLegacyVersionString');
+      const ret = du.getLinuxOSVersionString(du.os as LinuxOS);
+      expect(console.warn).toHaveBeenCalledTimes(2);
+      expect(du.getLegacyVersionString).toHaveBeenCalledTimes(1);
+      expect(ret).toBe('');
+    });
   });
 });
