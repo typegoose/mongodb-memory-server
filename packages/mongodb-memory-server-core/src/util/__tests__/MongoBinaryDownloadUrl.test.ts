@@ -513,10 +513,13 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getDebianVersionString()', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
     });
 
     it('should return a archive name for debian 6.2', () => {
@@ -577,6 +580,17 @@ describe('MongoBinaryDownloadUrl', () => {
           release: '9.0',
         })
       ).toBe('debian92');
+    });
+
+    it('should return debian10 release-archive for debian 10.0 and mongodb 4.4', () => {
+      downloadUrl.version = '4.4.0';
+      expect(
+        downloadUrl.getDebianVersionString({
+          os: 'linux',
+          dist: 'debian',
+          release: '10.0',
+        })
+      ).toBe('debian10');
     });
   });
 
