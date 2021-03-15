@@ -5,3 +5,9 @@ export class StateError extends Error {
     );
   }
 }
+
+export class UnknownLockfileStatus extends Error {
+  constructor(public status: number) {
+    super(`Unknown LockFile Status: "${status}"`);
+  }
+}
