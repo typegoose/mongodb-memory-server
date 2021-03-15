@@ -17,3 +17,10 @@ Example: `Unknown LockFile Status: "-1"`
 
 Details:  
 This Error gets thrown if an number outside the `LockFileStatus` Enum is used
+
+## UnknownPlatform
+
+Example: `Unknown Platform: "unknown"`
+
+Details:  
+This Error gets thrown when this package cannot get what platform it is running on
