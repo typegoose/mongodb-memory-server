@@ -5,6 +5,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
 import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 import { URL } from 'url';
+import { UnknownPlatform } from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -78,7 +79,7 @@ export class MongoBinaryDownloadUrl {
       case 'linux':
         return this.getArchiveNameLinux();
       default:
-        throw new Error(`Unknown Platform "${this.platform}"`);
+        throw new UnknownPlatform(this.platform);
     }
   }
 
@@ -387,7 +388,7 @@ export class MongoBinaryDownloadUrl {
       case 'sunos':
         return 'sunos5';
       default:
-        throw new Error(`Unknown Platform "${platform}"`);
+        throw new UnknownPlatform(platform);
     }
   }
 

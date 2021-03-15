@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platform is unknown (getArchiveName) 1`] = `"Unknown Platform: \\"unknown\\""`;
+
+exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platform is unknown (translatePlatform) 1`] = `"Unknown Platform: \\"unknown\\""`;

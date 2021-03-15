@@ -1,3 +1,4 @@
+import { UnknownPlatform } from '../errors';
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
@@ -415,7 +416,8 @@ describe('MongoBinaryDownloadUrl', () => {
         await du.getArchiveName();
         fail('Expected "getArchiveName" to throw');
       } catch (err) {
-        expect(err.message).toEqual('Unknown Platform "unknown"');
+        expect(err).toBeInstanceOf(UnknownPlatform);
+        expect(err.message).toMatchSnapshot();
       }
     });
 
@@ -429,7 +431,8 @@ describe('MongoBinaryDownloadUrl', () => {
         });
         fail('Expected "translatePlatform" to throw');
       } catch (err) {
-        expect(err.message).toEqual('Unknown Platform "unknown"');
+        expect(err).toBeInstanceOf(UnknownPlatform);
+        expect(err.message).toMatchSnapshot();
       }
     });
   });
