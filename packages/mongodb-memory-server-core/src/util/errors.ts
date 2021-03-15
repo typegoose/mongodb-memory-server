@@ -11,3 +11,9 @@ export class UnknownLockfileStatus extends Error {
     super(`Unknown LockFile Status: "${status}"`);
   }
 }
+
+export class UnknownPlatform extends Error {
+  constructor(public platform: string) {
+    super(`Unknown Platform: "${platform}"`);
+  }
+}
