@@ -7,6 +7,7 @@ import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 import * as utils from '../util/utils';
 import { MongoMemoryInstanceOpts } from '../util/MongoInstance';
+import { StateError } from '../util/errors';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 
@@ -179,7 +180,8 @@ describe('single server replset', () => {
       fail('Expected "_initReplSet" to throw');
     } catch (err) {
       clearTimeout(timeout);
-      expect(err.message).toEqual('Not in init phase.');
+      expect(err).toBeInstanceOf(StateError);
+      expect(err.message).toMatchSnapshot();
     }
   });
 
@@ -357,9 +359,8 @@ describe('MongoMemoryReplSet', () => {
           replSet.binaryOpts = {};
           fail('Expected assignment of "replSet.binaryOpts" to fail');
         } catch (err) {
-          expect(err.message).toEqual(
-            'Cannot change binary Options while "state" is not "stopped"!'
-          );
+          expect(err).toBeInstanceOf(StateError);
+          expect(err.message).toMatchSnapshot();
         }
       });
 
@@ -368,9 +369,8 @@ describe('MongoMemoryReplSet', () => {
           replSet.instanceOpts = [];
           fail('Expected assignment of "replSet.instanceOpts" to fail');
         } catch (err) {
-          expect(err.message).toEqual(
-            'Cannot change instance Options while "state" is not "stopped"!'
-          );
+          expect(err).toBeInstanceOf(StateError);
+          expect(err.message).toMatchSnapshot();
         }
       });
 
@@ -379,9 +379,8 @@ describe('MongoMemoryReplSet', () => {
           replSet.replSetOpts = {};
           fail('Expected assignment of "replSet.instanceOpts" to fail');
         } catch (err) {
-          expect(err.message).toEqual(
-            'Cannot change replSet Options while "state" is not "stopped"!'
-          );
+          expect(err).toBeInstanceOf(StateError);
+          expect(err.message).toMatchSnapshot();
         }
       });
     });
