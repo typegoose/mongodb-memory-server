@@ -3,6 +3,7 @@ import * as tmp from 'tmp';
 import * as path from 'path';
 import { pathExists } from '../utils';
 import { promises as fspromises } from 'fs';
+import { UnknownLockfileStatus } from '../errors';
 
 let tmpDir: tmp.DirResult;
 beforeAll(() => {
@@ -86,5 +87,57 @@ describe('LockFile', () => {
     expect(await pathExists(lockPath)).toBeFalsy();
     expect(lockFile.LockFile.files.size).toBe(0);
     expect(lockFile.LockFile.files.has(lockPath)).toBeFalsy();
+  });
+
+  describe('Unknown Lockfile Status Errors', () => {
+    it('should throw "UnknownLockfileStatus" in "lock"', async () => {
+      jest
+        .spyOn(
+          lockFile.LockFile,
+          // @ts-expect-error "checkLock" is "protected"
+          'checkLock'
+        )
+        .mockImplementation(
+          // @ts-expect-error "-1" is not in "LockFileStatus"
+          () => Promise.resolve(-1)
+        );
+      try {
+        await lockFile.LockFile.lock('/hello');
+        fail('Expected "lock" to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(UnknownLockfileStatus);
+        expect(err.message).toMatchSnapshot();
+      }
+    });
+
+    it('should throw "UnknownLockfileStatus" in "waitForLock"', async () => {
+      let calls = 0;
+      jest
+        .spyOn(
+          lockFile.LockFile,
+          // @ts-expect-error "checkLock" is "protected"
+          'checkLock'
+        )
+        .mockImplementation(
+          // @ts-expect-error "-1" is not in "LockFileStatus"
+          () => {
+            if (calls === 0) {
+              calls++;
+
+              return lockFile.LockFileStatus.available;
+            }
+
+            return Promise.resolve(-1);
+          }
+        );
+      try {
+        // @ts-expect-error "waitForLock" is "protected"
+        await lockFile.LockFile.waitForLock('/hello');
+        fail('Expected "waitForLock" to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(UnknownLockfileStatus);
+        expect(err.message).toMatchSnapshot();
+      }
+    });
   });
 });
