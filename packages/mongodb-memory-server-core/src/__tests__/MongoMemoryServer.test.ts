@@ -8,6 +8,7 @@ import MongoMemoryServer, {
 import MongoInstance from '../util/MongoInstance';
 import * as utils from '../util/utils';
 import * as semver from 'semver';
+import { StateError } from '../util/errors';
 
 tmp.setGracefulCleanup();
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
@@ -500,6 +501,17 @@ describe('MongoMemoryServer', () => {
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
+    });
+
+    it('should throw an error if state is not "stopped"', async () => {
+      const mongoServer = new MongoMemoryServer();
+      try {
+        await mongoServer.cleanup();
+        fail('Expected "cleanup" to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(StateError);
+        expect(err.message).toMatchSnapshot();
+      }
     });
   });
 

@@ -16,6 +16,7 @@ import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
 import { MongoClient } from 'mongodb';
 import { lt } from 'semver';
+import { StateError } from './util/errors';
 
 const log = debug('MongoMS:MongoMemoryServer');
 
@@ -499,10 +500,7 @@ export class MongoMemoryServer extends EventEmitter {
       force = false;
     }
 
-    assertion(
-      this.state === MongoMemoryServerStates.stopped,
-      new Error('Cannot cleanup when state is not "stopped"')
-    );
+    assertionIsMMSState(MongoMemoryServerStates.stopped, this.state);
     process.removeListener('beforeExit', this.cleanup);
 
     if (isNullOrUndefined(this._instanceInfo)) {
@@ -717,4 +715,16 @@ export default MongoMemoryServer;
  */
 function assertionInstanceInfo(val: unknown): asserts val is MongoInstanceData {
   assertion(!isNullOrUndefined(val), new Error('"instanceInfo" is undefined'));
+}
+
+/**
+ * Helper function to de-duplicate state checking for "MongoMemoryServerStates"
+ * @param wantedState The State that is wanted
+ * @param currentState The current State ("this._state")
+ */
+function assertionIsMMSState(
+  wantedState: MongoMemoryServerStates,
+  currentState: MongoMemoryServerStates
+): void {
+  assertion(currentState === wantedState, new StateError([wantedState], currentState));
 }

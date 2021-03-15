@@ -20,6 +20,7 @@ import {
   StorageEngine,
 } from './util/MongoInstance';
 import { SpawnOptions } from 'child_process';
+import { StateError } from './util/errors';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
 
@@ -192,10 +193,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   set instanceOpts(val: MongoMemoryInstanceOptsBase[]) {
-    assertion(
-      this._state === MongoMemoryReplSetStates.stopped,
-      new Error('Cannot change instance Options while "state" is not "stopped"!')
-    );
+    assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
     this._instanceOpts = val;
   }
 
@@ -210,7 +208,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   set binaryOpts(val: MongoBinaryOpts) {
     assertion(
       this._state === MongoMemoryReplSetStates.stopped,
-      new Error('Cannot change binary Options while "state" is not "stopped"!')
+      new StateError([MongoMemoryReplSetStates.stopped], this._state)
     );
     this._binaryOpts = val;
   }
@@ -225,10 +223,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   set replSetOpts(val: ReplSetOpts) {
-    assertion(
-      this._state === MongoMemoryReplSetStates.stopped,
-      new Error('Cannot change replSet Options while "state" is not "stopped"!')
-    );
+    assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
     const defaults: Required<ReplSetOpts> = {
       auth: false,
       args: [],
@@ -424,10 +419,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @throws If an fs error occured
    */
   async cleanup(force: boolean = false): Promise<void> {
-    assertion(
-      this._state === MongoMemoryReplSetStates.stopped,
-      new Error('Cannot run cleanup when state is not "stopped"')
-    );
+    assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
     log(`cleanup for "${this.servers.length}" servers`);
     process.removeListener('beforeExit', this.cleanup);
 
@@ -483,7 +475,7 @@ export class MongoMemoryReplSet extends EventEmitter {
    */
   protected async _initReplSet(): Promise<void> {
     log('_initReplSet');
-    assertion(this._state === MongoMemoryReplSetStates.init, new Error('Not in init phase.'));
+    assertionIsMMSRSState(MongoMemoryReplSetStates.init, this._state);
     assertion(this.servers.length > 0, new Error('One or more servers are required.'));
     const uris = this.servers.map((server) => server.getUri());
 
@@ -631,3 +623,15 @@ export class MongoMemoryReplSet extends EventEmitter {
 }
 
 export default MongoMemoryReplSet;
+
+/**
+ * Helper function to de-duplicate state checking for "MongoMemoryReplSetStates"
+ * @param wantedState The State that is wanted
+ * @param currentState The current State ("this._state")
+ */
+function assertionIsMMSRSState(
+  wantedState: MongoMemoryReplSetStates,
+  currentState: MongoMemoryReplSetStates
+): void {
+  assertion(currentState === wantedState, new StateError([wantedState], currentState));
+}

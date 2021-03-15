@@ -6,6 +6,7 @@ import mkdirp from 'mkdirp';
 import { promises as fspromises } from 'fs';
 import { Mutex } from 'async-mutex';
 import { v4 as uuidv4 } from 'uuid';
+import { UnknownLockfileStatus } from './errors';
 
 const log = debug('MongoMS:LockFile');
 
@@ -73,14 +74,15 @@ export class LockFile {
     // just to make sure "path" could resolve it to something
     utils.assertion(useFile.length > 0, new Error('Provided Path for lock file is length of 0'));
 
-    switch (await this.checkLock(useFile)) {
+    const status = await this.checkLock(useFile);
+    switch (status) {
       case LockFileStatus.lockedDifferent:
       case LockFileStatus.lockedSelf:
         return this.waitForLock(useFile);
       case LockFileStatus.available:
         return this.createLock(useFile);
       default:
-        throw new Error(`Unknown LockFileStatus!`);
+        throw new UnknownLockfileStatus(status);
     }
   }
 
@@ -185,7 +187,7 @@ export class LockFile {
       case LockFileStatus.available:
         return this.createLock(file);
       default:
-        throw new Error(`Unknown LockFileStatus!`);
+        throw new UnknownLockfileStatus(lockStatus);
     }
   }
 

@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LockFile Unknown Lockfile Status Errors should throw "UnknownLockfileStatus" in "lock" 1`] = `"Unknown LockFile Status: \\"-1\\""`;
+
+exports[`LockFile Unknown Lockfile Status Errors should throw "UnknownLockfileStatus" in "waitForLock" 1`] = `"Unknown LockFile Status: \\"-1\\""`;

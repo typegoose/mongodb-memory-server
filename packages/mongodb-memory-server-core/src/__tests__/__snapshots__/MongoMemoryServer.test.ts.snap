@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MongoMemoryServer cleanup() should throw an error if state is not "stopped" 1`] = `"Incorrect State for operation: \\"new\\", allowed States: \\"[stopped]\\""`;

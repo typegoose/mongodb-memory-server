@@ -1,3 +1,16 @@
+## [7.0.0-beta.30](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.29...v7.0.0-beta.30) (2021-03-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **utils:** Default-export from "utils" got removed, import it now with "{ generateDbName }"
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** getDownloadUrl: try "DOWNLOAD_URL" before getArchiveName ([7a8a4c3](https://github.com/nodkz/mongodb-memory-server/commit/7a8a4c34c44aa588277b2ea94f541c2f28b1730d))
+* **MongoBinaryUrl:** getDownloadUrl: try to create an "URL" to check if the url is valid ([25c865c](https://github.com/nodkz/mongodb-memory-server/commit/25c865c0a71e7d682eccb6f0e2895a11f9f092ef))
+* **utils:** remove default export ([102e4b0](https://github.com/nodkz/mongodb-memory-server/commit/102e4b05479f8f2433de447bd10b334f6b80301a))
+
 ## [7.0.0-beta.29](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.28...v7.0.0-beta.29) (2021-03-12)
 
 

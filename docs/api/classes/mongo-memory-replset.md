@@ -106,7 +106,7 @@ Also enables `auth`
 
 Typings: `protected _initServer(instanceOpts: MongoMemoryInstanceProp): MongoMemoryServer`
 
-Creates an new [`instance`](./mongomemoryserver.md) for the ReplSet
+Creates an new [`instance`](./mongo-memory-server.md) for the ReplSet
 
 ### _waitForPrimary
 
