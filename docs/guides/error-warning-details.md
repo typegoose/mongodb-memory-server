@@ -24,3 +24,10 @@ Example: `Unknown Platform: "unknown"`
 
 Details:  
 This Error gets thrown when this package cannot get what platform it is running on
+
+## UnknownArchitecture
+
+Example: `Unsupported Architecture: "risc"`
+
+Details:  
+This Error gets thrown when this package runs on an unsupported architecture by mongodb
