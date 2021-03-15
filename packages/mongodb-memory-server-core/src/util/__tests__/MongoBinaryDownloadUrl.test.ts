@@ -1,4 +1,4 @@
-import { UnknownPlatform } from '../errors';
+import { UnknownPlatform, UnknownArchitecture } from '../errors';
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
@@ -665,9 +665,8 @@ describe('MongoBinaryDownloadUrl', () => {
         MongoBinaryDownloadUrl.translateArch('ia32', 'darwin');
         fail('Expected "translateArch" to fail');
       } catch (err) {
-        expect(err.message).toBe(
-          'Unsupported Architecture-Platform combination: arch: "ia32", platform: "darwin"'
-        );
+        expect(err).toBeInstanceOf(UnknownArchitecture);
+        expect(err.message).toMatchSnapshot();
       }
     });
 
@@ -676,7 +675,8 @@ describe('MongoBinaryDownloadUrl', () => {
         MongoBinaryDownloadUrl.translateArch('risc', 'linux');
         fail('Expected "translateArch" to fail');
       } catch (err) {
-        expect(err.message).toBe('Unsupported Architecture: arch: "risc"');
+        expect(err).toBeInstanceOf(UnknownArchitecture);
+        expect(err.message).toMatchSnapshot();
       }
     });
   });

@@ -5,7 +5,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
 import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 import { URL } from 'url';
-import { UnknownPlatform } from './errors';
+import { UnknownArchitecture, UnknownPlatform } from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -407,15 +407,13 @@ export class MongoBinaryDownloadUrl {
           return 'i386';
         }
 
-        throw new Error(
-          `Unsupported Architecture-Platform combination: arch: "${arch}", platform: "${mongoPlatform}"`
-        );
+        throw new UnknownArchitecture(arch, mongoPlatform);
       case 'x64':
         return 'x86_64';
       case 'arm64':
         return 'arm64';
       default:
-        throw new Error(`Unsupported Architecture: arch: "${arch}"`);
+        throw new UnknownArchitecture(arch);
     }
   }
 }
