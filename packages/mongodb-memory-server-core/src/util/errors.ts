@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from './utils';
+
 export class StateError extends Error {
   constructor(public wantedStates: [string], public gotState: string) {
     super(
@@ -15,5 +17,17 @@ export class UnknownLockfileStatus extends Error {
 export class UnknownPlatform extends Error {
   constructor(public platform: string) {
     super(`Unknown Platform: "${platform}"`);
+  }
+}
+
+export class UnknownArchitecture extends Error {
+  constructor(public arch: string, public platform?: string) {
+    super();
+
+    if (!isNullOrUndefined(platform)) {
+      this.message = `Unsupported Architecture-Platform combination: arch: "${arch}", platform: "${platform}"`;
+    } else {
+      this.message = `Unsupported Architecture: "${arch}"`;
+    }
   }
 }
