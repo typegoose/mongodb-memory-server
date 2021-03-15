@@ -1,3 +1,18 @@
+## [7.0.0-beta.31](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.30...v7.0.0-beta.31) (2021-03-15)
+
+
+### Features
+
+* **errors:** add error "StateError" ([e582407](https://github.com/nodkz/mongodb-memory-server/commit/e582407cf0904244465e56012de9a7c9caf410a9))
+* **errors:** add error "UnknownArchitecture" ([e2c39d6](https://github.com/nodkz/mongodb-memory-server/commit/e2c39d6b448aac4a81be23dfb4d6cef33aaef90f))
+* **errors:** add error "UnknownLockfileStatus" ([186df5b](https://github.com/nodkz/mongodb-memory-server/commit/186df5b1ccd81714826d2880eb07bf4e3d80d0de))
+* **errors:** add error "UnknownPlatform" ([747d893](https://github.com/nodkz/mongodb-memory-server/commit/747d893b57c51ec85a10d4343cb17044c6eb4715))
+* **lockfile:** replace custom errors with "UnknownLockfileStatus" ([5ea5662](https://github.com/nodkz/mongodb-memory-server/commit/5ea56626454ff1852ccc07ad95630e1db130000f))
+* **MongoBinaryDownloadUrl:** replace custom errors with "UnknownArchitecture" ([6755554](https://github.com/nodkz/mongodb-memory-server/commit/67555547060d233fc3eca3a22452dbcd76b86c20))
+* **MongoBinaryDownloadUrl:** replace custom errors with "UnknownPlatform" ([86aac73](https://github.com/nodkz/mongodb-memory-server/commit/86aac73a768ca912527eaa30e50c0ad7a856ca26))
+* **MongoMemoryReplSet:** replace custom errors with "StateError" ([f49d7a1](https://github.com/nodkz/mongodb-memory-server/commit/f49d7a1c54f6ff39c5f5b91bdae32f3fc01f5c87))
+* **MongoMemoryServer:** replace custom error with "StateError" ([e965ef5](https://github.com/nodkz/mongodb-memory-server/commit/e965ef55c073f81d49934ffa86683bf06c1ed1ab))
+
 ## [7.0.0-beta.30](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.29...v7.0.0-beta.30) (2021-03-14)
 
 
