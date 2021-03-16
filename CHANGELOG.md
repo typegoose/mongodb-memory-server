@@ -1,3 +1,10 @@
+## [7.0.0-beta.32](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.31...v7.0.0-beta.32) (2021-03-16)
+
+
+### Fixes
+
+* **MongoMemoryServer:** change state to stopped when start fails ([e9134a7](https://github.com/nodkz/mongodb-memory-server/commit/e9134a7f4c05d741d25742b11d2d6a5862c35fcc))
+
 ## [7.0.0-beta.31](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.30...v7.0.0-beta.31) (2021-03-15)
 
 
