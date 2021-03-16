@@ -63,6 +63,7 @@ describe('MongoMemoryServer', () => {
 
       await expect(mongoServer.start()).rejects.toThrow('unknown error');
 
+      expect(mongoServer.state).toStrictEqual(MongoMemoryServerStates.stopped);
       expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledTimes(1);
     });

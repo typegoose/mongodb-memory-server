@@ -277,6 +277,8 @@ export class MongoMemoryServer extends EventEmitter {
         console.warn('Starting the instance failed, enable debug for more information');
       }
 
+      this.stateChange(MongoMemoryServerStates.stopped);
+
       throw err;
     });
 
