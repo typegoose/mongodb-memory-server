@@ -86,16 +86,11 @@ export class MongoBinary {
     const options: Required<MongoBinaryOpts> = { ...defaultOptions, ...opts };
     log(`getPath: MongoBinary options:`, JSON.stringify(options, null, 2));
 
-    let binaryPath: string | undefined;
-
-    const locatedBinary = await DryMongoBinary.locateBinary(options);
-
-    if (!isNullOrUndefined(locatedBinary)) {
-      binaryPath = locatedBinary;
-    }
+    let binaryPath: string | undefined = await DryMongoBinary.locateBinary(options);
 
     // check if the system binary has the same version as requested
     if (options.systemBinary.length > 0) {
+      // this case should actually never be false, because if "SYSTEM_BINARY" is set, "locateBinary" will run "getSystemPath" which tests the path for permissions
       if (!isNullOrUndefined(binaryPath)) {
         log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
         const spawnOutput = spawnSync(binaryPath, ['--version'])
@@ -124,7 +119,7 @@ export class MongoBinary {
         }
       } else {
         throw new Error(
-          'Option "SYSTEM_BINARY" was set, but binaryPath was empty! (system binary could not be found?)'
+          'Option "SYSTEM_BINARY" was set, but binaryPath was empty! (system binary could not be found?) [This Error should normally not be thrown, please report this]'
         );
       }
     }
