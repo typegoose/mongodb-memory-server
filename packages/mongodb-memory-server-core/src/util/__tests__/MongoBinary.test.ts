@@ -32,7 +32,7 @@ describe('MongoBinary', () => {
     DryMongoBinary.binaryCache.clear();
   });
 
-  describe('getDownloadPath', () => {
+  describe('getPath', () => {
     it('should download binary and keep it in cache', async () => {
       const version = resolveConfig(ResolveConfigVariables.VERSION);
       assertion(typeof version === 'string', new Error('Expected "version" to be an string'));
