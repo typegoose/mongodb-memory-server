@@ -97,10 +97,15 @@ export class MongoBinary {
     if (options.systemBinary.length > 0) {
       if (!isNullOrUndefined(binaryPath)) {
         log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
-        const binaryVersion = spawnSync(binaryPath, ['--version'])
+        const spawnOutput = spawnSync(binaryPath, ['--version'])
           .toString()
-          .split('\n')[0]
-          .split(' ')[2];
+          .match(/^db\sversion\s(v?\d+\.\d+\.\d+)$/im);
+
+        assertion(
+          !isNullOrUndefined(spawnOutput),
+          new Error('Couldnt find an version from system binary output!')
+        );
+        const binaryVersion = spawnOutput[1];
 
         if (isNullOrUndefined(options.version) || options.version.length <= 0) {
           log('getPath: Using SystemBinary version as options.version');
