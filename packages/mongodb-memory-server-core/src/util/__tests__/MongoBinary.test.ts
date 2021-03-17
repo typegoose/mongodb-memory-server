@@ -77,6 +77,25 @@ describe('MongoBinary', () => {
       expect(MongoBinary.download).toHaveBeenCalledTimes(1);
     });
 
+    it('should not trigger an download an error if "RUNTIME_DOWNLOAD" is false and no binary is found', async () => {
+      process.env[envName(ResolveConfigVariables.RUNTIME_DOWNLOAD)] = 'false';
+      jest.spyOn(DryMongoBinary, 'locateBinary').mockResolvedValue(undefined);
+      jest
+        .spyOn(MongoBinary, 'download')
+        .mockImplementation(() => fail('Expect this function to not have been called'));
+
+      try {
+        await MongoBinary.getPath();
+        fail('Expected "getPath" to fail');
+      } catch (err) {
+        expect(err.message).toEqual(
+          'MongoBinary.getPath: could not find an valid binary path! (Got: "undefined", RUNTIME_DOWNLOAD: "false")'
+        );
+        expect(DryMongoBinary.locateBinary).toBeCalledTimes(1);
+        expect(MongoBinary.download).not.toHaveBeenCalled();
+      }
+    });
+
     describe('systemBinary', () => {
       const sysBinaryPath = '/path/to/binary';
       beforeEach(() => {
