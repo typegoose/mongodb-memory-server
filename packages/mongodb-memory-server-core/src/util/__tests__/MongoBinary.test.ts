@@ -8,7 +8,8 @@ import { DryMongoBinary } from '../DryMongoBinary';
 
 tmp.setGracefulCleanup();
 
-const mockGetMongodPath = jest.fn().mockResolvedValue('/temp/path');
+const mockedPath = '/path/to/binary';
+const mockGetMongodPath = jest.fn().mockResolvedValue(mockedPath);
 
 jest.mock('../MongoBinaryDownload', () => {
   return jest.fn().mockImplementation(() => {
@@ -55,8 +56,10 @@ describe('MongoBinary', () => {
 
       expect(mockGetMongodPath).toHaveBeenCalledTimes(1);
 
-      expect(DryMongoBinary.binaryCache.get(version)).toBeDefined();
-      expect(DryMongoBinary.binaryCache.get(version)).toEqual(binPath);
+      const gotVersionPath = DryMongoBinary.binaryCache.get(version);
+      expect(gotVersionPath).toBeDefined();
+      expect(gotVersionPath).toEqual(binPath);
+      expect(gotVersionPath).toEqual(mockedPath);
     });
   });
 });
