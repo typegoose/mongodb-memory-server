@@ -1,3 +1,14 @@
+## [7.0.0-beta.33](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.32...v7.0.0-beta.33) (2021-03-17)
+
+
+### Fixes
+
+* **MongoBinary:** add information about "RUNTIME_DOWNLOAD" to no binary found error ([94ee82d](https://github.com/nodkz/mongodb-memory-server/commit/94ee82d201eeaf9580684601d6113e404f3c6242))
+* **MongoBinary:** change to match with regex instead of string splitting ([ab1cd36](https://github.com/nodkz/mongodb-memory-server/commit/ab1cd3697a12181f117b9587af89027a2594523a))
+* **MongoBinary:** remove using "binaryVersion" for version, because "version" cannot be undefined ([72c8199](https://github.com/nodkz/mongodb-memory-server/commit/72c819971b5e24e6f79ee27d181d4bd2b4ad9cf4))
+* **MongoBinary:** use less variables & extend error ([8b448db](https://github.com/nodkz/mongodb-memory-server/commit/8b448db73a24479273e6da12cdb5bdca8ff30a7d))
+* **MongoBinary:** use semver for version comparison ([d1f181a](https://github.com/nodkz/mongodb-memory-server/commit/d1f181ac98e044f85c1633b4466afcd789758300))
+
 ## [7.0.0-beta.32](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.31...v7.0.0-beta.32) (2021-03-16)
 
 
