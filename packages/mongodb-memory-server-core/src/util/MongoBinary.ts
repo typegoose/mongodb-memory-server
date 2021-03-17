@@ -4,6 +4,7 @@ import mkdirp from 'mkdirp';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
+import * as semver from 'semver';
 import { assertion, isNullOrUndefined } from './utils';
 import { spawnSync } from 'child_process';
 import { LockFile } from './lockfile';
@@ -112,7 +113,7 @@ export class MongoBinary {
           options.version = binaryVersion;
         }
 
-        if (options.version !== binaryVersion) {
+        if (semver.neq(options.version, binaryVersion)) {
           // we will log the version number of the system binary and the version requested so the user can see the difference
           console.warn(
             'getPath: MongoMemoryServer: Possible version conflict\n' +
