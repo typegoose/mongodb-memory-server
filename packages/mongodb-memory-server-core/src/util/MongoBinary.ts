@@ -103,11 +103,6 @@ export class MongoBinary {
         );
         const binaryVersion = spawnOutput[1];
 
-        if (isNullOrUndefined(options.version) || options.version.length <= 0) {
-          log('getPath: Using SystemBinary version as options.version');
-          options.version = binaryVersion;
-        }
-
         if (semver.neq(options.version, binaryVersion)) {
           // we will log the version number of the system binary and the version requested so the user can see the difference
           console.warn(
