@@ -129,6 +129,20 @@ build environment:
         expect(output).toBe(sysBinaryPath);
         expect(console.warn).toHaveBeenCalledTimes(1);
       });
+
+      it('should throw an error if systemBinary is set, but no binary can be found', async () => {
+        process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
+        jest.spyOn(DryMongoBinary, 'locateBinary').mockResolvedValue(undefined);
+
+        try {
+          await MongoBinary.getPath();
+          fail('Expected "getPath" to fail');
+        } catch (err) {
+          expect(err.message).toEqual(
+            'Option "SYSTEM_BINARY" was set, but binaryPath was empty! (system binary could not be found?) [This Error should normally not be thrown, please report this]'
+          );
+        }
+      });
     });
   });
 });
