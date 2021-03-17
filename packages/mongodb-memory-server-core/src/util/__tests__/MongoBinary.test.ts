@@ -31,9 +31,9 @@ describe('MongoBinary', () => {
   // cleanup
   afterEach(() => {
     tmpDir.removeCallback();
-    (MongoBinaryDownload as jest.Mock).mockClear();
-    mockGetMongodPath.mockClear();
+    jest.restoreAllMocks(); // restore all mocked functions to original
     DryMongoBinary.binaryCache.clear();
+    delete process.env[envName(ResolveConfigVariables.RUNTIME_DOWNLOAD)];
   });
 
   describe('getPath', () => {
@@ -65,10 +65,22 @@ describe('MongoBinary', () => {
       expect(gotVersionPath).toEqual(mockedPath);
     });
 
+    it('should trigger an download if binary dosnt exist', async () => {
+      const mockPath = '/path/to/downloaded/binary';
+      process.env[envName(ResolveConfigVariables.RUNTIME_DOWNLOAD)] = 'true';
+      jest.spyOn(MongoBinary, 'download').mockResolvedValue(mockPath);
+      jest.spyOn(DryMongoBinary, 'locateBinary').mockResolvedValue(undefined);
+
+      const output = await MongoBinary.getPath();
+      expect(output).toBe(mockPath);
+      expect(DryMongoBinary.locateBinary).toHaveBeenCalledTimes(1);
+      expect(MongoBinary.download).toHaveBeenCalledTimes(1);
+    });
+
     describe('systemBinary', () => {
       const sysBinaryPath = '/path/to/binary';
       beforeEach(() => {
-        jest.clearAllMocks();
+        jest.resetAllMocks(); // reset all mocked functions information & set implementation to blank "jest.fn()"
         jest
           .spyOn(utils, 'pathExists') // mock this to be sure that "pathExists" is "true" for "sysBinaryPath"
           .mockImplementation((path) => Promise.resolve(path === sysBinaryPath));
