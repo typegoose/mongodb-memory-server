@@ -134,8 +134,9 @@ export class MongoBinary {
     }
 
     if (!binaryPath) {
+      const runtimeDownload = envToBool(resolveConfig(ResolveConfigVariables.RUNTIME_DOWNLOAD));
       throw new Error(
-        `MongoBinary.getPath: could not find an valid binary path! (Got: "${binaryPath}")`
+        `MongoBinary.getPath: could not find an valid binary path! (Got: "${binaryPath}", RUNTIME_DOWNLOAD: "${runtimeDownload}")`
       );
     }
 
