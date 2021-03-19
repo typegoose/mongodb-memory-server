@@ -109,11 +109,11 @@ export class MongoInstance extends EventEmitter {
 
     this.on(MongoInstanceEvents.instanceReady, () => {
       this.isInstanceReady = true;
-      this.debug('Instance is ready!');
+      this.debug('constructor: Instance is ready!');
     });
 
     this.on(MongoInstanceEvents.instanceError, async (err: string | Error) => {
-      this.debug(`Instance has thrown an Error: ${err.toString()}`);
+      this.debug(`constructor: Instance has thrown an Error: ${err.toString()}`);
       this.isInstanceReady = false;
       this.isInstancePrimary = false;
 
@@ -186,7 +186,7 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceStarted
    */
   async start(): Promise<this> {
-    this.debug('run');
+    this.debug('start');
     this.isInstancePrimary = false;
     this.isInstanceReady = false;
     this.isReplSet = false;
@@ -224,7 +224,7 @@ export class MongoInstance extends EventEmitter {
    * Shutdown all related processes (Mongod Instance & Killer Process)
    */
   async stop(): Promise<MongoInstance> {
-    this.debug('kill: Called .kill():');
+    this.debug('stop: Called .stop():');
 
     if (!isNullOrUndefined(this.childProcess)) {
       // try to run "replSetStepDown" before running "killProcess" (gracefull "SIGINT")
@@ -232,7 +232,7 @@ export class MongoInstance extends EventEmitter {
       if (this.isReplSet && this.isInstancePrimary) {
         let con: MongoClient | undefined;
         try {
-          log('kill: instanceStopFailed event');
+          log('stop: instanceStopFailed event');
           const port = this.instanceOpts.port;
           const ip = this.instanceOpts.ip;
           assertion(
@@ -276,16 +276,16 @@ export class MongoInstance extends EventEmitter {
       await killProcess(this.childProcess, 'childProcess');
       this.childProcess = undefined; // reset reference to the childProcess for "mongod"
     } else {
-      this.debug('kill: childProcess: nothing to shutdown, skipping');
+      this.debug('stop: childProcess: nothing to shutdown, skipping');
     }
     if (!isNullOrUndefined(this.killerProcess)) {
       await killProcess(this.killerProcess, 'killerProcess');
       this.killerProcess = undefined; // reset reference to the childProcess for "mongo_killer"
     } else {
-      this.debug('kill: killerProcess: nothing to shutdown, skipping');
+      this.debug('stop: killerProcess: nothing to shutdown, skipping');
     }
 
-    this.debug('kill: Instance Finished Shutdown');
+    this.debug('stop: Instance Finished Shutdown');
 
     return this;
   }
@@ -363,10 +363,10 @@ export class MongoInstance extends EventEmitter {
     // because for mongodb any event on windows (like SIGINT / SIGTERM) will result in an code 12
     // https://docs.mongodb.com/manual/reference/exit-codes/#12
     if ((process.platform === 'win32' && code != 12 && code != 0) || code != 0) {
-      this.debug('Mongod instance closed with an non-0 (or non 12 on windows) code!');
+      this.debug('closeHandler: Mongod instance closed with an non-0 (or non 12 on windows) code!');
     }
 
-    this.debug(`CLOSE: ${code}`);
+    this.debug(`closeHandler: ${code}`);
     this.emit(MongoInstanceEvents.instanceClosed, code);
   }
 
@@ -376,7 +376,7 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceSTDERR
    */
   stderrHandler(message: string | Buffer): void {
-    this.debug(`STDERR: ${message.toString()}`);
+    this.debug(`stderrHandler: ${message.toString()}`);
     this.emit(MongoInstanceEvents.instanceSTDERR, message);
   }
 
@@ -391,7 +391,7 @@ export class MongoInstance extends EventEmitter {
    */
   stdoutHandler(message: string | Buffer): void {
     const line: string = message.toString().trim(); // trimming to remove extra new lines and spaces around the message
-    this.debug(`STDOUT: ""${line}""`); // denoting the STDOUT string with double quotes, because the stdout might also use quotes
+    this.debug(`stdoutHandler: ""${line}""`); // denoting the STDOUT string with double quotes, because the stdout might also use quotes
     this.emit(MongoInstanceEvents.instanceSTDOUT, line);
 
     // dont use "else if", because input can be multiple lines and match multiple things
@@ -437,7 +437,7 @@ export class MongoInstance extends EventEmitter {
     }
     if (/transition to primary complete; database writes are now permitted/i.test(line)) {
       this.isInstancePrimary = true;
-      this.debug('Calling all waitForPrimary resolve functions');
+      this.debug('stdoutHandler: Calling all waitForPrimary resolve functions');
       this.emit(MongoInstanceEvents.instancePrimary);
     }
     if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
