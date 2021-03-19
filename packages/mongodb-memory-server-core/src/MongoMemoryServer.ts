@@ -402,7 +402,7 @@ export class MongoMemoryServer extends EventEmitter {
     );
 
     // After that startup MongoDB instance
-    let instance = await MongoInstance.create(mongodOptions);
+    const instance = await MongoInstance.create(mongodOptions);
     log('_startUpInstance: Instance Started');
 
     // another "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
@@ -414,15 +414,9 @@ export class MongoMemoryServer extends EventEmitter {
         log('_startUpInstance: Killing No-Auth instance');
         await instance.stop();
 
-        // TODO: change this to just change the options instead of an new instance after adding getters & setters
         log('_startUpInstance: Starting Auth Instance');
-        instance = await MongoInstance.create({
-          ...mongodOptions,
-          instance: {
-            ...mongodOptions.instance,
-            auth: true,
-          },
-        });
+        instance.instanceOpts.auth = true;
+        await instance.start();
       } else {
         console.warn(
           'Not Restarting MongoInstance for Auth\n' +
