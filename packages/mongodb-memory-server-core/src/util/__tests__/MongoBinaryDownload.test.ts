@@ -1,11 +1,14 @@
 import { promises as fspromises } from 'fs';
 import md5file from 'md5-file';
+import * as mkdirp from 'mkdirp';
 import { DryMongoBinary } from '../DryMongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
+import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
 
 jest.mock('md5-file');
+jest.mock('mkdirp');
 
 describe('MongoBinaryDownload', () => {
   afterEach(() => {
@@ -221,5 +224,39 @@ describe('MongoBinaryDownload', () => {
       // @ts-expect-error because "getPath" is "protected"
       du.getPath
     ).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return the mongodb archive path (startDownload)', async () => {
+    const downloadUrl = 'https://fastdl.mongodb.org/linux/mongod-something-something.tgz';
+    const archivePath = '/path/to/archive.tgz';
+    jest.spyOn(mkdirp, 'default').mockResolvedValue(void 0);
+    jest.spyOn(fspromises, 'access').mockResolvedValue(void 0);
+    jest.spyOn(MongoBinaryDownloadUrl.prototype, 'getDownloadUrl').mockResolvedValue(downloadUrl);
+
+    const du = new MongoBinaryDownload({ downloadDir: '/' });
+    jest.spyOn(du, 'download').mockResolvedValue(archivePath);
+    jest.spyOn(du, 'makeMD5check');
+
+    const returnValue = await du.startDownload();
+    expect(returnValue).toEqual(archivePath);
+    expect(du.makeMD5check).toHaveBeenCalledWith(`${downloadUrl}.md5`, archivePath);
+    expect(du.download).toHaveBeenCalledWith(downloadUrl);
+  });
+
+  it('should return the mongodb archive path (startDownload)', async () => {
+    const customError = new Error('custom fs error');
+    jest.spyOn(mkdirp, 'default').mockResolvedValue(void 0);
+    jest.spyOn(fspromises, 'access').mockRejectedValue(customError);
+    jest.spyOn(console, 'error').mockImplementation(() => void 0);
+
+    const du = new MongoBinaryDownload({ downloadDir: '/' });
+
+    try {
+      await du.startDownload();
+      fail('Expected "startDownload" to fail');
+    } catch (err) {
+      expect(err.message).toEqual(customError.message);
+      expect(console.error).toHaveBeenCalledTimes(1);
+    }
   });
 });
