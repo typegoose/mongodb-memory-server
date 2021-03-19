@@ -1,3 +1,10 @@
+## [7.0.0-beta.35](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.34...v7.0.0-beta.35) (2021-03-19)
+
+
+### Fixes
+
+* **MongoBinaryDownload:** getPath: reduce some calls ([43b746a](https://github.com/nodkz/mongodb-memory-server/commit/43b746af35be6ba2ffc8ca7d4e3ac38ab4026a42))
+
 ## [7.0.0-beta.34](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.33...v7.0.0-beta.34) (2021-03-19)
 
 
