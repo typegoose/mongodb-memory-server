@@ -1,5 +1,6 @@
 import { promises as fspromises } from 'fs';
 import md5file from 'md5-file';
+import { DryMongoBinary } from '../DryMongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
@@ -141,5 +142,26 @@ describe('MongoBinaryDownload', () => {
     const du = new MongoBinaryDownload({ downloadDir: '/', checkMD5: false });
     const result = await du.makeMD5check('', '');
     expect(result).toEqual(undefined);
+  });
+
+  it('should return the correct path to binary name (getPath)', async () => {
+    const downloadDir = '/path/to/downloadDir';
+    jest.spyOn(DryMongoBinary, 'generateOptions').mockResolvedValue({
+      arch: 'x64',
+      version: '4.0.20',
+      downloadDir: downloadDir,
+      systemBinary: '',
+      os: {
+        os: 'linux',
+        dist: 'ubuntu',
+        release: '14',
+      },
+    });
+
+    const du = new MongoBinaryDownload({ downloadDir });
+
+    // @ts-expect-error because "getPath" is "protected"
+    const path = await du.getPath();
+    expect(path).toEqual(`${downloadDir}/mongod-x64-ubuntu-4.0.20`);
   });
 });
