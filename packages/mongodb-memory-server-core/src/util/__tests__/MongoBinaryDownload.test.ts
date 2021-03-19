@@ -164,4 +164,42 @@ describe('MongoBinaryDownload', () => {
     const path = await du.getPath();
     expect(path).toEqual(`${downloadDir}/mongod-x64-ubuntu-4.0.20`);
   });
+
+  it('should print the download progress (printDownloadProgress)', () => {
+    const version = '4.0.20';
+    process.stdout.isTTY = false;
+    jest.spyOn(console, 'log').mockImplementation(() => void 0);
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+
+    const du = new MongoBinaryDownload({
+      downloadDir: '/',
+      checkMD5: false,
+      version,
+      platform: 'linux',
+    });
+    expect(du.dlProgress.current).toBe(0);
+    du.dlProgress.length = 5242880;
+    du.dlProgress.totalMb = Math.round((du.dlProgress.length / 1048576) * 10) / 10;
+
+    du.printDownloadProgress({ length: 1048576 });
+    expect(console.log).toHaveBeenCalledWith(
+      `Downloading MongoDB "${version}": 20% (1mb / ${du.dlProgress.totalMb}mb)\r`
+    );
+    expect(console.log).toBeCalledTimes(1);
+    expect(process.stdout.write).not.toHaveBeenCalled();
+
+    du.printDownloadProgress({ length: 10 });
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(process.stdout.write).not.toHaveBeenCalled();
+    expect(du.dlProgress.current).toBe(1048576 + 10);
+
+    process.stdout.isTTY = true;
+    du.printDownloadProgress({ length: 0 }, true);
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(process.stdout.write).toHaveBeenCalledWith(
+      // its still "20" and "1" because of rounding
+      `Downloading MongoDB "${version}": 20% (1mb / ${du.dlProgress.totalMb}mb)\r`
+    );
+    expect(process.stdout.write).toHaveBeenCalledTimes(1);
+  });
 });
