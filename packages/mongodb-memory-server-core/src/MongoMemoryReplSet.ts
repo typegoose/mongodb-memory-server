@@ -483,6 +483,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    log('_initReplSet: connected');
 
     try {
       let adminDb = con.db('admin');
@@ -497,6 +498,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         },
       };
       try {
+        log('_initReplSet: trying "replSetInitiate"');
         await adminDb.command({ replSetInitiate: rsConfig });
 
         if (typeof this._replSetOpts.auth === 'object') {
