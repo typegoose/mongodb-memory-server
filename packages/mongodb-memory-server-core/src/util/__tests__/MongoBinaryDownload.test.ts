@@ -202,4 +202,24 @@ describe('MongoBinaryDownload', () => {
     );
     expect(process.stdout.write).toHaveBeenCalledTimes(1);
   });
+
+  it('should directly return the path if already exists', async () => {
+    const binaryPath = '/path/to/binary';
+    jest.spyOn(utils, 'pathExists').mockResolvedValue(true);
+
+    const du = new MongoBinaryDownload({ downloadDir: '/' });
+    jest
+      .spyOn(du, 'startDownload')
+      .mockImplementation(() => fail('Expected this function not to be called'));
+    // @ts-expect-error because "getPath" is "protected"
+    jest.spyOn(du, 'getPath').mockResolvedValue(binaryPath);
+
+    const returnValue = await du.getMongodPath();
+    expect(returnValue).toEqual(binaryPath);
+    expect(du.startDownload).not.toHaveBeenCalled();
+    expect(
+      // @ts-expect-error because "getPath" is "protected"
+      du.getPath
+    ).toHaveBeenCalledTimes(1);
+  });
 });
