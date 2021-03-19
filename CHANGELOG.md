@@ -1,3 +1,17 @@
+## [7.0.0-beta.34](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.33...v7.0.0-beta.34) (2021-03-19)
+
+
+### Fixes
+
+* **MongoInstance:** change logs to be more up-to-date ([d421e01](https://github.com/nodkz/mongodb-memory-server/commit/d421e015c0362b178c29a819392b938ac6c25b5a))
+* **MongoMemoryReplSet:** _initReplSet: add more logs ([952fbf5](https://github.com/nodkz/mongodb-memory-server/commit/952fbf58eb5fbc55837c26de0fbe7a08e118b94e))
+* **MongoMemoryServer:** change options instead of creating new instance for auth creation ([171f1fb](https://github.com/nodkz/mongodb-memory-server/commit/171f1fbe34873dcd898e15dfa418ca9e2c99b4eb))
+
+
+### Dependencies
+
+* **mongodb:** upgrade to 3.6.5 ([d0eabf6](https://github.com/nodkz/mongodb-memory-server/commit/d0eabf6a51a91c60a70a84767fc3d2000452e6b0))
+
 ## [7.0.0-beta.33](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.32...v7.0.0-beta.33) (2021-03-17)
 
 
