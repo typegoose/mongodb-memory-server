@@ -63,7 +63,11 @@ export class MongoBinaryDownload {
    * @return Absoulte Path with FileName
    */
   protected async getPath(): Promise<string> {
-    const opts = await DryMongoBinary.generateOptions({ version: this.version });
+    const opts = await DryMongoBinary.generateOptions({
+      version: this.version,
+      arch: this.arch,
+      downloadDir: this.downloadDir,
+    });
 
     return DryMongoBinary.combineBinaryName(
       { version: this.version },

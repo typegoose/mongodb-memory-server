@@ -63,6 +63,7 @@ describe('MongoMemoryServer', () => {
 
       await expect(mongoServer.start()).rejects.toThrow('unknown error');
 
+      expect(mongoServer.state).toStrictEqual(MongoMemoryServerStates.stopped);
       expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledTimes(1);
     });
@@ -271,7 +272,8 @@ describe('MongoMemoryServer', () => {
           await mongoServer.start();
           fail('Expected "start" to fail');
         } catch (err) {
-          expect(err.message).toEqual('Already in state running/starting or unknown');
+          expect(err).toBeInstanceOf(StateError);
+          expect(err.message).toMatchSnapshot();
         }
       }
 
@@ -283,7 +285,8 @@ describe('MongoMemoryServer', () => {
           await mongoServer.start();
           fail('Expected "start" to fail');
         } catch (err) {
-          expect(err.message).toEqual('Already in state running/starting or unknown');
+          expect(err).toBeInstanceOf(StateError);
+          expect(err.message).toMatchSnapshot();
         }
       }
     });
@@ -345,7 +348,8 @@ describe('MongoMemoryServer', () => {
         await mongoServer.ensureInstance();
         fail('Expected "ensureInstance" to throw');
       } catch (err) {
-        expect(err.message).toEqual('"ensureInstance" does not have an case for "not Existing"');
+        expect(err).toBeInstanceOf(StateError);
+        expect(err.message).toMatchSnapshot();
       }
     });
 

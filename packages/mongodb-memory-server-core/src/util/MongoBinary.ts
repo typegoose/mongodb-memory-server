@@ -4,6 +4,7 @@ import mkdirp from 'mkdirp';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
+import * as semver from 'semver';
 import { assertion, isNullOrUndefined } from './utils';
 import { spawnSync } from 'child_process';
 import { LockFile } from './lockfile';
@@ -85,29 +86,24 @@ export class MongoBinary {
     const options: Required<MongoBinaryOpts> = { ...defaultOptions, ...opts };
     log(`getPath: MongoBinary options:`, JSON.stringify(options, null, 2));
 
-    let binaryPath: string | undefined;
-
-    const locatedBinary = await DryMongoBinary.locateBinary(options);
-
-    if (!isNullOrUndefined(locatedBinary)) {
-      binaryPath = locatedBinary;
-    }
+    let binaryPath: string | undefined = await DryMongoBinary.locateBinary(options);
 
     // check if the system binary has the same version as requested
     if (options.systemBinary.length > 0) {
+      // this case should actually never be false, because if "SYSTEM_BINARY" is set, "locateBinary" will run "getSystemPath" which tests the path for permissions
       if (!isNullOrUndefined(binaryPath)) {
         log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
-        const binaryVersion = spawnSync(binaryPath, ['--version'])
+        const spawnOutput = spawnSync(binaryPath, ['--version'])
           .toString()
-          .split('\n')[0]
-          .split(' ')[2];
+          .match(/^db\sversion\s(v?\d+\.\d+\.\d+)$/im);
 
-        if (isNullOrUndefined(options.version) || options.version.length <= 0) {
-          log('getPath: Using SystemBinary version as options.version');
-          options.version = binaryVersion;
-        }
+        assertion(
+          !isNullOrUndefined(spawnOutput),
+          new Error('Couldnt find an version from system binary output!')
+        );
+        const binaryVersion = spawnOutput[1];
 
-        if (options.version !== binaryVersion) {
+        if (semver.neq(options.version, binaryVersion)) {
           // we will log the version number of the system binary and the version requested so the user can see the difference
           console.warn(
             'getPath: MongoMemoryServer: Possible version conflict\n' +
@@ -118,7 +114,7 @@ export class MongoBinary {
         }
       } else {
         throw new Error(
-          'Option "SYSTEM_BINARY" was set, but binaryPath was empty! (system binary could not be found?)'
+          'Option "SYSTEM_BINARY" was set, but binaryPath was empty! (system binary could not be found?) [This Error should normally not be thrown, please report this]'
         );
       }
     }
@@ -138,8 +134,9 @@ export class MongoBinary {
     }
 
     if (!binaryPath) {
+      const runtimeDownload = envToBool(resolveConfig(ResolveConfigVariables.RUNTIME_DOWNLOAD));
       throw new Error(
-        `MongoBinary.getPath: could not find an valid binary path! (Got: "${binaryPath}")`
+        `MongoBinary.getPath: could not find an valid binary path! (Got: "${binaryPath}", RUNTIME_DOWNLOAD: "${runtimeDownload}")`
       );
     }
 

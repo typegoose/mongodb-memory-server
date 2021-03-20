@@ -107,4 +107,14 @@ describe('utils', () => {
       ).rejects.toThrow(retError);
     });
   });
+
+  describe('getHost', () => {
+    it('should correctly extract host & port', () => {
+      expect(utils.getHost('mongodb://user:pass@localhost:port/authdb?queryoptions=1')).toEqual(
+        'localhost:port'
+      );
+      expect(utils.getHost('mongodb://0.0.0.0:0000/')).toEqual('0.0.0.0:0000');
+      expect(utils.getHost('mongodb://user:pass@localhost:0000/')).toEqual('localhost:0000');
+    });
+  });
 });

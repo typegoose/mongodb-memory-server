@@ -1,3 +1,57 @@
+## [7.0.0-beta.35](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.34...v7.0.0-beta.35) (2021-03-19)
+
+
+### Fixes
+
+* **MongoBinaryDownload:** getPath: reduce some calls ([43b746a](https://github.com/nodkz/mongodb-memory-server/commit/43b746af35be6ba2ffc8ca7d4e3ac38ab4026a42))
+
+## [7.0.0-beta.34](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.33...v7.0.0-beta.34) (2021-03-19)
+
+
+### Fixes
+
+* **MongoInstance:** change logs to be more up-to-date ([d421e01](https://github.com/nodkz/mongodb-memory-server/commit/d421e015c0362b178c29a819392b938ac6c25b5a))
+* **MongoMemoryReplSet:** _initReplSet: add more logs ([952fbf5](https://github.com/nodkz/mongodb-memory-server/commit/952fbf58eb5fbc55837c26de0fbe7a08e118b94e))
+* **MongoMemoryServer:** change options instead of creating new instance for auth creation ([171f1fb](https://github.com/nodkz/mongodb-memory-server/commit/171f1fbe34873dcd898e15dfa418ca9e2c99b4eb))
+
+
+### Dependencies
+
+* **mongodb:** upgrade to 3.6.5 ([d0eabf6](https://github.com/nodkz/mongodb-memory-server/commit/d0eabf6a51a91c60a70a84767fc3d2000452e6b0))
+
+## [7.0.0-beta.33](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.32...v7.0.0-beta.33) (2021-03-17)
+
+
+### Fixes
+
+* **MongoBinary:** add information about "RUNTIME_DOWNLOAD" to no binary found error ([94ee82d](https://github.com/nodkz/mongodb-memory-server/commit/94ee82d201eeaf9580684601d6113e404f3c6242))
+* **MongoBinary:** change to match with regex instead of string splitting ([ab1cd36](https://github.com/nodkz/mongodb-memory-server/commit/ab1cd3697a12181f117b9587af89027a2594523a))
+* **MongoBinary:** remove using "binaryVersion" for version, because "version" cannot be undefined ([72c8199](https://github.com/nodkz/mongodb-memory-server/commit/72c819971b5e24e6f79ee27d181d4bd2b4ad9cf4))
+* **MongoBinary:** use less variables & extend error ([8b448db](https://github.com/nodkz/mongodb-memory-server/commit/8b448db73a24479273e6da12cdb5bdca8ff30a7d))
+* **MongoBinary:** use semver for version comparison ([d1f181a](https://github.com/nodkz/mongodb-memory-server/commit/d1f181ac98e044f85c1633b4466afcd789758300))
+
+## [7.0.0-beta.32](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.31...v7.0.0-beta.32) (2021-03-16)
+
+
+### Fixes
+
+* **MongoMemoryServer:** change state to stopped when start fails ([e9134a7](https://github.com/nodkz/mongodb-memory-server/commit/e9134a7f4c05d741d25742b11d2d6a5862c35fcc))
+
+## [7.0.0-beta.31](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.30...v7.0.0-beta.31) (2021-03-15)
+
+
+### Features
+
+* **errors:** add error "StateError" ([e582407](https://github.com/nodkz/mongodb-memory-server/commit/e582407cf0904244465e56012de9a7c9caf410a9))
+* **errors:** add error "UnknownArchitecture" ([e2c39d6](https://github.com/nodkz/mongodb-memory-server/commit/e2c39d6b448aac4a81be23dfb4d6cef33aaef90f))
+* **errors:** add error "UnknownLockfileStatus" ([186df5b](https://github.com/nodkz/mongodb-memory-server/commit/186df5b1ccd81714826d2880eb07bf4e3d80d0de))
+* **errors:** add error "UnknownPlatform" ([747d893](https://github.com/nodkz/mongodb-memory-server/commit/747d893b57c51ec85a10d4343cb17044c6eb4715))
+* **lockfile:** replace custom errors with "UnknownLockfileStatus" ([5ea5662](https://github.com/nodkz/mongodb-memory-server/commit/5ea56626454ff1852ccc07ad95630e1db130000f))
+* **MongoBinaryDownloadUrl:** replace custom errors with "UnknownArchitecture" ([6755554](https://github.com/nodkz/mongodb-memory-server/commit/67555547060d233fc3eca3a22452dbcd76b86c20))
+* **MongoBinaryDownloadUrl:** replace custom errors with "UnknownPlatform" ([86aac73](https://github.com/nodkz/mongodb-memory-server/commit/86aac73a768ca912527eaa30e50c0ad7a856ca26))
+* **MongoMemoryReplSet:** replace custom errors with "StateError" ([f49d7a1](https://github.com/nodkz/mongodb-memory-server/commit/f49d7a1c54f6ff39c5f5b91bdae32f3fc01f5c87))
+* **MongoMemoryServer:** replace custom error with "StateError" ([e965ef5](https://github.com/nodkz/mongodb-memory-server/commit/e965ef55c073f81d49934ffa86683bf06c1ed1ab))
+
 ## [7.0.0-beta.30](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.29...v7.0.0-beta.30) (2021-03-14)
 
 
