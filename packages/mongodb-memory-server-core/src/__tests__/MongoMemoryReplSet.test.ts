@@ -93,9 +93,8 @@ describe('single server replset', () => {
       fail('Expected "waitUntilRunning" to throw');
     } catch (err) {
       clearTimeout(timeout);
-      expect(err.message).toEqual(
-        'State is not "running" or "init" - cannot wait on something that dosnt start'
-      );
+      expect(err).toBeInstanceOf(StateError);
+      expect(err.message).toMatchSnapshot();
     }
   });
 
@@ -119,7 +118,8 @@ describe('single server replset', () => {
       fail('Expected "getUri" to throw');
     } catch (err) {
       clearTimeout(timeout);
-      expect(err.message).toEqual('Replica Set is not running. Use debug for more info.');
+      expect(err).toBeInstanceOf(StateError);
+      expect(err.message).toMatchSnapshot();
     }
   });
 
@@ -138,7 +138,8 @@ describe('single server replset', () => {
       fail('Expected "start" to throw');
     } catch (err) {
       clearTimeout(timeout);
-      expect(err.message).toEqual('Already in "init" or "running" state. Use debug for more info.');
+      expect(err).toBeInstanceOf(StateError);
+      expect(err.message).toMatchSnapshot();
     }
   });
 

@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events';
-import MongoMemoryServer, { AutomaticAuth } from './MongoMemoryServer';
-import { MongoMemoryServerOpts } from './MongoMemoryServer';
+import { MongoMemoryServer, AutomaticAuth, MongoMemoryServerOpts } from './MongoMemoryServer';
 import {
   assertion,
   authDefault,
@@ -206,10 +205,7 @@ export class MongoMemoryReplSet extends EventEmitter {
   }
 
   set binaryOpts(val: MongoBinaryOpts) {
-    assertion(
-      this._state === MongoMemoryReplSetStates.stopped,
-      new StateError([MongoMemoryReplSetStates.stopped], this._state)
-    );
+    assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
     this._binaryOpts = val;
   }
 
@@ -275,7 +271,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       opts.storageEngine = baseOpts.storageEngine;
     }
 
-    log('   instance opts:', opts);
+    log('getInstanceOpts: instance opts:', opts);
 
     return opts;
   }
@@ -287,18 +283,22 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @throws if an server doesnt have "instanceInfo.port" defined
    */
   getUri(otherDb?: string | boolean): string {
-    log('getUri:', this._state);
-    switch (this._state) {
+    log('getUri:', this.state);
+    switch (this.state) {
       case MongoMemoryReplSetStates.running:
       case MongoMemoryReplSetStates.init:
         break;
       case MongoMemoryReplSetStates.stopped:
       default:
-        throw new Error('Replica Set is not running. Use debug for more info.');
+        throw new StateError(
+          [MongoMemoryReplSetStates.running, MongoMemoryReplSetStates.init],
+          this.state
+        );
     }
 
     let dbName = this._replSetOpts.dbName;
 
+    // double instead of isNullOrUndefined to respect type "boolean" being "false"
     if (!!otherDb) {
       dbName = typeof otherDb === 'string' ? otherDb : generateDbName();
     }
@@ -320,13 +320,13 @@ export class MongoMemoryReplSet extends EventEmitter {
    * @throws if state is already "running"
    */
   async start(): Promise<void> {
-    log('start');
-    switch (this._state) {
+    log('start:', this.state);
+    switch (this.state) {
       case MongoMemoryReplSetStates.stopped:
         break;
       case MongoMemoryReplSetStates.running:
       default:
-        throw new Error('Already in "init" or "running" state. Use debug for more info.');
+        throw new StateError([MongoMemoryReplSetStates.stopped], this.state);
     }
     this.stateChange(MongoMemoryReplSetStates.init); // this needs to be executed before "setImmediate"
     await ensureAsync();
@@ -360,12 +360,21 @@ export class MongoMemoryReplSet extends EventEmitter {
     // Any servers defined within `_instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
     // the `replSetInitiate` command against that server.
-    this._instanceOpts.forEach((opts) => {
-      log(`  starting server from instanceOpts (count: ${this.servers.length + 1}):`, opts);
+    this._instanceOpts.forEach((opts, index) => {
+      log(
+        `initAllServers: starting special server "${index + 1}" of "${
+          this._instanceOpts.length
+        }" from instanceOpts (count: ${this.servers.length + 1}):`,
+        opts
+      );
       this.servers.push(this._initServer(this.getInstanceOpts(opts)));
     });
     while (this.servers.length < this._replSetOpts.count) {
-      log(`  starting server ${this.servers.length + 1} of ${this._replSetOpts.count}`);
+      log(
+        `initAllServers: starting extra server "${this.servers.length + 1}" of "${
+          this._replSetOpts.count
+        }" (count: ${this.servers.length + 1})`
+      );
       this.servers.push(this._initServer(this.getInstanceOpts()));
     }
 
@@ -392,7 +401,7 @@ export class MongoMemoryReplSet extends EventEmitter {
         return true;
       })
       .catch((err) => {
-        log(err);
+        log('stop:', err);
         this.stateChange(MongoMemoryReplSetStates.stopped, err);
 
         return false;
@@ -459,9 +468,9 @@ export class MongoMemoryReplSet extends EventEmitter {
         return;
       case MongoMemoryReplSetStates.stopped:
       default:
-        // throw an error if not "running" or "init"
-        throw new Error(
-          'State is not "running" or "init" - cannot wait on something that dosnt start'
+        throw new StateError(
+          [MongoMemoryReplSetStates.running, MongoMemoryReplSetStates.init],
+          this.state
         );
     }
   }
@@ -485,10 +494,11 @@ export class MongoMemoryReplSet extends EventEmitter {
     });
     log('_initReplSet: connected');
 
+    // try-finally to close connection in any case
     try {
       let adminDb = con.db('admin');
 
-      const members = uris.map((uri, idx) => ({ _id: idx, host: getHost(uri) }));
+      const members = uris.map((uri, index) => ({ _id: index, host: getHost(uri) }));
       const rsConfig = {
         _id: this._replSetOpts.name,
         members,
@@ -497,6 +507,7 @@ export class MongoMemoryReplSet extends EventEmitter {
           ...this._replSetOpts.configSettings,
         },
       };
+      // try-catch because the first "command" can fail
       try {
         log('_initReplSet: trying "replSetInitiate"');
         await adminDb.command({ replSetInitiate: rsConfig });
@@ -540,15 +551,15 @@ export class MongoMemoryReplSet extends EventEmitter {
           } else {
             console.warn(
               'Not Restarting ReplSet for Auth\n' +
-                'Storage engine of current PRIMARY is ephemeralForTest, which does not write data on shutdown, and mongodb does not allow changeing "auth" runtime'
+                'Storage engine of current PRIMARY is ephemeralForTest, which does not write data on shutdown, and mongodb does not allow changing "auth" runtime'
             );
           }
         }
       } catch (e) {
         if (e instanceof MongoError && e.errmsg == 'already initialized') {
-          log(`${e.errmsg}: trying to set old config`);
+          log(`_initReplSet: "${e.errmsg}": trying to set old config`);
           const { config: oldConfig } = await adminDb.command({ replSetGetConfig: 1 });
-          log('got old config:\n', oldConfig);
+          log('_initReplSet: got old config:\n', oldConfig);
           await adminDb.command({
             replSetReconfig: oldConfig,
             force: true,
@@ -557,7 +568,7 @@ export class MongoMemoryReplSet extends EventEmitter {
           throw e;
         }
       }
-      log('_initReplSet: ReplSet-reConfig finished');
+      log('_initReplSet: ReplSet-reconfig finished');
       await this._waitForPrimary();
       this.stateChange(MongoMemoryReplSetStates.running);
       log('_initReplSet: running');
@@ -591,13 +602,14 @@ export class MongoMemoryReplSet extends EventEmitter {
     log('_waitForPrimary: Waiting for an Primary');
     let timeoutId: NodeJS.Timeout | undefined;
 
+    // "race" because not all servers will be an primary
     await Promise.race([
       ...this.servers.map(
         (server) =>
           new Promise<void>((res, rej) => {
             const instanceInfo = server.instanceInfo;
 
-            if (!instanceInfo) {
+            if (isNullOrUndefined(instanceInfo)) {
               return rej(new Error('_waitForPrimary - instanceInfo not present'));
             }
 
@@ -620,7 +632,7 @@ export class MongoMemoryReplSet extends EventEmitter {
       clearTimeout(timeoutId);
     }
 
-    log('_waitForPrimary detected one primary instance ');
+    log('_waitForPrimary: detected one primary instance ');
   }
 }
 
