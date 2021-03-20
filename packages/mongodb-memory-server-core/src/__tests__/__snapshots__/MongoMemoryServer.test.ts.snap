@@ -1,3 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`MongoMemoryServer cleanup() should throw an error if state is not "stopped" 1`] = `"Incorrect State for operation: \\"new\\", allowed States: \\"[stopped]\\""`;
+
+exports[`MongoMemoryServer ensureInstance() should throw an error if the given "_state" has no case 1`] = `"Incorrect State for operation: \\"not Existing\\", allowed States: \\"[running,new,stopped,starting]\\""`;
+
+exports[`MongoMemoryServer start() should throw an error if state is not "new" or "stopped" 1`] = `"Incorrect State for operation: \\"starting\\", allowed States: \\"[new,stopped]\\""`;
+
+exports[`MongoMemoryServer start() should throw an error if state is not "new" or "stopped" 2`] = `"Incorrect State for operation: \\"running\\", allowed States: \\"[new,stopped]\\""`;

@@ -9,7 +9,7 @@ import {
   authDefault,
   statPath,
 } from './util/utils';
-import MongoInstance, { MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
+import { MongoInstance, MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { EventEmitter } from 'events';
@@ -205,8 +205,6 @@ export class MongoMemoryServer extends EventEmitter {
 
   /**
    * Create an Mongo-Memory-Sever Instance
-   *
-   * Note: because of JavaScript limitations, autoStart cannot be awaited here, use ".create" for async/await ability
    * @param opts Mongo-Memory-Sever Options
    */
   constructor(opts?: MongoMemoryServerOpts) {
@@ -243,6 +241,7 @@ export class MongoMemoryServer extends EventEmitter {
   /**
    * Start the in-memory Instance
    * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
+   * @throws if state is not "new" or "stopped"
    */
   async start(forceSamePort: boolean = false): Promise<boolean> {
     log('start: Called .start() method');
@@ -254,7 +253,10 @@ export class MongoMemoryServer extends EventEmitter {
       case MongoMemoryServerStates.running:
       case MongoMemoryServerStates.starting:
       default:
-        throw new Error('Already in state running/starting or unknown');
+        throw new StateError(
+          [MongoMemoryServerStates.new, MongoMemoryServerStates.stopped],
+          this.state
+        );
     }
 
     if (!isNullOrUndefined(this._instanceInfo?.instance.childProcess)) {
@@ -297,7 +299,7 @@ export class MongoMemoryServer extends EventEmitter {
 
     // only log this message if an custom port was provided
     if (port != newPort && typeof port === 'number') {
-      log(`getNewPort: starting with port ${newPort}, since ${port} was locked`);
+      log(`getNewPort: starting with port "${newPort}", since "${port}" was locked`);
     }
 
     return newPort;
@@ -316,7 +318,7 @@ export class MongoMemoryServer extends EventEmitter {
     let isNew: boolean = true;
 
     const data: StartupInstanceData = {
-      port: await this.getNewPort(instOpts.port ?? undefined), // do (null or undefined) to undefined
+      port: await this.getNewPort(instOpts.port),
       dbName: generateDbName(instOpts.dbName),
       ip: instOpts.ip ?? '127.0.0.1',
       storageEngine: instOpts.storageEngine ?? 'ephemeralForTest',
@@ -337,7 +339,7 @@ export class MongoMemoryServer extends EventEmitter {
 
         isNew = true; // just to ensure "isNew" is "true" because an new temporary directory got created
       } else {
-        log(`Checking if "${data.dbPath}}" (no new tmpDir) already has data`);
+        log(`getStartOptions: Checking if "${data.dbPath}}" (no new tmpDir) already has data`);
         const files = await fspromises.readdir(data.dbPath);
 
         isNew = files.length > 0; // if there already files in the directory, assume that the database is not new
@@ -600,7 +602,15 @@ export class MongoMemoryServer extends EventEmitter {
           })
         );
       default:
-        throw new Error(`"ensureInstance" does not have an case for "${this._state}"`);
+        throw new StateError(
+          [
+            MongoMemoryServerStates.running,
+            MongoMemoryServerStates.new,
+            MongoMemoryServerStates.stopped,
+            MongoMemoryServerStates.starting,
+          ],
+          this.state
+        );
     }
 
     log('ensureInstance: no running instance, calling `start()` command');
@@ -638,7 +648,6 @@ export class MongoMemoryServer extends EventEmitter {
    * Create Users and restart instance to enable auth
    * This Function assumes "this.opts.auth" is defined / enabled
    * @param data Used to get "ip" and "port"
-   *
    * @internal
    */
   async createAuth(data: StartupInstanceData): Promise<void> {
