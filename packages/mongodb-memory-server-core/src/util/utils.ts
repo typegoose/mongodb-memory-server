@@ -20,7 +20,8 @@ export function generateDbName(dbName?: string): string {
  * @param {string} uri mongodb URI
  */
 export function getHost(uri: string): string {
-  return uri.replace('mongodb://', '').replace(/\/.*/, '');
+  // this will turn "mongodb://user:pass@localhost:port/authdb?queryoptions=1" to "localhost:port"
+  return uri.replace(/(?:^mongodb:\/{2})|(?:\/.*$)|(?:.*@)/gim, '');
 }
 
 /**
