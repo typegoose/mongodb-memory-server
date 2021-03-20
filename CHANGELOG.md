@@ -1,3 +1,17 @@
+## [7.0.0-beta.36](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.35...v7.0.0-beta.36) (2021-03-20)
+
+
+### Features
+
+* **MongoMemoryReplSet:** change more errors to "StateError" & more consistent logs ([64780ee](https://github.com/nodkz/mongodb-memory-server/commit/64780ee35ca332a416610c4dfe5b0d0e79227234))
+* **MongoMemoryServer:** change more errors to "StateError" & more consistent logs ([b05ec44](https://github.com/nodkz/mongodb-memory-server/commit/b05ec44d5319b34ff61b8aead819c11b9543a9bd))
+
+
+### Fixes
+
+* **errors:** StateError: fix type for "wantedStates" ([6297275](https://github.com/nodkz/mongodb-memory-server/commit/6297275b0908cb8e4083b4b8ca43eff4968d0f3e))
+* **utils:** getHost: reduce calls by combining regex ([1b46769](https://github.com/nodkz/mongodb-memory-server/commit/1b46769eb34a568d8b3915e25c4dc0f29b909667))
+
 ## [7.0.0-beta.35](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.34...v7.0.0-beta.35) (2021-03-19)
 
 
