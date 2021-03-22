@@ -278,8 +278,10 @@ export class MongoMemoryServer extends EventEmitter {
 
     this.stateChange(MongoMemoryServerStates.starting);
 
+    // check if not replset (because MongoMemoryReplSet has an own beforeExit listener) and
     // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
     if (
+      isNullOrUndefined(this.opts.instance?.replSet) &&
       process
         .listeners('beforeExit')
         .findIndex((f: (...args: any[]) => any) => f === this.cleanup) <= -1
