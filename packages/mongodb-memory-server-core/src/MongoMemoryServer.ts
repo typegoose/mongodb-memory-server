@@ -656,7 +656,7 @@ export class MongoMemoryServer extends EventEmitter {
 
   /**
    * Create Users and restart instance to enable auth
-   * This Function assumes "this.opts.auth" is defined / enabled
+   * This Function assumes "this.opts.auth" is already processed into "this.auth"
    * @param data Used to get "ip" and "port"
    * @internal
    */
@@ -680,7 +680,7 @@ export class MongoMemoryServer extends EventEmitter {
       pwd: 'rootuser',
       mechanisms: ['SCRAM-SHA-256'],
       customData: {
-        createBy: 'mongodb-memory-server',
+        createdBy: 'mongodb-memory-server',
         as: 'ROOTUSER',
       },
       roles: ['root'],
@@ -708,7 +708,11 @@ export class MongoMemoryServer extends EventEmitter {
         await db.command({
           createUser: user.createUser,
           pwd: user.pwd,
-          customData: user.customData ?? {},
+          customData: {
+            ...user.customData,
+            createdBy: 'mongodb-memory-server',
+            as: 'EXTRAUSER',
+          },
           roles: user.roles,
           authenticationRestrictions: user.authenticationRestrictions ?? [],
           mechanisms: user.mechanisms ?? ['SCRAM-SHA-256'],
