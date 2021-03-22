@@ -128,6 +128,10 @@ export async function ensureAsync(): Promise<void> {
   return new Promise((res) => process.nextTick(res));
 }
 
+/**
+ * Convert Partitial input into full-defaulted output
+ * @param opts Partitial input options
+ */
 export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
   return {
     force: false,
