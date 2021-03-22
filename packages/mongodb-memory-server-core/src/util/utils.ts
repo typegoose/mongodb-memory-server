@@ -112,7 +112,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
  */
 export function isAlive(pid: number): boolean {
   try {
-    process.kill(pid, 0);
+    process.kill(pid, 0); // code "0" dosnt actually kill anything (on all supported systems)
 
     return true;
   } catch (err) {
@@ -121,11 +121,11 @@ export function isAlive(pid: number): boolean {
 }
 
 /**
- * Call "setImmediate" to ensure an function is exectued on next event loop
- * look at the following link to get to know on why this needed: https://snyk.io/blog/nodejs-how-even-quick-async-functions-can-block-the-event-loop-starve-io/
+ * Call "process.nextTick" to ensure an function is exectued directly after all code surrounding it
+ * look at the following link to get to know on why this needed: https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#process-nexttick (read full documentation)
  */
 export async function ensureAsync(): Promise<void> {
-  return new Promise((res) => setImmediate(res));
+  return new Promise((res) => process.nextTick(res));
 }
 
 export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
