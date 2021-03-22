@@ -330,6 +330,15 @@ export class MongoMemoryReplSet extends EventEmitter {
     }
     this.stateChange(MongoMemoryReplSetStates.init); // this needs to be executed before "setImmediate"
 
+    // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
+    if (
+      process
+        .listeners('beforeExit')
+        .findIndex((f: (...args: any[]) => any) => f === this.cleanup) <= -1
+    ) {
+      process.on('beforeExit', this.cleanup);
+    }
+
     await ensureAsync()
       .then(() => this.initAllServers())
       .then(() => this._initReplSet())
@@ -342,15 +351,6 @@ export class MongoMemoryReplSet extends EventEmitter {
 
         throw err;
       });
-
-    // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
-    if (
-      process
-        .listeners('beforeExit')
-        .findIndex((f: (...args: any[]) => any) => f === this.cleanup) <= -1
-    ) {
-      process.on('beforeExit', this.cleanup);
-    }
   }
 
   /**
