@@ -329,9 +329,19 @@ export class MongoMemoryReplSet extends EventEmitter {
         throw new StateError([MongoMemoryReplSetStates.stopped], this.state);
     }
     this.stateChange(MongoMemoryReplSetStates.init); // this needs to be executed before "setImmediate"
-    await ensureAsync();
-    await this.initAllServers();
-    await this._initReplSet();
+
+    await ensureAsync()
+      .then(() => this.initAllServers())
+      .then(() => this._initReplSet())
+      .catch((err) => {
+        if (!debug.enabled('MongoMS:MongoMemoryReplSet')) {
+          console.warn('Starting the ReplSet failed, enable debug for more information');
+        }
+
+        this.stateChange(MongoMemoryReplSetStates.stopped);
+
+        throw err;
+      });
 
     // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
     if (
