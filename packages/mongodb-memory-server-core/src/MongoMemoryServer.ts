@@ -623,9 +623,9 @@ export class MongoMemoryServer extends EventEmitter {
         );
     }
 
-    log('ensureInstance: no running instance, calling `start()` command');
+    log('ensureInstance: no running instance, calling "start()" command');
     await this.start();
-    log('ensureInstance: `start()` command was succesfully resolved');
+    log('ensureInstance: "start()" command was succesfully resolved');
 
     // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
     if (!this._instanceInfo) {
