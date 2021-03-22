@@ -414,11 +414,10 @@ export class MongoMemoryServer extends EventEmitter {
       )}`
     );
 
-    // After that startup MongoDB instance
     const instance = await MongoInstance.create(mongodOptions);
     log('_startUpInstance: Instance Started');
 
-    // another "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
+    // "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
     if (!isNullOrUndefined(this.auth) && createAuth) {
       log(`_startUpInstance: Running "createAuth" (force: "${this.auth.force}")`);
       await this.createAuth(data);
@@ -433,7 +432,7 @@ export class MongoMemoryServer extends EventEmitter {
       } else {
         console.warn(
           'Not Restarting MongoInstance for Auth\n' +
-            'Storage engine is ephemeralForTest, which does not write data on shutdown, and mongodb does not allow changeing "auth" runtime'
+            'Storage engine is "ephemeralForTest", which does not write data on shutdown, and mongodb does not allow changing "auth" runtime'
         );
       }
     } else {
