@@ -1,3 +1,27 @@
+## [7.0.0-beta.37](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.36...v7.0.0-beta.37) (2021-03-22)
+
+
+### Style
+
+* **MongoMemoryServer:** getStartOptions: use "spread" instead of many lines ([9a01529](https://github.com/nodkz/mongodb-memory-server/commit/9a01529073da47d23486efc4274012c5b21788f8))
+* **resolveConfig:** update tsdoc ([4e5469c](https://github.com/nodkz/mongodb-memory-server/commit/4e5469c6dd32603a580a947b1194f4c5ca7c7476))
+* **utils:** authDefault: add tsdoc ([aab1647](https://github.com/nodkz/mongodb-memory-server/commit/aab16477cb96d63d2ed3b7a4e90b5761b51c2212))
+
+
+### Fixes
+
+* **MongoMemoryReplSet:** start: change state on error ([20433b5](https://github.com/nodkz/mongodb-memory-server/commit/20433b5fa27854c30f30d602d186d9413bf0563f))
+* **MongoMemoryReplSet:** start: move "beforeExit" listener setup before starting instances ([d1cc648](https://github.com/nodkz/mongodb-memory-server/commit/d1cc6481bbf0e475171e23f679363b83229d83ec))
+* **MongoMemoryServer:** add some tsdoc & change an if-throw to assertion ([5c7acb4](https://github.com/nodkz/mongodb-memory-server/commit/5c7acb489cdce3c385b5b101255ccd14f5d11775))
+* **MongoMemoryServer:** createAuth: fix typo in "customData" & add "customData" to extra users ([31c98c9](https://github.com/nodkz/mongodb-memory-server/commit/31c98c9f2fd5b45cf56880f238c35c9c3458c47e))
+* **MongoMemoryServer:** ensureInstance: change logs to be consistent with others ([3d430c1](https://github.com/nodkz/mongodb-memory-server/commit/3d430c19167608d902a0a6accfb4cceaeda347ba))
+* **MongoMemoryServer:** fix typo in warning ([532bc09](https://github.com/nodkz/mongodb-memory-server/commit/532bc0905ff47a425d50bcd212bd49de2d0b2082))
+* **MongoMemoryServer:** start: dont add "beforeExit" listener if being in an replset ([f9c555d](https://github.com/nodkz/mongodb-memory-server/commit/f9c555d5cf78b087c142d8232c51f4cd105b68b4))
+* **MongoMemoryServer:** stop: change log to be better sounding ([a009693](https://github.com/nodkz/mongodb-memory-server/commit/a0096932947b5e57d6b30587d1c103eda1d65680))
+* **postinstallHelper:** reduce variables ([b42bac3](https://github.com/nodkz/mongodb-memory-server/commit/b42bac3e40817c303ed82ea499b772a380271138))
+* **utils:** ensureAsync: change from "setImmediate" to "process.nextTick" ([3da59cc](https://github.com/nodkz/mongodb-memory-server/commit/3da59cc896872dee10f08272890efc0847128b3c))
+* **utils:** killProcess: unify log and variable names with other code ([5605ea0](https://github.com/nodkz/mongodb-memory-server/commit/5605ea0a067fab0d2064787e042f7ec07ad9bf76))
+
 ## [7.0.0-beta.36](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.35...v7.0.0-beta.36) (2021-03-20)
 
 
