@@ -469,14 +469,14 @@ export class MongoMemoryServer extends EventEmitter {
       return false;
     }
 
-    // assert here, just to be sure
+    // assert here, otherwise typescript is not happy
     assertion(
       !isNullOrUndefined(this._instanceInfo.instance),
       new Error('"instanceInfo.instance" is undefined!')
     );
 
     log(
-      `stop: Shutdown MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.childProcess?.pid}` // "undefined" would say more than ""
+      `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.childProcess?.pid}` // "undefined" would say more than ""
     );
     await this._instanceInfo.instance.stop();
 
