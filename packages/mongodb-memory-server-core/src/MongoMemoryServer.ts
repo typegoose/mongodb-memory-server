@@ -198,9 +198,21 @@ export interface MongoMemoryServer extends EventEmitter {
 }
 
 export class MongoMemoryServer extends EventEmitter {
+  /**
+   * Information about the started instance
+   */
   protected _instanceInfo?: MongoInstanceData;
+  /**
+   * General Options for this Instance
+   */
   opts: MongoMemoryServerOpts;
+  /**
+   * The Current State of this instance
+   */
   protected _state: MongoMemoryServerStates = MongoMemoryServerStates.new;
+  /**
+   * Original Auth Configuration (this.opts can be changed if stopped, but auth cannot be changed here)
+   */
   readonly auth?: Required<AutomaticAuth>;
 
   /**
@@ -239,7 +251,7 @@ export class MongoMemoryServer extends EventEmitter {
   }
 
   /**
-   * Start the in-memory Instance
+   * Start the Mongod Instance
    * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
    * @throws if state is not "new" or "stopped"
    */
@@ -259,9 +271,10 @@ export class MongoMemoryServer extends EventEmitter {
         );
     }
 
-    if (!isNullOrUndefined(this._instanceInfo?.instance.childProcess)) {
-      throw new Error('Cannot start because "instance.childProcess" is already defined!');
-    }
+    assertion(
+      isNullOrUndefined(this._instanceInfo?.instance.childProcess),
+      new Error('Cannot start because "instance.childProcess" is already defined!')
+    );
 
     this.stateChange(MongoMemoryServerStates.starting);
 
