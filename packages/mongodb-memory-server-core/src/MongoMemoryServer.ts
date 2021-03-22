@@ -375,11 +375,7 @@ export class MongoMemoryServer extends EventEmitter {
       createAuth: createAuth,
       mongodOptions: {
         instance: {
-          dbPath: data.dbPath,
-          ip: data.ip,
-          port: data.port,
-          storageEngine: data.storageEngine,
-          replSet: data.replSet,
+          ...data,
           args: instOpts.args,
           auth: createAuth ? false : instOpts.auth, // disable "auth" for "createAuth"
         },
