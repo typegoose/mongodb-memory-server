@@ -235,10 +235,9 @@ export class MongoBinaryDownload {
   async extract(mongoDBArchive: string): Promise<string> {
     log('extract');
     const mongodbFullPath = await this.getPath();
-    const mongodbDirPath = path.dirname(mongodbFullPath);
     log(`extract: archive: "${mongoDBArchive}" final: "${mongodbFullPath}"`);
 
-    await mkdirp(mongodbDirPath);
+    await mkdirp(path.dirname(mongodbFullPath));
 
     const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?)|(?:.*\.dll))$/i.test(file);
 
@@ -248,17 +247,17 @@ export class MongoBinaryDownload {
       await this.extractZip(mongoDBArchive, mongodbFullPath, filter);
     } else {
       throw new Error(
-        `MongoBinaryDownload: unsupported archive ${mongoDBArchive} (downloaded from ${
+        `MongoBinaryDownload: unsupported archive "${mongoDBArchive}" (downloaded from "${
           this._downloadingUrl ?? 'unknown'
-        }). Broken archive from MongoDB Provider?`
+        }"). Broken archive from MongoDB Provider?`
       );
     }
 
     if (!(await pathExists(mongodbFullPath))) {
       throw new Error(
-        `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${
+        `MongoBinaryDownload: missing mongod binary in "${mongoDBArchive}" (downloaded from "${
           this._downloadingUrl ?? 'unknown'
-        }). Broken archive from MongoDB Provider?`
+        }"). Broken archive from MongoDB Provider?`
       );
     }
 
