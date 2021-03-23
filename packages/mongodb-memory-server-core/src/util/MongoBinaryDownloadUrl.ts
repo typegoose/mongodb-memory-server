@@ -62,12 +62,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
   /**
    * Get the archive
-   * Version independent
    */
   async getArchiveName(): Promise<string> {
     const archive_name = resolveConfig(ResolveConfigVariables.ARCHIVE_NAME);
 
-    if (!isNullOrUndefined(archive_name) && archive_name.length > 0) {
+    // double-"!" to not include falsy values
+    if (!!archive_name) {
       return archive_name;
     }
 
