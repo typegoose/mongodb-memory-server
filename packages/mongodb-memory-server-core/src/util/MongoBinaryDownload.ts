@@ -370,9 +370,7 @@ export class MongoBinaryDownload {
     const downloadUrl = this.assignDownloadingURL(url);
 
     return new Promise((resolve, reject) => {
-      const fileStream = createWriteStream(tempDownloadLocation);
-
-      log(`httpDownload: trying to download ${downloadUrl}`);
+      log(`httpDownload: trying to download "${downloadUrl}"`);
       https
         .get(url, httpOptions, (response) => {
           if (response.statusCode != 200) {
@@ -406,6 +404,8 @@ export class MongoBinaryDownload {
           this.dlProgress.current = 0;
           this.dlProgress.length = parseInt(response.headers['content-length'], 10);
           this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
+
+          const fileStream = createWriteStream(tempDownloadLocation);
 
           response.pipe(fileStream);
 
