@@ -55,7 +55,7 @@ export class DryMongoBinary {
     log(`locateBinary: Trying to locate Binary for version "${opts.version}"`);
     const useOpts = await this.generateOptions(opts);
 
-    if (!isNullOrUndefined(useOpts.systemBinary) && useOpts.systemBinary.length > 0) {
+    if (!!useOpts.systemBinary) {
       log(`locateBinary: env "SYSTEM_BINARY" was provided with value: "${useOpts.systemBinary}"`);
 
       const systemReturn = await this.getSystemPath(useOpts.systemBinary);
