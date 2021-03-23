@@ -51,13 +51,11 @@ export enum MongoInstanceEvents {
 }
 
 export interface MongodOpts {
-  // instance options
+  /** instance options */
   instance: MongoMemoryInstanceOpts;
-
-  // mongo binary options
+  /** mongo binary options */
   binary: MongoBinaryOpts;
-
-  // child process spawn options
+  /** child process spawn options */
   spawn: SpawnOptions;
 }
 
