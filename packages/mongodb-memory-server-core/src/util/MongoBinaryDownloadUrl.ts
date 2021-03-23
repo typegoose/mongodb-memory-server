@@ -89,8 +89,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * (from: https://www.mongodb.org/dl/win32)
    */
   getArchiveNameWin(): string {
-    let name = `mongodb-${this.platform}`;
-    name += `-${this.arch}`;
+    let name = `mongodb-${this.platform}-${this.arch}`;
 
     if (!isNullOrUndefined(semver.coerce(this.version))) {
       if (semver.satisfies(this.version, '4.2.x')) {
