@@ -7,6 +7,7 @@ import {
   generateDbName,
   getHost,
   isNullOrUndefined,
+  ManagerAdvanced,
   uriTemplate,
 } from './util/utils';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -134,7 +135,7 @@ export interface MongoMemoryReplSet extends EventEmitter {
 /**
  * Class for managing an replSet
  */
-export class MongoMemoryReplSet extends EventEmitter {
+export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced {
   /**
    * All servers this ReplSet instance manages
    */
@@ -169,7 +170,8 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Create an instance of "MongoMemoryReplSet" and call start
    * @param opts Options for the ReplSet
    */
-  static async create(opts: Partial<MongoMemoryReplSetOpts> = {}): Promise<MongoMemoryReplSet> {
+  static async create(opts?: Partial<MongoMemoryReplSetOpts>): Promise<MongoMemoryReplSet> {
+    log('create: Called .create() method');
     const replSet = new this({ ...opts });
     await replSet.start();
 
