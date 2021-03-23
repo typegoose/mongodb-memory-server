@@ -190,11 +190,11 @@ export class MongoInstance extends EventEmitter {
     this.isInstanceReady = false;
     this.isReplSet = false;
 
-    const launch: Promise<void> = new Promise((resolve, reject) => {
-      this.once(MongoInstanceEvents.instanceReady, resolve);
-      this.once(MongoInstanceEvents.instanceError, reject);
+    const launch: Promise<void> = new Promise((res, rej) => {
+      this.once(MongoInstanceEvents.instanceReady, res);
+      this.once(MongoInstanceEvents.instanceError, rej);
       this.once(MongoInstanceEvents.instanceClosed, () => {
-        reject(new Error('Instance Exited before being ready and without throwing an error!'));
+        rej(new Error('Instance Exited before being ready and without throwing an error!'));
       });
     });
 
