@@ -314,7 +314,7 @@ export class MongoInstance extends EventEmitter {
   }
 
   /**
-   * Spawn an child to kill the parent and the mongod instance if both are Dead
+   * Spawn an seperate process to kill the parent and the mongod instance to ensure "mongod" gets stopped in any case
    * @param parentPid Parent nodejs process
    * @param childPid Mongod process to kill
    * @fires MongoInstance#killerLaunched
@@ -374,7 +374,7 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceSTDERR
    */
   stderrHandler(message: string | Buffer): void {
-    this.debug(`stderrHandler: ${message.toString()}`);
+    this.debug(`stderrHandler: ""${message.toString()}""`); // denoting the STDERR string with double quotes, because the stdout might also use quotes
     this.emit(MongoInstanceEvents.instanceSTDERR, message);
   }
 
@@ -397,7 +397,10 @@ export class MongoInstance extends EventEmitter {
       this.emit(MongoInstanceEvents.instanceReady);
     }
     if (/address already in use/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, `Port ${this.instanceOpts.port} already in use`);
+      this.emit(
+        MongoInstanceEvents.instanceError,
+        `Port "${this.instanceOpts.port}" already in use`
+      );
     }
     if (/mongod instance already running/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod already running');
@@ -435,7 +438,7 @@ export class MongoInstance extends EventEmitter {
     }
     if (/transition to primary complete; database writes are now permitted/i.test(line)) {
       this.isInstancePrimary = true;
-      this.debug('stdoutHandler: Calling all waitForPrimary resolve functions');
+      this.debug('stdoutHandler: emitting "instancePrimary"');
       this.emit(MongoInstanceEvents.instancePrimary);
     }
     if (/member [\d\.:]+ is now in state \w+/i.test(line)) {

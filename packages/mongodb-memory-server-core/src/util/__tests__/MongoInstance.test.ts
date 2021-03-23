@@ -151,7 +151,7 @@ describe('MongodbInstance', () => {
         instance: { port: gotPort, dbPath: tmpDir.name },
         binary: { version },
       })
-    ).rejects.toEqual(`Port ${gotPort} already in use`);
+    ).rejects.toEqual(`Port "${gotPort}" already in use`);
 
     await mongod.stop();
   });
@@ -259,7 +259,7 @@ describe('MongodbInstance', () => {
 
         expect(events.size).toEqual(2);
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instanceError)).toEqual('Port 1001 already in use');
+        expect(events.get(MongoInstanceEvents.instanceError)).toEqual('Port "1001" already in use');
       });
 
       it('should emit "instanceError" when curl-open-ssl-3 is not found', () => {
