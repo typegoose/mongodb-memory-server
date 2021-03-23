@@ -1,7 +1,6 @@
 import { ChildProcess, fork, spawn, SpawnOptions } from 'child_process';
-import path, { resolve } from 'path';
-import MongoBinary from './MongoBinary';
-import { MongoBinaryOpts } from './MongoBinary';
+import * as path from 'path';
+import { MongoBinary, MongoBinaryOpts } from './MongoBinary';
 import debug from 'debug';
 import { assertion, uriTemplate, isNullOrUndefined, killProcess } from './utils';
 import { lt } from 'semver';
@@ -297,7 +296,7 @@ export class MongoInstance extends EventEmitter {
    */
   _launchMongod(mongoBin: string): ChildProcess {
     this.debug('_launchMongod: Launching Mongod Process');
-    const childProcess = spawn(resolve(mongoBin), this.prepareCommandArgs(), {
+    const childProcess = spawn(path.resolve(mongoBin), this.prepareCommandArgs(), {
       ...this.spawnOpts,
       stdio: 'pipe', // ensure that stdio is always an pipe, regardless of user input
     });
