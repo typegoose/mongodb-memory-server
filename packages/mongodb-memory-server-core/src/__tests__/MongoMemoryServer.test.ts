@@ -2,6 +2,7 @@
 import { MongoClient } from 'mongodb';
 import * as tmp from 'tmp';
 import MongoMemoryServer, {
+  MongoInstanceData,
   MongoMemoryServerEvents,
   MongoMemoryServerStates,
 } from '../MongoMemoryServer';
@@ -295,9 +296,11 @@ describe('MongoMemoryServer', () => {
       const mongoServer2 = new MongoMemoryServer();
       // this case can normally happen if "start" is called again
       // @ts-expect-error because "_instanceInfo" is protected
-      mongoServer2._instanceInfo = { instance: { childProcess: {} } } as any; // artificially set this to {} to not be undefined anymore
+      mongoServer2._instanceInfo = {
+        instance: { mongodProcess: {} },
+      } as Partial<MongoInstanceData>; // artificially set this to {} to not be undefined anymore
       await expect(mongoServer2.start()).rejects.toThrow(
-        'Cannot start because "instance.childProcess" is already defined!'
+        'Cannot start because "instance.mongodProcess" is already defined!'
       );
     });
   });

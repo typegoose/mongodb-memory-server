@@ -134,7 +134,7 @@ describe('MongodbInstance', () => {
       binary: { version },
     });
 
-    expect(mongod.childProcess!.pid).toBeGreaterThan(0);
+    expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
 
     await mongod.stop();
   });
@@ -162,7 +162,7 @@ describe('MongodbInstance', () => {
       instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version },
     });
-    const pid: any = mongod.childProcess!.pid;
+    const pid: any = mongod.mongodProcess!.pid;
     const killerPid: any = mongod.killerProcess!.pid;
     expect(pid).toBeGreaterThan(0);
     expect(killerPid).toBeGreaterThan(0);
@@ -180,7 +180,7 @@ describe('MongodbInstance', () => {
       instance: { port: gotPort, dbPath: tmpDir.name },
       binary: { version: '4.0.3' },
     });
-    expect(mongod.childProcess!.pid).toBeGreaterThan(0);
+    expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
     await mongod.stop();
   });
 
@@ -192,7 +192,7 @@ describe('MongodbInstance', () => {
     expect(dbUtil.killProcess).not.toBeCalled();
   });
 
-  it('"_launchMongod" should throw an error if "childProcess.pid" is undefined', () => {
+  it('"_launchMongod" should throw an error if "mongodProcess.pid" is undefined', () => {
     const mongod = new MongodbInstance({ instance: { port: 0, dbPath: '' } }); // dummy values - they shouldnt matter
 
     try {

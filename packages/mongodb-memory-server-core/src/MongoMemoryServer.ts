@@ -272,8 +272,8 @@ export class MongoMemoryServer extends EventEmitter {
     }
 
     assertion(
-      isNullOrUndefined(this._instanceInfo?.instance.childProcess),
-      new Error('Cannot start because "instance.childProcess" is already defined!')
+      isNullOrUndefined(this._instanceInfo?.instance.mongodProcess),
+      new Error('Cannot start because "instance.mongodProcess" is already defined!')
     );
 
     this.stateChange(MongoMemoryServerStates.starting);
@@ -476,7 +476,7 @@ export class MongoMemoryServer extends EventEmitter {
     );
 
     log(
-      `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.childProcess?.pid}` // "undefined" would say more than ""
+      `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.mongodProcess?.pid}` // "undefined" would say more than ""
     );
     await this._instanceInfo.instance.stop();
 
@@ -518,8 +518,8 @@ export class MongoMemoryServer extends EventEmitter {
     }
 
     assertion(
-      isNullOrUndefined(this._instanceInfo.instance.childProcess),
-      new Error('Cannot cleanup because "instance.childProcess" is still defined')
+      isNullOrUndefined(this._instanceInfo.instance.mongodProcess),
+      new Error('Cannot cleanup because "instance.mongodProcess" is still defined')
     );
 
     log(`cleanup: force ${force}`);

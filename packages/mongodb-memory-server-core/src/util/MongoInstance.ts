@@ -41,7 +41,7 @@ export enum MongoInstanceEvents {
   instanceSTDOUT = 'instanceSTDOUT',
   instanceSTDERR = 'instanceSTDERR',
   instanceClosed = 'instanceClosed',
-  /** Only Raw Error (emitted by childProcess) */
+  /** Only Raw Error (emitted by mongodProcess) */
   instanceRawError = 'instanceRawError',
   /** Raw Errors and Custom Errors */
   instanceError = 'instanceError',
@@ -80,7 +80,7 @@ export class MongoInstance extends EventEmitter {
   /**
    * The "mongod" Process reference
    */
-  childProcess?: ChildProcess;
+  mongodProcess?: ChildProcess;
   /**
    * The "mongo_killer" Process reference
    */
@@ -207,8 +207,8 @@ export class MongoInstance extends EventEmitter {
       throw err;
     }
     this.debug('run: Starting Processes');
-    this.childProcess = this._launchMongod(mongoBin);
-    this.killerProcess = this._launchKiller(process.pid, this.childProcess.pid);
+    this.mongodProcess = this._launchMongod(mongoBin);
+    this.killerProcess = this._launchKiller(process.pid, this.mongodProcess.pid);
 
     await launch;
     this.emit(MongoInstanceEvents.instanceStarted);
@@ -223,7 +223,7 @@ export class MongoInstance extends EventEmitter {
   async stop(): Promise<MongoInstance> {
     this.debug('stop: Called .stop():');
 
-    if (!isNullOrUndefined(this.childProcess)) {
+    if (!isNullOrUndefined(this.mongodProcess)) {
       // try to run "replSetStepDown" before running "killProcess" (gracefull "SIGINT")
       // running "&& this.isInstancePrimary" otherwise "replSetStepDown" will fail with "MongoError: not primary so can't step down"
       if (this.isReplSet && this.isInstancePrimary) {
@@ -270,10 +270,10 @@ export class MongoInstance extends EventEmitter {
         }
       }
 
-      await killProcess(this.childProcess, 'childProcess');
-      this.childProcess = undefined; // reset reference to the childProcess for "mongod"
+      await killProcess(this.mongodProcess, 'mongodProcess');
+      this.mongodProcess = undefined; // reset reference to the childProcess for "mongod"
     } else {
-      this.debug('stop: childProcess: nothing to shutdown, skipping');
+      this.debug('stop: mongodProcess: nothing to shutdown, skipping');
     }
     if (!isNullOrUndefined(this.killerProcess)) {
       await killProcess(this.killerProcess, 'killerProcess');
