@@ -2,7 +2,7 @@ import { ChildProcess, fork, spawn, SpawnOptions } from 'child_process';
 import * as path from 'path';
 import { MongoBinary, MongoBinaryOpts } from './MongoBinary';
 import debug from 'debug';
-import { assertion, uriTemplate, isNullOrUndefined, killProcess } from './utils';
+import { assertion, uriTemplate, isNullOrUndefined, killProcess, ManagerBase } from './utils';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoNetworkError } from 'mongodb';
@@ -70,7 +70,7 @@ export interface MongoInstance extends EventEmitter {
  * MongoDB Instance Handler Class
  * This Class starts & stops the "mongod" process directly and handles stdout, sterr and close events
  */
-export class MongoInstance extends EventEmitter {
+export class MongoInstance extends EventEmitter implements ManagerBase {
   // Mark these values as "readonly" & "Readonly" because modifying them after starting will have no effect
   // readonly is required otherwise the property can still be changed on the root level
   instanceOpts: MongoMemoryInstanceOpts;
@@ -132,9 +132,11 @@ export class MongoInstance extends EventEmitter {
    * @param opts Options passed to the new instance
    */
   static async create(opts: Partial<MongodOpts>): Promise<MongoInstance> {
+    log('create: Called .create() method');
     const instance = new this(opts);
+    await instance.start();
 
-    return instance.start();
+    return instance;
   }
 
   /**
@@ -184,7 +186,7 @@ export class MongoInstance extends EventEmitter {
    * Create the mongod process
    * @fires MongoInstance#instanceStarted
    */
-  async start(): Promise<this> {
+  async start(): Promise<void> {
     this.debug('start');
     this.isInstancePrimary = false;
     this.isInstanceReady = false;
@@ -215,15 +217,19 @@ export class MongoInstance extends EventEmitter {
     await launch;
     this.emit(MongoInstanceEvents.instanceStarted);
     this.debug('start: Processes Started');
-
-    return this;
   }
 
   /**
    * Shutdown all related processes (Mongod Instance & Killer Process)
    */
-  async stop(): Promise<MongoInstance> {
+  async stop(): Promise<boolean> {
     this.debug('stop');
+
+    if (!this.mongodProcess && !this.killerProcess) {
+      log('stop: nothing to shutdown, returning');
+
+      return false;
+    }
 
     if (!isNullOrUndefined(this.mongodProcess)) {
       // try to run "replSetStepDown" before running "killProcess" (gracefull "SIGINT")
@@ -285,7 +291,7 @@ export class MongoInstance extends EventEmitter {
 
     this.debug('stop: Instance Finished Shutdown');
 
-    return this;
+    return true;
   }
 
   /**
