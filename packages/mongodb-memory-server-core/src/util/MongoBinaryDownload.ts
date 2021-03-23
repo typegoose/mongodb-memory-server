@@ -166,6 +166,8 @@ export class MongoBinaryDownload {
       throw new Error('MongoBinaryDownload: md5 check failed');
     }
 
+    await fspromises.unlink(mongoDBArchiveMd5);
+
     return true;
   }
 

@@ -115,6 +115,7 @@ describe('MongoBinaryDownload', () => {
 
     jest.spyOn(fspromises, 'readFile').mockResolvedValueOnce(`${someMd5} fileName`);
     jest.spyOn(md5file, 'sync').mockImplementationOnce(() => someMd5);
+    jest.spyOn(fspromises, 'unlink').mockResolvedValue(void 0);
 
     const du = new MongoBinaryDownload({ downloadDir: '/', checkMD5: true });
     jest.spyOn(du, 'download').mockResolvedValue(fileWithReferenceMd5);
@@ -124,6 +125,7 @@ describe('MongoBinaryDownload', () => {
     expect(res).toBe(true);
     expect(du.download).toBeCalledWith(urlToMongoDBArchivePath);
     expect(fspromises.readFile).toBeCalledWith(fileWithReferenceMd5);
+    expect(fspromises.unlink).toBeCalledTimes(1);
     expect(md5file.sync).toBeCalledWith(mongoDBArchivePath);
   });
 
