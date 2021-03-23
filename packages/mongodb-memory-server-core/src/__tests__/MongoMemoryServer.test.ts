@@ -20,7 +20,7 @@ afterEach(() => {
 
 describe('MongoMemoryServer', () => {
   describe('start()', () => {
-    it('should resolve to true if an MongoInstanceData is resolved by _startUpInstance', async () => {
+    it('should not error if an MongoInstanceData is resolved by _startUpInstance', async () => {
       const mongoServer = new MongoMemoryServer();
       jest
         .spyOn(mongoServer, '_startUpInstance')
@@ -29,7 +29,7 @@ describe('MongoMemoryServer', () => {
 
       expect(mongoServer._startUpInstance).not.toHaveBeenCalled();
 
-      await expect(mongoServer.start()).resolves.toEqual(true);
+      await mongoServer.start();
 
       expect(mongoServer._startUpInstance).toHaveBeenCalledTimes(1);
     });
@@ -308,7 +308,7 @@ describe('MongoMemoryServer', () => {
   describe('ensureInstance()', () => {
     it('should throw an error if no "instanceInfo" is defined after calling start', async () => {
       const mongoServer = new MongoMemoryServer();
-      jest.spyOn(mongoServer, 'start').mockImplementationOnce(() => Promise.resolve(true));
+      jest.spyOn(mongoServer, 'start').mockResolvedValue(void 0);
 
       await expect(mongoServer.ensureInstance()).rejects.toThrow(
         'Ensure-Instance failed to start an instance!'
@@ -425,9 +425,7 @@ describe('MongoMemoryServer', () => {
 
   describe('create()', () => {
     it('should create an instance and call ".start"', async () => {
-      jest
-        .spyOn(MongoMemoryServer.prototype, 'start')
-        .mockImplementationOnce(() => Promise.resolve(true));
+      jest.spyOn(MongoMemoryServer.prototype, 'start').mockResolvedValue(void 0);
 
       await MongoMemoryServer.create();
 

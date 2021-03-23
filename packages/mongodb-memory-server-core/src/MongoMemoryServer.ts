@@ -8,6 +8,7 @@ import {
   isNullOrUndefined,
   authDefault,
   statPath,
+  ManagerAdvanced,
 } from './util/utils';
 import { MongoInstance, MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -197,7 +198,7 @@ export interface MongoMemoryServer extends EventEmitter {
   once(event: MongoMemoryServerEvents, listener: (...args: any[]) => void): this;
 }
 
-export class MongoMemoryServer extends EventEmitter {
+export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   /**
    * Information about the started instance
    */
@@ -255,7 +256,7 @@ export class MongoMemoryServer extends EventEmitter {
    * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
    * @throws if state is not "new" or "stopped"
    */
-  async start(forceSamePort: boolean = false): Promise<boolean> {
+  async start(forceSamePort: boolean = false): Promise<void> {
     log('start: Called .start() method');
 
     switch (this._state) {
@@ -301,8 +302,6 @@ export class MongoMemoryServer extends EventEmitter {
 
     this.stateChange(MongoMemoryServerStates.running);
     log('start: Instance fully Started');
-
-    return true;
   }
 
   /**
