@@ -1,3 +1,50 @@
+## [7.0.0-beta.38](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.37...v7.0.0-beta.38) (2021-03-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **MongoMemoryServer:** "MongoMemoryServer" now implements "ManagerAdvanced"
+* **MongoInstance:** "MongoInstance" now implements "ManagerBase"
+* **MongoInstance:** renaming "MongoInstance.childProcess" to "MongoInstance.mongodProcess" can break some api's
+
+### Features
+
+* **DryMongoBinary:** combineBinaryName: remove unused parameter ([edee483](https://github.com/nodkz/mongodb-memory-server/commit/edee4836ba240908b377b4588477c205fbcd2f88))
+* **MongoInstance:** implement "ManagerBase" ([e6e4e6b](https://github.com/nodkz/mongodb-memory-server/commit/e6e4e6b1de4a2635e195217bca9de36f0634c90e))
+* **MongoInstance:** rename property "childProcess" to "mongodProcess" ([46c56d8](https://github.com/nodkz/mongodb-memory-server/commit/46c56d8556a7d033cd32f6b02cfadd28b0473d67))
+* **MongoMemoryServer:** implement "ManagerAdvanced" ([709f733](https://github.com/nodkz/mongodb-memory-server/commit/709f733c737a84885d32675639b7cc0ac760b32b))
+* **utils:** add "ManagerBase" and "ManagerAdvanced" classes ([40190ef](https://github.com/nodkz/mongodb-memory-server/commit/40190ef3af9da8fd152a0db802a411fe20452f41))
+
+
+### Style
+
+* **DryMongoBinary:** locateBinary: simplify "if-condition" ([3219315](https://github.com/nodkz/mongodb-memory-server/commit/3219315e6eea96258df87aaf29a686eccd3135e1))
+* **MongoBinary:** getPath: combine "defaultOptions" & "options" into single assignment ([b107d54](https://github.com/nodkz/mongodb-memory-server/commit/b107d54bb934901c12243a06f8366c472ac9ffb1))
+* **MongoBinary:** getPath: simplify "if-condition" ([7584b56](https://github.com/nodkz/mongodb-memory-server/commit/7584b564fb3dabb5e6c26fbe5f64d9a0c20c3a94))
+* **MongoBinaryDownloadUrl:** getArchiveNameLinux: combine "name" assignments ([50878b3](https://github.com/nodkz/mongodb-memory-server/commit/50878b3414280c86759c65ea0e347fee49427e88))
+* **MongoBinaryDownloadUrl:** getArchiveNameOsx: combine "name" assignments ([c4bbf79](https://github.com/nodkz/mongodb-memory-server/commit/c4bbf79b750df80e45a135aac8326c556fd3793d))
+* **MongoBinaryDownloadUrl:** getArchiveNameWin: combine "name" assignments ([258a6a1](https://github.com/nodkz/mongodb-memory-server/commit/258a6a110a76633bb84e3f4e9e25cf3e014faca4))
+* **MongoInstance:** change comments into tsdoc ([278619c](https://github.com/nodkz/mongodb-memory-server/commit/278619c0e1ea8ca870ca5cb0a9544cf1c143e43c))
+* **MongoInstance:** move some comments ([9832760](https://github.com/nodkz/mongodb-memory-server/commit/9832760b51e3b985fc00a7508f66a64d860ae48c))
+* **MongoInstance:** simplify imports ([5621da9](https://github.com/nodkz/mongodb-memory-server/commit/5621da9b4e40dfd1889a103a2d4b7e78a05b3458))
+* **MongoInstance:** unify promise variable names ([73691da](https://github.com/nodkz/mongodb-memory-server/commit/73691da74147b07cf53405f09f6541fbe563181b))
+
+
+### Fixes
+
+* **MongoBinaryDownload:** download: escape paths in log & errors ([5d2703e](https://github.com/nodkz/mongodb-memory-server/commit/5d2703ee565b384611194690a11dd56aeb97d2c3))
+* **MongoBinaryDownload:** extract: remove only once used variable & escape paths in errors ([3d5e9cb](https://github.com/nodkz/mongodb-memory-server/commit/3d5e9cb6b966d97cfb669736d94c093b81963e3d))
+* **MongoBinaryDownload:** getMongodPath: add more logging & escape path in error ([962cc9f](https://github.com/nodkz/mongodb-memory-server/commit/962cc9ff69cf9d25c79f49df7faa0b3a6dc599b0))
+* **MongoBinaryDownload:** httpDownload: open filestream only on successful response ([57f3c7c](https://github.com/nodkz/mongodb-memory-server/commit/57f3c7cd78ddcad8b8506db3336d162165451205))
+* **MongoBinaryDownload:** makeMD5check: unlink md5 file after check ([c0b707d](https://github.com/nodkz/mongodb-memory-server/commit/c0b707df3e6a7d002abdd5d3d679f29f12d31f42))
+* **MongoBinaryDownloadUrl:** change interface to actual needs ([a906acb](https://github.com/nodkz/mongodb-memory-server/commit/a906acb15401574ec0dd01f63152c432f7fdc7f5))
+* **MongoBinaryDownloadUrl:** getArchiveName: change tsdoc & simplify "if-condition" ([aaab616](https://github.com/nodkz/mongodb-memory-server/commit/aaab616199d19de8cf3fdf2a74ae237222b3b406))
+* **MongoInstance:** debug: change to be "protected" instead of "private" ([633a35e](https://github.com/nodkz/mongodb-memory-server/commit/633a35e968acb8107eef69c5c6cd357a5e9315d2))
+* **MongoInstance:** start: update logs to reflect actual function name ([1e5a2d7](https://github.com/nodkz/mongodb-memory-server/commit/1e5a2d7c7ea742acb62f00a2ae18bbb81a0bf145))
+* **MongoInstance:** stop: fix log & remove double "con.close" ([bb2697c](https://github.com/nodkz/mongodb-memory-server/commit/bb2697c35b41c02cc6149d723ef209e12463f8f2))
+* **MongoInstance:** update tsdoc & enhance logging ([2d9e8f5](https://github.com/nodkz/mongodb-memory-server/commit/2d9e8f502ac93f9369352fa629ce906e94990ea4))
+* **MongoMemoryReplSet:** implement "ManagerAdvanced" & add logging to "create" ([94e3092](https://github.com/nodkz/mongodb-memory-server/commit/94e3092e47adbb335cbadda1db20d96e49bbe986))
+
 ## [7.0.0-beta.37](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.36...v7.0.0-beta.37) (2021-03-22)
 
 
