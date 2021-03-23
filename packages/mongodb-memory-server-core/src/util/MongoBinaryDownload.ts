@@ -202,12 +202,12 @@ export class MongoBinaryDownload {
     const filename = urlObject.pathname.split('/').pop();
 
     if (!filename) {
-      throw new Error(`MongoBinaryDownload: missing filename for url ${downloadUrl}`);
+      throw new Error(`MongoBinaryDownload: missing filename for url "${downloadUrl}"`);
     }
 
     const downloadLocation = path.resolve(this.downloadDir, filename);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
-    log(`download: Downloading${proxy ? ` via proxy ${proxy}` : ''}: "${downloadUrl}"`);
+    log(`download: Downloading${proxy ? ` via proxy "${proxy}"` : ''}: "${downloadUrl}"`);
 
     if (await pathExists(downloadLocation)) {
       log('download: Already downloaded archive found, skipping download');
