@@ -208,13 +208,13 @@ export class MongoInstance extends EventEmitter {
       );
       throw err;
     }
-    this.debug('run: Starting Processes');
+    this.debug('start: Starting Processes');
     this.mongodProcess = this._launchMongod(mongoBin);
     this.killerProcess = this._launchKiller(process.pid, this.mongodProcess.pid);
 
     await launch;
     this.emit(MongoInstanceEvents.instanceStarted);
-    this.debug('run: Processes Started');
+    this.debug('start: Processes Started');
 
     return this;
   }
