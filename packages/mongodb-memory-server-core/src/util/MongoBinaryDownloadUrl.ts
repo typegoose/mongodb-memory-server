@@ -124,8 +124,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       this.arch = 'x86_64';
     }
 
-    name += `-${this.arch}`;
-    name += `-${this.version}.tgz`;
+    name += `-${this.arch}-${this.version}.tgz`;
 
     return name;
   }
