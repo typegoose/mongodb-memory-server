@@ -122,7 +122,7 @@ export class MongoInstance extends EventEmitter {
    * Debug-log with template applied
    * @param msg The Message to log
    */
-  private debug(msg: string): void {
+  protected debug(msg: string): void {
     const port = this.instanceOpts.port ?? 'unknown';
     log(`Mongo[${port}]: ${msg}`);
   }
