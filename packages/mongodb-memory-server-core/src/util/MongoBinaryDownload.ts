@@ -85,6 +85,8 @@ export class MongoBinaryDownload {
     const mongodPath = await this.getPath();
 
     if (await pathExists(mongodPath)) {
+      log(`getMongodPath: mongod path "${mongodPath}" already exists, using this`);
+
       return mongodPath;
     }
 
@@ -96,7 +98,7 @@ export class MongoBinaryDownload {
       return mongodPath;
     }
 
-    throw new Error(`Cannot find downloaded mongod binary by path ${mongodPath}`);
+    throw new Error(`Cannot find downloaded mongod binary by path "${mongodPath}"`);
   }
 
   /**
