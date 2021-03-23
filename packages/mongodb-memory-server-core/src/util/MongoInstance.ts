@@ -128,7 +128,7 @@ export class MongoInstance extends EventEmitter {
   }
 
   /**
-   * Create an new instance an call method "run"
+   * Create an new instance an call method "start"
    * @param opts Options passed to the new instance
    */
   static async create(opts: Partial<MongodOpts>): Promise<MongoInstance> {
@@ -150,11 +150,13 @@ export class MongoInstance extends EventEmitter {
       !isNullOrUndefined(this.instanceOpts.dbPath),
       new Error('"instanceOpts.dbPath" is required to be set!')
     );
+
     const result: string[] = [];
-    // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
+
     result.push('--port', this.instanceOpts.port.toString());
     result.push('--dbpath', this.instanceOpts.dbPath);
 
+    // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
     if (!!this.instanceOpts.storageEngine) {
       result.push('--storageEngine', this.instanceOpts.storageEngine);
     }
