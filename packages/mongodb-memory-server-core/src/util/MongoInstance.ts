@@ -223,7 +223,7 @@ export class MongoInstance extends EventEmitter {
    * Shutdown all related processes (Mongod Instance & Killer Process)
    */
   async stop(): Promise<MongoInstance> {
-    this.debug('stop: Called .stop():');
+    this.debug('stop');
 
     if (!isNullOrUndefined(this.mongodProcess)) {
       // try to run "replSetStepDown" before running "killProcess" (gracefull "SIGINT")
@@ -231,7 +231,7 @@ export class MongoInstance extends EventEmitter {
       if (this.isReplSet && this.isInstancePrimary) {
         let con: MongoClient | undefined;
         try {
-          log('stop: instanceStopFailed event');
+          log('stop: trying replSetStepDown');
           const port = this.instanceOpts.port;
           const ip = this.instanceOpts.ip;
           assertion(
@@ -250,7 +250,6 @@ export class MongoInstance extends EventEmitter {
 
           const admin = con.db('admin'); // just to ensure it is actually the "admin" database
           await admin.command({ replSetStepDown: 1, force: true });
-          await con.close();
         } catch (err) {
           // Quote from MongoDB Documentation (https://docs.mongodb.com/manual/reference/command/replSetStepDown/#client-connections):
           // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.
