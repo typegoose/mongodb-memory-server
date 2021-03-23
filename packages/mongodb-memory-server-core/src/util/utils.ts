@@ -192,3 +192,22 @@ export async function tryReleaseFile(
     return undefined;
   }
 }
+
+/**
+ * This Class is used to have unified types for base-manager functions
+ */
+export abstract class ManagerBase {
+  // this cannot be done yet, https://github.com/microsoft/TypeScript/issues/34516
+  // abstract static create(opts: Record<string, any>): Promise<new (...args: any) => any>;
+  abstract start(forceSamePort: boolean): Promise<void>;
+  abstract start(): Promise<void>;
+  abstract stop(cleanup: boolean): Promise<boolean>;
+}
+
+/**
+ * This Class is used to have unified types for advanced-manager functions
+ */
+export abstract class ManagerAdvanced extends ManagerBase {
+  abstract getUri(otherDB?: string | boolean): string;
+  abstract cleanup(force: boolean): Promise<void>;
+}
