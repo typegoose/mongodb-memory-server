@@ -134,11 +134,10 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * (from: https://www.mongodb.org/dl/linux)
    */
   async getArchiveNameLinux(): Promise<string> {
-    let name = `mongodb-linux`;
-    name += `-${this.arch}`;
-
+    let name = `mongodb-linux-${this.arch}`;
     let osString: string | undefined;
 
+    // the highest version for "i686" seems to be 3.3
     if (this.arch !== 'i686') {
       if (!this.os) {
         this.os = (await DryMongoBinary.generateOptions()).os;
@@ -146,7 +145,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
     }
-    if (osString) {
+    if (!!osString) {
       name += `-${osString}`;
     }
 
