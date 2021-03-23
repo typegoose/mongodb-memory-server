@@ -69,11 +69,7 @@ export class MongoBinaryDownload {
       downloadDir: this.downloadDir,
     });
 
-    return DryMongoBinary.combineBinaryName(
-      { version: this.version },
-      this.downloadDir,
-      DryMongoBinary.getBinaryName(opts)
-    );
+    return DryMongoBinary.combineBinaryName(this.downloadDir, DryMongoBinary.getBinaryName(opts));
   }
 
   /**

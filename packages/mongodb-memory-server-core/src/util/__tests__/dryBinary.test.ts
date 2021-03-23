@@ -11,13 +11,10 @@ tmp.setGracefulCleanup();
 describe('DryBinary', () => {
   it('should combine options with base and binary', () => {
     const input = {
-      opts: {
-        version: '4.0.20',
-      },
       base: '/hello',
       binary: 'mongod',
     };
-    expect(binary.DryMongoBinary.combineBinaryName(input.opts, input.base, input.binary)).toEqual(
+    expect(binary.DryMongoBinary.combineBinaryName(input.base, input.binary)).toEqual(
       path.resolve(input.base, 'mongod')
     );
   });
