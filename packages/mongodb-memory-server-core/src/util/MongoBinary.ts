@@ -76,14 +76,12 @@ export class MongoBinary {
     log('getPath');
 
     // "||" is still used here, because it should default if the value is false-y (like an empty string)
-    const defaultOptions: Required<MongoBinaryOpts> = {
+    const options: Required<MongoBinaryOpts> = {
       ...(await DryMongoBinary.generateOptions(opts as Required<MongoBinaryOpts>)),
-      platform: resolveConfig(ResolveConfigVariables.PLATFORM) || os.platform(),
-      checkMD5: envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK)),
+      platform: opts.platform || resolveConfig(ResolveConfigVariables.PLATFORM) || os.platform(),
+      checkMD5: opts.checkMD5 || envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK)),
     };
 
-    /** Provided Options combined with the Default Options */
-    const options: Required<MongoBinaryOpts> = { ...defaultOptions, ...opts };
     log(`getPath: MongoBinary options:`, JSON.stringify(options, null, 2));
 
     let binaryPath: string | undefined = await DryMongoBinary.locateBinary(options);
