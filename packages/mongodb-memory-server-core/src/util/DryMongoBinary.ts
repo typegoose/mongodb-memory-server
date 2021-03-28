@@ -55,7 +55,7 @@ export class DryMongoBinary {
     log(`locateBinary: Trying to locate Binary for version "${opts.version}"`);
     const useOpts = await this.generateOptions(opts);
 
-    if (!isNullOrUndefined(useOpts.systemBinary) && useOpts.systemBinary.length > 0) {
+    if (!!useOpts.systemBinary) {
       log(`locateBinary: env "SYSTEM_BINARY" was provided with value: "${useOpts.systemBinary}"`);
 
       const systemReturn = await this.getSystemPath(useOpts.systemBinary);
@@ -131,14 +131,9 @@ export class DryMongoBinary {
   }
 
   /**
-   * Combine basePath with binaryName and Options
-   * This is an placeholder function until https://github.com/nodkz/mongodb-memory-server/issues/256
+   * Combine basePath with binaryName
    */
-  static combineBinaryName(
-    opts: DryMongoBinaryOptions,
-    basePath: string,
-    binaryName: string
-  ): string {
+  static combineBinaryName(basePath: string, binaryName: string): string {
     return path.resolve(basePath, binaryName);
   }
 
@@ -189,7 +184,7 @@ export class DryMongoBinary {
     });
 
     if (!isNullOrUndefined(tmpModulesCache)) {
-      final.modulesCache = this.combineBinaryName(opts, path.resolve(tmpModulesCache), binaryName);
+      final.modulesCache = this.combineBinaryName(path.resolve(tmpModulesCache), binaryName);
     }
 
     // Probe if the legacy Home Cache exists, if not remove it from the list
@@ -197,7 +192,7 @@ export class DryMongoBinary {
 
     if (await pathExists(legacyHomeCache)) {
       log(`generatePaths: legacy home cache exist ("${legacyHomeCache}")`);
-      final.legacyHomeCache = this.combineBinaryName(opts, legacyHomeCache, binaryName);
+      final.legacyHomeCache = this.combineBinaryName(legacyHomeCache, binaryName);
     }
 
     // Resolve the config value "DOWNLOAD_DIR" if provided, otherwise remove from list
@@ -206,12 +201,11 @@ export class DryMongoBinary {
 
     if (!isNullOrUndefined(resolveConfigValue) && resolveConfigValue.length > 0) {
       log(`generatePaths: resolveConfigValue is not empty`);
-      final.resolveConfig = this.combineBinaryName(opts, resolveConfigValue, binaryName);
+      final.resolveConfig = this.combineBinaryName(resolveConfigValue, binaryName);
     }
 
     // Resolve relative to cwd if no other has been found
     final.relative = this.combineBinaryName(
-      opts,
       path.resolve(process.cwd(), 'mongodb-binaries'),
       binaryName
     );

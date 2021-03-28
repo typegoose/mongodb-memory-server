@@ -7,6 +7,7 @@ import {
   generateDbName,
   getHost,
   isNullOrUndefined,
+  ManagerAdvanced,
   uriTemplate,
 } from './util/utils';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -134,7 +135,7 @@ export interface MongoMemoryReplSet extends EventEmitter {
 /**
  * Class for managing an replSet
  */
-export class MongoMemoryReplSet extends EventEmitter {
+export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced {
   /**
    * All servers this ReplSet instance manages
    */
@@ -169,7 +170,8 @@ export class MongoMemoryReplSet extends EventEmitter {
    * Create an instance of "MongoMemoryReplSet" and call start
    * @param opts Options for the ReplSet
    */
-  static async create(opts: Partial<MongoMemoryReplSetOpts> = {}): Promise<MongoMemoryReplSet> {
+  static async create(opts?: Partial<MongoMemoryReplSetOpts>): Promise<MongoMemoryReplSet> {
+    log('create: Called .create() method');
     const replSet = new this({ ...opts });
     await replSet.start();
 
@@ -329,9 +331,6 @@ export class MongoMemoryReplSet extends EventEmitter {
         throw new StateError([MongoMemoryReplSetStates.stopped], this.state);
     }
     this.stateChange(MongoMemoryReplSetStates.init); // this needs to be executed before "setImmediate"
-    await ensureAsync();
-    await this.initAllServers();
-    await this._initReplSet();
 
     // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
     if (
@@ -341,6 +340,19 @@ export class MongoMemoryReplSet extends EventEmitter {
     ) {
       process.on('beforeExit', this.cleanup);
     }
+
+    await ensureAsync()
+      .then(() => this.initAllServers())
+      .then(() => this._initReplSet())
+      .catch((err) => {
+        if (!debug.enabled('MongoMS:MongoMemoryReplSet')) {
+          console.warn('Starting the ReplSet failed, enable debug for more information');
+        }
+
+        this.stateChange(MongoMemoryReplSetStates.stopped);
+
+        throw err;
+      });
   }
 
   /**

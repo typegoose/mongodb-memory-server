@@ -43,7 +43,7 @@ export function setDefaultValue(key: ResolveConfigVariables, value: string): voi
 
 let packageJsonConfig: Record<string, string> = {};
 /**
- * Find the nearest package.json for the provided directory
+ * Find the nearest package.json (that has an non-empty config field) for the provided directory
  * @param directory Set an custom directory to search the config in (default: process.cwd())
  */
 export function findPackageJson(directory?: string): Record<string, string> {
@@ -82,8 +82,8 @@ export function findPackageJson(directory?: string): Record<string, string> {
 findPackageJson();
 
 /**
- * Resolve "variableName" with a prefix of "ENV_CONFIG_PREFIX"
- * @param variableName The variable to use
+ * Resolve "variableName" value (process.env | packagejson | default | undefined)
+ * @param variableName The variable to search an value for
  */
 export function resolveConfig(variableName: ResolveConfigVariables): string | undefined {
   return (

@@ -69,11 +69,7 @@ export class MongoBinaryDownload {
       downloadDir: this.downloadDir,
     });
 
-    return DryMongoBinary.combineBinaryName(
-      { version: this.version },
-      this.downloadDir,
-      DryMongoBinary.getBinaryName(opts)
-    );
+    return DryMongoBinary.combineBinaryName(this.downloadDir, DryMongoBinary.getBinaryName(opts));
   }
 
   /**
@@ -85,6 +81,8 @@ export class MongoBinaryDownload {
     const mongodPath = await this.getPath();
 
     if (await pathExists(mongodPath)) {
+      log(`getMongodPath: mongod path "${mongodPath}" already exists, using this`);
+
       return mongodPath;
     }
 
@@ -96,7 +94,7 @@ export class MongoBinaryDownload {
       return mongodPath;
     }
 
-    throw new Error(`Cannot find downloaded mongod binary by path ${mongodPath}`);
+    throw new Error(`Cannot find downloaded mongod binary by path "${mongodPath}"`);
   }
 
   /**
@@ -164,6 +162,8 @@ export class MongoBinaryDownload {
       throw new Error('MongoBinaryDownload: md5 check failed');
     }
 
+    await fspromises.unlink(mongoDBArchiveMd5);
+
     return true;
   }
 
@@ -198,12 +198,12 @@ export class MongoBinaryDownload {
     const filename = urlObject.pathname.split('/').pop();
 
     if (!filename) {
-      throw new Error(`MongoBinaryDownload: missing filename for url ${downloadUrl}`);
+      throw new Error(`MongoBinaryDownload: missing filename for url "${downloadUrl}"`);
     }
 
     const downloadLocation = path.resolve(this.downloadDir, filename);
     const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
-    log(`download: Downloading${proxy ? ` via proxy ${proxy}` : ''}: "${downloadUrl}"`);
+    log(`download: Downloading${proxy ? ` via proxy "${proxy}"` : ''}: "${downloadUrl}"`);
 
     if (await pathExists(downloadLocation)) {
       log('download: Already downloaded archive found, skipping download');
@@ -231,10 +231,9 @@ export class MongoBinaryDownload {
   async extract(mongoDBArchive: string): Promise<string> {
     log('extract');
     const mongodbFullPath = await this.getPath();
-    const mongodbDirPath = path.dirname(mongodbFullPath);
     log(`extract: archive: "${mongoDBArchive}" final: "${mongodbFullPath}"`);
 
-    await mkdirp(mongodbDirPath);
+    await mkdirp(path.dirname(mongodbFullPath));
 
     const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?)|(?:.*\.dll))$/i.test(file);
 
@@ -244,17 +243,17 @@ export class MongoBinaryDownload {
       await this.extractZip(mongoDBArchive, mongodbFullPath, filter);
     } else {
       throw new Error(
-        `MongoBinaryDownload: unsupported archive ${mongoDBArchive} (downloaded from ${
+        `MongoBinaryDownload: unsupported archive "${mongoDBArchive}" (downloaded from "${
           this._downloadingUrl ?? 'unknown'
-        }). Broken archive from MongoDB Provider?`
+        }"). Broken archive from MongoDB Provider?`
       );
     }
 
     if (!(await pathExists(mongodbFullPath))) {
       throw new Error(
-        `MongoBinaryDownload: missing mongod binary in ${mongoDBArchive} (downloaded from ${
+        `MongoBinaryDownload: missing mongod binary in "${mongoDBArchive}" (downloaded from "${
           this._downloadingUrl ?? 'unknown'
-        }). Broken archive from MongoDB Provider?`
+        }"). Broken archive from MongoDB Provider?`
       );
     }
 
@@ -367,9 +366,7 @@ export class MongoBinaryDownload {
     const downloadUrl = this.assignDownloadingURL(url);
 
     return new Promise((resolve, reject) => {
-      const fileStream = createWriteStream(tempDownloadLocation);
-
-      log(`httpDownload: trying to download ${downloadUrl}`);
+      log(`httpDownload: trying to download "${downloadUrl}"`);
       https
         .get(url, httpOptions, (response) => {
           if (response.statusCode != 200) {
@@ -403,6 +400,8 @@ export class MongoBinaryDownload {
           this.dlProgress.current = 0;
           this.dlProgress.length = parseInt(response.headers['content-length'], 10);
           this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
+
+          const fileStream = createWriteStream(tempDownloadLocation);
 
           response.pipe(fileStream);
 

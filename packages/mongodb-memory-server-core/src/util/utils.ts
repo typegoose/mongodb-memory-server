@@ -75,10 +75,13 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
     return;
   }
 
+  /**
+   * Timeout before using SIGKILL
+   */
   const timeoutTime = 1000 * 10;
-  await new Promise<void>((resolve, reject) => {
+  await new Promise<void>((res, rej) => {
     let timeout = setTimeout(() => {
-      log('killProcess timeout triggered, trying SIGKILL');
+      log('killProcess: timeout triggered, trying SIGKILL');
 
       if (!debug.enabled('MongoMS:utils')) {
         console.warn(
@@ -89,16 +92,16 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
 
       childprocess.kill('SIGKILL');
       timeout = setTimeout(() => {
-        log('killProcess timeout triggered again, rejecting');
-        reject(new Error('Process didnt exit, enable debug for more information.'));
+        log('killProcess: timeout triggered again, rejecting');
+        rej(new Error(`Process "${name}" didnt exit, enable debug for more information.`));
       }, timeoutTime);
     }, timeoutTime);
     childprocess.once(`exit`, (code, signal) => {
-      log(`- ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
+      log(`killProcess: ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
       clearTimeout(timeout);
-      resolve();
+      res();
     });
-    log(`- ${name}: send "SIGINT"`);
+    log(`killProcess: ${name}: sending "SIGINT"`);
     childprocess.kill('SIGINT');
   });
 }
@@ -109,7 +112,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
  */
 export function isAlive(pid: number): boolean {
   try {
-    process.kill(pid, 0);
+    process.kill(pid, 0); // code "0" dosnt actually kill anything (on all supported systems)
 
     return true;
   } catch (err) {
@@ -118,13 +121,17 @@ export function isAlive(pid: number): boolean {
 }
 
 /**
- * Call "setImmediate" to ensure an function is exectued on next event loop
- * look at the following link to get to know on why this needed: https://snyk.io/blog/nodejs-how-even-quick-async-functions-can-block-the-event-loop-starve-io/
+ * Call "process.nextTick" to ensure an function is exectued directly after all code surrounding it
+ * look at the following link to get to know on why this needed: https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#process-nexttick (read full documentation)
  */
 export async function ensureAsync(): Promise<void> {
-  return new Promise((res) => setImmediate(res));
+  return new Promise((res) => process.nextTick(res));
 }
 
+/**
+ * Convert Partitial input into full-defaulted output
+ * @param opts Partitial input options
+ */
 export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
   return {
     force: false,
@@ -184,4 +191,23 @@ export async function tryReleaseFile(
 
     return undefined;
   }
+}
+
+/**
+ * This Class is used to have unified types for base-manager functions
+ */
+export abstract class ManagerBase {
+  // this cannot be done yet, https://github.com/microsoft/TypeScript/issues/34516
+  // abstract static create(opts: Record<string, any>): Promise<new (...args: any) => any>;
+  abstract start(forceSamePort: boolean): Promise<void>;
+  abstract start(): Promise<void>;
+  abstract stop(cleanup: boolean): Promise<boolean>;
+}
+
+/**
+ * This Class is used to have unified types for advanced-manager functions
+ */
+export abstract class ManagerAdvanced extends ManagerBase {
+  abstract getUri(otherDB?: string | boolean): string;
+  abstract cleanup(force: boolean): Promise<void>;
 }

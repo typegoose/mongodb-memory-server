@@ -8,6 +8,7 @@ import {
   isNullOrUndefined,
   authDefault,
   statPath,
+  ManagerAdvanced,
 } from './util/utils';
 import { MongoInstance, MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -197,10 +198,22 @@ export interface MongoMemoryServer extends EventEmitter {
   once(event: MongoMemoryServerEvents, listener: (...args: any[]) => void): this;
 }
 
-export class MongoMemoryServer extends EventEmitter {
+export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
+  /**
+   * Information about the started instance
+   */
   protected _instanceInfo?: MongoInstanceData;
+  /**
+   * General Options for this Instance
+   */
   opts: MongoMemoryServerOpts;
+  /**
+   * The Current State of this instance
+   */
   protected _state: MongoMemoryServerStates = MongoMemoryServerStates.new;
+  /**
+   * Original Auth Configuration (this.opts can be changed if stopped, but auth cannot be changed here)
+   */
   readonly auth?: Required<AutomaticAuth>;
 
   /**
@@ -239,11 +252,11 @@ export class MongoMemoryServer extends EventEmitter {
   }
 
   /**
-   * Start the in-memory Instance
+   * Start the Mongod Instance
    * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
    * @throws if state is not "new" or "stopped"
    */
-  async start(forceSamePort: boolean = false): Promise<boolean> {
+  async start(forceSamePort: boolean = false): Promise<void> {
     log('start: Called .start() method');
 
     switch (this._state) {
@@ -259,14 +272,17 @@ export class MongoMemoryServer extends EventEmitter {
         );
     }
 
-    if (!isNullOrUndefined(this._instanceInfo?.instance.childProcess)) {
-      throw new Error('Cannot start because "instance.childProcess" is already defined!');
-    }
+    assertion(
+      isNullOrUndefined(this._instanceInfo?.instance.mongodProcess),
+      new Error('Cannot start because "instance.mongodProcess" is already defined!')
+    );
 
     this.stateChange(MongoMemoryServerStates.starting);
 
+    // check if not replset (because MongoMemoryReplSet has an own beforeExit listener) and
     // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
     if (
+      isNullOrUndefined(this.opts.instance?.replSet) &&
       process
         .listeners('beforeExit')
         .findIndex((f: (...args: any[]) => any) => f === this.cleanup) <= -1
@@ -286,8 +302,6 @@ export class MongoMemoryServer extends EventEmitter {
 
     this.stateChange(MongoMemoryServerStates.running);
     log('start: Instance fully Started');
-
-    return true;
   }
 
   /**
@@ -360,11 +374,7 @@ export class MongoMemoryServer extends EventEmitter {
       createAuth: createAuth,
       mongodOptions: {
         instance: {
-          dbPath: data.dbPath,
-          ip: data.ip,
-          port: data.port,
-          storageEngine: data.storageEngine,
-          replSet: data.replSet,
+          ...data,
           args: instOpts.args,
           auth: createAuth ? false : instOpts.auth, // disable "auth" for "createAuth"
         },
@@ -403,11 +413,10 @@ export class MongoMemoryServer extends EventEmitter {
       )}`
     );
 
-    // After that startup MongoDB instance
     const instance = await MongoInstance.create(mongodOptions);
     log('_startUpInstance: Instance Started');
 
-    // another "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
+    // "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
     if (!isNullOrUndefined(this.auth) && createAuth) {
       log(`_startUpInstance: Running "createAuth" (force: "${this.auth.force}")`);
       await this.createAuth(data);
@@ -422,7 +431,7 @@ export class MongoMemoryServer extends EventEmitter {
       } else {
         console.warn(
           'Not Restarting MongoInstance for Auth\n' +
-            'Storage engine is ephemeralForTest, which does not write data on shutdown, and mongodb does not allow changeing "auth" runtime'
+            'Storage engine is "ephemeralForTest", which does not write data on shutdown, and mongodb does not allow changing "auth" runtime'
         );
       }
     } else {
@@ -459,14 +468,14 @@ export class MongoMemoryServer extends EventEmitter {
       return false;
     }
 
-    // assert here, just to be sure
+    // assert here, otherwise typescript is not happy
     assertion(
       !isNullOrUndefined(this._instanceInfo.instance),
       new Error('"instanceInfo.instance" is undefined!')
     );
 
     log(
-      `stop: Shutdown MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.childProcess?.pid}` // "undefined" would say more than ""
+      `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.mongodProcess?.pid}` // "undefined" would say more than ""
     );
     await this._instanceInfo.instance.stop();
 
@@ -508,8 +517,8 @@ export class MongoMemoryServer extends EventEmitter {
     }
 
     assertion(
-      isNullOrUndefined(this._instanceInfo.instance.childProcess),
-      new Error('Cannot cleanup because "instance.childProcess" is still defined')
+      isNullOrUndefined(this._instanceInfo.instance.mongodProcess),
+      new Error('Cannot cleanup because "instance.mongodProcess" is still defined')
     );
 
     log(`cleanup: force ${force}`);
@@ -613,9 +622,9 @@ export class MongoMemoryServer extends EventEmitter {
         );
     }
 
-    log('ensureInstance: no running instance, calling `start()` command');
+    log('ensureInstance: no running instance, calling "start()" command');
     await this.start();
-    log('ensureInstance: `start()` command was succesfully resolved');
+    log('ensureInstance: "start()" command was succesfully resolved');
 
     // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
     if (!this._instanceInfo) {
@@ -646,7 +655,7 @@ export class MongoMemoryServer extends EventEmitter {
 
   /**
    * Create Users and restart instance to enable auth
-   * This Function assumes "this.opts.auth" is defined / enabled
+   * This Function assumes "this.opts.auth" is already processed into "this.auth"
    * @param data Used to get "ip" and "port"
    * @internal
    */
@@ -670,7 +679,7 @@ export class MongoMemoryServer extends EventEmitter {
       pwd: 'rootuser',
       mechanisms: ['SCRAM-SHA-256'],
       customData: {
-        createBy: 'mongodb-memory-server',
+        createdBy: 'mongodb-memory-server',
         as: 'ROOTUSER',
       },
       roles: ['root'],
@@ -698,7 +707,11 @@ export class MongoMemoryServer extends EventEmitter {
         await db.command({
           createUser: user.createUser,
           pwd: user.pwd,
-          customData: user.customData ?? {},
+          customData: {
+            ...user.customData,
+            createdBy: 'mongodb-memory-server',
+            as: 'EXTRAUSER',
+          },
           roles: user.roles,
           authenticationRestrictions: user.authenticationRestrictions ?? [],
           mechanisms: user.mechanisms ?? ['SCRAM-SHA-256'],

@@ -15,21 +15,15 @@ import {
 
 findPackageJson(process.env.INIT_CWD);
 
-const envDisablePostinstall: string | undefined = resolveConfig(
-  ResolveConfigVariables.DISABLE_POSTINSTALL
-);
-
-if (!!envToBool(envDisablePostinstall)) {
+if (!!envToBool(resolveConfig(ResolveConfigVariables.DISABLE_POSTINSTALL))) {
   console.log(
     'Mongodb-Memory-Server* postinstall skipped because "DISABLE_POSTINSTALL" was set to an truthy value'
   );
   process.exit(0);
 }
 
-const envSystemBinary: string | undefined = resolveConfig(ResolveConfigVariables.SYSTEM_BINARY);
-
 // value is ensured to be either an string (with more than 0 length) or being undefined
-if (typeof envSystemBinary === 'string') {
+if (typeof resolveConfig(ResolveConfigVariables.SYSTEM_BINARY) === 'string') {
   console.log('Mongodb-Memory-Server* postinstall skipped because "SYSTEM_BINARY" was provided');
   process.exit(0);
 }

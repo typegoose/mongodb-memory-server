@@ -1,5 +1,5 @@
 import { AnyOS, LinuxOS } from './getos';
-import resolveConfig, { ResolveConfigVariables } from './resolveConfig';
+import { resolveConfig, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
@@ -9,26 +9,27 @@ import { UnknownArchitecture, UnknownPlatform } from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
-export interface MongoBinaryDownloadUrlOpts extends BaseDryMongoBinaryOptions {
-  version: string;
+export interface MongoBinaryDownloadUrlOpts {
+  version: NonNullable<BaseDryMongoBinaryOptions['version']>;
   platform: string;
-  arch: string;
+  arch: NonNullable<BaseDryMongoBinaryOptions['arch']>;
+  os?: BaseDryMongoBinaryOptions['os'];
 }
 
 /**
  * Download URL generator
  */
-export class MongoBinaryDownloadUrl {
+export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   platform: string;
   arch: string;
   version: string;
   os?: AnyOS;
 
-  constructor({ platform, arch, version, os }: MongoBinaryDownloadUrlOpts) {
-    this.version = version;
-    this.platform = this.translatePlatform(platform);
-    this.arch = MongoBinaryDownloadUrl.translateArch(arch, this.platform);
-    this.os = os;
+  constructor(opts: MongoBinaryDownloadUrlOpts) {
+    this.version = opts.version;
+    this.platform = this.translatePlatform(opts.platform);
+    this.arch = MongoBinaryDownloadUrl.translateArch(opts.arch, this.platform);
+    this.os = opts.os;
   }
 
   /**
@@ -61,12 +62,12 @@ export class MongoBinaryDownloadUrl {
 
   /**
    * Get the archive
-   * Version independent
    */
   async getArchiveName(): Promise<string> {
     const archive_name = resolveConfig(ResolveConfigVariables.ARCHIVE_NAME);
 
-    if (!isNullOrUndefined(archive_name) && archive_name.length > 0) {
+    // double-"!" to not include falsy values
+    if (!!archive_name) {
       return archive_name;
     }
 
@@ -88,8 +89,7 @@ export class MongoBinaryDownloadUrl {
    * (from: https://www.mongodb.org/dl/win32)
    */
   getArchiveNameWin(): string {
-    let name = `mongodb-${this.platform}`;
-    name += `-${this.arch}`;
+    let name = `mongodb-${this.platform}-${this.arch}`;
 
     if (!isNullOrUndefined(semver.coerce(this.version))) {
       if (semver.satisfies(this.version, '4.2.x')) {
@@ -124,8 +124,7 @@ export class MongoBinaryDownloadUrl {
       this.arch = 'x86_64';
     }
 
-    name += `-${this.arch}`;
-    name += `-${this.version}.tgz`;
+    name += `-${this.arch}-${this.version}.tgz`;
 
     return name;
   }
@@ -135,11 +134,10 @@ export class MongoBinaryDownloadUrl {
    * (from: https://www.mongodb.org/dl/linux)
    */
   async getArchiveNameLinux(): Promise<string> {
-    let name = `mongodb-linux`;
-    name += `-${this.arch}`;
-
+    let name = `mongodb-linux-${this.arch}`;
     let osString: string | undefined;
 
+    // the highest version for "i686" seems to be 3.3
     if (this.arch !== 'i686') {
       if (!this.os) {
         this.os = (await DryMongoBinary.generateOptions()).os;
@@ -147,7 +145,7 @@ export class MongoBinaryDownloadUrl {
 
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
     }
-    if (osString) {
+    if (!!osString) {
       name += `-${osString}`;
     }
 

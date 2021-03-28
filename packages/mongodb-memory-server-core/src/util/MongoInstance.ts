@@ -1,9 +1,8 @@
 import { ChildProcess, fork, spawn, SpawnOptions } from 'child_process';
-import path, { resolve } from 'path';
-import MongoBinary from './MongoBinary';
-import { MongoBinaryOpts } from './MongoBinary';
+import * as path from 'path';
+import { MongoBinary, MongoBinaryOpts } from './MongoBinary';
 import debug from 'debug';
-import { assertion, uriTemplate, isNullOrUndefined, killProcess } from './utils';
+import { assertion, uriTemplate, isNullOrUndefined, killProcess, ManagerBase } from './utils';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoNetworkError } from 'mongodb';
@@ -42,7 +41,7 @@ export enum MongoInstanceEvents {
   instanceSTDOUT = 'instanceSTDOUT',
   instanceSTDERR = 'instanceSTDERR',
   instanceClosed = 'instanceClosed',
-  /** Only Raw Error (emitted by childProcess) */
+  /** Only Raw Error (emitted by mongodProcess) */
   instanceRawError = 'instanceRawError',
   /** Raw Errors and Custom Errors */
   instanceError = 'instanceError',
@@ -52,13 +51,11 @@ export enum MongoInstanceEvents {
 }
 
 export interface MongodOpts {
-  // instance options
+  /** instance options */
   instance: MongoMemoryInstanceOpts;
-
-  // mongo binary options
+  /** mongo binary options */
   binary: MongoBinaryOpts;
-
-  // child process spawn options
+  /** child process spawn options */
   spawn: SpawnOptions;
 }
 
@@ -73,7 +70,7 @@ export interface MongoInstance extends EventEmitter {
  * MongoDB Instance Handler Class
  * This Class starts & stops the "mongod" process directly and handles stdout, sterr and close events
  */
-export class MongoInstance extends EventEmitter {
+export class MongoInstance extends EventEmitter implements ManagerBase {
   // Mark these values as "readonly" & "Readonly" because modifying them after starting will have no effect
   // readonly is required otherwise the property can still be changed on the root level
   instanceOpts: MongoMemoryInstanceOpts;
@@ -83,7 +80,7 @@ export class MongoInstance extends EventEmitter {
   /**
    * The "mongod" Process reference
    */
-  childProcess?: ChildProcess;
+  mongodProcess?: ChildProcess;
   /**
    * The "mongo_killer" Process reference
    */
@@ -125,19 +122,21 @@ export class MongoInstance extends EventEmitter {
    * Debug-log with template applied
    * @param msg The Message to log
    */
-  private debug(msg: string): void {
+  protected debug(msg: string): void {
     const port = this.instanceOpts.port ?? 'unknown';
     log(`Mongo[${port}]: ${msg}`);
   }
 
   /**
-   * Create an new instance an call method "run"
+   * Create an new instance an call method "start"
    * @param opts Options passed to the new instance
    */
   static async create(opts: Partial<MongodOpts>): Promise<MongoInstance> {
+    log('create: Called .create() method');
     const instance = new this(opts);
+    await instance.start();
 
-    return instance.start();
+    return instance;
   }
 
   /**
@@ -153,11 +152,13 @@ export class MongoInstance extends EventEmitter {
       !isNullOrUndefined(this.instanceOpts.dbPath),
       new Error('"instanceOpts.dbPath" is required to be set!')
     );
+
     const result: string[] = [];
-    // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
+
     result.push('--port', this.instanceOpts.port.toString());
     result.push('--dbpath', this.instanceOpts.dbPath);
 
+    // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
     if (!!this.instanceOpts.storageEngine) {
       result.push('--storageEngine', this.instanceOpts.storageEngine);
     }
@@ -185,17 +186,17 @@ export class MongoInstance extends EventEmitter {
    * Create the mongod process
    * @fires MongoInstance#instanceStarted
    */
-  async start(): Promise<this> {
+  async start(): Promise<void> {
     this.debug('start');
     this.isInstancePrimary = false;
     this.isInstanceReady = false;
     this.isReplSet = false;
 
-    const launch: Promise<void> = new Promise((resolve, reject) => {
-      this.once(MongoInstanceEvents.instanceReady, resolve);
-      this.once(MongoInstanceEvents.instanceError, reject);
+    const launch: Promise<void> = new Promise((res, rej) => {
+      this.once(MongoInstanceEvents.instanceReady, res);
+      this.once(MongoInstanceEvents.instanceError, rej);
       this.once(MongoInstanceEvents.instanceClosed, () => {
-        reject(new Error('Instance Exited before being ready and without throwing an error!'));
+        rej(new Error('Instance Exited before being ready and without throwing an error!'));
       });
     });
 
@@ -209,30 +210,34 @@ export class MongoInstance extends EventEmitter {
       );
       throw err;
     }
-    this.debug('run: Starting Processes');
-    this.childProcess = this._launchMongod(mongoBin);
-    this.killerProcess = this._launchKiller(process.pid, this.childProcess.pid);
+    this.debug('start: Starting Processes');
+    this.mongodProcess = this._launchMongod(mongoBin);
+    this.killerProcess = this._launchKiller(process.pid, this.mongodProcess.pid);
 
     await launch;
     this.emit(MongoInstanceEvents.instanceStarted);
-    this.debug('run: Processes Started');
-
-    return this;
+    this.debug('start: Processes Started');
   }
 
   /**
    * Shutdown all related processes (Mongod Instance & Killer Process)
    */
-  async stop(): Promise<MongoInstance> {
-    this.debug('stop: Called .stop():');
+  async stop(): Promise<boolean> {
+    this.debug('stop');
 
-    if (!isNullOrUndefined(this.childProcess)) {
+    if (!this.mongodProcess && !this.killerProcess) {
+      log('stop: nothing to shutdown, returning');
+
+      return false;
+    }
+
+    if (!isNullOrUndefined(this.mongodProcess)) {
       // try to run "replSetStepDown" before running "killProcess" (gracefull "SIGINT")
       // running "&& this.isInstancePrimary" otherwise "replSetStepDown" will fail with "MongoError: not primary so can't step down"
       if (this.isReplSet && this.isInstancePrimary) {
         let con: MongoClient | undefined;
         try {
-          log('stop: instanceStopFailed event');
+          log('stop: trying replSetStepDown');
           const port = this.instanceOpts.port;
           const ip = this.instanceOpts.ip;
           assertion(
@@ -251,7 +256,6 @@ export class MongoInstance extends EventEmitter {
 
           const admin = con.db('admin'); // just to ensure it is actually the "admin" database
           await admin.command({ replSetStepDown: 1, force: true });
-          await con.close();
         } catch (err) {
           // Quote from MongoDB Documentation (https://docs.mongodb.com/manual/reference/command/replSetStepDown/#client-connections):
           // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.
@@ -273,10 +277,10 @@ export class MongoInstance extends EventEmitter {
         }
       }
 
-      await killProcess(this.childProcess, 'childProcess');
-      this.childProcess = undefined; // reset reference to the childProcess for "mongod"
+      await killProcess(this.mongodProcess, 'mongodProcess');
+      this.mongodProcess = undefined; // reset reference to the childProcess for "mongod"
     } else {
-      this.debug('stop: childProcess: nothing to shutdown, skipping');
+      this.debug('stop: mongodProcess: nothing to shutdown, skipping');
     }
     if (!isNullOrUndefined(this.killerProcess)) {
       await killProcess(this.killerProcess, 'killerProcess');
@@ -287,7 +291,7 @@ export class MongoInstance extends EventEmitter {
 
     this.debug('stop: Instance Finished Shutdown');
 
-    return this;
+    return true;
   }
 
   /**
@@ -297,7 +301,7 @@ export class MongoInstance extends EventEmitter {
    */
   _launchMongod(mongoBin: string): ChildProcess {
     this.debug('_launchMongod: Launching Mongod Process');
-    const childProcess = spawn(resolve(mongoBin), this.prepareCommandArgs(), {
+    const childProcess = spawn(path.resolve(mongoBin), this.prepareCommandArgs(), {
       ...this.spawnOpts,
       stdio: 'pipe', // ensure that stdio is always an pipe, regardless of user input
     });
@@ -316,7 +320,7 @@ export class MongoInstance extends EventEmitter {
   }
 
   /**
-   * Spawn an child to kill the parent and the mongod instance if both are Dead
+   * Spawn an seperate process to kill the parent and the mongod instance to ensure "mongod" gets stopped in any case
    * @param parentPid Parent nodejs process
    * @param childPid Mongod process to kill
    * @fires MongoInstance#killerLaunched
@@ -376,7 +380,7 @@ export class MongoInstance extends EventEmitter {
    * @fires MongoInstance#instanceSTDERR
    */
   stderrHandler(message: string | Buffer): void {
-    this.debug(`stderrHandler: ${message.toString()}`);
+    this.debug(`stderrHandler: ""${message.toString()}""`); // denoting the STDERR string with double quotes, because the stdout might also use quotes
     this.emit(MongoInstanceEvents.instanceSTDERR, message);
   }
 
@@ -399,7 +403,10 @@ export class MongoInstance extends EventEmitter {
       this.emit(MongoInstanceEvents.instanceReady);
     }
     if (/address already in use/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, `Port ${this.instanceOpts.port} already in use`);
+      this.emit(
+        MongoInstanceEvents.instanceError,
+        `Port "${this.instanceOpts.port}" already in use`
+      );
     }
     if (/mongod instance already running/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod already running');
@@ -437,7 +444,7 @@ export class MongoInstance extends EventEmitter {
     }
     if (/transition to primary complete; database writes are now permitted/i.test(line)) {
       this.isInstancePrimary = true;
-      this.debug('stdoutHandler: Calling all waitForPrimary resolve functions');
+      this.debug('stdoutHandler: emitting "instancePrimary"');
       this.emit(MongoInstanceEvents.instancePrimary);
     }
     if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
