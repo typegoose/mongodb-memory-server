@@ -1,3 +1,10 @@
+## [7.0.0-beta.39](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.38...v7.0.0-beta.39) (2021-05-05)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** add fedora version 34+ handling ([8f33ef4](https://github.com/nodkz/mongodb-memory-server/commit/8f33ef4ba5c238fc72cf55b3fb7c934152b7eafe)), closes [#304](https://github.com/nodkz/mongodb-memory-server/issues/304)
+
 ## [7.0.0-beta.38](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.37...v7.0.0-beta.38) (2021-03-23)
 
 
