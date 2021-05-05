@@ -302,6 +302,42 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
       });
+
+      describe('for fedora', () => {
+        it('should return a archive name for Fedora 32', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.24',
+            os: {
+              os: 'linux',
+              dist: 'fedora',
+              release: '32',
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-4.0.24.tgz'
+          );
+        });
+
+        it('should return a archive name for Fedora 34', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.24',
+            os: {
+              os: 'linux',
+              dist: 'fedora',
+              release: '34',
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.0.24.tgz'
+          );
+        });
+      });
     });
 
     describe('for win32 & windows', () => {
