@@ -1,3 +1,10 @@
+## [7.0.0-beta.40](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.39...v7.0.0-beta.40) (2021-05-06)
+
+
+### Fixes
+
+* **resolveConfig:** resolve download dir and system binary relative to found package.json ([bc6ee8e](https://github.com/nodkz/mongodb-memory-server/commit/bc6ee8e4a6928f42f4357e090c0ffbea4ec0f384))
+
 ## [7.0.0-beta.39](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.38...v7.0.0-beta.39) (2021-05-05)
 
 
