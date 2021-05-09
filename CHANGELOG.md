@@ -1,3 +1,10 @@
+## [7.0.0-beta.41](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.40...v7.0.0-beta.41) (2021-05-09)
+
+
+### Fixes
+
+* **MongoBinaryDownload:** clear line before writing progress ([db3796a](https://github.com/nodkz/mongodb-memory-server/commit/db3796a60f766200abf510f6a34b4645edafbdd6))
+
 ## [7.0.0-beta.40](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.39...v7.0.0-beta.40) (2021-05-06)
 
 
