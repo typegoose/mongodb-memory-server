@@ -205,7 +205,7 @@ describe('MongoBinaryDownload', () => {
       // its still "20" and "1" because of rounding
       `Downloading MongoDB "${version}": 20% (1mb / ${du.dlProgress.totalMb}mb)\r`
     );
-    expect(process.stdout.write).toHaveBeenCalledTimes(1);
+    expect(process.stdout.write).toHaveBeenCalledTimes(2); // once for clearing the line and once for the actual line
   });
 
   it('should directly return the path if already exists', async () => {
