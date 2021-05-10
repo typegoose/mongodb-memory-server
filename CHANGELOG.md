@@ -1,3 +1,10 @@
+## [7.0.0-beta.42](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.41...v7.0.0-beta.42) (2021-05-10)
+
+
+### Fixes
+
+* **MongoMemoryServer:** resolve nodejs warning "DEP0147" ([c498e22](https://github.com/nodkz/mongodb-memory-server/commit/c498e223df7aa4ba2ac462ed5097060e254db7bb))
+
 ## [7.0.0-beta.41](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.40...v7.0.0-beta.41) (2021-05-09)
 
 
