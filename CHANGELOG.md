@@ -1,3 +1,31 @@
+## [7.0.0-beta.42](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.41...v7.0.0-beta.42) (2021-05-10)
+
+
+### Fixes
+
+* **MongoMemoryServer:** resolve nodejs warning "DEP0147" ([c498e22](https://github.com/nodkz/mongodb-memory-server/commit/c498e223df7aa4ba2ac462ed5097060e254db7bb))
+
+## [7.0.0-beta.41](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.40...v7.0.0-beta.41) (2021-05-09)
+
+
+### Fixes
+
+* **MongoBinaryDownload:** clear line before writing progress ([db3796a](https://github.com/nodkz/mongodb-memory-server/commit/db3796a60f766200abf510f6a34b4645edafbdd6))
+
+## [7.0.0-beta.40](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.39...v7.0.0-beta.40) (2021-05-06)
+
+
+### Fixes
+
+* **resolveConfig:** resolve download dir and system binary relative to found package.json ([bc6ee8e](https://github.com/nodkz/mongodb-memory-server/commit/bc6ee8e4a6928f42f4357e090c0ffbea4ec0f384))
+
+## [7.0.0-beta.39](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.38...v7.0.0-beta.39) (2021-05-05)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** add fedora version 34+ handling ([8f33ef4](https://github.com/nodkz/mongodb-memory-server/commit/8f33ef4ba5c238fc72cf55b3fb7c934152b7eafe)), closes [#304](https://github.com/nodkz/mongodb-memory-server/issues/304)
+
 ## [7.0.0-beta.38](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.37...v7.0.0-beta.38) (2021-03-23)
 
 

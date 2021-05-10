@@ -41,8 +41,8 @@ Until 7.0.0, `new` (`constructor`) automatically started the instance, which is 
 
 ### mongod binaries storage path changed
 
-`mongod` binary path changed from `basePath/version/mongod` its now `basePath/mongod-arch-dist-version`  
-This will make it easier to work with host / docker mounts
+`mongod` binary path changed from `basePath/version/mongod` to `basePath/mongod-arch-dist-version`  
+This will make it easier to work with sharing the project folder (like host to docker)
 
 :::note
 This package will **not** delete the old binaries, these need to be manually deleted, see [storage paths](../api/config-options.md#download_dir) for where binaries are stored
@@ -50,29 +50,29 @@ This package will **not** delete the old binaries, these need to be manually del
 
 ### getConnectionString got removed
 
-Function `getConnectionString` got removed in favour of just `getUri`
+Function `getConnectionString` got removed in favor of just `getUri`
 
-### MongoInstance.waitPrimaryReady removed
+### MongoInstance.waitPrimaryReady got removed
 
-Function `MongoInstance.waitPrimaryReady` got removed, in favour of listening to event `instancePrimary`
+Function `MongoInstance.waitPrimaryReady` got removed, in favor of listening to event `instancePrimary`
 
 ### Functions that returned public values on classes got removed
 
-Functions like `MongoMemoryServer.getInstanceInfo` got removed in favour of `MongoMemoryServer.instanceInfo` (getter)
+Functions like `MongoMemoryServer.getInstanceInfo` got removed in favor of `MongoMemoryServer.instanceInfo` (readonly value)
 
 These include:
 
-- `MongoMemoryServer.getInstanceInfo` -> `MongoMemoryServer.instanceInfo` (getter)
-- `MongoMemoryServer.getPort` -> `MongoMemoryServer.instanceInfo.port` (getter)
-- `MongoMemoryServer.getDbPath` -> `MongoMemoryServer.instanceInfo.dbPath` (getter)
-- `MongoMemoryServer.getDbName` -> `MongoMemoryServer.instanceInfo.dbName` (getter)
-- `MongoMemoryReplSet.getDbName` -> `MongoMemoryReplSet.opts.replSet.db` (getter)
-- `MongoInstance.getPid` -> `MongoInstance.mongodProcess.pid`
+- `MongoMemoryServer.getInstanceInfo` -> `MongoMemoryServer.instanceInfo` (readonly value)
+- `MongoMemoryServer.getPort` -> `MongoMemoryServer.instanceInfo.port` (readonly value)
+- `MongoMemoryServer.getDbPath` -> `MongoMemoryServer.instanceInfo.dbPath` (readonly value)
+- `MongoMemoryServer.getDbName` -> `MongoMemoryServer.instanceInfo.dbName` (readonly value)
+- `MongoMemoryReplSet.getDbName` -> `MongoMemoryReplSet.opts.replSet.db` (readonly value)
+- `MongoInstance.getPid` -> `MongoInstance.mongodProcess.pid` (readonly value)
 
 ### Manager Class functions got unified
 
 Manager-Classes got unified, these include `MongoMemoryServer`, `MongoMemoryReplSet`, `MongoInstance`  
-This means that all of them have unified standart types for `start`, `stop`, `create`, `getUri`, `cleanup`
+This means that all of them have unified typings for `start`, `stop`, `create`, `getUri`, `cleanup`
 
 This also includes function renames:
 
@@ -102,7 +102,7 @@ this does not only save space, but also provide direct auto-completion-suggestio
 
 ### All Manager Classes are now extending EventEmitter
 
-All Manager-Classes are now extending `EventEmitter`, which makes it easier to use and listen for changes
+All Manager-Classes are now extending `EventEmitter`, which makes them easier to use and listen for changes
 
 ### Automatic Authentication creation
 
@@ -125,11 +125,11 @@ const mongoServer = await MongoMemoryServer.create({
 The Instance will not be restarted if the storage engine is `ephemeralForTest` because data will not persist across restarts<br/>
 :::
 
-For Available Values look into either the source code or let intellisense show values
+For available Values look into either the source code or let intellisense show values
 
 ### Explicit & Implicit Cleanup
 
-Cleanup behaviour can now be controlled, default is an `tmpDir` then it will get automatically removed on stop / process exit, if it is not an `tmpDir` then `.cleanup` needs to be manually called with `true` (force)  
+Cleanup behaviour can now be controlled, default is an `tmpDir` that will get automatically removed on instance-stop / process exit, if it is not an `tmpDir` then `.cleanup` needs to be manually called with `true` (force)  
 
 If persistence between restarts is wanted (even if it is an `tmpDir`), then call `.stop` with `false` (`cleanup` for `tmpDir` will still be run on process exit)
 

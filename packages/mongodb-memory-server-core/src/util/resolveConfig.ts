@@ -47,9 +47,10 @@ let packageJsonConfig: Record<string, string> = {};
  * @param directory Set an custom directory to search the config in (default: process.cwd())
  */
 export function findPackageJson(directory?: string): Record<string, string> {
+  let filename: string | undefined;
   for (const found of finder(directory || process.cwd())) {
     // This is an hidden property, using this because an "for..of" loop dosnt return the "filename" value that is besides the "done" and "value" value
-    const filename = found.__path as string;
+    filename = found.__path as string;
     log(`findPackageJson: Found package.json at "${filename}"`);
 
     if (Object.keys(found?.config?.mongodbMemoryServer ?? {}).length > 0) {
@@ -62,18 +63,24 @@ export function findPackageJson(directory?: string): Record<string, string> {
   }
 
   // block for all file-path resolving
-  {
-    // These are so that "camelCase" dosnt get executed much & de-duplicate code
+  if (filename) {
+    // These are so that "camelCase" doesnt get executed much & de-duplicate code
     // "cc*" means "camelcase"
     const ccDownloadDir = camelCase(ResolveConfigVariables.DOWNLOAD_DIR);
     const ccSystemBinary = camelCase(ResolveConfigVariables.SYSTEM_BINARY);
 
     if (ccDownloadDir in packageJsonConfig) {
-      packageJsonConfig[ccDownloadDir] = path.resolve(packageJsonConfig[ccDownloadDir]);
+      packageJsonConfig[ccDownloadDir] = path.resolve(
+        path.dirname(filename),
+        packageJsonConfig[ccDownloadDir]
+      );
     }
 
     if (ccSystemBinary in packageJsonConfig) {
-      packageJsonConfig[ccSystemBinary] = path.resolve(packageJsonConfig[ccSystemBinary]);
+      packageJsonConfig[ccSystemBinary] = path.resolve(
+        path.dirname(filename),
+        packageJsonConfig[ccSystemBinary]
+      );
     }
   }
 

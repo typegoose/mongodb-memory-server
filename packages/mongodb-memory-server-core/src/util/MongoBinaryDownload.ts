@@ -15,6 +15,7 @@ import { assertion, pathExists } from './utils';
 import { DryMongoBinary } from './DryMongoBinary';
 import mkdirp from 'mkdirp';
 import { MongoBinaryOpts } from './MongoBinary';
+import { clearLine } from 'readline';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -463,7 +464,8 @@ export class MongoBinaryDownload {
     const message = `Downloading MongoDB "${this.version}": ${percentComplete}% (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`;
 
     if (process.stdout.isTTY) {
-      // if TTY overwrite last line over and over until finished
+      // if TTY overwrite last line over and over until finished and clear line to avoid residual characters
+      clearLine(process.stdout, 0); // this is because "process.stdout.clearLine" does not exist anymore
       process.stdout.write(message);
     } else {
       console.log(message);

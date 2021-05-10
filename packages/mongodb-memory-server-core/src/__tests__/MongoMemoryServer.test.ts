@@ -502,7 +502,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop(false);
       await mongoServer.cleanup(true);
       expect(utils.statPath).toHaveBeenCalledTimes(1);
-      expect(semver.lt).toHaveBeenCalledTimes(1);
+      expect(semver.lt).toHaveBeenCalled(); // not testing on how many, because it would change with nodejs version
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();

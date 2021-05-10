@@ -233,11 +233,17 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = 'rhel';
     const fedoraVer: number = parseInt(os.release, 10);
 
-    if (fedoraVer > 18) {
+    // 34 onward dosnt have "compat-openssl10" anymore, and only build from 4.0.24 are available for "rhel80"
+    if (fedoraVer >= 34) {
+      name += '80';
+    }
+    if (fedoraVer < 34 && fedoraVer >= 19) {
       name += '70';
-    } else if (fedoraVer < 19 && fedoraVer >= 12) {
+    }
+    if (fedoraVer < 19 && fedoraVer >= 12) {
       name += '62';
-    } else if (fedoraVer < 12 && fedoraVer >= 6) {
+    }
+    if (fedoraVer < 12 && fedoraVer >= 6) {
       name += '55';
     }
 
