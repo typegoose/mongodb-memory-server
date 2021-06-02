@@ -260,7 +260,7 @@ export class DryMongoBinary {
 
       return [false, paths.resolveConfig];
     }
-    if (preferGlobal) {
+    if (preferGlobal && !!paths.legacyHomeCache) {
       log(`generateDownloadPath: using global (preferGlobal) "${paths.legacyHomeCache}"`);
 
       return [false, paths.legacyHomeCache];
