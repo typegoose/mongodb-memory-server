@@ -173,8 +173,10 @@ export class DryMongoBinary {
     // Assign "node_modules/.cache" to modulesCache
 
     // if we're in postinstall script, npm will set the cwd too deep
-    let nodeModulesDLDir = process.cwd();
-    while (nodeModulesDLDir.endsWith(`node_modules${path.sep}mongodb-memory-server`)) {
+    // when in postinstall, npm will provide an "INIT_CWD" env variable
+    let nodeModulesDLDir = process.env['INIT_CWD'] || process.cwd();
+    // as long as "node_modules/mongodb-memory-server*" is included in the path, go the paths up
+    while (nodeModulesDLDir.includes(`node_modules${path.sep}mongodb-memory-server`)) {
       nodeModulesDLDir = path.resolve(nodeModulesDLDir, '..', '..');
     }
 
