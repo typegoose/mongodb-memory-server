@@ -1,3 +1,10 @@
+## [7.0.0-beta.44](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.43...v7.0.0-beta.44) (2021-06-13)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** support more arm64 (aarch64) versions ([8b5434c](https://github.com/nodkz/mongodb-memory-server/commit/8b5434c65217af87458a704bd93f6ffabb18de6c)), closes [#482](https://github.com/nodkz/mongodb-memory-server/issues/482)
+
 ## [7.0.0-beta.43](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.42...v7.0.0-beta.43) (2021-06-02)
 
 
