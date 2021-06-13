@@ -67,36 +67,88 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     describe('for linux', () => {
-      it('for ubuntu x64', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'linux',
-          arch: 'x64',
-          version: '3.6.3',
-          os: {
-            os: 'linux',
-            dist: 'Ubuntu Linux',
-            release: '14.04',
-          },
+      describe('for ubuntu', () => {
+        it('for ubuntu x64', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '3.6.3',
+            os: {
+              os: 'linux',
+              dist: 'Ubuntu Linux',
+              release: '14.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz'
+          );
         });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz'
-        );
-      });
 
-      it('for ubuntu arm64', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'linux',
-          arch: 'arm64',
-          version: '4.0.20',
-          os: {
-            os: 'linux',
-            dist: 'Ubuntu Linux',
-            release: '20.04',
-          },
+        describe('arm64', () => {
+          it('for ubuntu arm64 4.0.20 (below 4.1.10)', async () => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch: 'arm64',
+              version: '4.0.20',
+              os: {
+                os: 'linux',
+                dist: 'Ubuntu Linux',
+                release: '20.04',
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-arm64-ubuntu1604-4.0.20.tgz'
+            );
+          });
+
+          it('for ubuntu arm64 4.2.14 (above 4.1.10, below 4.4.0)', async () => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch: 'arm64',
+              version: '4.2.14',
+              os: {
+                os: 'linux',
+                dist: 'Ubuntu Linux',
+                release: '20.04',
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu1804-4.2.14.tgz'
+            );
+          });
+
+          it('for ubuntu arm64 4.4.6 & ubuntu1804 (above 4.1.10, above 4.4.0)', async () => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch: 'arm64',
+              version: '4.4.6',
+              os: {
+                os: 'linux',
+                dist: 'Ubuntu Linux',
+                release: '18.04',
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu1804-4.4.6.tgz'
+            );
+          });
+
+          it('for ubuntu arm64 4.4.6 & ubuntu2004 (above 4.1.10, above 4.4.0)', async () => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch: 'arm64',
+              version: '4.4.6',
+              os: {
+                os: 'linux',
+                dist: 'Ubuntu Linux',
+                release: '20.04',
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2004-4.4.6.tgz'
+            );
+          });
         });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/linux/mongodb-linux-arm64-ubuntu1604-4.0.20.tgz'
-        );
       });
 
       describe('for debian', () => {
