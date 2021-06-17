@@ -7,12 +7,13 @@ import { LinuxOS } from './getos';
 const log = debug('MongoMS:utils');
 
 /**
- * Return input or default auth database
+ * Return input or default database
  * @param {string} dbName
  */
 export function generateDbName(dbName?: string): string {
-  // not using "??", to also use default if string is empty
-  return dbName || 'admin';
+  // this is ""(empty) to make it compatible with mongodb's uri format and mongoose's uri format
+  // (in mongodb its the auth database, in mongoose its the default database for models)
+  return dbName || '';
 }
 
 /**
@@ -28,20 +29,18 @@ export function getHost(uri: string): string {
  * Basic MongoDB Connection string
  * @param host the host ip or an list of hosts
  * @param port the host port or undefined if "host" is an list of hosts
- * @param authDbName the auth db to use by default
+ * @param dbName the database to add to the uri (in mongodb its the auth database, in mongoose its the default database for models)
  * @param query extra uri-query options (joined with "&")
  */
 export function uriTemplate(
   host: string,
   port: number | undefined,
-  authDbName: string,
+  dbName: string,
   query?: string[]
 ): string {
   const hosts = !isNullOrUndefined(port) ? `${host}:${port}` : host;
 
-  return (
-    `mongodb://${hosts}/${authDbName}` + (!isNullOrUndefined(query) ? `?${query.join('&')}` : '')
-  );
+  return `mongodb://${hosts}/${dbName}` + (!isNullOrUndefined(query) ? `?${query.join('&')}` : '');
 }
 
 /**

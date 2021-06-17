@@ -642,14 +642,14 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Generate the Connection string used by mongodb
-   * @param otherAuthDb use a different authentication database than "admin"
+   * @param otherDb add an database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
    * @return an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
-  getUri(otherAuthDb?: string): string {
+  getUri(otherDb?: string): string {
     log('getUri:', this.state);
     assertionInstanceInfo(this._instanceInfo);
 
-    return uriTemplate(this._instanceInfo.ip, this._instanceInfo.port, generateDbName(otherAuthDb));
+    return uriTemplate(this._instanceInfo.ip, this._instanceInfo.port, generateDbName(otherDb));
   }
 
   /**

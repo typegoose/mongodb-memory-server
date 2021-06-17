@@ -48,8 +48,8 @@ export interface ReplSetOpts {
    */
   count?: number;
   /**
-   * authentication database name used in connection string
-   * @default "admin"
+   * add an database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
+   * @default ""
    */
   dbName?: string;
   /**
@@ -280,12 +280,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
   /**
    * Returns an mongodb URI that is setup with all replSet servers
-   * @param otherAuthDb use a different authentication database than "admin"
+   * @param otherDb add an database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
    * @throws if state is not "running"
    * @throws if an server doesnt have "instanceInfo.port" defined
    * @return an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
-  getUri(otherAuthDb?: string): string {
+  getUri(otherDb?: string): string {
     log('getUri:', this.state);
     switch (this.state) {
       case MongoMemoryReplSetStates.running:
@@ -308,7 +308,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       })
       .join(',');
 
-    return uriTemplate(hosts, undefined, generateDbName(otherAuthDb), [
+    return uriTemplate(hosts, undefined, generateDbName(otherDb), [
       `replicaSet=${this._replSetOpts.name}`,
     ]);
   }

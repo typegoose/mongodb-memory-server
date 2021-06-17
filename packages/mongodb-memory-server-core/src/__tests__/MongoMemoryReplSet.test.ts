@@ -36,11 +36,10 @@ describe('single server replset', () => {
   it('"getUri" should be able to generate an dbName', async () => {
     jest.spyOn(utils, 'generateDbName');
     const replSet = await MongoMemoryReplSet.create();
+    const port = replSet.servers[0].instanceInfo?.port;
     const uri = replSet.getUri();
+    expect(uri).toEqual(`mongodb://127.0.0.1:${port}/?replicaSet=testset`);
     expect(uri.split(',').length).toEqual(1);
-    // test that the default authdb is "admin"
-    expect(uri.includes('/admin')).toBeTruthy();
-    expect(uri.includes('replicaSet=testset')).toBeTruthy();
     expect(utils.generateDbName).toHaveBeenCalledTimes(4); // once in "new MongoMemoryReplSet" (setter), once in "_startUpInstance", once in getUri
 
     await replSet.stop();
