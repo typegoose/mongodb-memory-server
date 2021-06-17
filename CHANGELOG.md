@@ -1,3 +1,29 @@
+## [7.0.0-beta.45](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.44...v7.0.0-beta.45) (2021-06-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* `getUri`'s parameter got changed to what the actual definition is, and uses "admin" by default
+
+### Fixes
+
+* fix description & usage of "dbName" in mongo URI ([7b986e1](https://github.com/nodkz/mongodb-memory-server/commit/7b986e15dd1c060706b670116739f51bd2ea909b)), closes [#141](https://github.com/nodkz/mongodb-memory-server/issues/141)
+
+## [7.0.0-beta.44](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.43...v7.0.0-beta.44) (2021-06-13)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** support more arm64 (aarch64) versions ([8b5434c](https://github.com/nodkz/mongodb-memory-server/commit/8b5434c65217af87458a704bd93f6ffabb18de6c)), closes [#482](https://github.com/nodkz/mongodb-memory-server/issues/482)
+
+## [7.0.0-beta.43](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.42...v7.0.0-beta.43) (2021-06-02)
+
+
+### Fixes
+
+* **DryMongoBinary:** only use global path when not empty ([9d176b2](https://github.com/nodkz/mongodb-memory-server/commit/9d176b22a4867d1887a06c11a1955767f0696285)), closes [#478](https://github.com/nodkz/mongodb-memory-server/issues/478)
+* **DryMongoBinary:** use "INIT_CWD" when available ([cc2da32](https://github.com/nodkz/mongodb-memory-server/commit/cc2da3298de00b199d9f9ca134951b72e4c1a8ab)), closes [#478](https://github.com/nodkz/mongodb-memory-server/issues/478)
+
 ## [7.0.0-beta.42](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.41...v7.0.0-beta.42) (2021-05-10)
 
 

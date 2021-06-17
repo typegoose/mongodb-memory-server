@@ -134,7 +134,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * (from: https://www.mongodb.org/dl/linux)
    */
   async getArchiveNameLinux(): Promise<string> {
-    let name = `mongodb-linux-${this.arch}`;
     let osString: string | undefined;
 
     // the highest version for "i686" seems to be 3.3
@@ -145,6 +144,10 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
     }
+
+    // this is below, to allow overwriting the arch (like arm64 to aarch64)
+    let name = `mongodb-linux-${this.arch}`;
+
     if (!!osString) {
       name += `-${osString}`;
     }
@@ -301,13 +304,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       dist: 'ubuntu',
     };
 
-    // this is, because currently mongodb only really provides arm64 binaries for "ubuntu1604"
-    if (this.arch === 'arm64') {
-      log('getUbuntuVersionString: architecture "arm64" detected, using ubuntu1604');
-
-      return 'ubuntu1604';
-    }
-
     // "id_like" processing (version conversion) [this is an block to be collapsible]
     {
       if (/^linux\s?mint\s*$/i.test(os.dist)) {
@@ -339,6 +335,27 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     }
 
     const ubuntuYear: number = parseInt(ubuntuOS.release.split('.')[0], 10);
+
+    // this is, because currently mongodb only really provides arm64 binaries for "ubuntu1604"
+    if (this.arch === 'arm64') {
+      // this is because, before version 4.1.10, everything for "arm64" / "aarch64" were just "arm64" and for "ubuntu1604"
+      if (semver.satisfies(this.version, '<4.1.10')) {
+        this.arch = 'arm64';
+
+        return 'ubuntu1604';
+      }
+      if (semver.satisfies(this.version, '>=4.1.10')) {
+        // this is because mongodb changed since 4.1.0 to use "aarch64" instead of "arm64"
+        this.arch = 'aarch64';
+
+        // this is because since versions below "4.4.0" did not provide an binary for something like "20.04"
+        if (semver.satisfies(this.version, '<4.4.0')) {
+          return 'ubuntu1804';
+        }
+
+        return `ubuntu${ubuntuYear || 18}04`;
+      }
+    }
 
     if (ubuntuOS.release === '14.10') {
       return 'ubuntu1410-clang';

@@ -36,12 +36,11 @@ describe('single server replset', () => {
   it('"getUri" should be able to generate an dbName', async () => {
     jest.spyOn(utils, 'generateDbName');
     const replSet = await MongoMemoryReplSet.create();
-    const uri = replSet.getUri(true);
+    const port = replSet.servers[0].instanceInfo?.port;
+    const uri = replSet.getUri();
+    expect(uri).toEqual(`mongodb://127.0.0.1:${port}/?replicaSet=testset`);
     expect(uri.split(',').length).toEqual(1);
-    // regex for "uuidv4" ("17b00a74-e1f9-4aaa-86a1-aee757c8d3a6")
-    expect(/\/.{8}-.{4}-.{4}-.{4}-.{12}\?/i.test(uri)).toBeTruthy();
-    expect(uri.includes('replicaSet=testset')).toBeTruthy();
-    expect(utils.generateDbName).toHaveBeenCalledTimes(3); // once in "new MongoMemoryReplSet" (setter), once in "_startUpInstance", once in getUri
+    expect(utils.generateDbName).toHaveBeenCalledTimes(4); // once in "new MongoMemoryReplSet" (setter), once in "_startUpInstance", once in getUri
 
     await replSet.stop();
   });

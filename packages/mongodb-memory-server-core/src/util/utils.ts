@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import debug from 'debug';
 import { ChildProcess } from 'child_process';
 import { AutomaticAuth } from '../MongoMemoryServer';
@@ -8,11 +7,13 @@ import { LinuxOS } from './getos';
 const log = debug('MongoMS:utils');
 
 /**
- * Returns a database name string.
+ * Return input or default database
  * @param {string} dbName
  */
 export function generateDbName(dbName?: string): string {
-  return dbName || uuidv4();
+  // this is ""(empty) to make it compatible with mongodb's uri format and mongoose's uri format
+  // (in mongodb its the auth database, in mongoose its the default database for models)
+  return dbName || '';
 }
 
 /**
@@ -28,8 +29,8 @@ export function getHost(uri: string): string {
  * Basic MongoDB Connection string
  * @param host the host ip or an list of hosts
  * @param port the host port or undefined if "host" is an list of hosts
- * @param dbName the db to use by default
- * @param query extra uri-query options
+ * @param dbName the database to add to the uri (in mongodb its the auth database, in mongoose its the default database for models)
+ * @param query extra uri-query options (joined with "&")
  */
 export function uriTemplate(
   host: string,

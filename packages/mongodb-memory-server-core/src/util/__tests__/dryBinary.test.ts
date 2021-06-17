@@ -54,6 +54,7 @@ describe('DryBinary', () => {
     let binaryName: string;
     beforeAll(async () => {
       delete process.env[envName(ResolveConfigVariables.DOWNLOAD_DIR)]; // i dont know where this comes from, but without it, this property exists
+      process.env['INIT_CWD'] = undefined; // removing this, because it would mess with stuff - but still should be used when available (postinstall)
       tmpDir = tmp.dirSync({ prefix: 'mongo-mem-drybinGP-', unsafeCleanup: true });
       tmpDir2 = tmp.dirSync({ prefix: 'mongo-mem-drybinGP-', unsafeCleanup: true });
       jest

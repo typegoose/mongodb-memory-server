@@ -41,7 +41,7 @@ Constructs the options used for an instance
 
 ### getUri
 
-Typings: `getUri(otherDb?: string | boolean): string`
+Typings: `getUri(otherDb?: string): string`
 
 Get an mongodb-usable uri (can also be used in mongoose)
 

@@ -97,7 +97,7 @@ Will Error if instance cannot be started
 
 ### getUri
 
-Typings: `getUri(otherDbName?: string | boolean): string`
+Typings: `getUri(otherDbName?: string): string`
 
 Get an mongodb-usable uri (can also be used in mongoose)
 
