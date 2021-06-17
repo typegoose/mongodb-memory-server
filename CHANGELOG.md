@@ -1,3 +1,14 @@
+## [7.0.0-beta.46](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.45...v7.0.0-beta.46) (2021-06-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* `getUri`'s parameter got changed to use  ""(empty) by default
+
+### Fixes
+
+* change "generateDbName" to return an empty string by default ([840be19](https://github.com/nodkz/mongodb-memory-server/commit/840be19d3affae664be61c10ec357292c04922b7)), closes [#141](https://github.com/nodkz/mongodb-memory-server/issues/141)
+
 ## [7.0.0-beta.45](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.44...v7.0.0-beta.45) (2021-06-17)
 
 
