@@ -1,3 +1,14 @@
+## [7.0.0-beta.45](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.44...v7.0.0-beta.45) (2021-06-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* `getUri`'s parameter got changed to what the actual definition is, and uses "admin" by default
+
+### Fixes
+
+* fix description & usage of "dbName" in mongo URI ([7b986e1](https://github.com/nodkz/mongodb-memory-server/commit/7b986e15dd1c060706b670116739f51bd2ea909b)), closes [#141](https://github.com/nodkz/mongodb-memory-server/issues/141)
+
 ## [7.0.0-beta.44](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.43...v7.0.0-beta.44) (2021-06-13)
 
 
