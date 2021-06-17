@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import debug from 'debug';
 import { ChildProcess } from 'child_process';
 import { AutomaticAuth } from '../MongoMemoryServer';
@@ -8,11 +7,12 @@ import { LinuxOS } from './getos';
 const log = debug('MongoMS:utils');
 
 /**
- * Returns a database name string.
+ * Return input or default auth database
  * @param {string} dbName
  */
 export function generateDbName(dbName?: string): string {
-  return dbName || uuidv4();
+  // not using "??", to also use default if string is empty
+  return dbName || 'admin';
 }
 
 /**
@@ -28,18 +28,20 @@ export function getHost(uri: string): string {
  * Basic MongoDB Connection string
  * @param host the host ip or an list of hosts
  * @param port the host port or undefined if "host" is an list of hosts
- * @param dbName the db to use by default
- * @param query extra uri-query options
+ * @param authDbName the auth db to use by default
+ * @param query extra uri-query options (joined with "&")
  */
 export function uriTemplate(
   host: string,
   port: number | undefined,
-  dbName: string,
+  authDbName: string,
   query?: string[]
 ): string {
   const hosts = !isNullOrUndefined(port) ? `${host}:${port}` : host;
 
-  return `mongodb://${hosts}/${dbName}` + (!isNullOrUndefined(query) ? `?${query.join('&')}` : '');
+  return (
+    `mongodb://${hosts}/${authDbName}` + (!isNullOrUndefined(query) ? `?${query.join('&')}` : '')
+  );
 }
 
 /**

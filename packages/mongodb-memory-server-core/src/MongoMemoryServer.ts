@@ -642,21 +642,14 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Generate the Connection string used by mongodb
-   * @param otherDbName Set an custom Database name, or set this to "true" to generate an different name
+   * @param otherAuthDb use a different authentication database than "admin"
+   * @return an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
-  getUri(otherDbName?: string | boolean): string {
+  getUri(otherAuthDb?: string): string {
+    log('getUri:', this.state);
     assertionInstanceInfo(this._instanceInfo);
 
-    let dbName: string = this._instanceInfo.dbName;
-
-    // using "if" instead of nested "?:"
-    // Using "!!" to convert string into boolean, and that if "otherDbName" is fale, to not trigger this
-    if (!!otherDbName) {
-      // use "otherDbName" if string, otherwise generate an db-name
-      dbName = typeof otherDbName === 'string' ? otherDbName : generateDbName();
-    }
-
-    return uriTemplate(this._instanceInfo.ip, this._instanceInfo.port, dbName);
+    return uriTemplate(this._instanceInfo.ip, this._instanceInfo.port, generateDbName(otherAuthDb));
   }
 
   /**

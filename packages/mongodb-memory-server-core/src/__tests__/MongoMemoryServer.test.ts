@@ -452,14 +452,16 @@ describe('MongoMemoryServer', () => {
 
     it('should return correct value with "otherDb" being a boolean', async () => {
       const port: number = mongoServer.instanceInfo!.port;
-      expect(mongoServer.getUri(true)).not.toEqual(`mongodb://127.0.0.1:${port}/hello`);
+      const uri = mongoServer.getUri();
+      expect(uri).not.toEqual(`mongodb://127.0.0.1:${port}/hello`);
+      expect(uri).toEqual(`mongodb://127.0.0.1:${port}/admin`);
     });
 
-    it('should return correct value without "otherDb" being provided', async () => {
+    it('should return with default auth db being "admin"', async () => {
       const port: number = mongoServer.instanceInfo!.port;
       const instanceInfo = mongoServer.instanceInfo;
       utils.assertion(instanceInfo, new Error('"MongoServer.instanceInfo" should be defined!'));
-      expect(mongoServer.getUri()).toEqual(`mongodb://127.0.0.1:${port}/${instanceInfo.dbName}`);
+      expect(mongoServer.getUri()).toEqual(`mongodb://127.0.0.1:${port}/admin`);
     });
   });
 

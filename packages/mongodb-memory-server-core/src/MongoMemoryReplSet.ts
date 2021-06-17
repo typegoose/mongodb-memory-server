@@ -48,8 +48,8 @@ export interface ReplSetOpts {
    */
   count?: number;
   /**
-   * database name used in connection string
-   * @default uuidv4()
+   * authentication database name used in connection string
+   * @default "admin"
    */
   dbName?: string;
   /**
@@ -280,11 +280,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
   /**
    * Returns an mongodb URI that is setup with all replSet servers
-   * @param otherDb use a different database than what was set on creation?
+   * @param otherAuthDb use a different authentication database than "admin"
    * @throws if state is not "running"
    * @throws if an server doesnt have "instanceInfo.port" defined
+   * @return an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
-  getUri(otherDb?: string | boolean): string {
+  getUri(otherAuthDb?: string): string {
     log('getUri:', this.state);
     switch (this.state) {
       case MongoMemoryReplSetStates.running:
@@ -298,13 +299,6 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         );
     }
 
-    let dbName = this._replSetOpts.dbName;
-
-    // double instead of isNullOrUndefined to respect type "boolean" being "false"
-    if (!!otherDb) {
-      dbName = typeof otherDb === 'string' ? otherDb : generateDbName();
-    }
-
     const hosts = this.servers
       .map((s) => {
         const port = s.instanceInfo?.port;
@@ -314,7 +308,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       })
       .join(',');
 
-    return uriTemplate(hosts, undefined, dbName, [`replicaSet=${this._replSetOpts.name}`]);
+    return uriTemplate(hosts, undefined, generateDbName(otherAuthDb), [
+      `replicaSet=${this._replSetOpts.name}`,
+    ]);
   }
 
   /**
