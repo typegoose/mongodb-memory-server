@@ -1922,10 +1922,10 @@
   resolved "https://registry.yarnpkg.com/@types/find-cache-dir/-/find-cache-dir-3.2.0.tgz#eaaf331699dccf52c47926e4d4f8f3ed8db33f3c"
   integrity sha512-+JeT9qb2Jwzw72WdjU+TSvD5O1QRPWCeRpDJV+guiIq+2hwR0DFGw+nZNbTFjMIVe6Bf4GgAKeB/6Ytx6+MbeQ==
 
-"@types/find-package-json@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@types/find-package-json/-/find-package-json-1.2.0.tgz#bd8cb2be70338e50713628154d6addd1fb4999e2"
-  integrity sha512-6MllVGBx1F+O3w1dozG1PtI+rKDZf7r7llwd+M3JaSJqTcOiiELFzzaeWKmg335Ibt+ihOdepRseFii5/femfA==
+"@types/find-package-json@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@types/find-package-json/-/find-package-json-1.2.1.tgz#3698017e98d7efab1477f6030dd8fd4f8e5fcac7"
+  integrity sha512-8lNK2BIs/Impf4fSYdwk4U3+G29j6KsZq6TEOK6gSAoVWz1gZBHR32pCYKd9Ij5ux7oh5sX/21axWl6JOoaDGw==
   dependencies:
     "@types/node" "*"
 
