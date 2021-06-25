@@ -116,7 +116,8 @@ describe('MongoBinary', () => {
         // DO NOT INDENT THE TEXT
         jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
           // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
-          Buffer.from(`db version v4.0.20
+          {
+            stdout: Buffer.from(`db version v4.0.20
 git version: e2416422da84a0b63cde2397d60b521758b56d1b
 OpenSSL version: OpenSSL 1.1.1f  31 Mar 2020
 allocator: tcmalloc
@@ -124,7 +125,8 @@ modules: none
 build environment:
     distmod: ubuntu1804
     distarch: x86_64
-    target_arch: x86_64`)
+    target_arch: x86_64`),
+          }
         );
         process.env[envName(ResolveConfigVariables.VERSION)] = '4.0.20'; // set it explicitly to that version to test matching versions
         process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
@@ -141,7 +143,8 @@ build environment:
         // DO NOT INDENT THE TEXT
         jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
           // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
-          Buffer.from(`db version v4.0.20
+          {
+            stdout: Buffer.from(`db version v4.0.20
 git version: e2416422da84a0b63cde2397d60b521758b56d1b
 OpenSSL version: OpenSSL 1.1.1f  31 Mar 2020
 allocator: tcmalloc
@@ -149,7 +152,8 @@ modules: none
 build environment:
     distmod: ubuntu1804
     distarch: x86_64
-    target_arch: x86_64`)
+    target_arch: x86_64`),
+          }
         );
         process.env[envName(ResolveConfigVariables.VERSION)] = '4.4.0'; // set it explicitly to that version to test non-matching versions
         process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
