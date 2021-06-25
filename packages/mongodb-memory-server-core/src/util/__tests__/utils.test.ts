@@ -58,7 +58,10 @@ describe('utils', () => {
       jest.spyOn(process, 'kill').mockImplementationOnce(() => {
         throw new Error('hello');
       });
-      jest.useFakeTimers(); // fake times to have spies on "setTimeout" (and ensure they never get run)
+      jest.spyOn(global, 'setTimeout');
+      // the "useFakeTimers" seems to be brocken in jest@27.0.5 & ts-jest@27.0.3
+      // tracking issue: https://github.com/facebook/jest/issues/11564
+      // jest.useFakeTimers(); // fake times to have spies on "setTimeout" (and ensure they never get run)
 
       await utils.killProcess({ pid: 1001 } as ChildProcess, 'test');
       expect(process.kill).toHaveBeenCalledWith(1001, 0);

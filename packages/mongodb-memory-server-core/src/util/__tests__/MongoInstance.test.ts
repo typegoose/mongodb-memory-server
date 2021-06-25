@@ -5,7 +5,7 @@ import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
 import getPort from 'get-port';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+jest.setTimeout(100000); // 10s
 tmp.setGracefulCleanup();
 
 let tmpDir: tmp.DirResult;

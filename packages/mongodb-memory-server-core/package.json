@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-core",
-  "version": "7.0.0-beta.45",
+  "version": "7.0.0-beta.47",
   "description": "MongoDB Server for testing (core package, without autodownload). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "lib/index",
   "types": "lib/index.d.ts",
@@ -33,12 +33,11 @@
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/find-cache-dir": "^3.2.0",
-    "@types/find-package-json": "^1.2.0",
-    "@types/md5-file": "^4.0.2",
+    "@types/find-package-json": "^1.2.1",
     "@types/mkdirp": "^1.0.1",
-    "@types/mongodb": "^3.5.31",
+    "@types/mongodb": "^3.6.18",
     "@types/rimraf": "^3.0.0",
-    "@types/semver": "^7.3.4",
+    "@types/semver": "^7.3.6",
     "@types/tar-stream": "^2.1.0",
     "@types/uuid": "^8.0.0",
     "@types/yauzl": "^2.9.1"
@@ -54,11 +53,11 @@
     "https-proxy-agent": "^5.0.0",
     "md5-file": "^5.0.0",
     "mkdirp": "^1.0.4",
-    "mongodb": "^3.6.5",
-    "semver": "^7.3.2",
+    "mongodb": "^3.6.9",
+    "semver": "^7.3.5",
     "tar-stream": "^2.1.4",
     "tmp": "^0.2.1",
-    "tslib": "^2.0.3",
+    "tslib": "^2.3.0",
     "uuid": "^8.3.1",
     "yauzl": "^2.10.0"
   },

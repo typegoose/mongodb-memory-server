@@ -12,7 +12,7 @@ import * as semver from 'semver';
 import { StateError } from '../util/errors';
 
 tmp.setGracefulCleanup();
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+jest.setTimeout(100000); // 10s
 
 afterEach(() => {
   jest.restoreAllMocks();

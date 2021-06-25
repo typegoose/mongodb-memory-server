@@ -40,9 +40,11 @@ describe('MongoBinaryDownload', () => {
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
-    const callArg1 = ((du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
-      MongoBinaryDownload['httpDownload']
-    >)[1];
+    const callArg1 = (
+      (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
+        MongoBinaryDownload['httpDownload']
+      >
+    )[1];
     expect(callArg1.agent).toBeUndefined();
   });
 
@@ -65,9 +67,11 @@ describe('MongoBinaryDownload', () => {
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
-    const callArg1 = ((du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
-      MongoBinaryDownload['httpDownload']
-    >)[1];
+    const callArg1 = (
+      (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
+        MongoBinaryDownload['httpDownload']
+      >
+    )[1];
     utils.assertion(
       !utils.isNullOrUndefined(callArg1.agent),
       new Error('Expected "callArg1.agent" to be defined')
@@ -86,9 +90,11 @@ describe('MongoBinaryDownload', () => {
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
-    const callArg1 = ((du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
-      MongoBinaryDownload['httpDownload']
-    >)[1];
+    const callArg1 = (
+      (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
+        MongoBinaryDownload['httpDownload']
+      >
+    )[1];
     expect(callArg1.rejectUnauthorized).toEqual(false);
   });
 
@@ -102,9 +108,11 @@ describe('MongoBinaryDownload', () => {
 
     await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
-    const callArg1 = ((du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
-      MongoBinaryDownload['httpDownload']
-    >)[1];
+    const callArg1 = (
+      (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
+        MongoBinaryDownload['httpDownload']
+      >
+    )[1];
     expect(callArg1.rejectUnauthorized).toEqual(true);
   });
 
