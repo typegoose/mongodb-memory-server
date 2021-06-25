@@ -69,10 +69,8 @@ Choose any package, because they are the same. They differ only in the default c
 
 ### Requirements
 
-- NodeJS: 10.15+
+- NodeJS: 12.22+
 - Typescript: 4.0+ (if used)
-
-If using NodeJS below 12.10, package `rimraf` needs to be installed (when using cleanup with `force`)
 
 And one of those:
 
@@ -91,7 +89,7 @@ And one of those:
 
 ### Configuring which mongod binary to use
 
-The default behaviour is that version ~~`latest`~~`4.0.20` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
+The default behaviour is that version ~~`latest`~~`4.0.25` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
 
 ```sh
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
@@ -145,7 +143,7 @@ const mongod = new MongoMemoryServer({
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },
   binary: {
-    version?: string, // by default '4.0.20'
+    version?: string, // by default '4.0.25'
     downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()

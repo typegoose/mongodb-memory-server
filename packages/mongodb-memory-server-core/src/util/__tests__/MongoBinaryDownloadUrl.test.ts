@@ -85,11 +85,11 @@ describe('MongoBinaryDownloadUrl', () => {
         });
 
         describe('arm64', () => {
-          it('for ubuntu arm64 4.0.20 (below 4.1.10)', async () => {
+          it('for ubuntu arm64 4.0.25 (below 4.1.10)', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
-              version: '4.0.20',
+              version: '4.0.25',
               os: {
                 os: 'linux',
                 dist: 'Ubuntu Linux',
@@ -97,7 +97,7 @@ describe('MongoBinaryDownloadUrl', () => {
               },
             });
             expect(await du.getDownloadUrl()).toBe(
-              'https://fastdl.mongodb.org/linux/mongodb-linux-arm64-ubuntu1604-4.0.20.tgz'
+              'https://fastdl.mongodb.org/linux/mongodb-linux-arm64-ubuntu1604-4.0.25.tgz'
             );
           });
 
@@ -168,11 +168,11 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for debian 10 for 4.0.20 should use debian 92 [#448]', async () => {
+        it('for debian 10 for 4.0.25 should use debian 92 [#448]', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
-            version: '4.0.20',
+            version: '4.0.25',
             os: {
               os: 'linux',
               dist: 'debian',
@@ -180,7 +180,7 @@ describe('MongoBinaryDownloadUrl', () => {
             },
           });
           expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian92-4.0.20.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian92-4.0.25.tgz'
           );
         });
       });
@@ -309,7 +309,7 @@ describe('MongoBinaryDownloadUrl', () => {
           downloadUrl = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
-            version: '4.0.20',
+            version: '4.0.25',
             os: {
               os: 'linux',
               dist: 'Linux Mint',
@@ -322,35 +322,35 @@ describe('MongoBinaryDownloadUrl', () => {
         it('should default to Mint Version 20, if version cannot be found in lookup table', async () => {
           (downloadUrl.os as LinuxOS).release = '16';
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.20.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.25.tgz'
           );
         });
 
         it('should return a archive name for Linux Mint 17', async () => {
           (downloadUrl.os as LinuxOS).release = '17';
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-4.0.20.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-4.0.25.tgz'
           );
         });
 
         it('should return a archive name for Linux Mint 18', async () => {
           (downloadUrl.os as LinuxOS).release = '18';
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.25.tgz'
           );
         });
 
         it('should return a archive name for Linux Mint 19', async () => {
           (downloadUrl.os as LinuxOS).release = '19';
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.20.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.25.tgz'
           );
         });
 
         it('should return a archive name for Linux Mint 20', async () => {
           (downloadUrl.os as LinuxOS).release = '20';
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.20.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.25.tgz'
           );
         });
       });
