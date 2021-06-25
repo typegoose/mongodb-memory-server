@@ -41,12 +41,10 @@
   },
   "lint-staged": {
     "packages/**/*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ],
     "./README.md": [
-      "doctoc ./README.md",
-      "git add"
+      "doctoc ./README.md"
     ]
   },
   "scripts": {
