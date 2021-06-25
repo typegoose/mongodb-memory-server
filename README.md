@@ -70,7 +70,7 @@ Choose any package, because they are the same. They differ only in the default c
 ### Requirements
 
 - NodeJS: 10.15+
-- Typescript: 3.8+ (if used)
+- Typescript: 4.0+ (if used)
 
 If using NodeJS below 12.10, package `rimraf` needs to be installed (when using cleanup with `force`)
 
