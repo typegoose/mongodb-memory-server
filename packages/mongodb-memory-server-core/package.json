@@ -36,7 +36,7 @@
     "@types/find-package-json": "^1.2.0",
     "@types/md5-file": "^4.0.2",
     "@types/mkdirp": "^1.0.1",
-    "@types/mongodb": "^3.5.31",
+    "@types/mongodb": "^3.6.18",
     "@types/rimraf": "^3.0.0",
     "@types/semver": "^7.3.4",
     "@types/tar-stream": "^2.1.0",
