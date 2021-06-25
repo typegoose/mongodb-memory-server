@@ -939,6 +939,33 @@ change "MongoMemoryServer.instanceInfoSync" to be "undefined" instead of "null"
 * **MongoInstance:** removing the "dynamic" part can break some code with custom debug-logging
 * **MongoInstance:** because of the rename it can break some use-cases
 
+## [6.9.6](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.5...v6.9.6) (2021-03-08)
+
+
+### Bug Fixes
+
+* **dependencies:** allow patch versions ([237177b](https://github.com/nodkz/mongodb-memory-server/commit/237177b82baf11610cf695bca9f3a81d8cbfb51f)), closes [#433](https://github.com/nodkz/mongodb-memory-server/issues/433)
+
+## [6.9.5](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.4...v6.9.5) (2021-03-08)
+
+
+### Bug Fixes
+
+* **MongoBinaryDownloadUrl:** add support for ubuntu-arm64 ([c432e24](https://github.com/nodkz/mongodb-memory-server/commit/c432e24c9c28ee08b2995d3da32909996f6582c7)), closes [#443](https://github.com/nodkz/mongodb-memory-server/issues/443)
+
+## [6.9.4](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.3...v6.9.4) (2021-03-08)
+
+
+### Bug Fixes
+
+* **MongoBinaryDownloadUrl:** use debian92 for versions <4.2.0 ([7bb5097](https://github.com/nodkz/mongodb-memory-server/commit/7bb5097020502ff140e1e55176f997ab7fe11715)), closes [#448](https://github.com/nodkz/mongodb-memory-server/issues/448)
+
+## [6.9.3](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.2...v6.9.3) (2021-01-13)
+
+
+### Bug Fixes
+
+* **MongoBinaryDownloadUrl:** handle Debian "testing" release ([#430](https://github.com/nodkz/mongodb-memory-server/issues/430)) ([e4ffecf](https://github.com/nodkz/mongodb-memory-server/commit/e4ffecf1eb2ceb06931feb90bb3f7fbbe0a6237a))
 
 ## [6.9.2](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.1...v6.9.2) (2020-10-09)
 
