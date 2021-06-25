@@ -93,7 +93,8 @@ export class MongoBinary {
         log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
         const spawnOutput = spawnSync(binaryPath, ['--version'])
           .toString()
-          .match(/^db\sversion\s(v?\d+\.\d+\.\d+)$/im);
+          // this regex is to match the first line of the "mongod --version" output "db version v4.0.20"
+          .match(/^\s*db\s+version\s+v?(\d+\.\d+\.\d+)\s*$/im);
 
         assertion(
           !isNullOrUndefined(spawnOutput),
