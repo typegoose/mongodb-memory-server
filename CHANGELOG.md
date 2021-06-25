@@ -1,3 +1,25 @@
+## [7.0.0-beta.49](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.48...v7.0.0-beta.49) (2021-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Lowest supported NodeJS version is now 12.22
+
+### Features
+
+* set lowest supported nodejs version to 12.22 ([7d6d018](https://github.com/nodkz/mongodb-memory-server/commit/7d6d018a6fd3357a2ed82f663fd5218143ec0a2a))
+
+
+### Dependencies
+
+* **lint-staged:** upgrade to 11.0.0 ([3429e69](https://github.com/nodkz/mongodb-memory-server/commit/3429e695cf6608f51d450edb86c0f0527f39d348))
+* **semantic-release:** upgrade to 17.4.4 (and related) ([16ccef1](https://github.com/nodkz/mongodb-memory-server/commit/16ccef1570e9992902709b3b2a88bc6650236a42))
+
+
+### Fixes
+
+* change default version to "4.0.25" ([ffe2875](https://github.com/nodkz/mongodb-memory-server/commit/ffe28755b5aab143b3681f78eed6d22a1cf4b23d))
+
 ## [7.0.0-beta.48](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.47...v7.0.0-beta.48) (2021-06-25)
 
 
