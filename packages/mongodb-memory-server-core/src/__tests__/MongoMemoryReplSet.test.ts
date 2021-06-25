@@ -9,7 +9,7 @@ import * as utils from '../util/utils';
 import { MongoMemoryInstanceOpts } from '../util/MongoInstance';
 import { StateError } from '../util/errors';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+jest.setTimeout(100000); // 10s
 
 afterEach(() => {
   jest.restoreAllMocks();
