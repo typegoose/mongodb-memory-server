@@ -10,7 +10,7 @@
     "directory": "packages/mongodb-memory-server-core"
   },
   "engines": {
-    "node": ">=10.15.0"
+    "node": ">=12.22.0"
   },
   "files": [
     "lib",
@@ -36,11 +36,11 @@
     "@types/find-package-json": "^1.2.1",
     "@types/mkdirp": "^1.0.1",
     "@types/mongodb": "^3.6.18",
-    "@types/rimraf": "^3.0.0",
     "@types/semver": "^7.3.6",
     "@types/tar-stream": "^2.1.0",
     "@types/uuid": "^8.0.0",
-    "@types/yauzl": "^2.9.1"
+    "@types/yauzl": "^2.9.1",
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
     "@types/tmp": "^0.2.0",
@@ -73,7 +73,5 @@
     "test:watch": "yarn run watch",
     "tscheck": "tsc --noEmit"
   },
-  "optionalDependencies": {
-    "rimraf": "^3.0.2"
-  }
+  "optionalDependencies": {}
 }

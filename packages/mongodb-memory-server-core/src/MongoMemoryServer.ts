@@ -539,17 +539,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       } else {
         assertion(res.isDirectory(), new Error('Defined dbPath is not an directory'));
 
-        // exclusive semver versions are used here (yes "lt" not "lte")
-        if (lt(process.version, '12.10.0')) {
-          // this has to be used for below 12.10 (exclusive), because nodejs did not have an recursive delete
-          try {
-            const rimraf = (await import('rimraf')).sync;
-            rimraf(dbPath);
-          } catch (err) {
-            console.warn('When using NodeJS below 12.10 package "rimraf" is needed');
-            throw err;
-          }
-        } else if (lt(process.version, '14.14.0')) {
+        if (lt(process.version, '14.14.0')) {
           // this has to be used for 12.10 - 14.13 (inclusive) because ".rm" did not exist yet
           await fspromises.rmdir(dbPath, { recursive: true, maxRetries: 1 });
         } else {
