@@ -8,7 +8,7 @@ This Guide will show how to setup this package for basic use
 ## Requirements
 
 - NodeJS: 10.15+
-- Typescript: 3.8+ (if used)
+- Typescript: 4.0+ (if used)
 
 :::info
 When using NodeJS below 12.10, package `rimraf` needs to be installed (when using cleanup with `force`)
