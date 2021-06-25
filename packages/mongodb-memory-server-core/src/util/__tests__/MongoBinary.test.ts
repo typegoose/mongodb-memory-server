@@ -112,12 +112,12 @@ describe('MongoBinary', () => {
       });
 
       it('should return and check an SystemBinary', async () => {
-        // Output taken from mongodb x64 for "ubuntu" version "4.0.20"
+        // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
         // DO NOT INDENT THE TEXT
         jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
           // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
           {
-            stdout: Buffer.from(`db version v4.0.20
+            stdout: Buffer.from(`db version v4.0.25
 git version: e2416422da84a0b63cde2397d60b521758b56d1b
 OpenSSL version: OpenSSL 1.1.1f  31 Mar 2020
 allocator: tcmalloc
@@ -128,7 +128,7 @@ build environment:
     target_arch: x86_64`),
           }
         );
-        process.env[envName(ResolveConfigVariables.VERSION)] = '4.0.20'; // set it explicitly to that version to test matching versions
+        process.env[envName(ResolveConfigVariables.VERSION)] = '4.0.25'; // set it explicitly to that version to test matching versions
         process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
 
         const output = await MongoBinary.getPath();
@@ -139,12 +139,12 @@ build environment:
 
       it('should return and check an SystemBinary and warn version conflict', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-        // Output taken from mongodb x64 for "ubuntu" version "4.0.20"
+        // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
         // DO NOT INDENT THE TEXT
         jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
           // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
           {
-            stdout: Buffer.from(`db version v4.0.20
+            stdout: Buffer.from(`db version v4.0.25
 git version: e2416422da84a0b63cde2397d60b521758b56d1b
 OpenSSL version: OpenSSL 1.1.1f  31 Mar 2020
 allocator: tcmalloc

@@ -161,7 +161,7 @@ describe('MongoBinaryDownload', () => {
     const downloadDir = '/path/to/downloadDir';
     jest.spyOn(DryMongoBinary, 'generateOptions').mockResolvedValue({
       arch: 'x64',
-      version: '4.0.20',
+      version: '4.0.25',
       downloadDir: downloadDir,
       systemBinary: '',
       os: {
@@ -175,11 +175,11 @@ describe('MongoBinaryDownload', () => {
 
     // @ts-expect-error because "getPath" is "protected"
     const path = await du.getPath();
-    expect(path).toEqual(`${downloadDir}/mongod-x64-ubuntu-4.0.20`);
+    expect(path).toEqual(`${downloadDir}/mongod-x64-ubuntu-4.0.25`);
   });
 
   it('should print the download progress (printDownloadProgress)', () => {
-    const version = '4.0.20';
+    const version = '4.0.25';
     process.stdout.isTTY = false;
     jest.spyOn(console, 'log').mockImplementation(() => void 0);
     jest.spyOn(process.stdout, 'write').mockImplementation(() => true);

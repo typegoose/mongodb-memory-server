@@ -39,7 +39,7 @@ Valid Options are `ia32`, `x64`, `arm64`
 
 Option `VERSION` is used to set what mongodb version should be downloaded
 
-Default: `4.0.20`
+Default: `4.0.25`
 
 ### DEBUG
 

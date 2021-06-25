@@ -49,7 +49,7 @@ describe('DryBinary', () => {
     /** Used for non "find-cache-dir" */
     let tmpDir2: tmp.DirResult;
     const cwdBefore = process.cwd();
-    const version = '4.0.20';
+    const version = '4.0.25';
     let opts: binary.DryMongoBinaryOptions & binary.DryMongoBinaryNameOptions;
     let binaryName: string;
     beforeAll(async () => {
@@ -158,7 +158,7 @@ describe('DryBinary', () => {
     let expectedPaths: binary.DryMongoBinaryPaths;
     let opts: Required<binary.DryMongoBinaryOptions>;
     beforeAll(async () => {
-      opts = await binary.DryMongoBinary.generateOptions({ version: '4.0.20' });
+      opts = await binary.DryMongoBinary.generateOptions({ version: '4.0.25' });
       delete process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)];
       jest.spyOn(utils, 'pathExists').mockImplementation((file) => {
         // this is to ensure it is returning an promise
@@ -312,7 +312,7 @@ describe('DryBinary', () => {
       process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = mockBinary;
       jest.spyOn(fspromises, 'access').mockResolvedValue(void 0);
 
-      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '4.0.20' });
+      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '4.0.25' });
       expect(returnValue).toEqual(mockBinary);
       expect(binary.DryMongoBinary.binaryCache.size).toBe(0); // system binaries dont get added to the cache
       expect(fspromises.access).toHaveBeenCalled();
@@ -324,7 +324,7 @@ describe('DryBinary', () => {
       jest.spyOn(fspromises, 'access').mockRejectedValue(new Error('custom'));
 
       try {
-        await binary.DryMongoBinary.locateBinary({ version: '4.0.20' });
+        await binary.DryMongoBinary.locateBinary({ version: '4.0.25' });
         fail('Expected "locateBinary" to throw');
       } catch (err) {
         expect(err.message).toEqual(
@@ -338,7 +338,7 @@ describe('DryBinary', () => {
     it('should return "undefined" if no binary can be found', async () => {
       jest.spyOn(binary.DryMongoBinary, 'generateDownloadPath').mockResolvedValue([false, 'empty']);
 
-      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '4.0.20' });
+      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '4.0.25' });
       expect(returnValue).toBeUndefined();
       expect(binary.DryMongoBinary.binaryCache.size).toBe(0);
       expect(binary.DryMongoBinary.generateDownloadPath).toHaveBeenCalled();
@@ -346,11 +346,11 @@ describe('DryBinary', () => {
 
     it('should return cached version if exists', async () => {
       const mockBinary = '/custom/path';
-      binary.DryMongoBinary.binaryCache.set('4.0.20', mockBinary);
+      binary.DryMongoBinary.binaryCache.set('4.0.25', mockBinary);
       jest.spyOn(binary.DryMongoBinary.binaryCache, 'get');
       jest.spyOn(binary.DryMongoBinary.binaryCache, 'has');
 
-      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '4.0.20' });
+      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '4.0.25' });
       expect(returnValue).toEqual(mockBinary);
       expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
       expect(binary.DryMongoBinary.binaryCache.has).toBeCalledTimes(1);
@@ -364,7 +364,7 @@ describe('DryBinary', () => {
         .spyOn(binary.DryMongoBinary, 'generateDownloadPath')
         .mockResolvedValue([true, mockBinary]);
 
-      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '4.0.20' });
+      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '4.0.25' });
       expect(returnValue).toEqual(mockBinary);
       expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
       expect(binary.DryMongoBinary.binaryCache.has).toBeCalledTimes(2); // it seems like ".set" also calls ".has"

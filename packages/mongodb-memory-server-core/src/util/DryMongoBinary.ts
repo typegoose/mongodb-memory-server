@@ -97,7 +97,7 @@ export class DryMongoBinary {
   static async generateOptions(
     opts?: DryMongoBinaryOptions
   ): Promise<Required<DryMongoBinaryOptions>> {
-    const defaultVersion = resolveConfig(ResolveConfigVariables.VERSION) ?? '4.0.20';
+    const defaultVersion = resolveConfig(ResolveConfigVariables.VERSION) ?? '4.0.25';
     const ensuredOpts: DryMongoBinaryOptions = isNullOrUndefined(opts)
       ? { version: defaultVersion }
       : opts;

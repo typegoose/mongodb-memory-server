@@ -25,7 +25,7 @@ export enum ResolveConfigVariables {
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
-  [ResolveConfigVariables.VERSION, '4.0.20'],
+  [ResolveConfigVariables.VERSION, '4.0.25'],
   [ResolveConfigVariables.PREFER_GLOBAL_PATH, 'true'],
   [ResolveConfigVariables.RUNTIME_DOWNLOAD, 'true'],
   [ResolveConfigVariables.USE_HTTP, 'false'],
