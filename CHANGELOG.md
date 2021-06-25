@@ -1,3 +1,11 @@
+## [7.0.0-beta.47](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.46...v7.0.0-beta.47) (2021-06-25)
+
+
+### Fixes
+
+* **MongoBinary:** enhance systemBinary version regex ([0d990d3](https://github.com/nodkz/mongodb-memory-server/commit/0d990d3e9a2958628dce5aef1e6b5025165b705d))
+* **MongoBinary:** use ".stdout.toString" for command output parsing ([d8d6749](https://github.com/nodkz/mongodb-memory-server/commit/d8d6749f585afb76037a35956a7160e330ed28a3)), closes [#487](https://github.com/nodkz/mongodb-memory-server/issues/487)
+
 ## [7.0.0-beta.46](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.45...v7.0.0-beta.46) (2021-06-17)
 
 
