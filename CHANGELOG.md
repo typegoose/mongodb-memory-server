@@ -1,3 +1,11 @@
+## [7.0.0-beta.50](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.49...v7.0.0-beta.50) (2021-06-28)
+
+
+### Fixes
+
+* **DryMongoBinary:** generatePaths: this function should now not hit the filesystem anymore ([8aefba5](https://github.com/nodkz/mongodb-memory-server/commit/8aefba5abd75c0fbb186c942d1281d3ea27734a3))
+* **resolveConfig:** envToBool: return "false" if input is somehow not an string ([6d78971](https://github.com/nodkz/mongodb-memory-server/commit/6d78971a36aa4f77c6a2ec932527798dd1b38bda))
+
 ## [7.0.0-beta.49](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.48...v7.0.0-beta.49) (2021-06-25)
 
 
