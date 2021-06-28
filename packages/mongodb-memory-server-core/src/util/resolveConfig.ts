@@ -97,7 +97,7 @@ export function resolveConfig(variableName: ResolveConfigVariables): string | un
     process.env[envName(variableName)] ??
     packageJsonConfig[camelCase(variableName)] ??
     defaultValues.get(variableName)
-  );
+  )?.toString();
 }
 
 export default resolveConfig;
