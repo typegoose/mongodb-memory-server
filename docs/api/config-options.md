@@ -14,7 +14,7 @@ Option `DOWNLOAD_DIR` is used to set where the binaries will be located in, this
 Directory Priority:
 
 1. DOWNLOAD_DIR (Environment Variable over package.json)
-2. `~/.cache/mongodb-binaries` (Home Directory Cache) [Only used if directory exists]
+2. `~/.cache/mongodb-binaries` (Home Directory Cache) (if [`PREFER_GLOBAL_PATH`](#prefer_global_path) is active, or binary already exists)
 3. `projectRoot/node_modules/.cache/mongodb-binaries` (node-modules cache)
 4. `./mongodb-binaries` (relative to `process.cwd()`)
 
