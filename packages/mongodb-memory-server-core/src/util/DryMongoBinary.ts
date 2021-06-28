@@ -158,6 +158,8 @@ export class DryMongoBinary {
 
   /**
    * Generate an "MongoBinaryPaths" object
+   *
+   * This Function should not hit the FileSystem
    * @return an finished "MongoBinaryPaths" object
    */
   static async generatePaths(
@@ -189,13 +191,9 @@ export class DryMongoBinary {
       final.modulesCache = this.combineBinaryName(path.resolve(tmpModulesCache), binaryName);
     }
 
-    // Probe if the legacy Home Cache exists, if not remove it from the list
     const legacyHomeCache = path.resolve(this.homedir(), '.cache/mongodb-binaries');
 
-    if (await pathExists(legacyHomeCache)) {
-      log(`generatePaths: legacy home cache exist ("${legacyHomeCache}")`);
-      final.legacyHomeCache = this.combineBinaryName(legacyHomeCache, binaryName);
-    }
+    final.legacyHomeCache = this.combineBinaryName(legacyHomeCache, binaryName);
 
     // Resolve the config value "DOWNLOAD_DIR" if provided, otherwise remove from list
     const resolveConfigValue =
