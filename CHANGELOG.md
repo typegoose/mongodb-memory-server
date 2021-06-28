@@ -1,3 +1,11 @@
+## [7.0.0-beta.51](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.50...v7.0.0-beta.51) (2021-06-28)
+
+
+### Fixes
+
+* **resolveConfig:** move executing "findPackageJson" after enabling debug ([7e4c8dc](https://github.com/nodkz/mongodb-memory-server/commit/7e4c8dc5878c1e2f9bf092a8a17b02649fb25426))
+* **resolveConfig:** resolveConfig: always convert any value to string ([27f1f5c](https://github.com/nodkz/mongodb-memory-server/commit/27f1f5c0a57828780410d843378042e9ad131f6b))
+
 ## [7.0.0-beta.50](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.49...v7.0.0-beta.50) (2021-06-28)
 
 
