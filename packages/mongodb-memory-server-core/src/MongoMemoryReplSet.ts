@@ -1,20 +1,31 @@
 import { EventEmitter } from 'events';
-import * as mongodb from 'mongodb';
-import MongoMemoryServer from './MongoMemoryServer';
-import { MongoMemoryServerOptsT } from './MongoMemoryServer';
-import { generateDbName, getHost } from './util/db_util';
-import { MongoBinaryOpts } from './util/MongoBinary';
+import { MongoMemoryServer, AutomaticAuth, MongoMemoryServerOpts } from './MongoMemoryServer';
 import {
-  MongoMemoryInstancePropT,
-  MongoMemoryInstancePropBaseT,
-  SpawnOptions,
-  StorageEngineT,
-} from './types';
+  assertion,
+  authDefault,
+  ensureAsync,
+  generateDbName,
+  getHost,
+  isNullOrUndefined,
+  ManagerAdvanced,
+  uriTemplate,
+} from './util/utils';
+import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
-import { MongoError } from 'mongodb';
-import { deprecate } from 'util';
+import { MongoClient, MongoError } from 'mongodb';
+import {
+  MongoInstanceEvents,
+  MongoMemoryInstanceOpts,
+  MongoMemoryInstanceOptsBase,
+  StorageEngine,
+} from './util/MongoInstance';
+import { SpawnOptions } from 'child_process';
+import { StateError } from './util/errors';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
+
+// "setImmediate" is used to ensure the functions are async, otherwise the process might evaluate the one function before other async functions (like "start")
+// and so skip to next state check or return before actually ready
 
 /**
  * Replica set specific options.
@@ -24,20 +35,21 @@ export interface ReplSetOpts {
    * enable auth ("--auth" / "--noauth")
    * @default false
    */
-  auth?: boolean;
+  auth?: boolean | AutomaticAuth;
   /**
-   * additional command line args passed to `mongod`
+   * additional command line arguments passed to `mongod`
    * @default []
    */
   args?: string[];
   /**
-   * number of `mongod` servers to start
+   * if this number is bigger than "instanceOpts.length", more "generic" servers get started
+   * if this number is lower than "instanceOpts.length", no more "generic" servers get started (server count will be "instanceOpts.length")
    * @default 1
    */
   count?: number;
   /**
-   * database name used in connection string
-   * @default uuidv4()
+   * add an database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
+   * @default ""
    */
   dbName?: string;
   /**
@@ -51,11 +63,6 @@ export interface ReplSetOpts {
    */
   name?: string;
   /**
-   * oplog size (in MB)
-   * @default 1
-   */
-  oplogSize?: number;
-  /**
    * Childprocess spawn options
    * @default {}
    */
@@ -64,18 +71,18 @@ export interface ReplSetOpts {
    *`mongod` storage engine type
    * @default 'ephemeralForTest'
    */
-  storageEngine?: StorageEngineT;
+  storageEngine?: StorageEngine;
   /**
    * Options for "rsConfig"
    * @default {}
    */
-  configSettings?: MongoMemoryReplSetConfigSettingsT;
+  configSettings?: MongoMemoryReplSetConfigSettings;
 }
 
 /**
  * Options for "rsConfig"
  */
-export interface MongoMemoryReplSetConfigSettingsT {
+export interface MongoMemoryReplSetConfigSettings {
   chainingAllowed?: boolean;
   heartbeatTimeoutSecs?: number;
   heartbeatIntervalMillis?: number;
@@ -86,103 +93,175 @@ export interface MongoMemoryReplSetConfigSettingsT {
 /**
  * Options for the replSet
  */
-export interface MongoMemoryReplSetOptsT {
-  instanceOpts?: MongoMemoryInstancePropBaseT[];
-  binary?: MongoBinaryOpts;
-  replSet?: ReplSetOpts;
+export interface MongoMemoryReplSetOpts {
   /**
-   * Auto-Start the replSet?
-   * @default true
+   * Specific Options to use for some instances
    */
-  autoStart?: boolean;
+  instanceOpts: MongoMemoryInstanceOptsBase[];
+  /**
+   * Binary Options used for all instances
+   */
+  binary: MongoBinaryOpts;
+  /**
+   * Options used for all instances
+   * -> gets overwritten by specific "instanceOpts"
+   */
+  replSet: ReplSetOpts;
+}
+
+/**
+ * Enum for "_state" inside "MongoMemoryReplSet"
+ */
+export enum MongoMemoryReplSetStates {
+  init = 'init',
+  running = 'running',
+  stopped = 'stopped',
+}
+
+/**
+ * All Events for "MongoMemoryReplSet"
+ */
+export enum MongoMemoryReplSetEvents {
+  stateChange = 'stateChange',
+}
+
+export interface MongoMemoryReplSet extends EventEmitter {
+  // Overwrite EventEmitter's definitions (to provide at least the event names)
+  emit(event: MongoMemoryReplSetEvents, ...args: any[]): boolean;
+  on(event: MongoMemoryReplSetEvents, listener: (...args: any[]) => void): this;
+  once(event: MongoMemoryReplSetEvents, listener: (...args: any[]) => void): this;
 }
 
 /**
  * Class for managing an replSet
  */
-export default class MongoMemoryReplSet extends EventEmitter {
+export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced {
+  /**
+   * All servers this ReplSet instance manages
+   */
   servers: MongoMemoryServer[] = [];
-  opts: {
-    instanceOpts: MongoMemoryInstancePropBaseT[];
-    binary: MongoBinaryOpts;
-    replSet: Required<ReplSetOpts>;
-    autoStart?: boolean;
-  };
 
-  _state: 'init' | 'running' | 'stopped';
+  // "!" is used, because the getters are used instead of the "_" values
+  protected _instanceOpts!: MongoMemoryInstanceOptsBase[];
+  protected _binaryOpts!: MongoBinaryOpts;
+  protected _replSetOpts!: Required<ReplSetOpts>;
 
-  constructor(opts: MongoMemoryReplSetOptsT = {}) {
+  protected _state: MongoMemoryReplSetStates = MongoMemoryReplSetStates.stopped;
+  protected _ranCreateAuth: boolean = false;
+
+  constructor(opts: Partial<MongoMemoryReplSetOpts> = {}) {
     super();
-    const replSetDefaults: Required<ReplSetOpts> = {
+
+    this.binaryOpts = { ...opts.binary };
+    this.instanceOpts = opts.instanceOpts ?? [];
+    this.replSetOpts = { ...opts.replSet };
+  }
+
+  /**
+   * Change "this._state" to "newState" and emit "newState"
+   * @param newState The new State to set & emit
+   */
+  protected stateChange(newState: MongoMemoryReplSetStates, ...args: any[]): void {
+    this._state = newState;
+    this.emit(MongoMemoryReplSetEvents.stateChange, newState, ...args);
+  }
+
+  /**
+   * Create an instance of "MongoMemoryReplSet" and call start
+   * @param opts Options for the ReplSet
+   */
+  static async create(opts?: Partial<MongoMemoryReplSetOpts>): Promise<MongoMemoryReplSet> {
+    log('create: Called .create() method');
+    const replSet = new this({ ...opts });
+    await replSet.start();
+
+    return replSet;
+  }
+
+  /**
+   * Get Current state of this class
+   */
+  get state(): MongoMemoryReplSetStates {
+    return this._state;
+  }
+
+  /**
+   * Get & Set "instanceOpts"
+   * @throws if "state" is not "stopped"
+   */
+  get instanceOpts(): MongoMemoryInstanceOptsBase[] {
+    return this._instanceOpts;
+  }
+
+  set instanceOpts(val: MongoMemoryInstanceOptsBase[]) {
+    assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
+    this._instanceOpts = val;
+  }
+
+  /**
+   * Get & Set "binaryOpts"
+   * @throws if "state" is not "stopped"
+   */
+  get binaryOpts(): MongoBinaryOpts {
+    return this._binaryOpts;
+  }
+
+  set binaryOpts(val: MongoBinaryOpts) {
+    assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
+    this._binaryOpts = val;
+  }
+
+  /**
+   * Get & Set "replSetOpts"
+   * (Applies defaults)
+   * @throws if "state" is not "stopped"
+   */
+  get replSetOpts(): ReplSetOpts {
+    return this._replSetOpts;
+  }
+
+  set replSetOpts(val: ReplSetOpts) {
+    assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
+    const defaults: Required<ReplSetOpts> = {
       auth: false,
       args: [],
       name: 'testset',
       count: 1,
       dbName: generateDbName(),
       ip: '127.0.0.1',
-      oplogSize: 1,
       spawn: {},
       storageEngine: 'ephemeralForTest',
       configSettings: {},
     };
-    this._state = 'stopped';
-    this.opts = {
-      binary: opts.binary || {},
-      instanceOpts: opts.instanceOpts || [],
-      replSet: { ...replSetDefaults, ...opts.replSet },
-    };
+    this._replSetOpts = { ...defaults, ...val };
 
-    if (!this.opts.replSet.args) {
-      this.opts.replSet.args = [];
+    assertion(this._replSetOpts.count > 0, new Error('ReplSet Count needs to be 1 or higher!'));
+
+    if (typeof this._replSetOpts.auth === 'object') {
+      this._replSetOpts.auth = authDefault(this._replSetOpts.auth);
     }
-    this.opts.replSet.args.push('--oplogSize', `${this.opts.replSet.oplogSize}`);
-    if (!(opts && opts.autoStart === false)) {
-      log('Autostarting MongoMemoryReplSet.');
-      setTimeout(() => this.start(), 0);
-    }
-
-    process.once('beforeExit', this.stop);
-  }
-
-  /**
-   * Get the Connection String for mongodb to connect
-   * @param otherDb use a different database than what was set on creation?
-   * @deprecated
-   */
-  async getConnectionString(otherDb?: string | boolean): Promise<string> {
-    return deprecate(
-      this.getUri,
-      '"MongoMemoryReplSet.getConnectionString" is deprecated, use ".getUri"',
-      'MDEP001'
-    ).call(this, otherDb);
-  }
-
-  /**
-   * Returns database name.
-   */
-  async getDbName(): Promise<string> {
-    // this function is only async for consistency with MongoMemoryServer
-    // I don't see much point to either of them being async but don't
-    // care enough to change it and introduce a breaking change.
-    return this.opts.replSet.dbName;
   }
 
   /**
    * Returns instance options suitable for a MongoMemoryServer.
    * @param baseOpts Options to merge with
    */
-  getInstanceOpts(baseOpts: MongoMemoryInstancePropBaseT = {}): MongoMemoryInstancePropT {
-    const rsOpts: ReplSetOpts = this.opts.replSet;
-    const opts: MongoMemoryInstancePropT = {
-      auth: !!rsOpts.auth,
-      args: rsOpts.args,
-      dbName: rsOpts.dbName,
-      ip: rsOpts.ip,
-      replSet: rsOpts.name,
-      storageEngine: rsOpts.storageEngine,
+  protected getInstanceOpts(baseOpts: MongoMemoryInstanceOptsBase = {}): MongoMemoryInstanceOpts {
+    const opts: MongoMemoryInstanceOpts = {
+      // disable "auth" if replsetopts has an object-auth
+      auth:
+        typeof this._replSetOpts.auth === 'object' && !this._ranCreateAuth
+          ? false
+          : !!this._replSetOpts.auth,
+      args: this._replSetOpts.args,
+      dbName: this._replSetOpts.dbName,
+      ip: this._replSetOpts.ip,
+      replSet: this._replSetOpts.name,
+      storageEngine: this._replSetOpts.storageEngine,
     };
+
     if (baseOpts.args) {
-      opts.args = (rsOpts.args || []).concat(baseOpts.args);
+      opts.args = this._replSetOpts.args.concat(baseOpts.args);
     }
     if (baseOpts.port) {
       opts.port = baseOpts.port;
@@ -193,148 +272,303 @@ export default class MongoMemoryReplSet extends EventEmitter {
     if (baseOpts.storageEngine) {
       opts.storageEngine = baseOpts.storageEngine;
     }
-    log('   instance opts:', opts);
+
+    log('getInstanceOpts: instance opts:', opts);
+
     return opts;
   }
 
   /**
-   * Returns a mongodb: URI to connect to a given database.
-   * @param otherDb use a different database than what was set on creation?
+   * Returns an mongodb URI that is setup with all replSet servers
+   * @param otherDb add an database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
+   * @throws if state is not "running"
+   * @throws if an server doesnt have "instanceInfo.port" defined
+   * @return an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
-  async getUri(otherDb?: string | boolean): Promise<string> {
-    if (this._state === 'init') {
-      await this._waitForPrimary();
+  getUri(otherDb?: string): string {
+    log('getUri:', this.state);
+    switch (this.state) {
+      case MongoMemoryReplSetStates.running:
+      case MongoMemoryReplSetStates.init:
+        break;
+      case MongoMemoryReplSetStates.stopped:
+      default:
+        throw new StateError(
+          [MongoMemoryReplSetStates.running, MongoMemoryReplSetStates.init],
+          this.state
+        );
     }
-    if (this._state !== 'running') {
-      throw new Error('Replica Set is not running. Use debug for more info.');
-    }
-    let dbName: string;
-    if (otherDb) {
-      dbName = typeof otherDb === 'string' ? otherDb : generateDbName();
-    } else {
-      dbName = this.opts.replSet.dbName;
-    }
-    const ports = await Promise.all(this.servers.map((s) => s.getPort()));
-    const hosts = ports.map((port) => `127.0.0.1:${port}`).join(',');
-    return `mongodb://${hosts}/${dbName}?replicaSet=${this.opts.replSet.name}`;
+
+    const hosts = this.servers
+      .map((s) => {
+        const port = s.instanceInfo?.port;
+        assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
+
+        return `127.0.0.1:${port}`;
+      })
+      .join(',');
+
+    return uriTemplate(hosts, undefined, generateDbName(otherDb), [
+      `replicaSet=${this._replSetOpts.name}`,
+    ]);
   }
 
   /**
    * Start underlying `mongod` instances.
+   * @throws if state is already "running"
    */
   async start(): Promise<void> {
-    log('start');
-    if (this._state !== 'stopped') {
-      throw new Error(`Already in 'init' or 'running' state. Use debug for more info.`);
+    log('start:', this.state);
+    switch (this.state) {
+      case MongoMemoryReplSetStates.stopped:
+        break;
+      case MongoMemoryReplSetStates.running:
+      default:
+        throw new StateError([MongoMemoryReplSetStates.stopped], this.state);
     }
-    this.emit((this._state = 'init'));
-    log('init');
-    // Any servers defined within `opts.instanceOpts` should be started first as
-    // the user could have specified a `dbPath` in which case we would want to perform
-    // the `replSetInitiate` command against that server.
-    const servers = this.opts.instanceOpts.map((opts) => {
-      log('  starting server from instanceOpts:', opts, '...');
-      return this._initServer(this.getInstanceOpts(opts));
-    });
-    const cnt = this.opts.replSet.count || 1;
-    while (servers.length < cnt) {
-      log(`  starting server ${servers.length + 1} of ${cnt}...`);
-      const server = this._initServer(this.getInstanceOpts({}));
-      servers.push(server);
-    }
-    // ensures all servers are listening for connection
-    await Promise.all(servers.map((s) => s.start()));
-    this.servers = servers;
-    await this._initReplSet();
-  }
+    this.stateChange(MongoMemoryReplSetStates.init); // this needs to be executed before "setImmediate"
 
-  /**
-   * Stop the underlying `mongod` instance(s).
-   */
-  async stop(): Promise<boolean> {
-    if (this._state === 'stopped') {
-      return false;
+    // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
+    if (
+      process
+        .listeners('beforeExit')
+        .findIndex((f: (...args: any[]) => any) => f === this.cleanup) <= -1
+    ) {
+      process.on('beforeExit', this.cleanup);
     }
-    const servers = this.servers;
-    this.servers = [];
-    process.removeListener('beforeExit', this.stop); // many accumulate inside tests
-    return Promise.all(servers.map((s) => s.stop()))
-      .then(() => {
-        this.emit((this._state = 'stopped'));
-        return true;
-      })
+
+    await ensureAsync()
+      .then(() => this.initAllServers())
+      .then(() => this._initReplSet())
       .catch((err) => {
-        log(err);
-        this.emit((this._state = 'stopped'), err);
-        return false;
+        if (!debug.enabled('MongoMS:MongoMemoryReplSet')) {
+          console.warn('Starting the ReplSet failed, enable debug for more information');
+        }
+
+        this.stateChange(MongoMemoryReplSetStates.stopped);
+
+        throw err;
       });
   }
 
   /**
-   * Wait until all instances are running
+   * Initialize & start all servers in the replSet
    */
-  async waitUntilRunning(): Promise<void> {
-    // TODO: this seems like it dosnt catch if an instance fails, and runs forever
-    if (this._state === 'running') {
+  protected async initAllServers(): Promise<void> {
+    log('initAllServers');
+    this.stateChange(MongoMemoryReplSetStates.init);
+
+    if (this.servers.length > 0) {
+      log('initAllServers: lenght of "servers" is higher than 0, starting existing servers');
+      await Promise.all(this.servers.map((s) => s.start(true)));
+
       return;
     }
-    await new Promise((resolve) => this.once('running', () => resolve()));
+
+    // Any servers defined within `_instanceOpts` should be started first as
+    // the user could have specified a `dbPath` in which case we would want to perform
+    // the `replSetInitiate` command against that server.
+    this._instanceOpts.forEach((opts, index) => {
+      log(
+        `initAllServers: starting special server "${index + 1}" of "${
+          this._instanceOpts.length
+        }" from instanceOpts (count: ${this.servers.length + 1}):`,
+        opts
+      );
+      this.servers.push(this._initServer(this.getInstanceOpts(opts)));
+    });
+    while (this.servers.length < this._replSetOpts.count) {
+      log(
+        `initAllServers: starting extra server "${this.servers.length + 1}" of "${
+          this._replSetOpts.count
+        }" (count: ${this.servers.length + 1})`
+      );
+      this.servers.push(this._initServer(this.getInstanceOpts()));
+    }
+
+    log('initAllServers: waiting for all servers to finish starting');
+    // ensures all servers are listening for connection
+    await Promise.all(this.servers.map((s) => s.start()));
+  }
+
+  /**
+   * Stop the underlying `mongod` instance(s).
+   * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
+   */
+  async stop(runCleanup: boolean = true): Promise<boolean> {
+    log('stop' + isNullOrUndefined(process.exitCode) ? '' : ': called by process-event');
+
+    if (this._state === MongoMemoryReplSetStates.stopped) {
+      return false;
+    }
+
+    const bool = await Promise.all(this.servers.map((s) => s.stop(false)))
+      .then(() => {
+        this.stateChange(MongoMemoryReplSetStates.stopped);
+
+        return true;
+      })
+      .catch((err) => {
+        log('stop:', err);
+        this.stateChange(MongoMemoryReplSetStates.stopped, err);
+
+        return false;
+      });
+
+    // return early if the instances failed to stop
+    if (!bool) {
+      return bool;
+    }
+
+    if (runCleanup) {
+      await this.cleanup(false);
+    }
+
+    return true;
+  }
+
+  /**
+   * Remove the defined dbPath's
+   * This function gets automatically called on process event "beforeExit" (with force being "false")
+   * @param force Remove the dbPath even if it is no "tmpDir" (and re-check if tmpDir actually removed it)
+   * @throws If "state" is not "stopped"
+   * @throws If "instanceInfo" is not defined
+   * @throws If an fs error occured
+   */
+  async cleanup(force: boolean = false): Promise<void> {
+    assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
+    log(`cleanup for "${this.servers.length}" servers`);
+    process.removeListener('beforeExit', this.cleanup);
+
+    await Promise.all(this.servers.map((s) => s.cleanup(force)));
+
+    this.servers = [];
+
+    return;
+  }
+
+  /**
+   * Wait until all instances are running
+   * @throws if state is "stopped" (cannot wait on something that dosnt start)
+   */
+  async waitUntilRunning(): Promise<void> {
+    await ensureAsync();
+    log('waitUntilRunning:', this._state);
+    switch (this._state) {
+      case MongoMemoryReplSetStates.running:
+        // just return immediatly if the replSet is already running
+        return;
+      case MongoMemoryReplSetStates.init:
+        // wait for event "running"
+        await new Promise<void>((res) => {
+          // the use of "this" here can be done because "on" either binds "this" or uses an arrow function
+          function waitRunning(this: MongoMemoryReplSet, state: MongoMemoryReplSetStates) {
+            // this is because other states can be emitted multiple times (like stopped & init for auth creation)
+            if (state === MongoMemoryReplSetStates.running) {
+              this.removeListener(MongoMemoryReplSetEvents.stateChange, waitRunning);
+              res();
+            }
+          }
+
+          this.on(MongoMemoryReplSetEvents.stateChange, waitRunning);
+        });
+
+        return;
+      case MongoMemoryReplSetStates.stopped:
+      default:
+        throw new StateError(
+          [MongoMemoryReplSetStates.running, MongoMemoryReplSetStates.init],
+          this.state
+        );
+    }
   }
 
   /**
    * Connects to the first server from the list of servers and issues the `replSetInitiate`
    * command passing in a new replica set configuration object.
+   * @throws if state is not "init"
+   * @throws if "servers.length" is not 1 or above
+   * @throws if package "mongodb" is not installed
    */
-  async _initReplSet(): Promise<void> {
-    if (this._state !== 'init') {
-      throw new Error('Not in init phase.');
-    }
-    log('Initializing replica set.');
-    if (!this.servers.length) {
-      throw new Error('One or more servers are required.');
-    }
-    const uris = await Promise.all(this.servers.map((server) => server.getUri()));
+  protected async _initReplSet(): Promise<void> {
+    log('_initReplSet');
+    assertionIsMMSRSState(MongoMemoryReplSetStates.init, this._state);
+    assertion(this.servers.length > 0, new Error('One or more servers are required.'));
+    const uris = this.servers.map((server) => server.getUri());
 
-    let MongoClient: typeof mongodb.MongoClient;
-    try {
-      MongoClient = (await import('mongodb')).MongoClient;
-    } catch (e) {
-      throw new Error(
-        `You need to install "mongodb" package. It's required for checking ReplicaSet state.`
-      );
-    }
-
-    const conn: mongodb.MongoClient = await MongoClient.connect(uris[0], {
+    let con: MongoClient = await MongoClient.connect(uris[0], {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    log('_initReplSet: connected');
 
+    // try-finally to close connection in any case
     try {
-      const db = await conn.db(this.opts.replSet.dbName);
+      let adminDb = con.db('admin');
 
-      // MongoClient HACK which helps to avoid the following error:
-      //   "RangeError: Maximum call stack size exceeded"
-      // (db as any).topology.shouldCheckForSessionSupport = () => false; // TODO: remove after 1.1.2021 if no issues arise
-
-      /** reference to "db.admin()" */
-      const admin = db.admin();
-      const members = uris.map((uri, idx) => ({ _id: idx, host: getHost(uri) }));
+      const members = uris.map((uri, index) => ({ _id: index, host: getHost(uri) }));
       const rsConfig = {
-        _id: this.opts.replSet.name,
+        _id: this._replSetOpts.name,
         members,
         settings: {
           electionTimeoutMillis: 500,
-          ...(this.opts.replSet.configSettings || {}),
+          ...this._replSetOpts.configSettings,
         },
       };
+      // try-catch because the first "command" can fail
       try {
-        await admin.command({ replSetInitiate: rsConfig });
+        log('_initReplSet: trying "replSetInitiate"');
+        await adminDb.command({ replSetInitiate: rsConfig });
+
+        if (typeof this._replSetOpts.auth === 'object') {
+          log('_initReplSet: "this._replSetOpts.auth" is an object');
+
+          await this._waitForPrimary();
+
+          const primary = this.servers.find(
+            (server) => server.instanceInfo?.instance.isInstancePrimary
+          );
+          assertion(!isNullOrUndefined(primary), new Error('No Primary found'));
+          assertion(
+            !isNullOrUndefined(primary.instanceInfo),
+            new Error('Primary dosnt have an "instanceInfo" defined')
+          );
+
+          await primary.createAuth(primary.instanceInfo);
+          this._ranCreateAuth = true;
+
+          if (primary.opts.instance?.storageEngine !== 'ephemeralForTest') {
+            log('_initReplSet: closing connection for restart');
+            await con.close(); // close connection in preparation for "stop"
+            await this.stop(false); // stop all servers for enabling auth
+            log('_initReplSet: starting all server again with auth');
+            await this.initAllServers(); // start all servers again with "auth" enabled
+
+            con = await MongoClient.connect(this.getUri('admin'), {
+              useNewUrlParser: true,
+              useUnifiedTopology: true,
+              authSource: 'admin',
+              authMechanism: 'SCRAM-SHA-256',
+              auth: {
+                user: this._replSetOpts.auth.customRootName as string, // cast because these are existing
+                password: this._replSetOpts.auth.customRootPwd as string,
+              },
+            });
+            adminDb = con.db('admin');
+            log('_initReplSet: auth restart finished');
+          } else {
+            console.warn(
+              'Not Restarting ReplSet for Auth\n' +
+                'Storage engine of current PRIMARY is ephemeralForTest, which does not write data on shutdown, and mongodb does not allow changing "auth" runtime'
+            );
+          }
+        }
       } catch (e) {
         if (e instanceof MongoError && e.errmsg == 'already initialized') {
-          log(`${e.errmsg}: trying to set old config`);
-          const { config: oldConfig } = await admin.command({ replSetGetConfig: 1 });
-          log('got old config:\n', oldConfig);
-          await admin.command({
+          log(`_initReplSet: "${e.errmsg}": trying to set old config`);
+          const { config: oldConfig } = await adminDb.command({ replSetGetConfig: 1 });
+          log('_initReplSet: got old config:\n', oldConfig);
+          await adminDb.command({
             replSetReconfig: oldConfig,
             force: true,
           });
@@ -342,12 +576,12 @@ export default class MongoMemoryReplSet extends EventEmitter {
           throw e;
         }
       }
-      log('Waiting for replica set to have a PRIMARY member.');
+      log('_initReplSet: ReplSet-reconfig finished');
       await this._waitForPrimary();
-      this.emit((this._state = 'running'));
-      log('running');
+      this.stateChange(MongoMemoryReplSetStates.running);
+      log('_initReplSet: running');
     } finally {
-      await conn.close();
+      await con.close();
     }
   }
 
@@ -355,44 +589,71 @@ export default class MongoMemoryReplSet extends EventEmitter {
    * Create the one Instance (without starting them)
    * @param instanceOpts Instance Options to use for this instance
    */
-  _initServer(instanceOpts: MongoMemoryInstancePropT): MongoMemoryServer {
-    const serverOpts: MongoMemoryServerOptsT = {
-      autoStart: false,
-      binary: this.opts.binary,
+  protected _initServer(instanceOpts: MongoMemoryInstanceOpts): MongoMemoryServer {
+    const serverOpts: MongoMemoryServerOpts = {
+      binary: this._binaryOpts,
       instance: instanceOpts,
-      spawn: this.opts.replSet.spawn,
+      spawn: this._replSetOpts.spawn,
+      auth: typeof this.replSetOpts.auth === 'object' ? this.replSetOpts.auth : undefined,
     };
     const server = new MongoMemoryServer(serverOpts);
+
     return server;
   }
 
   /**
    * Wait until the replSet has elected an Primary
    * @param timeout Timeout to not run infinitly
+   * @throws if timeout is reached
    */
-  async _waitForPrimary(timeout: number = 30000): Promise<void> {
+  protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
+    log('_waitForPrimary: Waiting for an Primary');
     let timeoutId: NodeJS.Timeout | undefined;
-    const timeoutPromise = new Promise((resolve, reject) => {
-      timeoutId = setTimeout(() => {
-        reject('Timed out in ' + timeout + 'ms. When waiting for primary.');
-      }, timeout);
-    });
 
+    // "race" because not all servers will be an primary
     await Promise.race([
-      ...this.servers.map((server) => {
-        const instanceInfo = server.getInstanceInfo();
-        if (!instanceInfo) {
-          throw new Error('_waitForPrimary - instanceInfo not present ');
-        }
-        return instanceInfo.instance.waitPrimaryReady();
+      ...this.servers.map(
+        (server) =>
+          new Promise<void>((res, rej) => {
+            const instanceInfo = server.instanceInfo;
+
+            if (isNullOrUndefined(instanceInfo)) {
+              return rej(new Error('_waitForPrimary - instanceInfo not present'));
+            }
+
+            instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);
+
+            if (instanceInfo.instance.isInstancePrimary) {
+              log('_waitForPrimary: found instance being already primary');
+              res();
+            }
+          })
+      ),
+      new Promise((_res, rej) => {
+        timeoutId = setTimeout(() => {
+          rej(new Error(`Timed out after ${timeout}ms while waiting for an Primary`));
+        }, timeout);
       }),
-      timeoutPromise,
     ]);
 
-    if (timeoutId != null) {
+    if (!isNullOrUndefined(timeoutId)) {
       clearTimeout(timeoutId);
     }
 
-    log('_waitForPrimary detected one primary instance ');
+    log('_waitForPrimary: detected one primary instance ');
   }
+}
+
+export default MongoMemoryReplSet;
+
+/**
+ * Helper function to de-duplicate state checking for "MongoMemoryReplSetStates"
+ * @param wantedState The State that is wanted
+ * @param currentState The current State ("this._state")
+ */
+function assertionIsMMSRSState(
+  wantedState: MongoMemoryReplSetStates,
+  currentState: MongoMemoryReplSetStates
+): void {
+  assertion(currentState === wantedState, new StateError([wantedState], currentState));
 }

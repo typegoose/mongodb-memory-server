@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MongoMemoryReplSet getters & setters state errors setter of "binaryOpts" should throw an error if state is not "stopped" 1`] = `"Incorrect State for operation: \\"init\\", allowed States: \\"[stopped]\\""`;
+
+exports[`MongoMemoryReplSet getters & setters state errors setter of "instanceOpts" should throw an error if state is not "stopped" 1`] = `"Incorrect State for operation: \\"init\\", allowed States: \\"[stopped]\\""`;
+
+exports[`MongoMemoryReplSet getters & setters state errors setter of "replSetOpts" should throw an error if state is not "stopped" 1`] = `"Incorrect State for operation: \\"init\\", allowed States: \\"[stopped]\\""`;
+
+exports[`single server replset "_initReplSet" should throw an error if _state is not "init" 1`] = `"Incorrect State for operation: \\"running\\", allowed States: \\"[init]\\""`;
+
+exports[`single server replset "getUri" should throw an error if _state is not "running" or "init" 1`] = `"Incorrect State for operation: \\"stopped\\", allowed States: \\"[running,init]\\""`;
+
+exports[`single server replset "start" should throw an error if _state is not "stopped" 1`] = `"Incorrect State for operation: \\"running\\", allowed States: \\"[stopped]\\""`;
+
+exports[`single server replset "waitUntilRunning" should throw an error if _state is not "init" 1`] = `"Incorrect State for operation: \\"stopped\\", allowed States: \\"[running,init]\\""`;

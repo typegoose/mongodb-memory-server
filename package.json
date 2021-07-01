@@ -5,35 +5,34 @@
   "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
   "repository": "https://github.com/nodkz/mongodb-memory-server",
   "devDependencies": {
-    "@commitlint/cli": "11.0.0",
-    "@commitlint/config-conventional": "11.0.0",
-    "@google/semantic-release-replace-plugin": "^1.0.1",
-    "@semantic-release/changelog": "^5.0.1",
-    "@semantic-release/commit-analyzer": "^8.0.1",
-    "@semantic-release/git": "^9.0.0",
-    "@semantic-release/github": "^7.1.1",
-    "@semantic-release/npm": "^7.0.6",
-    "@semantic-release/release-notes-generator": "^9.0.1",
-    "@types/jest": "26.0.14",
-    "@types/mongodb": "3.5.27",
-    "@types/node": "14.11.2",
-    "@typescript-eslint/eslint-plugin": "4.3.0",
-    "@typescript-eslint/parser": "4.3.0",
-    "commitlint": "11.0.0",
-    "cross-env": "^7.0.2",
-    "doctoc": "^1.4.0",
-    "eslint": "7.10.0",
-    "eslint-config-prettier": "6.12.0",
-    "eslint-plugin-prettier": "3.1.4",
-    "husky": "^4.3.0",
-    "jest": "26.4.2",
-    "lerna": "^3.22.1",
-    "lint-staged": "10.4.0",
-    "mongodb": "3.6.2",
-    "prettier": "2.1.2",
-    "semantic-release": "^17.1.2",
-    "ts-jest": "26.4.1",
-    "typescript": "4.0.3"
+    "@commitlint/cli": "12.1.4",
+    "@commitlint/config-conventional": "12.1.4",
+    "@google/semantic-release-replace-plugin": "1.0.2",
+    "@semantic-release/changelog": "5.0.1",
+    "@semantic-release/commit-analyzer": "8.0.1",
+    "@semantic-release/git": "9.0.0",
+    "@semantic-release/github": "7.2.3",
+    "@semantic-release/npm": "7.1.3",
+    "@semantic-release/release-notes-generator": "9.0.3",
+    "@types/jest": "^26.0.23",
+    "@types/node": "~14.14.5",
+    "@typescript-eslint/eslint-plugin": "4.28.1",
+    "@typescript-eslint/parser": "4.28.1",
+    "commitlint": "12.1.4",
+    "conventional-changelog-conventionalcommits": "4.6.0",
+    "cross-env": "7.0.3",
+    "doctoc": "2.0.1",
+    "eslint": "7.29.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "3.4.0",
+    "husky": "7.0.0",
+    "jest": "27.0.6",
+    "lerna": "4.0.0",
+    "lint-staged": "11.0.0",
+    "prettier": "2.3.2",
+    "semantic-release": "17.4.4",
+    "ts-jest": "27.0.3",
+    "typescript": "4.3.5"
   },
   "workspaces": {
     "packages": [
@@ -42,29 +41,20 @@
   },
   "lint-staged": {
     "packages/**/*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ],
     "./README.md": [
-      "doctoc ./README.md",
-      "git add"
+      "doctoc ./README.md"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged"
-    }
   },
   "scripts": {
     "test": "yarn --cwd packages/mongodb-memory-server-core run test",
     "lint": "lerna run lint --stream --npm-client=yarn --no-prefix",
-    "eslint": "eslint 'packages/mongodb-memory-server-core/src/**/*.{js,ts}'",
     "watch": "jest --env node --watch",
     "jest": "jest --env node",
     "build": "tsc --build tsconfig.build.json",
     "semantic-release": "semantic-release",
     "readme:toc": "doctoc ./README.md",
-    "postinstall": "yarn build"
+    "postinstall": "husky install"
   }
 }

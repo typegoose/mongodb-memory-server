@@ -3,16 +3,31 @@
 
 name: Node.js CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      git-ref:
+        description: Git Ref (Optional)
+        required: false
 
 jobs:
   tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [12.x, 14.x, 16.x]
     steps:
       - uses: actions/checkout@v2
+        if: github.event.inputs.git-ref == ''
+        with:
+          fetch-depth: 0 # always fetch everything to be sure for codecov
+      - uses: actions/checkout@v2
+        if: github.event.inputs.git-ref != ''
+        with:
+          ref: ${{ github.event.inputs.git-ref }}
+          fetch-depth: 5 # because this is an manual trigger, only fetch the latest 5
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -24,12 +39,12 @@ jobs:
       - name: ESLint
         run: yarn --cwd packages/mongodb-memory-server-core run eslint
       - name: Tests
-        run: yarn --cwd packages/mongodb-memory-server-core run coverage
+        run: yarn --cwd packages/mongodb-memory-server-core run coverage --colors
         env:
           CI: true
       - name: Send codecov.io stats
         if: matrix.node-version == '12.x'
-        run: bash <(curl -s https://codecov.io/bash) || echo ''
+        uses: codecov/codecov-action@v1
 
   publish:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta'

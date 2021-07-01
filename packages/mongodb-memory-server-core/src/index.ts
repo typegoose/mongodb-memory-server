@@ -1,9 +1,9 @@
-import './util/resolve-config'; // import it for the side-effects (globals)
+import './util/resolveConfig'; // import it for the side-effects (globals)
+import { MongoMemoryServer } from './MongoMemoryServer';
 
-import MongoBinary from './util/MongoBinary';
-import MongoInstance from './util/MongoInstance';
-import MongoMemoryServer from './MongoMemoryServer';
-import MongoMemoryReplSet from './MongoMemoryReplSet';
+export { MongoBinary } from './util/MongoBinary';
+export { MongoInstance } from './util/MongoInstance';
+export { MongoMemoryReplSet } from './MongoMemoryReplSet';
 
+export { MongoMemoryServer };
 export default MongoMemoryServer;
-export { MongoBinary, MongoInstance, MongoMemoryServer, MongoMemoryReplSet };

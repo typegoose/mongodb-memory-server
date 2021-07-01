@@ -18,9 +18,6 @@ tmp
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
-
 # IntelliJ Files
 *.iml
 *.ipr
@@ -46,3 +43,4 @@ packages/mongodb-memory-server-core/lib
 coverage
 .nyc_output
 package-lock.json
+build

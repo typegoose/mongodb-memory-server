@@ -1,20 +1,7 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./lib",
-    "noEmit": false,
-    "target": "es5",
-    "module": "commonjs",
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "skipLibCheck": false,
-    "strict": true,
-    "lib": ["esnext"],
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest"]
+    "outDir": "./lib"
   },
   "include": ["src/**/*"],
   "exclude": ["**/__tests__"]

@@ -1,28 +1,23 @@
-import { readFile, readdir } from 'fs';
 import { platform } from 'os';
-
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import { join } from 'path';
-import resolveConfig from '../resolve-config';
 import debug from 'debug';
-import { isNullOrUndefined } from '../db_util';
+import { isNullOrUndefined, tryReleaseFile } from '../utils';
 
 const log = debug('MongoMS:getos');
 
 /** Collection of Regexes for "lsb_release -a" parsing */
 const LSBRegex = {
-  name: /^distributor id:\s*(.*)$/im,
-  codename: /^codename:\s*(.*)$/im,
-  release: /^release:\s*(.*)$/im,
+  // regex format is "lsb_release" (command output) and then "lsb-release" (file output)
+  name: /^(?:distributor id:|DISTRIB_ID=)\s*(.*)$/im,
+  codename: /^(?:codename:|DISTRIB_CODENAME=)\s*(.*)$/im,
+  release: /^(?:release:|DISTRIB_RELEASE=)\s*(.*)$/im,
 };
 
 /** Collection of Regexes for "/etc/os-release" parsing */
 const OSRegex = {
   name: /^id\s*=\s*"?(.*)"?$/im,
-  /** uses VERSION_CODENAME */
   codename: /^version_codename\s*=\s*(.*)$/im,
-  release: /^version_id\s*=\s*"?(.*)"?$/im,
+  release: /^version_id\s*=\s*"?(\d*(?:\.\d*)?)"?$/im,
+  id_like: /^id_like\s*=\s*"?(.*)"?$/im,
 };
 
 export interface OtherOS {
@@ -34,6 +29,7 @@ export interface LinuxOS extends OtherOS {
   dist: string;
   release: string;
   codename?: string;
+  id_like?: string;
 }
 
 export type AnyOS = OtherOS | LinuxOS;
@@ -47,161 +43,91 @@ export function isLinuxOS(os: AnyOS): os is LinuxOS {
 }
 
 /** Get an OS object */
-export default async function getOS(): Promise<AnyOS> {
+export async function getOS(): Promise<AnyOS> {
   /** Node builtin function for first determinations */
   const osName = platform();
 
   // Linux is a special case.
   if (osName === 'linux') {
-    return await getLinuxInfomation();
+    return await getLinuxInformation();
   }
 
   return { os: osName };
 }
 
-/** Function to outsource Linux Infomation Parsing */
-async function getLinuxInfomation(): Promise<LinuxOS> {
+export default getOS;
+
+/** Function to outsource Linux Information Parsing */
+async function getLinuxInformation(): Promise<LinuxOS> {
   // Structure of this function:
-  // 1. try lsb_release
-  // (if not 1) 2. try /etc/os-release
-  // (if not 2) 3. try read dir /etc and filter any file "-release" and try to parse the first file found
+  // 1. get upstream release, if possible
+  // 2. get os release (etc) because it has an "id_like"
+  // 3. get os release (usr) because it has an "id_like"
+  // 4. get lsb-release (etc) as fallback
 
-  // Force "lsb_release" to be used
-  if (!isNullOrUndefined(resolveConfig('USE_LINUX_LSB_RELEASE'))) {
-    log('Forced LSB-Release file!');
-    return (await tryLSBRelease()) as LinuxOS;
-  }
-  // Force /etc/os-release to be used
-  if (!isNullOrUndefined(resolveConfig('USE_LINUX_OS_RELEASE'))) {
-    log('Forced OS-Release file!');
-    return (await tryOSRelease()) as LinuxOS;
-  }
-  // Force the first /etc/*-release file to be used
-  if (!isNullOrUndefined(resolveConfig('USE_LINUX_ANYFILE_RELEASE'))) {
-    log('Forced First *-Release file!');
-    return (await tryFirstReleaseFile()) as LinuxOS;
+  const upstreamLSB = await tryReleaseFile('/etc/upstream-release/lsb-release', parseLSB);
+
+  if (!isNullOrUndefined(upstreamLSB)) {
+    log('getLinuxInformation: Using UpstreamLSB');
+
+    return upstreamLSB;
   }
 
-  // Try everything
-  // Note: these values are stored, because this code should not use "inline value assignment"
+  const etcOsRelease = await tryReleaseFile('/etc/os-release', parseOS);
 
-  log('Trying LSB-Release');
-  const lsbOut = await tryLSBRelease();
-  if (!isNullOrUndefined(lsbOut)) {
-    return lsbOut;
+  if (!isNullOrUndefined(etcOsRelease)) {
+    log('getLinuxInformation: Using etcOsRelease');
+
+    return etcOsRelease;
   }
 
-  log('Trying OS-Release');
-  const osOut = await tryOSRelease();
-  if (!isNullOrUndefined(osOut)) {
-    return osOut;
+  const usrOsRelease = await tryReleaseFile('/usr/lib/os-release', parseOS);
+
+  if (!isNullOrUndefined(usrOsRelease)) {
+    log('getLinuxInformation: Using usrOsRelease');
+
+    return usrOsRelease;
   }
 
-  log('Trying First *-Release file');
-  const releaseOut = await tryFirstReleaseFile();
-  if (!isNullOrUndefined(releaseOut)) {
-    return releaseOut;
+  const etcLSBRelease = await tryReleaseFile('/etc/lsb-release', parseLSB);
+
+  if (!isNullOrUndefined(etcLSBRelease)) {
+    log('getLinuxInformation: Using etcLSBRelease');
+
+    return etcLSBRelease;
   }
 
-  log('Couldnt find an release file');
-  // if none has worked, return unkown
+  console.warn('Could not find any Release File, using fallback binary');
+
+  // if none has worked, return unknown
   return {
     os: 'linux',
-    dist: 'unkown',
+    dist: 'unknown',
     release: '',
   };
 }
 
 /**
- * Try the "lsb_release" command, and if it works, parse it
+ * Parse LSB-like output (either command or file)
  */
-async function tryLSBRelease(): Promise<LinuxOS | undefined> {
-  try {
-    const lsb = await promisify(exec)('lsb_release -a'); // exec this for safety, because "/etc/lsb-release" could be changed to another file
-
-    return parseLSB(lsb.stdout);
-  } catch (err) {
-    // check if "USE_LINUX_LSB_RELEASE" is unset, when yes - just return to start the next try
-    if (isNullOrUndefined(resolveConfig('USE_LINUX_LSB_RELEASE'))) {
-      return;
-    }
-
-    // otherwise throw the error
-    throw err;
-  }
-}
-
-/**
- * Try to read the /etc/os-release file, and if it works, parse it
- */
-async function tryOSRelease(): Promise<LinuxOS | undefined> {
-  try {
-    const os = await promisify(readFile)('/etc/os-release');
-
-    return parseOS(os.toString());
-  } catch (err) {
-    // check if the error is an "ENOENT" OR "SKIP_OS_RELEASE" is set
-    // AND "USE_LINUX_OS_RELEASE" is unset
-    // and just return
-    if (
-      (err?.code === 'ENOENT' || !isNullOrUndefined(resolveConfig('SKIP_OS_RELEASE'))) &&
-      isNullOrUndefined(resolveConfig('USE_LINUX_OS_RELEASE'))
-    ) {
-      return;
-    }
-
-    // otherwise throw the error
-    throw err;
-  }
-}
-
-/**
- * Try to read any /etc/*-release file, take the first, and if it works, parse it
- */
-async function tryFirstReleaseFile(): Promise<LinuxOS | undefined> {
-  try {
-    const file = (await promisify(readdir)('/etc')).filter(
-      (v) =>
-        // match if file ends with "-release"
-        v.match(/.*-release$/im) &&
-        // check if the file does NOT contain "lsb"
-        !v.match(/lsb/im)
-    )[0];
-    if (isNullOrUndefined(file) || file.length <= 0) {
-      throw new Error('No release file found!');
-    }
-    const os = await promisify(readFile)(join('/etc/', file));
-
-    return parseOS(os.toString());
-  } catch (err) {
-    // check if the error is an "ENOENT" OR "SKIP_RELEASE" is set
-    // AND "USE_LINUX_RELEASE" is unset
-    // and just return
-    if (err?.code === 'ENOENT' && isNullOrUndefined(resolveConfig('USE_LINUX_ANYFILE_RELEASE'))) {
-      return;
-    }
-
-    // otherwise throw the error
-    throw err;
-  }
-}
-
-/** Function to outsource "lsb_release -a" parsing */
-function parseLSB(input: string): LinuxOS {
+export function parseLSB(input: string): LinuxOS {
   return {
     os: 'linux',
-    dist: input.match(LSBRegex.name)?.[1] ?? 'unkown',
-    codename: input.match(LSBRegex.codename)?.[1],
-    release: input.match(LSBRegex.release)?.[1] ?? '',
+    dist: input.match(LSBRegex.name)?.[1].toLocaleLowerCase() ?? 'unknown',
+    codename: input.match(LSBRegex.codename)?.[1].toLocaleLowerCase(),
+    release: input.match(LSBRegex.release)?.[1].toLocaleLowerCase() ?? '',
   };
 }
 
-/** Function to outsource "/etc/os-release" parsing */
-function parseOS(input: string): LinuxOS {
+/**
+ * Parse OSRelease-like output
+ */
+export function parseOS(input: string): LinuxOS {
   return {
     os: 'linux',
-    dist: input.match(OSRegex.name)?.[1] ?? 'unkown',
-    codename: input.match(OSRegex.codename)?.[1],
-    release: input.match(OSRegex.release)?.[1] ?? '',
+    dist: input.match(OSRegex.name)?.[1].toLocaleLowerCase() ?? 'unknown',
+    codename: input.match(OSRegex.codename)?.[1].toLocaleLowerCase(),
+    release: input.match(OSRegex.release)?.[1].toLocaleLowerCase() ?? '',
+    id_like: input.match(OSRegex.id_like)?.[1].toLocaleLowerCase(),
   };
 }

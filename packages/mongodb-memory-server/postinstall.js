@@ -1,4 +1,4 @@
-/* eslint @typescript-eslint/no-var-requires: 0 */
+/* eslint-disable @typescript-eslint/no-var-requires */
 
 /*
 This script is used as postinstall hook.
@@ -10,7 +10,7 @@ It helps to skip timeout setup `jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;`
 when first test run hits MongoDB binary downloading to the cache.
 */
 
-function isModuleExists(name) {
+function doesModuleExist(name) {
   try {
     return !!require.resolve(name);
   } catch (e) {
@@ -18,41 +18,13 @@ function isModuleExists(name) {
   }
 }
 
-if (!isModuleExists('../mongodb-memory-server-core/lib/util/resolve-config')) {
-  console.log('Could not resolve postinstall configuration');
+const modulePath = 'mongodb-memory-server-core/lib/util/postinstallHelper';
+
+if (!doesModuleExist(modulePath)) {
+  console.log('Could not find file "postinstall" in core package!');
+
   return;
 }
 
-const rc = require('../mongodb-memory-server-core/lib/util/resolve-config');
-rc.reInitializePackageJson(process.env.INIT_CWD);
-
-const envDisablePostinstall = rc.default('DISABLE_POSTINSTALL');
-
-if (typeof envDisablePostinstall === 'string' && rc.envToBool(envDisablePostinstall)) {
-  console.log('Download is skipped by MONGOMS_DISABLE_POSTINSTALL variable');
-  process.exit(0);
-}
-
-const envSystemBinary = rc.default('SYSTEM_BINARY');
-
-if (typeof envSystemBinary === 'string') {
-  console.log('Download is skipped by MONGOMS_SYSTEM_BINARY variable');
-  process.exit(0);
-}
-
-const mongoBinaryModule = '../mongodb-memory-server-core/lib/util/MongoBinary';
-if (isModuleExists(mongoBinaryModule)) {
-  const MongoBinary = require(mongoBinaryModule).default;
-
-  console.log('mongodb-memory-server: checking MongoDB binaries cache...');
-  MongoBinary.getPath({})
-    .then((binPath) => {
-      console.log(`mongodb-memory-server: binary path is ${binPath}`);
-    })
-    .catch((err) => {
-      console.log(`failed to download/install MongoDB binaries. The error: ${err}`);
-      process.exit(0);
-    });
-} else {
-  console.log("Can't resolve MongoBinary module");
-}
+// no explicit version, but "local"
+require(modulePath).postInstallEnsureBinary(undefined, true);

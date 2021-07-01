@@ -1,0 +1,31 @@
+name: Deploy Github Pages
+
+on:
+  push:
+    branches:
+      - 'master'
+      - '!beta' # only deploy the website on "master"
+      - '!gh-pages'
+    paths: # only run this deploy if an file in the following directories are changed
+      - 'docs/**'
+      - 'website/**'
+  release:
+    types: [created]
+
+jobs:
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install & Build
+        run: bash ./ghPagesPre.sh
+      - name: Deploy to Github Pages
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: . # the root, because the provided script already moves files

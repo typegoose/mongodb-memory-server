@@ -13,3 +13,7 @@ trim_trailing_whitespace = true
 # Set default charset
 [*.{js,ts}]
 charset = utf-8
+
+# Double whitespaces are line "forced" line breaks in markdown, so they are needed
+[*.{md,mdx}]
+trim_trailing_whitespace = false

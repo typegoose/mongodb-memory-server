@@ -29,32 +29,32 @@ Works perfectly [with Travis CI](https://github.com/nodkz/graphql-compose-mongoo
 
 - [Installation](#installation)
   - [Requirements](#requirements)
-    - [Known Incompatibilities](#known-incompatibilities)
-  - [mongodb-memory-server](#mongodb-memory-server)
-  - [mongodb-memory-server-global](#mongodb-memory-server-global)
-    - [mongodb-memory-server-global-x.x](#mongodb-memory-server-global-xx)
-  - [mongodb-memory-server-core](#mongodb-memory-server-core)
+  - [Known Issues](#known-issues)
+  - [Choose the Correct Package](#choose-the-correct-package)
   - [Configuring which mongod binary to use](#configuring-which-mongod-binary-to-use)
 - [Usage](#usage)
   - [Simple server start](#simple-server-start)
   - [Available options for MongoMemoryServer](#available-options-for-mongomemoryserver)
   - [Replica Set start](#replica-set-start)
   - [Available options for MongoMemoryReplSet](#available-options-for-mongomemoryreplset)
-  - [Options which can be set via ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables)
-  - [Options which can be set via package.json's `config` section](#options-which-can-be-set-via-packagejsons-config-section)
+  - [Config Options](#config-options)
   - [Simple test with MongoClient](#simple-test-with-mongoclient)
   - [Provide connection string to mongoose](#provide-connection-string-to-mongoose)
   - [Several mongoose connections simultaneously](#several-mongoose-connections-simultaneously)
-  - [Simple Mocha/Chai test example](#simple-mochachai-test-example)
-  - [Simple Jest test example](#simple-jest-test-example)
+  - [Integration Examples](#integration-examples)
   - [AVA test runner](#ava-test-runner)
   - [Docker Alpine](#docker-alpine)
   - [Enable Debug Mode](#enable-debug-mode)
 - [CI](#ci)
 - [Contributing](#contributing)
+- [Join Our Discord Server](#join-our-discord-server)
+- [Documentation](#documentation)
 - [Credits](#credits)
-- [License](#license)
 - [Maintainers](#maintainers)
+- [Contributors](#contributors)
+- [Backers](#backers)
+- [Sponsors](#sponsors)
+- [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -69,8 +69,8 @@ Choose any package, because they are the same. They differ only in the default c
 
 ### Requirements
 
-- NodeJS: 10.15+
-- Typescript: 3.8+ (if used)
+- NodeJS: 12.22+
+- Typescript: 4.0+ (if used)
 
 And one of those:
 
@@ -79,56 +79,19 @@ And one of those:
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
 - manually specify which version & system should be used
 
-#### Known Incompatibilities
+### Known Issues
 
-- [ArchLinux](https://github.com/nodkz/mongodb-memory-server/issues/302) & [Alpine](https://github.com/nodkz/mongodb-memory-server/issues/347) do not have an official mongodb build
-- ArchLinux(Docker) does not have an `/etc/os-release` file by default
+[Known Issues in the Documentation](https://nodkz.github.io/mongodb-memory-server/docs/guides/known-issues)
 
-### mongodb-memory-server
+### Choose the Correct Package
 
-Auto-downloads version ~~`latest`~~`4.0.14` `mongod` binary on npm install to: `node_modules/.cache/mongodb-binaries`.
-
-```bash
-yarn add mongodb-memory-server --dev
-# OR
-npm install mongodb-memory-server --save-dev
-```
-
-### mongodb-memory-server-global
-
-Auto-downloads version ~~`latest`~~`4.0.14` `mongod` binary on npm install to: `%HOME%/.cache/mongodb-binaries` / `~/.cache/mongodb-binaries`.
-
-```bash
-yarn add mongodb-memory-server-global --dev
-# OR
-npm install mongodb-memory-server-global --save-dev
-```
-
-#### mongodb-memory-server-global-x.x
-
-This Repository provides stub packages that set an MongoDB version, currently available are:
-
-`3.6, 4.2, 4.4`
-
-Note: **The packages below 4.2 have been deprecated**
-
-### mongodb-memory-server-core
-
-Does NOT auto-download `mongod` on npm install.
-
-```bash
-yarn add mongodb-memory-server-core --dev
-# OR
-npm install mongodb-memory-server-core --save-dev
-```
-
-_Note: the package does try to download `mongod` upon server start if it cannot find the binary._
+[Choose the right package for the task](https://nodkz.github.io/mongodb-memory-server/docs/guides/quick-start-guide#choose-the-right-package)
 
 ### Configuring which mongod binary to use
 
-The default behaviour is that version ~~`latest`~~`4.0.14` for your OS will be downloaded. By setting [ENVIRONMENT variables](#options-which-can-be-set-via-environment-variables) you are able to specify which version and binary will be downloaded:
+The default behaviour is that version ~~`latest`~~`4.0.25` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
 
-```bash
+```sh
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
 export MONGOMS_VERSION=4.2.8
 ```
@@ -180,7 +143,7 @@ const mongod = new MongoMemoryServer({
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },
   binary: {
-    version?: string, // by default '4.0.14'
+    version?: string, // by default '4.0.25'
     downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
@@ -261,66 +224,13 @@ const replSet = new MongoMemoryReplSet({
 });
 ```
 
-### Options which can be set via ENVIRONMENT variables
+### Config Options
 
-```sh
-MONGOMS_DOWNLOAD_DIR=/path/to/mongodb/binaries
-MONGOMS_PLATFORM=linux
-MONGOMS_ARCH=x64
-MONGOMS_VERSION=3
-MONGOMS_DEBUG=1 # also available case-insensitive values: "on" "yes" "true"
-MONGOMS_DOWNLOAD_MIRROR=host # your mirror host to download the mongodb binary
-MONGOMS_DOWNLOAD_URL=url # full URL to download the mongodb binary
-MONGOMS_DISABLE_POSTINSTALL=1 # if you want to skip download binaries on `npm i` command
-MONGOMS_SYSTEM_BINARY=/usr/local/bin/mongod # if you want to use an existing binary already on your system.
-MONGOMS_MD5_CHECK=1 # if you want to make MD5 check of downloaded binary.
-# Passed constructor parameter `binary.checkMD5` has higher priority.
-
-# GetOS specific ones (for linux only)
-MONGOMS_USE_LINUX_LSB_RELEASE # Only try "lsb_release -a"
-MONGOMS_USE_LINUX_OS_RELEASE # Only try to read "/etc/os-release"
-MONGOMS_USE_LINUX_ANYFILE_RELEASE # Only try to read the first file found "/etc/*-release"
-```
-
-### Options which can be set via package.json's `config` section
-
-You can also use package.json's `config` section to configure installation process.
-Environment variables have higher priority than contents of package.json.
-
-```json
-{
-  "config": {
-    "mongodbMemoryServer": {
-      "downloadDir": "/path/to/mongodb/binaries",
-      "platform": "linux",
-      "arch": "x64",
-      "version": "3",
-      "debug": "1",
-      "downloadMirror": "url",
-      "disablePostinstall": "1",
-      "systemBinary": "/usr/local/bin/mongod",
-      "md5Check": "1"
-    }
-  }
-}
-```
-
-By default it uses the nearest (upwards) `package.json` to `process.cwd()`.
-To change this:
-
-```ts
-import { findPackageJson } from "mongodb-memory-server-core/lib/util/resolve-config";
-
-findPackageJson('/custom/path');
-
-// OR
-
-process.chdir('/custom/path'); // not recommended
-```
+[Documentation of Config Options](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options)
 
 ### Simple test with MongoClient
 
-Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB-test.ts).
+Take a look at this [test file](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB.test.ts).
 
 ### Provide connection string to mongoose
 
@@ -450,75 +360,9 @@ mongoose.connect(uri, opts);
 const User = mongoose.model('User', new mongoose.Schema({ name: String })); // define model
 ```
 
-### Simple Mocha/Chai test example
+### Integration Examples
 
-Start Mocha with `--timeout 60000` cause first download of MongoDB binaries may take a time.
-
-```js
-import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-
-let mongoServer;
-const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
-
-before(async () => {
-  mongoServer = new MongoMemoryServer();
-  const mongoUri = await mongoServer.getUri();
-  await mongoose.connect(mongoUri, opts);
-});
-
-after(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
-
-describe('...', () => {
-  it('...', async () => {
-    const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-    const cnt = await User.count();
-    expect(cnt).to.equal(0);
-  });
-});
-```
-
-### Simple Jest test example
-
-```js
-import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-
-// May require additional time for downloading MongoDB binaries
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
-
-let mongoServer;
-const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
-
-beforeAll(async () => {
-  mongoServer = new MongoMemoryServer();
-  const mongoUri = await mongoServer.getUri();
-  await mongoose.connect(mongoUri, opts, (err) => {
-    if (err) console.error(err);
-  });
-});
-
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
-
-describe('...', () => {
-  it('...', async () => {
-    const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-    const count = await User.count();
-    expect(count).toEqual(0);
-  });
-});
-```
-
-Additional examples of Jest tests:
-
-- simple example with `mongodb` in [tests in current package](https://github.com/nodkz/mongodb-memory-server/blob/master/src/__tests__/)
-- more complex example with `mongoose` in [graphql-compose-mongoose](https://github.com/nodkz/graphql-compose-mongoose/blob/master/src/__mocks__/mongooseCommon.js)
+[Documentation for Integration Examples](https://nodkz.github.io/mongodb-memory-server/docs/guides/integration-examples)
 
 ### AVA test runner
 
@@ -566,6 +410,15 @@ script:
 ## Contributing
 
 Contributing Guidelines are setup in [CONTRIBUTING](./.github/CONTRIBUTING.md)
+
+## Join Our Discord Server
+
+To ask questions or just talk with us, [join our Discord Server](https://discord.gg/bgCrRP9).
+
+## Documentation
+
+- [Documentation](https://nodkz.github.io/mongodb-memory-server/docs/api/index-api)
+- [Quick start guide](https://nodkz.github.io/mongodb-memory-server/docs/guides/quick-start-guide/)
 
 ## Credits
 
