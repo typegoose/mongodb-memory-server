@@ -1,3 +1,17 @@
+## [7.0.0-beta.52](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.51...v7.0.0-beta.52) (2021-07-01)
+
+
+### Dependencies
+
+* **@types/debug:** upgrade to 4.1.6 ([dd112af](https://github.com/nodkz/mongodb-memory-server/commit/dd112affc4dbeacec5fdce45f712ccae11e4360e))
+* **@types/mongodb:** upgrade to 3.6.19 ([a539022](https://github.com/nodkz/mongodb-memory-server/commit/a539022b7154be600d2fddc0846e9d480c6e6644))
+* **@types/node:** change from "^" to "~" ([000d601](https://github.com/nodkz/mongodb-memory-server/commit/000d6015ced54ec3c0538fbd313a7130cf0ab977))
+* **@typescript-eslint/*:** upgrade to 4.28.1 ([87e98e6](https://github.com/nodkz/mongodb-memory-server/commit/87e98e6adf39f5d8c23f519814869a4b387b12f6))
+* **husky:** upgrade to 7.0.0 ([c58a9ec](https://github.com/nodkz/mongodb-memory-server/commit/c58a9ec638393c3ee61e77dfe28e9d238888047c))
+* **jest:** upgrade to 27.0.6 ([7a6e051](https://github.com/nodkz/mongodb-memory-server/commit/7a6e0513273e17e592c8a2620980591cfa38b90d))
+* **prettier:** upgrade to 2.3.2 ([21efc3d](https://github.com/nodkz/mongodb-memory-server/commit/21efc3d7e64bad5fe16f370fade3ea508095f359))
+* **typescript:** upgrade to 4.3.5 ([b778965](https://github.com/nodkz/mongodb-memory-server/commit/b778965fee9b867fa3f07054031c7bfc73a82153))
+
 ## [7.0.0-beta.51](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.50...v7.0.0-beta.51) (2021-06-28)
 
 
