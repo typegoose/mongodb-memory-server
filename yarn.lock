@@ -2227,10 +2227,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/mongodb@^3.6.18":
-  version "3.6.18"
-  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.6.18.tgz#7524c462fc7e3b67892afda8211cd045edee65eb"
-  integrity sha512-JSVFt9p0rTfZ4EgzXmVHUB3ue00xe3CRbQho8nXfImzEDDM4O7I3po1bwbWl/EIbLENxUreZxqLOc8lvcnLVPA==
+"@types/mongodb@^3.6.19":
+  version "3.6.19"
+  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.6.19.tgz#4666c1727d3460910b0966d5cc21eae19d1473f5"
+  integrity sha512-krZbirw3ATb8EJySZdlDChX7A8WqTBPWWVjEAl9SUUL6QHJY/5+yCk7DjJv1BE0qmi5iShtd2meEi/Ru0F6c7g==
   dependencies:
     "@types/bson" "*"
     "@types/node" "*"
