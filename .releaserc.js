@@ -5,6 +5,7 @@ module.exports = {
       {
         preset: "angular",
         releaseRules: [
+          {breaking: true, release: 'major'},
           {type: "feat", release: "minor"},
           {type: "fix", release: "patch"},
           {type: "docs", release: false},
@@ -16,7 +17,10 @@ module.exports = {
           {type: "dependencies", release: "minor"},
           // dont trigger another release on release commit
           {type: "release", release: false}
-        ]
+        ],
+        parserOpts: {
+          noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES']
+        }
       }
     ],
     [
