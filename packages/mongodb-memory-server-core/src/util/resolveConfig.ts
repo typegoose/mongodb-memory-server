@@ -86,7 +86,6 @@ export function findPackageJson(directory?: string): Record<string, string> {
 
   return packageJsonConfig;
 }
-findPackageJson();
 
 /**
  * Resolve "variableName" value (process.env | packagejson | default | undefined)
@@ -97,7 +96,7 @@ export function resolveConfig(variableName: ResolveConfigVariables): string | un
     process.env[envName(variableName)] ??
     packageJsonConfig[camelCase(variableName)] ??
     defaultValues.get(variableName)
-  );
+  )?.toString();
 }
 
 export default resolveConfig;
@@ -127,3 +126,6 @@ export function envToBool(env: string = ''): boolean {
 if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG))) {
   debug.enable('MongoMS:*');
 }
+
+// run this always after debug is enabled
+findPackageJson();

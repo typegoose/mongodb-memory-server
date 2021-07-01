@@ -11,7 +11,7 @@ This Guide is written for migration from the latest 6.x to 7.0.x
 
 ## Requirement Changes
 
-If using NodeJS below 12.10, package `rimraf` needs to be installed (when using cleanup with `force`)
+If using NodeJS below 12.22, package `rimraf` needs to be installed (when using cleanup with `force`)
 
 ## Breaking Changes
 

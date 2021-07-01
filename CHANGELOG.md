@@ -1,3 +1,33 @@
+## [7.0.0-beta.52](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.51...v7.0.0-beta.52) (2021-07-01)
+
+
+### Dependencies
+
+* **@types/debug:** upgrade to 4.1.6 ([dd112af](https://github.com/nodkz/mongodb-memory-server/commit/dd112affc4dbeacec5fdce45f712ccae11e4360e))
+* **@types/mongodb:** upgrade to 3.6.19 ([a539022](https://github.com/nodkz/mongodb-memory-server/commit/a539022b7154be600d2fddc0846e9d480c6e6644))
+* **@types/node:** change from "^" to "~" ([000d601](https://github.com/nodkz/mongodb-memory-server/commit/000d6015ced54ec3c0538fbd313a7130cf0ab977))
+* **@typescript-eslint/*:** upgrade to 4.28.1 ([87e98e6](https://github.com/nodkz/mongodb-memory-server/commit/87e98e6adf39f5d8c23f519814869a4b387b12f6))
+* **husky:** upgrade to 7.0.0 ([c58a9ec](https://github.com/nodkz/mongodb-memory-server/commit/c58a9ec638393c3ee61e77dfe28e9d238888047c))
+* **jest:** upgrade to 27.0.6 ([7a6e051](https://github.com/nodkz/mongodb-memory-server/commit/7a6e0513273e17e592c8a2620980591cfa38b90d))
+* **prettier:** upgrade to 2.3.2 ([21efc3d](https://github.com/nodkz/mongodb-memory-server/commit/21efc3d7e64bad5fe16f370fade3ea508095f359))
+* **typescript:** upgrade to 4.3.5 ([b778965](https://github.com/nodkz/mongodb-memory-server/commit/b778965fee9b867fa3f07054031c7bfc73a82153))
+
+## [7.0.0-beta.51](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.50...v7.0.0-beta.51) (2021-06-28)
+
+
+### Fixes
+
+* **resolveConfig:** move executing "findPackageJson" after enabling debug ([7e4c8dc](https://github.com/nodkz/mongodb-memory-server/commit/7e4c8dc5878c1e2f9bf092a8a17b02649fb25426))
+* **resolveConfig:** resolveConfig: always convert any value to string ([27f1f5c](https://github.com/nodkz/mongodb-memory-server/commit/27f1f5c0a57828780410d843378042e9ad131f6b))
+
+## [7.0.0-beta.50](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.49...v7.0.0-beta.50) (2021-06-28)
+
+
+### Fixes
+
+* **DryMongoBinary:** generatePaths: this function should now not hit the filesystem anymore ([8aefba5](https://github.com/nodkz/mongodb-memory-server/commit/8aefba5abd75c0fbb186c942d1281d3ea27734a3))
+* **resolveConfig:** envToBool: return "false" if input is somehow not an string ([6d78971](https://github.com/nodkz/mongodb-memory-server/commit/6d78971a36aa4f77c6a2ec932527798dd1b38bda))
+
 ## [7.0.0-beta.49](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0-beta.48...v7.0.0-beta.49) (2021-06-25)
 
 
