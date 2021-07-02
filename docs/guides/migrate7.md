@@ -80,6 +80,12 @@ This also includes function renames:
 - `MongoInstance.run` -> `MongoInstance.start`
 - `MongoInstance.kill` -> `MongoInstance.stop`
 
+### getUri by default does not include any dbName anymore
+
+This was changed to allow mongodb and mongoose URI's to work at the same time (they slightly differ).
+
+[See the code comment for more information](https://github.com/nodkz/mongodb-memory-server/blob/3624253f509a54cff04997943894b9eb7e7e64fe/packages/mongodb-memory-server-core/src/util/utils.ts#L13-L17)
+
 ## Non-Breaking changes / Additions
 
 ### Config Values are now collected in an enum
