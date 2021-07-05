@@ -1,3 +1,10 @@
+## [7.1.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0...v7.1.0) (2021-07-05)
+
+
+### Features
+
+* **resolveConfig:** replace "find-package-json" with "new-find-package-json" ([90b6d1b](https://github.com/nodkz/mongodb-memory-server/commit/90b6d1b91e433ac378172270fa5970d6f388467b)), closes [#495](https://github.com/nodkz/mongodb-memory-server/issues/495) [#494](https://github.com/nodkz/mongodb-memory-server/issues/494)
+
 ## [7.0.0](https://github.com/nodkz/mongodb-memory-server/compare/v6.9.6...v7.0.0) (2021-07-01)
 
 
