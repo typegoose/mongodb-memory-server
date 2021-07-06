@@ -463,6 +463,18 @@ describe('MongoMemoryServer', () => {
       utils.assertion(instanceInfo, new Error('"MongoServer.instanceInfo" should be defined!'));
       expect(mongoServer.getUri()).toEqual(`mongodb://127.0.0.1:${port}/`);
     });
+
+    it('should throw an state error, if not starting or running', async () => {
+      const newMongoServer = new MongoMemoryServer();
+
+      expect(() => newMongoServer.getUri()).toThrowError(StateError);
+      expect(mongoServer.getUri()).not.toBeUndefined();
+
+      await newMongoServer.start();
+      expect(newMongoServer.getUri()).not.toBeUndefined();
+      await newMongoServer.stop();
+      expect(() => newMongoServer.getUri()).toThrowError(StateError);
+    });
   });
 
   describe('cleanup()', () => {
