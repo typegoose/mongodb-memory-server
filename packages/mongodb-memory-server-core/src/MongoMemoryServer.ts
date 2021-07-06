@@ -721,7 +721,18 @@ export default MongoMemoryServer;
  * @param val this.instanceInfo
  */
 function assertionInstanceInfo(val: unknown): asserts val is MongoInstanceData {
-  assertion(!isNullOrUndefined(val), new Error('"instanceInfo" is undefined'));
+  const solution = `
+    Starting from mongodb-memory-server@7.0.0 was changed method of server creation:
+    
+    In v6 it was:
+      const mongoServer = new MongoMemoryServer();
+      const mongoUri = await mongoServer.getUri(true);
+
+    Starting from v7 it became:
+      const mongoServer = await MongoMemoryServer.create();
+      const mongoUri = mongoServer.getUri();
+  `;
+  assertion(!isNullOrUndefined(val), new Error('"instanceInfo" is undefined' + '\n' + solution));
 }
 
 /**

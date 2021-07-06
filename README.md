@@ -89,7 +89,7 @@ And one of those:
 
 ### Configuring which mongod binary to use
 
-The default behaviour is that version ~~`latest`~~`4.0.25` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
+The default behavior is that version ~~`latest`~~`4.0.25` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
 
 ```sh
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
@@ -103,24 +103,18 @@ export MONGOMS_VERSION=4.2.8
 ```js
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-const mongod = new MongoMemoryServer();
+const mongod = await MongoMemoryServer.create();
 
-const uri = await mongod.getUri();
-const port = await mongod.getPort();
-const dbPath = await mongod.getDbPath();
-const dbName = await mongod.getDbName();
+const uri = mongod.getUri();
 
 // some code
 //   ... where you may use `uri` for as a connection string for mongodb or mongoose
 
-// you may check instance status, after you got `uri` it must be `true`
-mongod.getInstanceInfo(); // return Object with instance data
+// you may get instance info
+console.log(mongod.instanceInfo); // return Object with instance data
 
 // you may stop mongod manually
 await mongod.stop();
-
-// when mongod killed, it's running status should be `false`
-mongod.getInstanceInfo();
 
 // even you forget to stop `mongod` when you exit from script
 // special childProcess killer will shutdown it for you
@@ -131,7 +125,7 @@ mongod.getInstanceInfo();
 All options are optional.
 
 ```js
-const mongod = new MongoMemoryServer({
+const mongod = await MongoMemoryServer.create({
   instance: {
     port?: number, // by default choose any free port
     ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`,
