@@ -1,7 +1,8 @@
 import camelCase from 'camelcase';
-import finder from 'find-package-json';
+import { findSync } from 'new-find-package-json';
 import debug from 'debug';
 import * as path from 'path';
+import { readFileSync } from 'fs';
 
 const log = debug('MongoMS:ResolveConfig');
 
@@ -48,16 +49,15 @@ let packageJsonConfig: Record<string, string> = {};
  */
 export function findPackageJson(directory?: string): Record<string, string> {
   let filename: string | undefined;
-  for (const found of finder(directory || process.cwd())) {
-    // This is an hidden property, using this because an "for..of" loop dosnt return the "filename" value that is besides the "done" and "value" value
-    filename = found.__path as string;
+  for (const filename of findSync(directory || process.cwd())) {
     log(`findPackageJson: Found package.json at "${filename}"`);
+    const readout: Record<string, any> = JSON.parse(readFileSync(filename).toString());
 
-    if (Object.keys(found?.config?.mongodbMemoryServer ?? {}).length > 0) {
+    if (Object.keys(readout?.config?.mongodbMemoryServer ?? {}).length > 0) {
       log(`findPackageJson: Found package with non-empty config field at "${filename}"`);
 
       // the optional chaining is needed, because typescript wont accept an "isNullOrUndefined" in the if with "&& Object.keys"
-      packageJsonConfig = found?.config?.mongodbMemoryServer;
+      packageJsonConfig = readout?.config?.mongodbMemoryServer;
       break;
     }
   }

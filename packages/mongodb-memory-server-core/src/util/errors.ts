@@ -3,7 +3,11 @@ import { isNullOrUndefined } from './utils';
 export class StateError extends Error {
   constructor(public wantedStates: string[], public gotState: string) {
     super(
-      `Incorrect State for operation: "${gotState}", allowed States: "[${wantedStates.join(',')}]"`
+      `Incorrect State for operation: "${gotState}", allowed States: "[${wantedStates.join(
+        ','
+      )}]"\n` +
+        'This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:\n' +
+        'https://nodkz.github.io/mongodb-memory-server/docs/guides/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything'
     );
   }
 }
