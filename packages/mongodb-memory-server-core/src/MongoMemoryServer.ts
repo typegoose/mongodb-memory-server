@@ -637,6 +637,19 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    */
   getUri(otherDb?: string): string {
     log('getUri:', this.state);
+
+    switch (this.state) {
+      case MongoMemoryServerStates.running:
+      case MongoMemoryServerStates.starting:
+        break;
+      case MongoMemoryServerStates.stopped:
+      default:
+        throw new StateError(
+          [MongoMemoryServerStates.running, MongoMemoryServerStates.starting],
+          this.state
+        );
+    }
+
     assertionInstanceInfo(this._instanceInfo);
 
     return uriTemplate(this._instanceInfo.ip, this._instanceInfo.port, generateDbName(otherDb));

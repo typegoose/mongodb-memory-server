@@ -79,6 +79,11 @@ afterAll(async () => {
 });
 ```
 
+:::caution
+It is very important to limit spawned number of Jest workers for avoiding race condition. Cause Jest spawn huge amount of workers for every node environment on same machine. [More details](https://github.com/facebook/jest/issues/3765)
+Use [`--maxWorkers 4`](https://jestjs.io/docs/configuration#maxworkers-number--string) or [`--runInBand`](https://jestjs.io/docs/cli#--runinband) option.
+:::
+
 ## mocha / chai
 
 Start Mocha with `--timeout 60000` cause first download of MongoDB binaries may take a time.
@@ -109,3 +114,11 @@ describe('...', () => {
   });
 });
 ```
+
+## AVA test runner
+
+For AVA written [detailed tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) how to test mongoose models by @zellwk.
+
+:::note
+Note that this mentioned tutorial is pre 7.x
+:::

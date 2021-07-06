@@ -445,23 +445,43 @@ describe('MongoMemoryServer', () => {
       }
     });
 
-    it('should return correct value with "otherDb" being a string', async () => {
+    it('should return correct value with "otherDb" being a string', () => {
       const port: number = mongoServer.instanceInfo!.port;
       expect(mongoServer.getUri('customDB')).toEqual(`mongodb://127.0.0.1:${port}/customDB`);
     });
 
-    it('should return correct value with "otherDb" being a boolean', async () => {
+    it('should return correct value with "otherDb" being a boolean', () => {
       const port: number = mongoServer.instanceInfo!.port;
       const uri = mongoServer.getUri();
       expect(uri).not.toEqual(`mongodb://127.0.0.1:${port}/hello`);
       expect(uri).toEqual(`mongodb://127.0.0.1:${port}/`);
     });
 
-    it('should return with no database attached', async () => {
+    it('should return with no database attached', () => {
       const port: number = mongoServer.instanceInfo!.port;
       const instanceInfo = mongoServer.instanceInfo;
       utils.assertion(instanceInfo, new Error('"MongoServer.instanceInfo" should be defined!'));
       expect(mongoServer.getUri()).toEqual(`mongodb://127.0.0.1:${port}/`);
+    });
+
+    it('should throw an state error, if not starting or running', async () => {
+      const newMongoServer = new MongoMemoryServer();
+
+      // short for instead having to use "() => newMongoServer.getUri()"
+      function getUri() {
+        return newMongoServer.getUri();
+      }
+
+      // it is tested multiple times, to ensure it is an *instanceof* that error, and *the message* is correct
+      expect(getUri).toThrowError(StateError);
+      expect(getUri).toThrowErrorMatchingSnapshot();
+      expect(mongoServer.getUri()).not.toBeUndefined();
+
+      await newMongoServer.start();
+      expect(newMongoServer.getUri()).not.toBeUndefined();
+      await newMongoServer.stop();
+      expect(getUri).toThrowError(StateError);
+      expect(getUri).toThrowErrorMatchingSnapshot();
     });
   });
 
