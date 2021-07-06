@@ -467,13 +467,21 @@ describe('MongoMemoryServer', () => {
     it('should throw an state error, if not starting or running', async () => {
       const newMongoServer = new MongoMemoryServer();
 
-      expect(() => newMongoServer.getUri()).toThrowError(StateError);
+      // short for instead having to use "() => newMongoServer.getUri()"
+      function getUri() {
+        return newMongoServer.getUri();
+      }
+
+      // it is tested multiple times, to ensure it is an *instanceof* that error, and *the message* is correct
+      expect(getUri).toThrowError(StateError);
+      expect(getUri).toThrowErrorMatchingSnapshot();
       expect(mongoServer.getUri()).not.toBeUndefined();
 
       await newMongoServer.start();
       expect(newMongoServer.getUri()).not.toBeUndefined();
       await newMongoServer.stop();
-      expect(() => newMongoServer.getUri()).toThrowError(StateError);
+      expect(getUri).toThrowError(StateError);
+      expect(getUri).toThrowErrorMatchingSnapshot();
     });
   });
 
