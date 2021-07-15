@@ -145,15 +145,16 @@ export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
 }
 
 /**
- * Run "fs.promises.stat", but return "undefined" if error is "ENOENT"
+ * Run "fs.promises.stat", but return "undefined" if error is "ENOENT" or "EACCES"
  * follows symlinks
  * @param path The Path to Stat
- * @throws if the error is not "ENOENT"
+ * @throws if the error is not "ENOENT" or "EACCES"
  */
 export async function statPath(path: string): Promise<Stats | undefined> {
   return fspromises.stat(path).catch((err) => {
-    if (err.code === 'ENOENT') {
-      return undefined; // catch the error if the directory dosnt exist, without throwing an error
+    // catch the error if the directory doesn't exist or permission is denied, without throwing an error
+    if (['ENOENT', 'EACCES'].includes(err.code)) {
+      return undefined;
     }
 
     throw err;
@@ -184,7 +185,7 @@ export async function tryReleaseFile(
 
     return parser(output.toString());
   } catch (err) {
-    if (err.code !== 'ENOENT') {
+    if (!['ENOENT', 'EACCES'].includes(err.code)) {
       throw err;
     }
 
