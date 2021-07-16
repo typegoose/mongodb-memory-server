@@ -31,7 +31,7 @@ describe('utils', () => {
   });
 
   describe('statPath', () => {
-    it('should throw an error if code is not "ENOENT"', async () => {
+    it('should throw an error if code is not "ENOENT" or "EACCES"', async () => {
       const retError = new Error();
       // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
       retError.code = 'EPERM';
@@ -97,7 +97,20 @@ describe('utils', () => {
       ).resolves.toBeUndefined();
     });
 
-    it('should throw an error if error is not "ENOENT"', async () => {
+    it('should return "undefined" if "EACCES"', async () => {
+      const retError = new Error();
+      // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
+      retError.code = 'EACCES';
+      jest.spyOn(fspromises, 'readFile').mockRejectedValueOnce(retError);
+
+      await expect(
+        utils.tryReleaseFile('/some/path', () => {
+          fail('This Function should never run');
+        })
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw an error if error is not "ENOENT" or "EACCES"', async () => {
       const retError = new Error();
       // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
       retError.code = 'EPERM';

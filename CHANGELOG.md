@@ -1,3 +1,22 @@
+### [7.2.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.2.0...v7.2.1) (2021-07-15)
+
+
+### Fixes
+
+* **utils:** statPath: do not throw on EACCES ([#506](https://github.com/nodkz/mongodb-memory-server/issues/506)) ([d07eb3b](https://github.com/nodkz/mongodb-memory-server/commit/d07eb3b6791701f26613cd4e296aca19ee2f2902))
+
+## [7.2.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.1.0...v7.2.0) (2021-07-06)
+
+
+### Features
+
+* **MongoMemoryServer:** getUri: throw StateError instead of assertionError ([2e632ab](https://github.com/nodkz/mongodb-memory-server/commit/2e632abaa170c0750137f44077ec4f5b6d3f01f7)), closes [#501](https://github.com/nodkz/mongodb-memory-server/issues/501) [#497](https://github.com/nodkz/mongodb-memory-server/issues/497) [#458](https://github.com/nodkz/mongodb-memory-server/issues/458)
+
+
+### Fixes
+
+* **errors:** StateError: add link to migration guide ([d1be861](https://github.com/nodkz/mongodb-memory-server/commit/d1be861cdf222de3a4bcd95c30b6769f7e255270))
+
 ## [7.1.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.0.0...v7.1.0) (2021-07-05)
 
 
