@@ -16,14 +16,68 @@ const log = debug('MongoMS:MongoInstance');
 
 export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
 
-// Ref: https://docs.mongodb.com/manual/reference/replica-configuration/#replica-set-configuration-document-example
+/**
+ * Overwrite replica member-specific configuration
+ *
+ * @see {@link https://docs.mongodb.com/manual/reference/replica-configuration/#replica-set-configuration-document-example}
+ *
+ * @example
+ * ```ts
+ * {
+ *   priority: 2,
+ *   buildIndexes: false,
+ *   votes: 2,
+ * }
+ * ```
+ */
 export interface ReplicaMemberConfig {
+  /**
+   * A boolean that identifies an arbiter.
+   * @defaultValue `false` - A value of `true` indicates that the member is an arbiter.
+   */
   arbiterOnly?: boolean;
+
+  /**
+   * A boolean that indicates whether the mongod builds indexes on this member.
+   * You can only set this value when adding a member to a replica set.
+   * @defaultValue `true`
+   */
   buildIndexes?: boolean;
+
+  /**
+   * The replica set hides this instance and does not include the member in the output of `db.hello()` or `hello`.
+   * @defaultValue `true`
+   */
   hidden?: boolean;
+
+  /**
+   * A number that indicates the relative eligibility of a member to become a primary.
+   * Specify higher values to make a member more eligible to become primary, and lower values to make the member less eligible.
+   * @defaultValue 1.0 for primary/secondary; 0 for arbiters.
+   */
   priority?: number;
+
+  /**
+   * A tags document contains user-defined tag field and value pairs for the replica set member.
+   * @defaultValue `null`
+   * @example
+   * ```ts
+   * { "<tag1>": "<string1>", "<tag2>": "<string2>",... }
+   * ```
+   */
   tags?: any;
+
+  /**
+   * The number of seconds "behind" the primary that this replica set member should "lag".
+   * @defaultValue 0
+   */
   secondaryDelaySecs?: number;
+
+  /**
+   * The number of votes a server will cast in a replica set election.
+   * The number of votes each member has is either 1 or 0, and arbiters always have exactly 1 vote.
+   * @defaultValue 1
+   */
   votes?: number;
 }
 
