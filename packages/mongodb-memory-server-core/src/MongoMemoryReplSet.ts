@@ -272,6 +272,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     if (baseOpts.storageEngine) {
       opts.storageEngine = baseOpts.storageEngine;
     }
+    if (baseOpts.replicaMemberConfig) {
+      opts.replicaMemberConfig = baseOpts.replicaMemberConfig;
+    }
 
     log('getInstanceOpts: instance opts:', opts);
 
@@ -506,7 +509,11 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     try {
       let adminDb = con.db('admin');
 
-      const members = uris.map((uri, index) => ({ _id: index, host: getHost(uri) }));
+      const members = uris.map((uri, index) => ({
+        _id: index,
+        host: getHost(uri),
+        ...(this.servers[index].opts.instance?.replicaMemberConfig || {}), // Overwrite replica member config
+      }));
       const rsConfig = {
         _id: this._replSetOpts.name,
         members,

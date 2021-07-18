@@ -16,11 +16,23 @@ const log = debug('MongoMS:MongoInstance');
 
 export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
 
+// Ref: https://docs.mongodb.com/manual/reference/replica-configuration/#replica-set-configuration-document-example
+export interface ReplicaMemberConfig {
+  arbiterOnly?: boolean;
+  buildIndexes?: boolean;
+  hidden?: boolean;
+  priority?: number;
+  tags?: any;
+  secondaryDelaySecs?: number;
+  votes?: number;
+}
+
 export interface MongoMemoryInstanceOptsBase {
   args?: string[];
   port?: number;
   dbPath?: string;
   storageEngine?: StorageEngine;
+  replicaMemberConfig?: ReplicaMemberConfig;
 }
 
 export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
