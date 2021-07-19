@@ -1,3 +1,10 @@
+## [7.3.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.2.1...v7.3.0) (2021-07-19)
+
+
+### Features
+
+* **MongoMemoryReplSet:** add replicaMemberConfig to replica instance ([#508](https://github.com/nodkz/mongodb-memory-server/issues/508)) ([3752c72](https://github.com/nodkz/mongodb-memory-server/commit/3752c72dbdb7a265ffe003459b2198e89b024d61))
+
 ### [7.2.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.2.0...v7.2.1) (2021-07-15)
 
 
