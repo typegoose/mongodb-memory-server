@@ -69,7 +69,7 @@ export interface ReplicaMemberConfig {
 
   /**
    * Mongodb 4.x only - The number of seconds "behind" the primary that this replica set member should "lag".
-   * @deprecated For mongodb 5.x, use `secondaryDelaySecs` instead.
+   * For mongodb 5.x, use `secondaryDelaySecs` instead.
    * @see {@link https://docs.mongodb.com/v4.4/tutorial/configure-a-delayed-replica-set-member/}
    * @defaultValue 0
    */
