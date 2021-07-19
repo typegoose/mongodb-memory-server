@@ -143,12 +143,22 @@ describe('single server replset', () => {
   });
 
   it('start an replset with instanceOpts', async () => {
-    const replSet = new MongoMemoryReplSet({ instanceOpts: [{ args: ['--quiet'] }] });
+    const replSet = new MongoMemoryReplSet({
+      instanceOpts: [
+        {
+          args: ['--quiet'],
+          replicaMemberConfig: {
+            priority: 2,
+          },
+        },
+      ],
+    });
     await replSet.start();
 
     expect(
       replSet.servers[0].opts.instance!.args!.findIndex((x) => x === '--quiet') > -1
     ).toBeTruthy();
+    expect(replSet.servers[0].opts.instance?.replicaMemberConfig?.priority).toBe(2);
 
     await replSet.stop();
   });
