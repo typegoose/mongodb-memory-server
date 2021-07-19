@@ -148,7 +148,7 @@ describe('single server replset', () => {
         {
           args: ['--quiet'],
           replicaMemberConfig: {
-            arbiterOnly: true,
+            priority: 2,
           },
         },
       ],
@@ -158,7 +158,7 @@ describe('single server replset', () => {
     expect(
       replSet.servers[0].opts.instance!.args!.findIndex((x) => x === '--quiet') > -1
     ).toBeTruthy();
-    expect(replSet.servers[0].opts.instance?.replicaMemberConfig?.arbiterOnly).toBe(true);
+    expect(replSet.servers[0].opts.instance?.replicaMemberConfig?.priority).toBe(2);
 
     await replSet.stop();
   });
