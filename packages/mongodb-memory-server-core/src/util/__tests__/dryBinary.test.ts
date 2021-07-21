@@ -182,9 +182,33 @@ describe('DryBinary', () => {
       delete process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)];
       filesExist.clear();
       (binary.DryMongoBinary.generatePaths as jest.Mock).mockClear();
+
+      if (jest.isMockFunction(binary.DryMongoBinary.getSystemPath)) {
+        (binary.DryMongoBinary.getSystemPath as jest.Mock).mockRestore();
+      }
     });
 
     describe('should return exists', () => {
+      it('should return system binary if provided and exists', async () => {
+        jest.spyOn(binary.DryMongoBinary, 'getSystemPath');
+        jest.spyOn(fspromises, 'access').mockResolvedValueOnce(void 0);
+        const expectedPath = '/some/systembinary/somewhere';
+        expectedPaths = {
+          legacyHomeCache: '',
+          modulesCache: '',
+          relative: '',
+          resolveConfig: '',
+        };
+        filesExist.add(expectedPath);
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({
+          ...opts,
+          systemBinary: expectedPath,
+        });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(binary.DryMongoBinary.getSystemPath).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([true, expectedPath]);
+      });
+
       it('should return the DOWNLOAD_DIR when provided', async () => {
         const expectedPath = '/some/custom/path/binary';
         expectedPaths = {

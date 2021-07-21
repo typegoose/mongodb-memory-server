@@ -232,7 +232,16 @@ export class DryMongoBinary {
     log(`generateDownloadPath: Generating Download Path, preferGlobal: "${preferGlobal}"`);
     const paths = await this.generatePaths(opts);
 
-    log('generateDownloadPath: Paths:', paths);
+    log('generateDownloadPath: Paths:', paths, opts.systemBinary);
+
+    // SystemBinary will only be returned if defined and paths exists
+    if (!!opts.systemBinary && (await pathExists(opts.systemBinary))) {
+      const sysPath = await this.getSystemPath(opts.systemBinary);
+
+      if (!isNullOrUndefined(sysPath)) {
+        return [true, sysPath];
+      }
+    }
 
     // Section where paths are probed for an existing binary
     if (await pathExists(paths.resolveConfig)) {
