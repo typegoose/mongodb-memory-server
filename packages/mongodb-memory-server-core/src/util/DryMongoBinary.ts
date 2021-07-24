@@ -97,6 +97,7 @@ export class DryMongoBinary {
   static async generateOptions(
     opts?: DryMongoBinaryOptions
   ): Promise<Required<DryMongoBinaryOptions>> {
+    log('generateOptions');
     const defaultVersion = resolveConfig(ResolveConfigVariables.VERSION) ?? '4.0.25';
     const ensuredOpts: DryMongoBinaryOptions = isNullOrUndefined(opts)
       ? { version: defaultVersion }
@@ -108,10 +109,12 @@ export class DryMongoBinary {
 
     const final: Required<DryMongoBinaryOptions> = {
       version: ensuredOpts.version || defaultVersion,
-      downloadDir: opts?.downloadDir || '',
-      os: opts?.os ?? this.cachedGetOs,
-      arch: opts?.arch || arch(),
-      systemBinary: resolveConfig(ResolveConfigVariables.SYSTEM_BINARY) || '',
+      downloadDir:
+        resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) || ensuredOpts.downloadDir || '',
+      os: ensuredOpts.os ?? this.cachedGetOs,
+      arch: ensuredOpts.arch || arch(),
+      systemBinary:
+        resolveConfig(ResolveConfigVariables.SYSTEM_BINARY) || ensuredOpts.systemBinary || '',
     };
 
     final.downloadDir = path.dirname((await this.generateDownloadPath(final))[1]);
@@ -124,6 +127,7 @@ export class DryMongoBinary {
    * @return Absoulte Path with FileName
    */
   static getBinaryName(opts: DryMongoBinaryNameOptions): string {
+    log('getBinaryName');
     const addExe = platform() === 'win32' ? '.exe' : '';
     const dist = isLinuxOS(opts.os) ? opts.os.dist : opts.os.os;
 
@@ -134,6 +138,8 @@ export class DryMongoBinary {
    * Combine basePath with binaryName
    */
   static combineBinaryName(basePath: string, binaryName: string): string {
+    log('combineBinaryName');
+
     return path.resolve(basePath, binaryName);
   }
 
@@ -143,6 +149,7 @@ export class DryMongoBinary {
    * @return System Binary path or undefined
    */
   static async getSystemPath(systemBinary: string): Promise<string | undefined> {
+    log('getSystempath');
     try {
       await fspromises.access(systemBinary, constants.X_OK); // check if the provided path exists and has the execute bit for current user
 
@@ -165,6 +172,7 @@ export class DryMongoBinary {
   static async generatePaths(
     opts: DryMongoBinaryOptions & DryMongoBinaryNameOptions
   ): Promise<DryMongoBinaryPaths> {
+    log('generatePaths');
     const final: DryMongoBinaryPaths = {
       legacyHomeCache: '',
       modulesCache: '',
@@ -224,7 +232,16 @@ export class DryMongoBinary {
     log(`generateDownloadPath: Generating Download Path, preferGlobal: "${preferGlobal}"`);
     const paths = await this.generatePaths(opts);
 
-    log('generateDownloadPath: Paths:', paths);
+    log('generateDownloadPath: Paths:', paths, opts.systemBinary);
+
+    // SystemBinary will only be returned if defined and paths exists
+    if (!!opts.systemBinary && (await pathExists(opts.systemBinary))) {
+      const sysPath = await this.getSystemPath(opts.systemBinary);
+
+      if (!isNullOrUndefined(sysPath)) {
+        return [true, sysPath];
+      }
+    }
 
     // Section where paths are probed for an existing binary
     if (await pathExists(paths.resolveConfig)) {

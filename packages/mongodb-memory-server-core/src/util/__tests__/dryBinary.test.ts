@@ -5,6 +5,7 @@ import { constants, promises as fspromises } from 'fs';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
 import mkdirp from 'mkdirp';
+import { LinuxOS, OtherOS } from '../getos';
 
 tmp.setGracefulCleanup();
 
@@ -181,9 +182,33 @@ describe('DryBinary', () => {
       delete process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)];
       filesExist.clear();
       (binary.DryMongoBinary.generatePaths as jest.Mock).mockClear();
+
+      if (jest.isMockFunction(binary.DryMongoBinary.getSystemPath)) {
+        (binary.DryMongoBinary.getSystemPath as jest.Mock).mockRestore();
+      }
     });
 
     describe('should return exists', () => {
+      it('should return system binary if provided and exists', async () => {
+        jest.spyOn(binary.DryMongoBinary, 'getSystemPath');
+        jest.spyOn(fspromises, 'access').mockResolvedValueOnce(void 0);
+        const expectedPath = '/some/systembinary/somewhere';
+        expectedPaths = {
+          legacyHomeCache: '',
+          modulesCache: '',
+          relative: '',
+          resolveConfig: '',
+        };
+        filesExist.add(expectedPath);
+        const returnValue = await binary.DryMongoBinary.generateDownloadPath({
+          ...opts,
+          systemBinary: expectedPath,
+        });
+        expect(binary.DryMongoBinary.generatePaths).toHaveBeenCalledTimes(1);
+        expect(binary.DryMongoBinary.getSystemPath).toHaveBeenCalledTimes(1);
+        expect(returnValue).toStrictEqual([true, expectedPath]);
+      });
+
       it('should return the DOWNLOAD_DIR when provided', async () => {
         const expectedPath = '/some/custom/path/binary';
         expectedPaths = {
@@ -305,6 +330,7 @@ describe('DryBinary', () => {
     });
     afterEach(() => {
       delete process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)];
+      jest.restoreAllMocks();
     });
 
     it('should return SystemBinary if option provided is valid', async () => {
@@ -367,8 +393,95 @@ describe('DryBinary', () => {
       const returnValue = await binary.DryMongoBinary.locateBinary({ version: '4.0.25' });
       expect(returnValue).toEqual(mockBinary);
       expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
-      expect(binary.DryMongoBinary.binaryCache.has).toBeCalledTimes(2); // it seems like ".set" also calls ".has"
+      expect(binary.DryMongoBinary.binaryCache.has).toBeCalledTimes(1);
       expect(binary.DryMongoBinary.generateDownloadPath).toHaveBeenCalled();
+    });
+  });
+
+  describe('generateOptions', () => {
+    let osmock: LinuxOS;
+    const mockBinary: string = '/custom/path';
+
+    beforeAll(() => {
+      jest.spyOn(binary.DryMongoBinary, 'generateDownloadPath').mockImplementation(async (opts) => {
+        return [true, opts.downloadDir ? opts.downloadDir : mockBinary];
+      });
+      osmock = binary.DryMongoBinary.cachedGetOs = {
+        dist: 'ubuntu',
+        os: 'linux',
+        release: '20.04',
+      };
+    });
+    beforeEach(() => {
+      delete process.env[envName(ResolveConfigVariables.DOWNLOAD_DIR)];
+      delete process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)];
+      delete process.env[envName(ResolveConfigVariables.VERSION)];
+      process.env['INIT_CWD'] = undefined; // removing this, because it would mess with stuff - but still should be used when available (postinstall)
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should return defaults, with no configs set', async () => {
+      const output = await binary.DryMongoBinary.generateOptions();
+
+      expect(output).toStrictEqual(
+        expect.objectContaining({
+          version: '4.0.25',
+          systemBinary: '',
+          os: osmock,
+          downloadDir: path.dirname(mockBinary),
+        })
+      );
+    });
+
+    it('should use provided options instead of defaults', async () => {
+      const customos: OtherOS = {
+        os: 'win32',
+      };
+      const options: Required<binary.DryMongoBinaryOptions> = {
+        version: '4.4.4',
+        arch: 'x86',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '/also/somewhere',
+      };
+      const output = await binary.DryMongoBinary.generateOptions(options);
+
+      expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
+        version: options.version,
+        arch: options.arch,
+        systemBinary: options.systemBinary,
+        os: options.os,
+        downloadDir: path.dirname(options.downloadDir),
+      });
+    });
+
+    it('should use env over provided options and defaults', async () => {
+      const envdldir = '/env/path/somewhere';
+      const envsbdir = '/env/sb/somewhere';
+      process.env[envName(ResolveConfigVariables.DOWNLOAD_DIR)] = envdldir;
+      process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = envsbdir;
+      const customos: OtherOS = {
+        os: 'win32',
+      };
+      const options: Required<binary.DryMongoBinaryOptions> = {
+        version: '4.4.4',
+        arch: 'x86',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '/also/somewhere',
+      };
+      const output = await binary.DryMongoBinary.generateOptions(options);
+
+      expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
+        version: options.version,
+        arch: options.arch,
+        systemBinary: envsbdir,
+        os: options.os,
+        downloadDir: path.dirname(envdldir),
+      });
     });
   });
 });

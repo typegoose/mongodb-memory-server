@@ -55,7 +55,14 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     log(`Using "${mirror}" as the mirror`);
 
     const url = new URL(mirror);
-    url.pathname = `/${this.platform}/${archive}`;
+
+    // ensure that the "mirror" path ends with "/"
+    if (!url.pathname.endsWith('/')) {
+      url.pathname = url.pathname + '/';
+    }
+
+    // no extra "/" between "pathname" and "platfrom", because of the "if" statement above to ensure "url.pathname" to end with "/"
+    url.pathname = `${url.pathname}${this.platform}/${archive}`;
 
     return url.toString();
   }

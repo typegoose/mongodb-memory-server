@@ -1,3 +1,11 @@
+### [7.3.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.0...v7.3.1) (2021-07-21)
+
+
+### Fixes
+
+* **DryMongoBinary:** generateDownloadPath: return sytemBinary if exists ([91ab2b0](https://github.com/nodkz/mongodb-memory-server/commit/91ab2b06f64a5103e1039fbbf152347433dbe44b))
+* **DryMongoBinary:** use provided systembinary (and not ignore it) ([bc89da3](https://github.com/nodkz/mongodb-memory-server/commit/bc89da33a4cddaa3b4dda8480a2ba480d3cd3051))
+
 ## [7.3.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.2.1...v7.3.0) (2021-07-19)
 
 
