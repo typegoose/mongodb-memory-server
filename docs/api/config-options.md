@@ -51,6 +51,12 @@ Option `DOWNLOAD_MIRROR` is used to set which mirror to use
 
 Default / Format: `https://fastdl.mongodb.org` (protocol needs to be included)
 
+Also supported is adding an path `https://someserver.com/some/path/for/mongodb`.  
+
+:::note
+It is discouraged to use query parameters, they may work, but not officially supported
+:::
+
 ### DOWNLOAD_URL
 
 Option `DOWNLOAD_URL` is used to overwrite the ***complete*** URL (including [`DOWNLOAD_MIRROR`](#DOWNLOAD_MIRROR))
