@@ -1,1 +1,7 @@
-@nodkz @AJRdev @hasezoey
+# Top Level; Everything that is not convered by anything below
+* @nodkz @AJRdev @hasezoey
+
+**/LICENSE.md @nodkz
+website/ @hasezoey
+docs/ @hasezoey @nodkz
+.github/ @hasezoey @nodkz
