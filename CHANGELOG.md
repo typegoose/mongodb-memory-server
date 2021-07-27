@@ -1,3 +1,10 @@
+### [7.3.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.2...v7.3.3) (2021-07-27)
+
+
+### Fixes
+
+* **MongoBinaryDownload:** handle all options from "MongoBinaryOpts" in constructor ([5ce583e](https://github.com/nodkz/mongodb-memory-server/commit/5ce583eaa0d27993ad8e2c014dd965472faf76f3)), closes [#514](https://github.com/nodkz/mongodb-memory-server/issues/514)
+
 ### [7.3.2](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.1...v7.3.2) (2021-07-24)
 
 
