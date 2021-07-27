@@ -33,24 +33,73 @@ export class MongoBinaryDownload {
   dlProgress: MongoBinaryDownloadProgress;
   _downloadingUrl?: string;
 
-  checkMD5: boolean;
-  downloadDir: string;
-  arch: string;
-  version: string;
-  platform: string;
+  /**These options are kind of raw, they are not run through DryMongoBinary.generateOptions */
+  binaryOpts: Required<MongoBinaryOpts>;
 
-  constructor({ platform, arch, downloadDir, version, checkMD5 }: MongoBinaryOpts) {
-    this.platform = platform ?? os.platform();
-    this.arch = arch ?? os.arch();
-    version = version ?? resolveConfig(ResolveConfigVariables.VERSION);
+  // TODO: for an major version, remove the compat get/set
+  // the following get/set are to not break existing stuff
+
+  get checkMD5(): boolean {
+    return this.binaryOpts.checkMD5;
+  }
+
+  set checkMD5(val: boolean) {
+    this.binaryOpts.checkMD5 = val;
+  }
+
+  get downloadDir(): string {
+    return this.binaryOpts.downloadDir;
+  }
+
+  set downloadDir(val: string) {
+    this.binaryOpts.downloadDir = val;
+  }
+
+  get arch(): string {
+    return this.binaryOpts.arch;
+  }
+
+  set arch(val: string) {
+    this.binaryOpts.arch = val;
+  }
+
+  get version(): string {
+    return this.binaryOpts.version;
+  }
+
+  set version(val: string) {
+    this.binaryOpts.version = val;
+  }
+
+  get platform(): string {
+    return this.binaryOpts.platform;
+  }
+
+  set platform(val: string) {
+    this.binaryOpts.platform = val;
+  }
+
+  // end get/set backwards compat section
+
+  constructor(opts: MongoBinaryOpts) {
+    assertion(typeof opts.downloadDir === 'string', new Error('An DownloadDir must be specified!'));
+    const version = opts.version ?? resolveConfig(ResolveConfigVariables.VERSION);
     assertion(
       typeof version === 'string',
       new Error('An MongoDB Binary version must be specified!')
     );
-    assertion(typeof downloadDir === 'string', new Error('An DownloadDir must be specified!'));
-    this.version = version;
-    this.downloadDir = downloadDir;
-    this.checkMD5 = checkMD5 ?? envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK));
+
+    // DryMongoBinary.generateOptions cannot be used here, because its async
+    this.binaryOpts = {
+      platform: opts.platform ?? os.platform(),
+      arch: opts.arch ?? os.arch(),
+      version: version,
+      downloadDir: opts.downloadDir,
+      checkMD5: opts.checkMD5 ?? envToBool(resolveConfig(ResolveConfigVariables.MD5_CHECK)),
+      systemBinary: opts.systemBinary ?? '',
+      os: opts.os ?? { os: 'unknown' },
+    };
+
     this.dlProgress = {
       current: 0,
       length: 0,
@@ -64,11 +113,7 @@ export class MongoBinaryDownload {
    * @return Absoulte Path with FileName
    */
   protected async getPath(): Promise<string> {
-    const opts = await DryMongoBinary.generateOptions({
-      version: this.version,
-      arch: this.arch,
-      downloadDir: this.downloadDir,
-    });
+    const opts = await DryMongoBinary.generateOptions(this.binaryOpts);
 
     return DryMongoBinary.combineBinaryName(this.downloadDir, DryMongoBinary.getBinaryName(opts));
   }
@@ -104,11 +149,7 @@ export class MongoBinaryDownload {
    */
   async startDownload(): Promise<string> {
     log('startDownload');
-    const mbdUrl = new MongoBinaryDownloadUrl({
-      platform: this.platform,
-      arch: this.arch,
-      version: this.version,
-    });
+    const mbdUrl = new MongoBinaryDownloadUrl(this.binaryOpts);
 
     await mkdirp(this.downloadDir);
 
