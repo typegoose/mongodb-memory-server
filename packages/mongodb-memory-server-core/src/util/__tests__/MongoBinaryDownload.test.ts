@@ -2,6 +2,7 @@ import { promises as fspromises } from 'fs';
 import md5file from 'md5-file';
 import * as mkdirp from 'mkdirp';
 import { DryMongoBinary } from '../DryMongoBinary';
+import { MongoBinaryOpts } from '../MongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
@@ -269,5 +270,24 @@ describe('MongoBinaryDownload', () => {
       expect(err.message).toEqual(customError.message);
       expect(console.error).toHaveBeenCalledTimes(1);
     }
+  });
+
+  it('should passthrough options to MongoBinaryDownloadUrl', async () => {
+    const options: MongoBinaryOpts = {
+      arch: 'x64',
+      downloadDir: '/path/to/somewhere',
+      os: {
+        os: 'linux',
+        dist: 'custom',
+        release: '100.0',
+      },
+      version: '4.0.0',
+    };
+    const mbd = new MongoBinaryDownload(options);
+    jest.spyOn(DryMongoBinary, 'generateOptions');
+    // @ts-expect-error "getPath" is protected
+    const path = await mbd.getPath();
+    expect(DryMongoBinary.generateOptions).toBeCalledWith(expect.objectContaining(options));
+    expect(path).toMatchSnapshot();
   });
 });
