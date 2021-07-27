@@ -111,7 +111,12 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
  * Check if the given Process is still alive
  * @param {number} pid The Process PID
  */
-export function isAlive(pid: number): boolean {
+export function isAlive(pid?: number): boolean {
+  // This test (and allow to be undefined) is here because somewhere between nodejs 12 and 16 the types for "childprocess.pid" changed to include "| undefined"
+  if (isNullOrUndefined(pid)) {
+    return false;
+  }
+
   try {
     process.kill(pid, 0); // code "0" dosnt actually kill anything (on all supported systems)
 
