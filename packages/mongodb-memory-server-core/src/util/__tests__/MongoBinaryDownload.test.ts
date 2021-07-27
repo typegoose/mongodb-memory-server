@@ -13,6 +13,7 @@ jest.mock('mkdirp');
 describe('MongoBinaryDownload', () => {
   afterEach(() => {
     delete process.env[envName(ResolveConfigVariables.MD5_CHECK)];
+    jest.restoreAllMocks();
   });
 
   it('checkMD5 attribute can be set via constructor parameter', () => {
