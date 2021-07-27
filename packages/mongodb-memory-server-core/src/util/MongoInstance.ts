@@ -497,23 +497,24 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     if (/Data directory .*? not found/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Data directory not found');
     }
-    if (/CURL_OPENSSL_3.*not found/i.test(line)) {
+    if (/CURL_OPENSSL_3['\s]+not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
         'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
           'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
       );
     }
-    if (/CURL_OPENSSL_4.*not found/i.test(line)) {
+    if (/CURL_OPENSSL_4['\s]+not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
         'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
           'You need to manually install libcurl4\n'
       );
     }
-    if (/lib.*: cannot open shared object/i.test(line)) {
+    if (/lib[\w-.]+: cannot open shared object/i.test(line)) {
       const lib =
-        line.match(/(lib.*): cannot open shared object/i)?.[1].toLocaleLowerCase() ?? 'unknown';
+        line.match(/(lib[\w-.]+): cannot open shared object/i)?.[1].toLocaleLowerCase() ??
+        'unknown';
       this.emit(
         MongoInstanceEvents.instanceError,
         `Instance Failed to start because an library file is missing: "${lib}"`
