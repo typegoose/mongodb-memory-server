@@ -286,6 +286,12 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     }
     this.debug('start: Starting Processes');
     this.mongodProcess = this._launchMongod(mongoBin);
+    // This assertion is here because somewhere between nodejs 12 and 16 the types for "childprocess.pid" changed to include "| undefined"
+    // it is tested and a error is thrown in "this_launchMongod", but typescript somehow does not see this yet as of 4.3.5
+    assertion(
+      !isNullOrUndefined(this.mongodProcess.pid),
+      new Error('MongoD Process failed to spawn')
+    );
     this.killerProcess = this._launchKiller(process.pid, this.mongodProcess.pid);
 
     await launch;
