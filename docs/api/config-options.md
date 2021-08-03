@@ -41,6 +41,18 @@ Option `VERSION` is used to set what mongodb version should be downloaded
 
 Default: `4.0.25`
 
+Common MongoDB Version formats (`X` is a number):
+
+- `X.X.X`
+- `vX.X.X`
+- `vX.X-latest`
+
+Search for what version is used:
+
+- [`osx`](https://dl.mongodb.org/dl/osx/x86_64) (Note: This one does not list versions above 4.0, see [This Issue](https://jira.mongodb.org/browse/DOCS-14560))
+- [`windows`](https://www.mongodb.org/dl/win32)
+- [`linux`](https://dl.mongodb.org/dl/linux)
+
 ### DEBUG
 
 Option `DEBUG` is used to enable Debug Output
