@@ -1,3 +1,12 @@
+### [7.3.4](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.3...v7.3.4) (2021-07-27)
+
+
+### Fixes
+
+* **MongoInstance:** assert "this.mongodProcess.pid" before usage (childprocess pid can be undefined) ([394ea3a](https://github.com/nodkz/mongodb-memory-server/commit/394ea3a2ed3859797d85b7c9b7571bdd532b68d2))
+* **MongoInstance:** stdoutHandler: try to apply CodeQL suggestions for CWE-730 ([e17dc7c](https://github.com/nodkz/mongodb-memory-server/commit/e17dc7cb7350150823a0b17e381d1c84d36be955))
+* **utils:** allow optional parameter and test if undefined (childprocess pid can be undefined) ([84f59a5](https://github.com/nodkz/mongodb-memory-server/commit/84f59a55918ff4845b003470e075a245e5c90b75))
+
 ### [7.3.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.2...v7.3.3) (2021-07-27)
 
 
