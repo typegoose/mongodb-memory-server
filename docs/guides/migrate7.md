@@ -5,8 +5,8 @@ title: 'Migrate to version 7.0.0'
 
 Here are the Important changes made for 7.0.0
 
-:::info
-This Guide is written for migration from the latest 6.x to 7.0.x
+:::caution Important, Read this first
+This Guide is written for migration from version `6.9.6` to `7.0.0`, for versions `>7.0.0 <8.0.0`, please consult the [CHANGELOG](https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md)
 :::
 
 ## Requirement Changes
