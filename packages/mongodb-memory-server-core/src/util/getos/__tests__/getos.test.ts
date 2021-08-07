@@ -62,5 +62,28 @@ UBUNTU_CODENAME=focal`;
         id_like: 'ubuntu',
       });
     });
+
+    it('should parse an full os-release file with quotes', () => {
+      const example = `NAME="Linux Mint"
+VERSION="20.2 (Uma)"
+ID="linuxmint"
+ID_LIKE="ubuntu"
+PRETTY_NAME="Linux Mint 20.2"
+VERSION_ID="20.2"
+HOME_URL="https://www.linuxmint.com/"
+SUPPORT_URL="https://forums.linuxmint.com/"
+BUG_REPORT_URL="http://linuxmint-troubleshooting-guide.readthedocs.io/en/latest/"
+PRIVACY_POLICY_URL="https://www.linuxmint.com/"
+VERSION_CODENAME=uma
+UBUNTU_CODENAME=focal`;
+
+      expect(getos.parseOS(example)).toEqual<getos.LinuxOS>({
+        os: 'linux',
+        dist: 'linuxmint',
+        release: '20.2',
+        codename: 'uma',
+        id_like: 'ubuntu',
+      });
+    });
   });
 });
