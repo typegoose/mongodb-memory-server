@@ -1,3 +1,10 @@
+## [7.4.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.5...v7.4.0-beta.1) (2021-08-07)
+
+
+### Features
+
+* **getos:** support multiple "id_like" ([ce42fad](https://github.com/nodkz/mongodb-memory-server/commit/ce42fad3f249c885fb2f8f23ae0eaf7b5c4a6741)), closes [#525](https://github.com/nodkz/mongodb-memory-server/issues/525)
+
 ### [7.3.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.4...v7.3.5) (2021-08-07)
 
 
