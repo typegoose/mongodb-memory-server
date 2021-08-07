@@ -59,7 +59,7 @@ UBUNTU_CODENAME=focal`;
         dist: 'linuxmint',
         release: '20.1',
         codename: 'ulyssa',
-        id_like: 'ubuntu',
+        id_like: ['ubuntu'],
       });
     });
 
@@ -82,7 +82,27 @@ UBUNTU_CODENAME=focal`;
         dist: 'linuxmint',
         release: '20.2',
         codename: 'uma',
-        id_like: 'ubuntu',
+        id_like: ['ubuntu'],
+      });
+    });
+
+    it('should parse multiple "id_like"', () => {
+      const example = `NAME="Amazon Linux"
+VERSION="2"
+ID="amzn"
+ID_LIKE="centos rhel fedora"
+VERSION_ID="2"
+PRETTY_NAME="Amazon Linux 2"
+ANSI_COLOR="0;33"
+CPE_NAME="cpe:2.3:o:amazon:amazon_linux:2"
+HOME_URL="https://amazonlinux.com/"`;
+
+      expect(getos.parseOS(example)).toEqual<getos.LinuxOS>({
+        os: 'linux',
+        dist: 'amzn',
+        release: '2',
+        codename: undefined,
+        id_like: ['centos', 'rhel', 'fedora'],
       });
     });
   });

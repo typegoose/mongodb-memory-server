@@ -201,7 +201,9 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     // warn for the fallback
     console.warn(
-      `Unknown/unsupported linux "${os.dist}(${os.id_like})". Falling back to legacy MongoDB build!`
+      `Unknown/unsupported linux "${os.dist}(${os.id_like?.join(
+        ', '
+      )})". Falling back to legacy MongoDB build!`
     );
 
     return this.getLegacyVersionString();
@@ -452,5 +454,8 @@ export default MongoBinaryDownloadUrl;
  * Helper function to reduce code / regex duplication
  */
 function regexHelper(regex: RegExp, os: LinuxOS): boolean {
-  return regex.test(os.dist) || (!isNullOrUndefined(os.id_like) ? regex.test(os.id_like) : false);
+  return (
+    regex.test(os.dist) ||
+    (!isNullOrUndefined(os.id_like) ? os.id_like.filter((v) => regex.test(v)).length >= 1 : false)
+  );
 }

@@ -216,7 +216,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: 'linux',
             dist: 'ManjaroLinux',
             release: '20.2',
-            id_like: 'arch',
+            id_like: ['arch'],
           },
         });
         expect(await du.getDownloadUrl()).toBe(
@@ -236,7 +236,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: 'linux',
             dist: 'Arch',
             release: 'rolling',
-            id_like: 'arch',
+            id_like: ['arch'],
           },
         });
         expect(await du.getDownloadUrl()).toBe(
@@ -256,7 +256,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: 'linux',
             dist: 'ArchStrike',
             release: 'rolling',
-            id_like: 'arch',
+            id_like: ['arch'],
           },
         });
         expect(await du.getDownloadUrl()).toBe(
@@ -275,7 +275,7 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'elementary OS',
               release: '0.3',
-              id_like: 'ubuntu',
+              id_like: ['ubuntu'],
             },
           });
 
@@ -293,7 +293,7 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'elementary OS',
               release: '5.1',
-              id_like: 'ubuntu',
+              id_like: ['ubuntu'],
             },
           });
 
@@ -314,7 +314,7 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'Linux Mint',
               release: '',
-              id_like: 'ubuntu',
+              id_like: ['ubuntu'],
             },
           });
         });
