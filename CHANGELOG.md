@@ -1,3 +1,10 @@
+### [7.3.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.4...v7.3.5) (2021-08-07)
+
+
+### Fixes
+
+* **getos:** fix OSRegex "id" & "id_like" including ending quotes ([8609c49](https://github.com/nodkz/mongodb-memory-server/commit/8609c498ab54d161494e1893a4417ce299af8a94)), closes [#525](https://github.com/nodkz/mongodb-memory-server/issues/525)
+
 ### [7.3.4](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.3...v7.3.4) (2021-07-27)
 
 
