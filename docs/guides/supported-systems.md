@@ -61,6 +61,12 @@ Highest version (default to) is `18`
 Lowest supported Distribution version is `5`<br/>
 Highest version (default to) is `8`
 
+### Amazon
+
+(uses mongodb's `amazon` release)<br/>
+Lowest supported Distribution version is `1`<br/>
+Highest version (default to) is `2`
+
 ### ElementaryOS
 
 (uses mongodb's `ubuntu` release)<br/>

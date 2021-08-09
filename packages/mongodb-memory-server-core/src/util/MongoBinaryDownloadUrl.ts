@@ -171,6 +171,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   getLinuxOSVersionString(os: LinuxOS): string {
     if (regexHelper(/ubuntu/i, os)) {
       return this.getUbuntuVersionString(os);
+    } else if (regexHelper(/amzn/i, os)) {
+      return this.getAmazonVersionString(os);
     } else if (regexHelper(/suse/i, os)) {
       return this.getSuseVersionString(os);
     } else if (regexHelper(/(rhel|centos|scientific)/i, os)) {
@@ -288,6 +290,22 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       // fallback to "70", because that is what currently is supporting 3.6 to 5.0 and should work with many
       name += '70';
     }
+
+    return name;
+  }
+
+  /**
+   * Get the version string for Amazon Distro
+   * @param os LinuxOS Object
+   */
+  getAmazonVersionString(os: LinuxOS): string {
+    let name = 'amazon';
+    const release: number = parseInt(os.release, 10);
+
+    if (release >= 2 && release <= 3) {
+      name += '2';
+    }
+    // dont add anthing as fallback, because for "amazon 1", mongodb just uses "amazon"
 
     return name;
   }

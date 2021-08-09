@@ -390,6 +390,45 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
       });
+
+      // see https://github.com/nodkz/mongodb-memory-server/issues/527
+      describe('for amazon', () => {
+        it('should return a archive name for Amazon 1', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.24',
+            os: {
+              os: 'linux',
+              dist: 'amzn',
+              release: '1',
+              id_like: ['centos', 'rhel', 'fedora'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon-4.0.24.tgz'
+          );
+        });
+
+        it('should return a archive name for Amazon 2', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.24',
+            os: {
+              os: 'linux',
+              dist: 'amzn',
+              release: '2',
+              id_like: ['centos', 'rhel', 'fedora'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon2-4.0.24.tgz'
+          );
+        });
+      });
     });
 
     describe('for win32 & windows', () => {
