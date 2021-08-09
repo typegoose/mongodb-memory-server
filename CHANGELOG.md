@@ -1,3 +1,10 @@
+### [7.3.6](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.5...v7.3.6) (2021-08-09)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** getRhelVersionString: fallback to "70" ([55293a1](https://github.com/nodkz/mongodb-memory-server/commit/55293a102be964a93d274edfc1558635ff1d7202))
+
 ### [7.3.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.4...v7.3.5) (2021-08-07)
 
 
