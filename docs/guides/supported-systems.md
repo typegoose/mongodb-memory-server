@@ -35,7 +35,8 @@ Depends on the distribution, many common ones should just work right out of the 
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `1404`<br/>
-Highest version (default to) is `2004`
+Highest version is `2004`<br/>
+Default version is `1404`
 :::note
 Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an lower version of mongodb for an higher version of ubuntu
 :::
@@ -47,43 +48,50 @@ For Arm64 MongoDB only provides binaries for `ubuntu1604`
 
 (uses mongodb's `debian` release)<br/>
 Lowest supported Distribution version is `71`<br/>
-Highest version (default to) is `10`
+Highest version is `10`<br/>
+Default version is `10` (when in `unstable` or `testing`, otherwise none)
 
 ### Fedora
 
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `6`<br/>
-Highest version (default to) is `18`
+Highest version is `18`<br/>
+Default version is `34` (when above or equal to `34`, otherwise none)
 
 ### Rhel
 
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `5`<br/>
-Highest version (default to) is `8`
+Highest version is `8`<br/>
+Default version is `70`
 
 ### Amazon
 
 (uses mongodb's `amazon` release)<br/>
 Lowest supported Distribution version is `1`<br/>
-Highest version (default to) is `2`
+Highest version is `2`<br/>
+Default version is `1`
 
 ### ElementaryOS
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `3` (or `0.3`)<br/>
-Highest version (default to) is `6`
+Highest version is `6`<br/>
+Default version is `6`
 
 ### Linux Mint
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `17`<br/>
-Highest version (default to) is `20`
+Highest version is `20`<br/>
+Default version is `20`
 
 ### Suse
 
 (uses mongodb's `suse` release)<br/>
 Lowest supported Distribution version is `11`<br/>
-Highest version (default to) is `12`
+Highest version is `12`<br/>
+Default version is none
 
 ### Arch
 
