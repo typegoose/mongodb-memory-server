@@ -32,7 +32,7 @@
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/find-cache-dir": "^3.2.0",
+    "@types/find-cache-dir": "^3.2.1",
     "@types/mkdirp": "^1.0.1",
     "@types/mongodb": "^3.6.19",
     "@types/semver": "^7.3.6",
