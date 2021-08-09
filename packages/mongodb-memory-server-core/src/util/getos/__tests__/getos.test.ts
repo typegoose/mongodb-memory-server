@@ -15,6 +15,7 @@ describe('getos', () => {
     });
 
     it('should parse full lsb-release file', () => {
+      // output taken from @hasezoey (locally)
       const example = `DISTRIB_ID=LinuxMint
 DISTRIB_RELEASE=20.1
 DISTRIB_CODENAME=ulyssa
@@ -41,6 +42,7 @@ DISTRIB_DESCRIPTION="Linux Mint 20.1 Ulyssa"`;
     });
 
     it('should parse an full os-release file', () => {
+      // output taken from @hasezoey (locally)
       const example = `NAME="Linux Mint"
 VERSION="20.1 (Ulyssa)"
 ID=linuxmint
@@ -64,6 +66,7 @@ UBUNTU_CODENAME=focal`;
     });
 
     it('should parse an full os-release file with quotes', () => {
+      // output taken from @hasezoey (locally) but modified to test specific case
       const example = `NAME="Linux Mint"
 VERSION="20.2 (Uma)"
 ID="linuxmint"
@@ -87,6 +90,7 @@ UBUNTU_CODENAME=focal`;
     });
 
     it('should parse multiple "id_like"', () => {
+      // output taken from https://github.com/nodkz/mongodb-memory-server/issues/525#issuecomment-894279720
       const example = `NAME="Amazon Linux"
 VERSION="2"
 ID="amzn"
