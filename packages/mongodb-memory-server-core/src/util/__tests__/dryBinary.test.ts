@@ -6,6 +6,7 @@ import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
 import mkdirp from 'mkdirp';
 import { LinuxOS, OtherOS } from '../getos';
+import { NoSystemBinaryFoundError } from '../errors';
 
 tmp.setGracefulCleanup();
 
@@ -353,9 +354,8 @@ describe('DryBinary', () => {
         await binary.DryMongoBinary.locateBinary({ version: '4.0.25' });
         fail('Expected "locateBinary" to throw');
       } catch (err) {
-        expect(err.message).toEqual(
-          `Config option "SYSTEM_BINARY" was provided with value "${mockBinary}", but no binary could be found!`
-        );
+        expect(err).toBeInstanceOf(NoSystemBinaryFoundError);
+        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
         expect(binary.DryMongoBinary.binaryCache.size).toBe(0);
         expect(fspromises.access).toHaveBeenCalled();
       }

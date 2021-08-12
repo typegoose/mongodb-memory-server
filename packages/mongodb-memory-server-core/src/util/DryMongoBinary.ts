@@ -6,6 +6,7 @@ import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
 import getOS, { AnyOS, isLinuxOS } from './getos';
+import { NoSystemBinaryFoundError } from './errors';
 
 const log = debug('MongoMS:DryMongoBinary');
 
@@ -61,9 +62,7 @@ export class DryMongoBinary {
       const systemReturn = await this.getSystemPath(useOpts.systemBinary);
 
       if (isNullOrUndefined(systemReturn)) {
-        throw new Error(
-          `Config option "SYSTEM_BINARY" was provided with value "${useOpts.systemBinary}", but no binary could be found!`
-        );
+        throw new NoSystemBinaryFoundError(useOpts.systemBinary);
       }
 
       return systemReturn;

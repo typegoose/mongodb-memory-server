@@ -54,3 +54,11 @@ export class EnsureInstanceError extends Error {
     }
   }
 }
+
+export class NoSystemBinaryFoundError extends Error {
+  constructor(public binaryPath: string) {
+    super(
+      `Config option "SYSTEM_BINARY" was provided with value "${binaryPath}", but no binary could be found!`
+    );
+  }
+}
