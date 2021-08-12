@@ -17,7 +17,7 @@ import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
 import { MongoClient } from 'mongodb';
 import { lt } from 'semver';
-import { StateError } from './util/errors';
+import { EnsureInstanceError, StateError } from './util/errors';
 
 const log = debug('MongoMS:MongoMemoryServer');
 
@@ -580,7 +580,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
           return this._instanceInfo;
         }
 
-        throw new Error('MongoMemoryServer "_state" is "running" but "instanceInfo" is undefined!');
+        throw new EnsureInstanceError(true);
       case MongoMemoryServerStates.new:
       case MongoMemoryServerStates.stopped:
         break;
@@ -624,7 +624,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
     if (!this._instanceInfo) {
-      throw new Error('Ensure-Instance failed to start an instance!');
+      throw new EnsureInstanceError(false);
     }
 
     return this._instanceInfo;

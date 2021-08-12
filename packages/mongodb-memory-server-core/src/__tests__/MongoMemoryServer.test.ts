@@ -9,7 +9,7 @@ import MongoMemoryServer, {
 import MongoInstance from '../util/MongoInstance';
 import * as utils from '../util/utils';
 import * as semver from 'semver';
-import { StateError } from '../util/errors';
+import { EnsureInstanceError, StateError } from '../util/errors';
 
 tmp.setGracefulCleanup();
 jest.setTimeout(100000); // 10s
@@ -310,9 +310,13 @@ describe('MongoMemoryServer', () => {
       const mongoServer = new MongoMemoryServer();
       jest.spyOn(mongoServer, 'start').mockResolvedValue(void 0);
 
-      await expect(mongoServer.ensureInstance()).rejects.toThrow(
-        'Ensure-Instance failed to start an instance!'
-      );
+      try {
+        await mongoServer.ensureInstance();
+        fail('Expected "ensureInstance" to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(EnsureInstanceError);
+        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
+      }
 
       expect(mongoServer.start).toHaveBeenCalledTimes(1);
     });
@@ -334,11 +338,10 @@ describe('MongoMemoryServer', () => {
 
       try {
         await mongoServer.ensureInstance();
-        fail('Expected "ensureInstance" to throw');
+        fail('Expected "ensureInstance" to fail');
       } catch (err) {
-        expect(err.message).toEqual(
-          'MongoMemoryServer "_state" is "running" but "instanceInfo" is undefined!'
-        );
+        expect(err).toBeInstanceOf(EnsureInstanceError);
+        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
       }
     });
 

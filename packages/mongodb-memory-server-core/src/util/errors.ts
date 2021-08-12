@@ -41,3 +41,16 @@ export class WaitForPrimaryTimeoutError extends Error {
     super(`Timed out after ${timeout}ms while waiting for a Primary`);
   }
 }
+
+export class EnsureInstanceError extends Error {
+  constructor(public isRunning: boolean) {
+    super();
+    const baseMesasge = '"ensureInstance" failed, because';
+
+    if (isRunning) {
+      this.message = `${baseMesasge} state was "running" but "instanceInfo" was undefined!`;
+    } else {
+      this.message = `${baseMesasge} "instanceInfo" was undefined after running "start"`;
+    }
+  }
+}
