@@ -123,9 +123,16 @@ export function envToBool(env: string = ''): boolean {
 }
 
 // enable debug if "MONGOMS_DEBUG" is true
-if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG))) {
+if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
   debug.enable('MongoMS:*');
+  log('Debug Mode Enabled, through Environment Variable');
 }
 
-// run this always after debug is enabled
+// run this after env debug enable to be able to debug this function too
 findPackageJson();
+
+// enable debug if "config.mongodbMemoryServer.debug" is true
+if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
+  debug.enable('MongoMS:*');
+  log('Debug Mode Enabled, through package.json');
+}
