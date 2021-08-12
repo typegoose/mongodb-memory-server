@@ -14,10 +14,10 @@ const LSBRegex = {
 
 /** Collection of Regexes for "/etc/os-release" parsing */
 const OSRegex = {
-  name: /^id\s*=\s*"?(.*)"?$/im,
+  name: /^id\s*=\s*"?(\w*)"?$/im,
   codename: /^version_codename\s*=\s*(.*)$/im,
   release: /^version_id\s*=\s*"?(\d*(?:\.\d*)?)"?$/im,
-  id_like: /^id_like\s*=\s*"?(.*)"?$/im,
+  id_like: /^id_like\s*=\s*"?(\w*)"?$/im,
 };
 
 export interface OtherOS {

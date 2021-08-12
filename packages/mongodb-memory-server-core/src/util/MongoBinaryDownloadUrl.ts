@@ -264,6 +264,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * Get the version string for Red Hat Enterprise Linux
    * @param os LinuxOS Object
    */
+  // TODO: add tests for RHEL
   getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const { release } = os;
@@ -278,6 +279,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       } else if (/^5/.test(release)) {
         name += '55';
       }
+    }
+    // fallback
+    if (name === 'rhel') {
+      log('getRhelVersionString: falling back to "70"');
+      // fallback to "70", because that is what currently is supporting 3.6 to 5.0 and should work with many
+      name += '70';
     }
 
     return name;

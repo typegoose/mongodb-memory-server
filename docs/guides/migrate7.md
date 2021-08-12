@@ -11,7 +11,7 @@ This Guide is written for migration from version `6.9.6` to `7.0.0`, for version
 
 ## Requirement Changes
 
-If using NodeJS below 12.22, package `rimraf` needs to be installed (when using cleanup with `force`)
+- Nodejs `10` & `11` are now unsupported, lowest supported version is now `12.22`
 
 ## Breaking Changes
 
