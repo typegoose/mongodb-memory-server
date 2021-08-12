@@ -313,12 +313,12 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     }
 
     if (!isNullOrUndefined(this.mongodProcess)) {
-      // try to run "replSetStepDown" before running "killProcess" (gracefull "SIGINT")
-      // running "&& this.isInstancePrimary" otherwise "replSetStepDown" will fail with "MongoError: not primary so can't step down"
-      if (this.isReplSet && this.isInstancePrimary) {
+      // try to run "shutdown" before running "killProcess" (gracefull "SIGINT")
+      // using this, otherwise on windows nodejs will handle "SIGINT" & "SIGTERM" & "SIGKILL" the same (instant exit)
+      if (this.isReplSet) {
         let con: MongoClient | undefined;
         try {
-          this.debug('stop: trying replSetStepDown');
+          this.debug('stop: trying shutdownServer');
           const port = this.instanceOpts.port;
           const ip = this.instanceOpts.ip;
           assertion(
@@ -336,7 +336,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           });
 
           const admin = con.db('admin'); // just to ensure it is actually the "admin" database
-          await admin.command({ replSetStepDown: 1, force: true });
+          // "timeoutSecs" is set to "1" otherwise it will take at least "10" seconds to stop (very long tests)
+          await admin.command({ shutdown: 1, force: true, timeoutSecs: 1 });
         } catch (err) {
           // Quote from MongoDB Documentation (https://docs.mongodb.com/manual/reference/command/replSetStepDown/#client-connections):
           // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.
