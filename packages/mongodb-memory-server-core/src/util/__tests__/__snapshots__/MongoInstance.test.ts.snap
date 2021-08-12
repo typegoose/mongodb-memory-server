@@ -1,3 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MongodbInstance "_launchMongod" should throw an error if "mongodProcess.pid" is undefined 1`] = `"{\\"binary\\":\\"/projects/nodejs/mongodb-memory-server/packages/mongodb-memory-server-core/thisShouldNotExist\\"}"`;
+exports[`MongodbInstance "_launchMongod" should throw an error if "mongodProcess.pid" is undefined 1`] = `"{\\"binary\\":\\"/tmp/thisShouldNotExist\\"}"`;

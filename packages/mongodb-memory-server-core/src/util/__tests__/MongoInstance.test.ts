@@ -217,7 +217,7 @@ describe('MongodbInstance', () => {
 
   it('"_launchMongod" should throw an error if "mongodProcess.pid" is undefined', () => {
     const mongod = new MongodbInstance({ instance: { port: 0, dbPath: '' } }); // dummy values - they shouldnt matter
-    const mockBinary = 'thisShouldNotExist';
+    const mockBinary = '/tmp/thisShouldNotExist';
 
     try {
       mongod._launchMongod(mockBinary);
