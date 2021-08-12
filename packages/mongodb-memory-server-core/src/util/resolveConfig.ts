@@ -114,7 +114,7 @@ export function envName(variableName: ResolveConfigVariables): string {
  */
 export function envToBool(env: string = ''): boolean {
   if (typeof env !== 'string') {
-    log('envToBool: input was not an string!');
+    log('envToBool: input was not a string!');
 
     return false;
   }

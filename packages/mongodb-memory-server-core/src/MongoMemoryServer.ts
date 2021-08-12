@@ -48,12 +48,12 @@ export interface AutomaticAuth {
    */
   extraUsers?: CreateUser[];
   /**
-   * mongodb-memory-server automatically creates an root user (with "root" role)
+   * mongodb-memory-server automatically creates a root user (with "root" role)
    * @default 'mongodb-memory-server-root'
    */
   customRootName?: string;
   /**
-   * mongodb-memory-server automatically creates an root user with this password
+   * mongodb-memory-server automatically creates a root user with this password
    * @default 'rootuser'
    */
   customRootPwd?: string;

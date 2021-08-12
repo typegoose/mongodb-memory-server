@@ -528,7 +528,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         await adminDb.command({ replSetInitiate: rsConfig });
 
         if (typeof this._replSetOpts.auth === 'object') {
-          log('_initReplSet: "this._replSetOpts.auth" is an object');
+          log('_initReplSet: "this._replSetOpts.auth" is a object');
 
           await this._waitForPrimary();
 
@@ -538,7 +538,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           assertion(!isNullOrUndefined(primary), new Error('No Primary found'));
           assertion(
             !isNullOrUndefined(primary.instanceInfo),
-            new Error('Primary dosnt have an "instanceInfo" defined')
+            new Error('Primary dosnt have "instanceInfo" defined')
           );
 
           await primary.createAuth(primary.instanceInfo);
@@ -609,15 +609,15 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   }
 
   /**
-   * Wait until the replSet has elected an Primary
+   * Wait until the replSet has elected a Primary
    * @param timeout Timeout to not run infinitly
    * @throws if timeout is reached
    */
   protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
-    log('_waitForPrimary: Waiting for an Primary');
+    log('_waitForPrimary: Waiting for a Primary');
     let timeoutId: NodeJS.Timeout | undefined;
 
-    // "race" because not all servers will be an primary
+    // "race" because not all servers will be a primary
     await Promise.race([
       ...this.servers.map(
         (server) =>
@@ -638,7 +638,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       ),
       new Promise((_res, rej) => {
         timeoutId = setTimeout(() => {
-          rej(new Error(`Timed out after ${timeout}ms while waiting for an Primary`));
+          rej(new Error(`Timed out after ${timeout}ms while waiting for a Primary`));
         }, timeout);
       }),
     ]);

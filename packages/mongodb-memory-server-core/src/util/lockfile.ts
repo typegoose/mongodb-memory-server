@@ -123,7 +123,7 @@ export class LockFile {
         return LockFileStatus.lockedSelf;
       }
 
-      log(`checkLock: Lock File Aready exists, for an different process: "${readout}"`);
+      log(`checkLock: Lock File Aready exists, for a different process: "${readout}"`);
 
       return utils.isAlive(readout) ? LockFileStatus.lockedDifferent : LockFileStatus.available;
     } catch (err) {

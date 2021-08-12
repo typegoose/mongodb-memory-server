@@ -426,7 +426,7 @@ describe('MongoMemoryReplSet', () => {
       await replSet._waitForPrimary(1); // 1ms to be fast (0 and 1 are equal for "setTimeout" in js)
       fail('Expected "_waitForPrimary" to throw');
     } catch (err) {
-      expect(err.message).toEqual('Timed out after 1ms while waiting for an Primary');
+      expect(err.message).toEqual('Timed out after 1ms while waiting for a Primary');
     }
   });
 

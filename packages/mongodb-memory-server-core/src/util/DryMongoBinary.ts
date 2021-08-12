@@ -80,7 +80,7 @@ export class DryMongoBinary {
     const returnValue = await this.generateDownloadPath(useOpts);
 
     if (!returnValue[0]) {
-      log('locateBinary: could not find an existing binary');
+      log('locateBinary: could not find a existing binary');
 
       return undefined;
     }
