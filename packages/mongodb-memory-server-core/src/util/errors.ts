@@ -18,6 +18,16 @@ export class UnknownLockfileStatusError extends Error {
   }
 }
 
+export class UnableToUnlockLockfileError extends Error {
+  constructor(public thisInstance: boolean, public file: string) {
+    super(
+      `Cannot unlock file "${file}", because it is not locked by this ${
+        thisInstance ? 'instance' : 'process'
+      }`
+    );
+  }
+}
+
 export class UnknownPlatformError extends Error {
   constructor(public platform: string) {
     super(`Unknown Platform: "${platform}"`);

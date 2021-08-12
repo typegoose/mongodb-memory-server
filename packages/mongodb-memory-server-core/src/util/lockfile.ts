@@ -6,7 +6,7 @@ import mkdirp from 'mkdirp';
 import { promises as fspromises } from 'fs';
 import { Mutex } from 'async-mutex';
 import { v4 as uuidv4 } from 'uuid';
-import { UnknownLockfileStatusError } from './errors';
+import { UnableToUnlockLockfileError, UnknownLockfileStatusError } from './errors';
 
 const log = debug('MongoMS:LockFile');
 
@@ -270,13 +270,9 @@ export class LockFile {
 
         return;
       case LockFileStatus.lockedSelf:
-        throw new Error(
-          `Cannot unlock file "${this.file}", because it is not locked by this instance!`
-        );
+        throw new UnableToUnlockLockfileError(true, this.file);
       default:
-        throw new Error(
-          `Cannot unlock Lock File "${this.file}" because it is not locked by this process!`
-        );
+        throw new UnableToUnlockLockfileError(false, this.file);
     }
   }
 
