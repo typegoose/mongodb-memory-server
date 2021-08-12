@@ -6,7 +6,7 @@ import mkdirp from 'mkdirp';
 import { promises as fspromises } from 'fs';
 import { Mutex } from 'async-mutex';
 import { v4 as uuidv4 } from 'uuid';
-import { UnknownLockfileStatus } from './errors';
+import { UnknownLockfileStatusError } from './errors';
 
 const log = debug('MongoMS:LockFile');
 
@@ -82,7 +82,7 @@ export class LockFile {
       case LockFileStatus.available:
         return this.createLock(useFile);
       default:
-        throw new UnknownLockfileStatus(status);
+        throw new UnknownLockfileStatusError(status);
     }
   }
 
@@ -187,7 +187,7 @@ export class LockFile {
       case LockFileStatus.available:
         return this.createLock(file);
       default:
-        throw new UnknownLockfileStatus(lockStatus);
+        throw new UnknownLockfileStatusError(lockStatus);
     }
   }
 

@@ -3,7 +3,7 @@ import * as tmp from 'tmp';
 import * as path from 'path';
 import { pathExists } from '../utils';
 import { promises as fspromises } from 'fs';
-import { UnknownLockfileStatus } from '../errors';
+import { UnknownLockfileStatusError } from '../errors';
 
 let tmpDir: tmp.DirResult;
 beforeAll(() => {
@@ -105,7 +105,7 @@ describe('LockFile', () => {
         await lockFile.LockFile.lock('/hello');
         fail('Expected "lock" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(UnknownLockfileStatus);
+        expect(err).toBeInstanceOf(UnknownLockfileStatusError);
         expect(err.message).toMatchSnapshot();
       }
     });
@@ -135,7 +135,7 @@ describe('LockFile', () => {
         await lockFile.LockFile.waitForLock('/hello');
         fail('Expected "waitForLock" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(UnknownLockfileStatus);
+        expect(err).toBeInstanceOf(UnknownLockfileStatusError);
         expect(err.message).toMatchSnapshot();
       }
     });
