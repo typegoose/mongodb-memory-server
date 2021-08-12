@@ -24,7 +24,7 @@ export class UnknownPlatformError extends Error {
   }
 }
 
-export class UnknownArchitecture extends Error {
+export class UnknownArchitectureError extends Error {
   constructor(public arch: string, public platform?: string) {
     super();
 

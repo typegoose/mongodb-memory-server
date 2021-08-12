@@ -5,7 +5,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
 import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 import { URL } from 'url';
-import { UnknownArchitecture, UnknownPlatformError } from './errors';
+import { UnknownArchitectureError, UnknownPlatformError } from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -462,13 +462,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           return 'i386';
         }
 
-        throw new UnknownArchitecture(arch, mongoPlatform);
+        throw new UnknownArchitectureError(arch, mongoPlatform);
       case 'x64':
         return 'x86_64';
       case 'arm64':
         return 'arm64';
       default:
-        throw new UnknownArchitecture(arch);
+        throw new UnknownArchitectureError(arch);
     }
   }
 }

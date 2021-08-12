@@ -1,4 +1,4 @@
-import { UnknownPlatformError, UnknownArchitecture } from '../errors';
+import { UnknownPlatformError, UnknownArchitectureError } from '../errors';
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
@@ -822,7 +822,7 @@ describe('MongoBinaryDownloadUrl', () => {
         MongoBinaryDownloadUrl.translateArch('ia32', 'darwin');
         fail('Expected "translateArch" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(UnknownArchitecture);
+        expect(err).toBeInstanceOf(UnknownArchitectureError);
         expect(err.message).toMatchSnapshot();
       }
     });
@@ -832,7 +832,7 @@ describe('MongoBinaryDownloadUrl', () => {
         MongoBinaryDownloadUrl.translateArch('risc', 'linux');
         fail('Expected "translateArch" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(UnknownArchitecture);
+        expect(err).toBeInstanceOf(UnknownArchitectureError);
         expect(err.message).toMatchSnapshot();
       }
     });
