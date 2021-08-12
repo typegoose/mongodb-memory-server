@@ -307,7 +307,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     this.debug('stop');
 
     if (!this.mongodProcess && !this.killerProcess) {
-      log('stop: nothing to shutdown, returning');
+      this.debug('stop: nothing to shutdown, returning');
 
       return false;
     }
@@ -318,7 +318,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       if (this.isReplSet && this.isInstancePrimary) {
         let con: MongoClient | undefined;
         try {
-          log('stop: trying replSetStepDown');
+          this.debug('stop: trying replSetStepDown');
           const port = this.instanceOpts.port;
           const ip = this.instanceOpts.ip;
           assertion(
