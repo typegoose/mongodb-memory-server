@@ -72,7 +72,7 @@ export function assertion(cond: unknown, error?: Error): asserts cond {
 export async function killProcess(
   childprocess: ChildProcess,
   name: string,
-  mongodPort: number | undefined
+  mongodPort?: number
 ): Promise<void> {
   function ilog(msg: string) {
     log(`Mongo[${mongodPort || 'unknown'}] killProcess: ${msg}`);

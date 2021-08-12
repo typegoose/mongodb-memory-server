@@ -443,7 +443,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    * @param code The Exit code to handle
    * @fires MongoInstance#instanceClosed
    */
-  closeHandler(code: number): void {
+  closeHandler(code: number, signal: string): void {
     // check if the platform is windows, if yes check if the code is not "12" or "0" otherwise just check code is not "0"
     // because for mongodb any event on windows (like SIGINT / SIGTERM) will result in an code 12
     // https://docs.mongodb.com/manual/reference/exit-codes/#12
@@ -451,8 +451,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       this.debug('closeHandler: Mongod instance closed with an non-0 (or non 12 on windows) code!');
     }
 
-    this.debug(`closeHandler: ${code}`);
-    this.emit(MongoInstanceEvents.instanceClosed, code);
+    this.debug(`closeHandler: "${code}" "${signal}"`);
+    this.emit(MongoInstanceEvents.instanceClosed, code, signal);
   }
 
   /**
