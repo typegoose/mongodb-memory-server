@@ -35,3 +35,9 @@ export class UnknownArchitecture extends Error {
     }
   }
 }
+
+export class WaitForPrimaryTimeoutError extends Error {
+  constructor(public timeout: number) {
+    super(`Timed out after ${timeout}ms while waiting for a Primary`);
+  }
+}

@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`MongoMemoryReplSet "_waitForPrimary" should throw an error if timeout is reached 1`] = `"{\\"timeout\\":1}"`;
+
 exports[`MongoMemoryReplSet getters & setters state errors setter of "binaryOpts" should throw an error if state is not "stopped" 1`] = `
 "Incorrect State for operation: \\"init\\", allowed States: \\"[stopped]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:

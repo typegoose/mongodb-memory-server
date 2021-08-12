@@ -20,7 +20,7 @@ import {
   StorageEngine,
 } from './util/MongoInstance';
 import { SpawnOptions } from 'child_process';
-import { StateError } from './util/errors';
+import { StateError, WaitForPrimaryTimeoutError } from './util/errors';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
 
@@ -638,7 +638,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       ),
       new Promise((_res, rej) => {
         timeoutId = setTimeout(() => {
-          rej(new Error(`Timed out after ${timeout}ms while waiting for a Primary`));
+          rej(new WaitForPrimaryTimeoutError(timeout));
         }, timeout);
       }),
     ]);

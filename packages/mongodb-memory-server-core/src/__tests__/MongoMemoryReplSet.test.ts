@@ -7,7 +7,7 @@ import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 import * as utils from '../util/utils';
 import { MongoMemoryInstanceOpts } from '../util/MongoInstance';
-import { StateError } from '../util/errors';
+import { StateError, WaitForPrimaryTimeoutError } from '../util/errors';
 
 jest.setTimeout(100000); // 10s
 
@@ -426,7 +426,8 @@ describe('MongoMemoryReplSet', () => {
       await replSet._waitForPrimary(1); // 1ms to be fast (0 and 1 are equal for "setTimeout" in js)
       fail('Expected "_waitForPrimary" to throw');
     } catch (err) {
-      expect(err.message).toEqual('Timed out after 1ms while waiting for a Primary');
+      expect(err).toBeInstanceOf(WaitForPrimaryTimeoutError);
+      expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
     }
   });
 
