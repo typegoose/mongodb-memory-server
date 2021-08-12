@@ -72,3 +72,9 @@ export class NoSystemBinaryFoundError extends Error {
     );
   }
 }
+
+export class Md5CheckFailedError extends Error {
+  constructor(public binarymd5: string, public checkfilemd5: string) {
+    super(`MD5 check failed! Binary MD5 is "${binarymd5}", Checkfile MD5 is "${checkfilemd5}"`);
+  }
+}
