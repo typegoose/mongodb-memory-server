@@ -67,11 +67,20 @@ export function assertion(cond: unknown, error?: Error): asserts cond {
  * Kill an ChildProcess
  * @param childprocess The Process to kill
  * @param name the name used in the logs
+ * @param mongodPort the port for the mongod process (for easier logging)
  */
-export async function killProcess(childprocess: ChildProcess, name: string): Promise<void> {
+export async function killProcess(
+  childprocess: ChildProcess,
+  name: string,
+  mongodPort: number | undefined
+): Promise<void> {
+  function ilog(msg: string) {
+    log(`Mongo[${mongodPort || 'unknown'}] killProcess: ${msg}`);
+  }
+
   // check if the childProcess (via PID) is still alive (found thanks to https://github.com/nodkz/mongodb-memory-server/issues/411)
   if (!isAlive(childprocess.pid)) {
-    log("killProcess: given childProcess's PID was not alive anymore");
+    ilog("killProcess: given childProcess's PID was not alive anymore");
 
     return;
   }
@@ -82,7 +91,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
   const timeoutTime = 1000 * 10;
   await new Promise<void>((res, rej) => {
     let timeout = setTimeout(() => {
-      log('killProcess: timeout triggered, trying SIGKILL');
+      ilog('killProcess: timeout triggered, trying SIGKILL');
 
       if (!debug.enabled('MongoMS:utils')) {
         console.warn(
@@ -93,16 +102,16 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
 
       childprocess.kill('SIGKILL');
       timeout = setTimeout(() => {
-        log('killProcess: timeout triggered again, rejecting');
+        ilog('killProcess: timeout triggered again, rejecting');
         rej(new Error(`Process "${name}" didnt exit, enable debug for more information.`));
       }, timeoutTime);
     }, timeoutTime);
     childprocess.once(`exit`, (code, signal) => {
-      log(`killProcess: ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
+      ilog(`killProcess: ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
       clearTimeout(timeout);
       res();
     });
-    log(`killProcess: ${name}: sending "SIGINT"`);
+    ilog(`killProcess: ${name}: sending "SIGINT"`);
     childprocess.kill('SIGINT');
   });
 }

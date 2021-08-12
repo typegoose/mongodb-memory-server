@@ -358,13 +358,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         }
       }
 
-      await killProcess(this.mongodProcess, 'mongodProcess');
+      await killProcess(this.mongodProcess, 'mongodProcess', this.instanceOpts.port);
       this.mongodProcess = undefined; // reset reference to the childProcess for "mongod"
     } else {
       this.debug('stop: mongodProcess: nothing to shutdown, skipping');
     }
     if (!isNullOrUndefined(this.killerProcess)) {
-      await killProcess(this.killerProcess, 'killerProcess');
+      await killProcess(this.killerProcess, 'killerProcess', this.instanceOpts.port);
       this.killerProcess = undefined; // reset reference to the childProcess for "mongo_killer"
     } else {
       this.debug('stop: killerProcess: nothing to shutdown, skipping');
