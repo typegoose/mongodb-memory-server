@@ -1,3 +1,10 @@
+## [7.4.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.3...v7.4.0-beta.4) (2021-08-12)
+
+
+### Fixes
+
+* **resolveConfig:** enable debug mode when defined through package config ([20b121f](https://github.com/nodkz/mongodb-memory-server/commit/20b121f6e7d6ba3b65193dad0581c8669c869b7d))
+
 ## [7.4.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.2...v7.4.0-beta.3) (2021-08-12)
 
 
