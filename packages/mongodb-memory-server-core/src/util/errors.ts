@@ -18,7 +18,7 @@ export class UnknownLockfileStatusError extends Error {
   }
 }
 
-export class UnknownPlatform extends Error {
+export class UnknownPlatformError extends Error {
   constructor(public platform: string) {
     super(`Unknown Platform: "${platform}"`);
   }
