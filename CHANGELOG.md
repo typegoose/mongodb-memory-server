@@ -1,3 +1,31 @@
+## [7.4.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.2...v7.4.0-beta.3) (2021-08-12)
+
+
+### Features
+
+* **errors:** add "EnsureInstanceError" ([e5aaebf](https://github.com/nodkz/mongodb-memory-server/commit/e5aaebf90a16f5f84fdd3497c48c30e0b8687d94))
+* **errors:** add "Md5CheckFailedError" ([6ca70f0](https://github.com/nodkz/mongodb-memory-server/commit/6ca70f0a83ceee14818436a6295a020b0e44be6a))
+* **errors:** add "NoSystemBinaryFoundError" ([e1206c7](https://github.com/nodkz/mongodb-memory-server/commit/e1206c7b14097883763cc5110542fd7f5c390203))
+* **errors:** add "StartBinaryFailedError" ([83626e0](https://github.com/nodkz/mongodb-memory-server/commit/83626e00d843eb81be5dc935eeac5c5381a2c78c))
+* **errors:** add "UnableToUnlockLockfileError" ([c1d1426](https://github.com/nodkz/mongodb-memory-server/commit/c1d1426fcfb678236ea45f6d89a1a512bf3f2bb2))
+* **errors:** add error "WaitForPrimaryTimeoutError" ([db1a3aa](https://github.com/nodkz/mongodb-memory-server/commit/db1a3aab866966ce66f51d5885ff531f4f4a60f7))
+* **errors:** rename "UnknownArchitecture" to "UnknownArchitectureError" ([c546ab0](https://github.com/nodkz/mongodb-memory-server/commit/c546ab05427482e703ddbfa6bc481c450244aafd))
+* **errors:** rename "UnknownLockfileStatus" to "UnknownLockfileStatusError" ([f0fb208](https://github.com/nodkz/mongodb-memory-server/commit/f0fb208be8cce7f35dc9a962bd367754065b0d13))
+* **errors:** rename "UnknownPlatform" to "UnknownPlatformError" ([2800029](https://github.com/nodkz/mongodb-memory-server/commit/28000295fe5f3e530b6786ca27ac36d11a446e06))
+
+
+### Style
+
+* fix some typos "an" -> "a" ([ad0a930](https://github.com/nodkz/mongodb-memory-server/commit/ad0a930b052fd2267612ae65d3568895b64d497c))
+
+
+### Fixes
+
+* **MongoInstance:** closeHandler: also log the exit signal ([a9f42ea](https://github.com/nodkz/mongodb-memory-server/commit/a9f42ea541f352cfb38f80e1523cf8497c94e47a))
+* **MongoInstance:** stop: use "this.debug" over "log" ([00740ac](https://github.com/nodkz/mongodb-memory-server/commit/00740ac5764edcb68ce1a775d161e819978d13f6))
+* **MongoInstance:** use "shutdown" on all replset members instead of "replSetStepDown" on primary ([40af0a0](https://github.com/nodkz/mongodb-memory-server/commit/40af0a06d5b185304b593db8f1555613bc1c26b8))
+* **utils:** killProcess: use better logging ([aa75e42](https://github.com/nodkz/mongodb-memory-server/commit/aa75e420008f929ef1b010a655e9ef941e3fd894))
+
 ## [7.4.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.1...v7.4.0-beta.2) (2021-08-09)
 
 
