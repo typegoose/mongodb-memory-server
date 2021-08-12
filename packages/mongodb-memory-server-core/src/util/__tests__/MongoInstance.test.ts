@@ -4,6 +4,7 @@ import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
 import getPort from 'get-port';
+import { StartBinaryFailedError } from '../errors';
 
 jest.setTimeout(100000); // 10s
 tmp.setGracefulCleanup();
@@ -216,12 +217,14 @@ describe('MongodbInstance', () => {
 
   it('"_launchMongod" should throw an error if "mongodProcess.pid" is undefined', () => {
     const mongod = new MongodbInstance({ instance: { port: 0, dbPath: '' } }); // dummy values - they shouldnt matter
+    const mockBinary = 'thisShouldNotExist';
 
     try {
-      mongod._launchMongod('thisShouldNotExist');
+      mongod._launchMongod(mockBinary);
       fail('Expected "_launchMongod" to throw');
     } catch (err) {
-      expect(err.message).toEqual('Spawned Mongo Instance PID is undefined');
+      expect(err).toBeInstanceOf(StartBinaryFailedError);
+      expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
     }
   });
 

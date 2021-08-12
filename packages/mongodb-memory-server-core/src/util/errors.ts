@@ -78,3 +78,9 @@ export class Md5CheckFailedError extends Error {
     super(`MD5 check failed! Binary MD5 is "${binarymd5}", Checkfile MD5 is "${checkfilemd5}"`);
   }
 }
+
+export class StartBinaryFailedError extends Error {
+  constructor(public binary: string) {
+    super(`Starting the Binary Failed (PID is undefined)! Binary: "${binary}"`);
+  }
+}

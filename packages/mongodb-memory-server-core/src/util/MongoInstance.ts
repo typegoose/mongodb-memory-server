@@ -7,6 +7,7 @@ import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoNetworkError } from 'mongodb';
 import { promises as fspromises, constants } from 'fs';
+import { StartBinaryFailedError } from './errors';
 
 if (lt(process.version, '10.15.0')) {
   console.warn('Using NodeJS below 10.15.0');
@@ -391,7 +392,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     childProcess.on('error', this.errorHandler.bind(this));
 
     if (isNullOrUndefined(childProcess.pid)) {
-      throw new Error('Spawned Mongo Instance PID is undefined');
+      throw new StartBinaryFailedError(path.resolve(mongoBin));
     }
 
     this.emit(MongoInstanceEvents.instanceLaunched);
