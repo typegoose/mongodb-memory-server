@@ -1,7 +1,6 @@
-import { promises as fspromises, constants } from 'fs';
 import debug from 'debug';
 import { envToBool, resolveConfig, ResolveConfigVariables } from './resolveConfig';
-import { isNullOrUndefined, pathExists } from './utils';
+import { checkBinaryPermissions, isNullOrUndefined, pathExists } from './utils';
 import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
@@ -148,9 +147,10 @@ export class DryMongoBinary {
    * @return System Binary path or undefined
    */
   static async getSystemPath(systemBinary: string): Promise<string | undefined> {
+    // REFACTOR: change this function to always return "string"
     log('getSystempath');
     try {
-      await fspromises.access(systemBinary, constants.X_OK); // check if the provided path exists and has the execute bit for current user
+      await checkBinaryPermissions(systemBinary);
 
       log(`getSystemPath: found system binary path at "${systemBinary}"`);
 

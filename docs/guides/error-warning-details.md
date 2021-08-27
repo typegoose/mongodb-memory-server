@@ -67,3 +67,11 @@ This Error gets thrown when this package runs on an unsupported architecture by 
 ## AuthNotObjectError
 
 *extend documentation*
+
+## InsufficientPermissionsError
+
+*extend documentation*
+
+## BinaryNotFoundError
+
+*extend documentation*

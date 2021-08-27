@@ -1,8 +1,9 @@
 import debug from 'debug';
 import { ChildProcess } from 'child_process';
 import { AutomaticAuth } from '../MongoMemoryServer';
-import { promises as fspromises, Stats } from 'fs';
+import { promises as fspromises, Stats, constants } from 'fs';
 import { LinuxOS } from './getos';
+import { BinaryNotFoundError, InsufficientPermissionsError } from './errors';
 
 const log = debug('MongoMS:utils');
 
@@ -227,4 +228,23 @@ export abstract class ManagerBase {
 export abstract class ManagerAdvanced extends ManagerBase {
   abstract getUri(otherDB?: string | boolean): string;
   abstract cleanup(force: boolean): Promise<void>;
+}
+
+/**
+ * Check that the Binary has sufficient Permissions to be executed
+ * @param path The Path to check
+ */
+export async function checkBinaryPermissions(path: string): Promise<void> {
+  try {
+    await fspromises.access(path, constants.X_OK); // check if the provided path exists and has the execute bit for current user
+  } catch (err) {
+    if (err?.code === 'EACCES') {
+      throw new InsufficientPermissionsError(path);
+    }
+    if (err?.code === 'ENOENT') {
+      throw new BinaryNotFoundError(path);
+    }
+
+    throw err;
+  }
 }

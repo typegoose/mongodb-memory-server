@@ -65,6 +65,7 @@ export class EnsureInstanceError extends Error {
   }
 }
 
+// REFACTOR: merge this error with BinaryNotFoundError
 export class NoSystemBinaryFoundError extends Error {
   constructor(public binaryPath: string) {
     super(
@@ -100,5 +101,17 @@ export class KeyFileMissingError extends Error {
 export class AuthNotObjectError extends Error {
   constructor() {
     super('"auth" was not a object when it was expected!');
+  }
+}
+
+export class InsufficientPermissionsError extends Error {
+  constructor(public path: string) {
+    super(`File "${path}" does not have the required Permissions, required Permissions: "--x"`);
+  }
+}
+
+export class BinaryNotFoundError extends Error {
+  constructor(public path: string) {
+    super(`No Binary at path "${path}" was found! (ENOENT)`);
   }
 }

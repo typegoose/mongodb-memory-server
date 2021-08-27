@@ -1,6 +1,11 @@
 import { Stats, promises as fspromises } from 'fs';
 import { ChildProcess } from 'child_process';
 import * as utils from '../utils';
+import * as tmp from 'tmp';
+import { resolve } from 'path';
+import { BinaryNotFoundError, InsufficientPermissionsError } from '../errors';
+
+tmp.setGracefulCleanup();
 
 describe('utils', () => {
   describe('uriTemplate', () => {
@@ -131,6 +136,60 @@ describe('utils', () => {
       );
       expect(utils.getHost('mongodb://0.0.0.0:0000/')).toEqual('0.0.0.0:0000');
       expect(utils.getHost('mongodb://user:pass@localhost:0000/')).toEqual('localhost:0000');
+    });
+  });
+
+  describe('checkBinaryPermissions', () => {
+    let tmpDir: tmp.DirResult;
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      tmpDir = tmp.dirSync({ prefix: 'mongo-mem-utils-', unsafeCleanup: true });
+    });
+    afterEach(() => {
+      tmpDir.removeCallback();
+    });
+
+    it('should throw nothing', async () => {
+      jest.spyOn(fspromises, 'access');
+      const binaryPath = resolve(tmpDir.name, 'noThrow');
+
+      await fspromises.writeFile(binaryPath, '', { mode: 0o777 });
+
+      await utils.checkBinaryPermissions(binaryPath);
+
+      expect(fspromises.access).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw InsufficientPermissionsError', async () => {
+      jest.spyOn(fspromises, 'access');
+      const binaryPath = resolve(tmpDir.name, 'throwInsufficientPermissionsError');
+
+      await fspromises.writeFile(binaryPath, '', { mode: 0o600 });
+
+      try {
+        await utils.checkBinaryPermissions(binaryPath);
+        fail('Expected "utils.checkBinaryPermissions" to throw');
+      } catch (err) {
+        expect(err).toBeInstanceOf(InsufficientPermissionsError);
+        expect(err).toHaveProperty('path', binaryPath);
+      }
+
+      expect(fspromises.access).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw BinaryNotFoundError', async () => {
+      jest.spyOn(fspromises, 'access');
+      const binaryPath = resolve(tmpDir.name, 'doesNotExist');
+
+      try {
+        await utils.checkBinaryPermissions(binaryPath);
+        fail('Expected "utils.checkBinaryPermissions" to throw');
+      } catch (err) {
+        expect(err).toBeInstanceOf(BinaryNotFoundError);
+        expect(err).toHaveProperty('path', binaryPath);
+      }
+
+      expect(fspromises.access).toHaveBeenCalledTimes(1);
     });
   });
 });

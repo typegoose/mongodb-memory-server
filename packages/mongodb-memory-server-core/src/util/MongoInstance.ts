@@ -2,11 +2,17 @@ import { ChildProcess, fork, spawn, SpawnOptions } from 'child_process';
 import * as path from 'path';
 import { MongoBinary, MongoBinaryOpts } from './MongoBinary';
 import debug from 'debug';
-import { assertion, uriTemplate, isNullOrUndefined, killProcess, ManagerBase } from './utils';
+import {
+  assertion,
+  uriTemplate,
+  isNullOrUndefined,
+  killProcess,
+  ManagerBase,
+  checkBinaryPermissions,
+} from './utils';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
-import { promises as fspromises, constants } from 'fs';
 import { KeyFileMissingError, StartBinaryFailedError } from './errors';
 
 // ignore the nodejs warning for coverage
@@ -294,15 +300,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     });
 
     const mongoBin = await MongoBinary.getPath(this.binaryOpts);
-    try {
-      await fspromises.access(mongoBin, constants.X_OK);
-    } catch (err) {
-      console.error(
-        `Mongod File at "${mongoBin}" does not have sufficient permissions to be used by this process\n` +
-          'Needed Permissions: Execute (--x)\n'
-      );
-      throw err;
-    }
+    await checkBinaryPermissions(mongoBin);
     this.debug('start: Starting Processes');
     this.mongodProcess = this._launchMongod(mongoBin);
     // This assertion is here because somewhere between nodejs 12 and 16 the types for "childprocess.pid" changed to include "| undefined"
