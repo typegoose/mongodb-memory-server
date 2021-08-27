@@ -19,7 +19,7 @@ When directly starting the replset, [`create`](#create) should be used
 
 ### create
 
-Typings: `static async create(opts: Partial<MongoMemoryReplSetOpts> = {}): Promise<MongoMemoryReplSet>`
+Typings: `static async create(opts?: Partial<MongoMemoryReplSetOpts>): Promise<MongoMemoryReplSet>`
 
 Create an new ReplSet and start it (while being an Promise)
 
@@ -62,6 +62,14 @@ Will Error if ReplSet is already running
 Typings: `protected async initAllServers(): Promise<void>`
 
 Used by [`start`](#start) and to restart without fully running everything again
+
+### ensureKeyFile
+
+<span class="badge badge--warning">Internal</span>
+
+Typings: `protected async ensureKeyFile(): Promise<tmp.DirResult>`
+
+Ensures and returns that [`_keyfiletmp`](#_keyfiletmp) is defined an exists and also that the keyfile is created
 
 ### stop
 
@@ -186,6 +194,14 @@ Will Throw an Error if `state` is not `stopped`
 Typings: `protected _replSetOpts!: Required<ReplSetOpts>`
 
 Stores the options used for the ReplSet Initiation
+
+### _keyfiletmp
+
+<span class="badge badge--warning">Internal</span>
+
+Typings: `protected _keyfiletmp?: tmp.DirResult`
+
+Stores the `tmpDir` for the keyfile location
 
 ### state
 
