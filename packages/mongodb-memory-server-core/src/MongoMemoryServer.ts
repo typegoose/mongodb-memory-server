@@ -62,6 +62,12 @@ export interface AutomaticAuth {
    * @default false "creatAuth" is normally only run when the given "dbPath" is empty (no files)
    */
   force?: boolean;
+  /**
+   * Custom Keyfile content to use (only has an effect in replset's)
+   * Note: This is not secure, this is for test environments only!
+   * @default "0123456789"
+   */
+  keyfileContent?: string;
 }
 
 /**
@@ -694,6 +700,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
         as: 'ROOTUSER',
       },
       roles: ['root'],
+      // "writeConcern" is needced, otherwise replset servers might fail with "auth failed: such user does not exist"
+      writeConcern: {
+        w: 'majority',
+      },
     } as CreateUserMongoDB);
 
     if (this.auth.extraUsers.length > 0) {

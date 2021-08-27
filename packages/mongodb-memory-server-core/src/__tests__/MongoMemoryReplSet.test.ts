@@ -249,6 +249,12 @@ describe('single server replset', () => {
     expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(1);
     expect(console.warn).toHaveBeenCalledTimes(1);
 
+    {
+      expect(replSet.servers[0].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(false);
+      expect(replSet.servers[1].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(false);
+      expect(replSet.servers[2].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(false);
+    }
+
     await con.close();
     await replSet.stop();
   });
@@ -285,6 +291,12 @@ describe('single server replset', () => {
     expect(users.users[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
     // @ts-expect-error because "initAllServers" is protected
     expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(2);
+
+    {
+      expect(replSet.servers[0].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
+      expect(replSet.servers[1].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
+      expect(replSet.servers[2].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
+    }
 
     await con.close();
     await replSet.stop();

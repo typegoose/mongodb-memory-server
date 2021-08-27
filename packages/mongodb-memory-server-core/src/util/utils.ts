@@ -154,6 +154,7 @@ export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
     customRootName: 'mongodb-memory-server-root',
     customRootPwd: 'rootuser',
     extraUsers: [],
+    keyfileContent: '0123456789',
     ...opts,
   };
 }

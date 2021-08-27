@@ -62,9 +62,9 @@ describe('MongodbInstance', () => {
         '27555',
         '--dbpath',
         tmpDir.name,
-        '--noauth',
         '--replSet',
         'testset',
+        '--noauth',
       ]);
     });
 
@@ -125,6 +125,31 @@ describe('MongodbInstance', () => {
       } catch (err) {
         expect(err.message).toEqual('"instanceOpts.dbPath" is required to be set!');
       }
+    });
+
+    it('should add "keyfile" argument when auth is enabled and is a replset', () => {
+      const keyfileLocation = '/dev/null';
+      const replsetName = 'hello';
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+          dbPath: tmpDir.name,
+          auth: true,
+          replSet: replsetName,
+          keyfileLocation: keyfileLocation,
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual([
+        '--port',
+        '27555',
+        '--dbpath',
+        tmpDir.name,
+        '--replSet',
+        replsetName,
+        '--auth',
+        '--keyFile',
+        keyfileLocation,
+      ]);
     });
   });
 

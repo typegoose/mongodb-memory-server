@@ -8,6 +8,7 @@ import {
   getHost,
   isNullOrUndefined,
   ManagerAdvanced,
+  statPath,
   uriTemplate,
 } from './util/utils';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -20,9 +21,19 @@ import {
   StorageEngine,
 } from './util/MongoInstance';
 import { SpawnOptions } from 'child_process';
-import { StateError, WaitForPrimaryTimeoutError } from './util/errors';
+import {
+  AuthNotObjectError,
+  InstanceInfoError,
+  StateError,
+  WaitForPrimaryTimeoutError,
+} from './util/errors';
+import * as tmp from 'tmp';
+import { promises as fs } from 'fs';
+import { resolve } from 'path';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
+
+tmp.setGracefulCleanup();
 
 // "setImmediate" is used to ensure the functions are async, otherwise the process might evaluate the one function before other async functions (like "start")
 // and so skip to next state check or return before actually ready
@@ -142,9 +153,14 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   servers: MongoMemoryServer[] = [];
 
   // "!" is used, because the getters are used instead of the "_" values
+  /** Options for individual instances */
   protected _instanceOpts!: MongoMemoryInstanceOptsBase[];
+  /** Options for the Binary across all instances */
   protected _binaryOpts!: MongoBinaryOpts;
+  /** Options for the Replset itself and defaults for instances */
   protected _replSetOpts!: Required<ReplSetOpts>;
+  /** TMPDIR for the keyfile, when auth is used */
+  protected _keyfiletmp?: tmp.DirResult;
 
   protected _state: MongoMemoryReplSetStates = MongoMemoryReplSetStates.stopped;
   protected _ranCreateAuth: boolean = false;
@@ -363,6 +379,29 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     if (this.servers.length > 0) {
       log('initAllServers: lenght of "servers" is higher than 0, starting existing servers');
+
+      if (this._ranCreateAuth) {
+        log('initAllServers: "_ranCreateAuth" is true, changing "auth" to on');
+        const keyfilepath = resolve((await this.ensureKeyFile()).name, 'keyfile');
+        for (const server of this.servers) {
+          assertion(
+            !isNullOrUndefined(server.instanceInfo),
+            new InstanceInfoError('MongoMemoryReplSet.initAllServers')
+          );
+          assertion(typeof this._replSetOpts.auth === 'object', new AuthNotObjectError());
+          server.instanceInfo.instance.instanceOpts.auth = true;
+          server.instanceInfo.instance.instanceOpts.keyfileLocation = keyfilepath;
+          server.instanceInfo.instance.extraConnectionOptions = {
+            authSource: 'admin',
+            authMechanism: 'SCRAM-SHA-256',
+            auth: {
+              user: this._replSetOpts.auth.customRootName as string, // cast because these are existing
+              password: this._replSetOpts.auth.customRootPwd as string,
+            },
+          };
+        }
+      }
+
       await Promise.all(this.servers.map((s) => s.start(true)));
 
       return;
@@ -395,11 +434,44 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   }
 
   /**
+   * Ensure "_keyfiletmp" is defined
+   * @returns the ensured "_keyfiletmp" value
+   */
+  protected async ensureKeyFile(): Promise<tmp.DirResult> {
+    log('ensureKeyFile');
+
+    if (isNullOrUndefined(this._keyfiletmp)) {
+      this._keyfiletmp = tmp.dirSync({
+        mode: 0o766,
+        prefix: 'mongo-mem-keyfile-',
+        unsafeCleanup: true,
+      });
+    }
+
+    const keyfilepath = resolve(this._keyfiletmp.name, 'keyfile');
+
+    // if path does not exist or have no access, create it (or fail)
+    if (!(await statPath(keyfilepath))) {
+      log('ensureKeyFile: creating Keyfile');
+
+      assertion(typeof this._replSetOpts.auth === 'object', new AuthNotObjectError());
+
+      await fs.writeFile(
+        resolve(this._keyfiletmp.name, 'keyfile'),
+        this._replSetOpts.auth.keyfileContent ?? '0123456789',
+        { mode: 0o700 } // this is because otherwise mongodb errors with "permissions are too open" on unix systems
+      );
+    }
+
+    return this._keyfiletmp;
+  }
+
+  /**
    * Stop the underlying `mongod` instance(s).
    * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
    */
   async stop(runCleanup: boolean = true): Promise<boolean> {
-    log('stop' + isNullOrUndefined(process.exitCode) ? '' : ': called by process-event');
+    log(`stop: called by ${isNullOrUndefined(process.exitCode) ? 'manual' : 'process exit'}`);
 
     if (this._state === MongoMemoryReplSetStates.stopped) {
       return false;
@@ -444,6 +516,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     process.removeListener('beforeExit', this.cleanup);
 
     await Promise.all(this.servers.map((s) => s.cleanup(force)));
+
+    // cleanup the keyfile tmpdir
+    if (!isNullOrUndefined(this._keyfiletmp)) {
+      this._keyfiletmp.removeCallback();
+      this._keyfiletmp = undefined;
+    }
 
     this.servers = [];
 

@@ -5,9 +5,9 @@ import debug from 'debug';
 import { assertion, uriTemplate, isNullOrUndefined, killProcess, ManagerBase } from './utils';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
-import { MongoClient, MongoNetworkError } from 'mongodb';
+import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
 import { promises as fspromises, constants } from 'fs';
-import { StartBinaryFailedError } from './errors';
+import { KeyFileMissingError, StartBinaryFailedError } from './errors';
 
 if (lt(process.version, '10.15.0')) {
   console.warn('Using NodeJS below 10.15.0');
@@ -107,6 +107,11 @@ export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
   ip?: string;
   replSet?: string;
   storageEngine?: StorageEngine;
+  /**
+   * Location for the "--keyfile" argument
+   * Only has an effect when "auth" is enabled and is a replset
+   */
+  keyfileLocation?: string;
 }
 
 export enum MongoInstanceEvents {
@@ -151,6 +156,12 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
   instanceOpts: MongoMemoryInstanceOpts;
   readonly binaryOpts: Readonly<MongoBinaryOpts>;
   readonly spawnOpts: Readonly<SpawnOptions>;
+
+  /**
+   * Extra options to append to "mongoclient.connect"
+   * Mainly used for authentication
+   */
+  extraConnectionOptions?: MongoClientOptions;
 
   /**
    * The "mongod" Process reference
@@ -234,6 +245,10 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     result.push('--dbpath', this.instanceOpts.dbPath);
 
     // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
+    if (!!this.instanceOpts.replSet) {
+      this.isReplSet = true;
+      result.push('--replSet', this.instanceOpts.replSet);
+    }
     if (!!this.instanceOpts.storageEngine) {
       result.push('--storageEngine', this.instanceOpts.storageEngine);
     }
@@ -242,12 +257,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     }
     if (this.instanceOpts.auth) {
       result.push('--auth');
+
+      if (this.isReplSet) {
+        assertion(!isNullOrUndefined(this.instanceOpts.keyfileLocation), new KeyFileMissingError());
+        result.push('--keyFile', this.instanceOpts.keyfileLocation);
+      }
     } else {
       result.push('--noauth');
-    }
-    if (!!this.instanceOpts.replSet) {
-      this.isReplSet = true;
-      result.push('--replSet', this.instanceOpts.replSet);
     }
 
     const final = result.concat(this.instanceOpts.args ?? []);
@@ -333,6 +349,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            ...this.extraConnectionOptions,
           });
 
           const admin = con.db('admin'); // just to ensure it is actually the "admin" database

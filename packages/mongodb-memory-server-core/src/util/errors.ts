@@ -84,3 +84,21 @@ export class StartBinaryFailedError extends Error {
     super(`Starting the Binary Failed (PID is undefined)! Binary: "${binary}"`);
   }
 }
+
+export class InstanceInfoError extends Error {
+  constructor(public where: string) {
+    super(`"instanceInfo" was undefined when expected to be defined! (where: "${where}")`);
+  }
+}
+
+export class KeyFileMissingError extends Error {
+  constructor() {
+    super(`"keyfileLocation" was undefined when expected!`);
+  }
+}
+
+export class AuthNotObjectError extends Error {
+  constructor() {
+    super('"auth" was not a object when it was expected!');
+  }
+}
