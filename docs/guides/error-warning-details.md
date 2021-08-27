@@ -11,23 +11,59 @@ Details:
 This Error gets thrown if an function (or setter) is called, but the state is not what it should be.  
 (like calling start again after already being started - or changing options while running)
 
-## UnknownLockfileStatus
+## UnknownLockfileStatusError
 
 Example: `Unknown LockFile Status: "-1"`
 
 Details:  
 This Error gets thrown if an number outside the `LockFileStatus` Enum is used
 
-## UnknownPlatform
+## UnableToUnlockLockfileError
 
 Example: `Unknown Platform: "unknown"`
 
 Details:  
 This Error gets thrown when this package cannot get what platform it is running on
 
-## UnknownArchitecture
+## UnknownArchitectureError
 
 Example: `Unsupported Architecture: "risc"`
 
 Details:  
 This Error gets thrown when this package runs on an unsupported architecture by mongodb
+
+## UnknownPlatformError
+
+*extend documentation*
+
+## WaitForPrimaryTimeoutError
+
+*extend documentation*
+
+## EnsureInstanceError
+
+*extend documentation*
+
+## NoSystemBinaryFoundError
+
+*extend documentation*
+
+## Md5CheckFailedError
+
+*extend documentation*
+
+## StartBinaryFailedError
+
+*extend documentation*
+
+## InstanceInfoError
+
+*extend documentation*
+
+## KeyFileMissingError
+
+*extend documentation*
+
+## AuthNotObjectError
+
+*extend documentation*
