@@ -9,8 +9,8 @@ import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
 import { promises as fspromises, constants } from 'fs';
 import { KeyFileMissingError, StartBinaryFailedError } from './errors';
 
-if (lt(process.version, '10.15.0')) {
-  console.warn('Using NodeJS below 10.15.0');
+if (lt(process.version, '12.22.0')) {
+  console.warn('Using NodeJS below 12.22.0');
 }
 
 const log = debug('MongoMS:MongoInstance');
