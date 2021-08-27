@@ -547,9 +547,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       this.debug('stdoutHandler: emitting "instancePrimary"');
       this.emit(MongoInstanceEvents.instancePrimary);
     }
-    if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
-      // "[\d\.:]+" matches "0.0.0.0:0000" (IP:PORT)
-      const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNKNOWN';
+    if (/transition to \w+ from \w+/i.test(line)) {
+      const state = /transition to (\w+) from \w+/i.exec(line)?.[1] ?? 'UNKNOWN';
       this.emit(MongoInstanceEvents.instanceReplState, state);
 
       if (state !== 'PRIMARY') {
