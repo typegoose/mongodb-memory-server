@@ -257,7 +257,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * @throws if state is not "new" or "stopped"
    */
   async start(forceSamePort: boolean = false): Promise<void> {
-    log('start: Called .start() method');
+    this.debug('start: Called .start() method');
 
     switch (this._state) {
       case MongoMemoryServerStates.new:
@@ -301,7 +301,16 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     });
 
     this.stateChange(MongoMemoryServerStates.running);
-    log('start: Instance fully Started');
+    this.debug('start: Instance fully Started');
+  }
+
+  /**
+   * Debug-log with template applied
+   * @param msg The Message to log
+   */
+  protected debug(msg: string, ...extra: unknown[]): void {
+    const port = this._instanceInfo?.port ?? 'unknown';
+    log(`Mongo[${port}]: ${msg}`, ...extra);
   }
 
   /**
@@ -313,7 +322,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     // only log this message if an custom port was provided
     if (port != newPort && typeof port === 'number') {
-      log(`getNewPort: starting with port "${newPort}", since "${port}" was locked`);
+      this.debug(`getNewPort: starting with port "${newPort}", since "${port}" was locked`);
     }
 
     return newPort;
@@ -323,7 +332,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * Construct Instance Starting Options
    */
   protected async getStartOptions(): Promise<MongoMemoryServerGetStartOptions> {
-    log('getStartOptions');
+    this.debug('getStartOptions');
     /** Shortcut to this.opts.instance */
     const instOpts = this.opts.instance ?? {};
     /**
@@ -353,7 +362,9 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
         isNew = true; // just to ensure "isNew" is "true" because an new temporary directory got created
       } else {
-        log(`getStartOptions: Checking if "${data.dbPath}}" (no new tmpDir) already has data`);
+        this.debug(
+          `getStartOptions: Checking if "${data.dbPath}}" (no new tmpDir) already has data`
+        );
         const files = await fspromises.readdir(data.dbPath);
 
         isNew = files.length > 0; // if there already files in the directory, assume that the database is not new
@@ -390,10 +401,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * @private
    */
   async _startUpInstance(forceSamePort: boolean = false): Promise<void> {
-    log('_startUpInstance: Called MongoMemoryServer._startUpInstance() method');
+    this.debug('_startUpInstance: Called MongoMemoryServer._startUpInstance() method');
 
     if (!isNullOrUndefined(this._instanceInfo)) {
-      log('_startUpInstance: "instanceInfo" already defined, reusing instance');
+      this.debug('_startUpInstance: "instanceInfo" already defined, reusing instance');
 
       if (!forceSamePort) {
         const newPort = await this.getNewPort(this._instanceInfo.port);
@@ -407,25 +418,21 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     }
 
     const { mongodOptions, createAuth, data } = await this.getStartOptions();
-    log(
-      `_startUpInstance: Creating new MongoDB instance with options: ${JSON.stringify(
-        mongodOptions
-      )}`
-    );
+    this.debug(`_startUpInstance: Creating new MongoDB instance with options:`, mongodOptions);
 
     const instance = await MongoInstance.create(mongodOptions);
-    log('_startUpInstance: Instance Started');
+    this.debug('_startUpInstance: Instance Started');
 
     // "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
     if (!isNullOrUndefined(this.auth) && createAuth) {
-      log(`_startUpInstance: Running "createAuth" (force: "${this.auth.force}")`);
+      this.debug(`_startUpInstance: Running "createAuth" (force: "${this.auth.force}")`);
       await this.createAuth(data);
 
       if (data.storageEngine !== 'ephemeralForTest') {
-        log('_startUpInstance: Killing No-Auth instance');
+        this.debug('_startUpInstance: Killing No-Auth instance');
         await instance.stop();
 
-        log('_startUpInstance: Starting Auth Instance');
+        this.debug('_startUpInstance: Starting Auth Instance');
         instance.instanceOpts.auth = true;
         await instance.start();
       } else {
@@ -437,7 +444,9 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     } else {
       // extra "if" to log when "disable" is set to "true"
       if (this.opts.auth?.disable) {
-        log('_startUpInstance: AutomaticAuth.disable is set to "true" skipping "createAuth"');
+        this.debug(
+          '_startUpInstance: AutomaticAuth.disable is set to "true" skipping "createAuth"'
+        );
       }
     }
 
@@ -453,17 +462,17 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
    */
   async stop(runCleanup: boolean = true): Promise<boolean> {
-    log('stop: Called .stop() method');
+    this.debug('stop: Called .stop() method');
 
     // just return "true" if there was never an instance
     if (isNullOrUndefined(this._instanceInfo)) {
-      log('stop: "instanceInfo" is not defined (never ran?)');
+      this.debug('stop: "instanceInfo" is not defined (never ran?)');
 
       return false;
     }
 
     if (this._state === MongoMemoryServerStates.stopped) {
-      log(`stop: state is "stopped", so already stopped`);
+      this.debug(`stop: state is "stopped", so already stopped`);
 
       return false;
     }
@@ -474,7 +483,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       new Error('"instanceInfo.instance" is undefined!')
     );
 
-    log(
+    this.debug(
       `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.mongodProcess?.pid}` // "undefined" would say more than ""
     );
     await this._instanceInfo.instance.stop();
@@ -511,7 +520,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     process.removeListener('beforeExit', this.cleanup);
 
     if (isNullOrUndefined(this._instanceInfo)) {
-      log('cleanup: "instanceInfo" is undefined');
+      this.debug('cleanup: "instanceInfo" is undefined');
 
       return;
     }
@@ -521,12 +530,12 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       new Error('Cannot cleanup because "instance.mongodProcess" is still defined')
     );
 
-    log(`cleanup: force ${force}`);
+    this.debug(`cleanup: force ${force}`);
 
     const tmpDir = this._instanceInfo.tmpDir;
 
     if (!isNullOrUndefined(tmpDir)) {
-      log(`cleanup: removing tmpDir at ${tmpDir.name}`);
+      this.debug(`cleanup: removing tmpDir at ${tmpDir.name}`);
       tmpDir.removeCallback();
     }
 
@@ -535,7 +544,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       const res = await statPath(dbPath);
 
       if (isNullOrUndefined(res)) {
-        log(`cleanup: force is true, but path "${dbPath}" dosnt exist anymore`);
+        this.debug(`cleanup: force is true, but path "${dbPath}" dosnt exist anymore`);
       } else {
         assertion(res.isDirectory(), new Error('Defined dbPath is not an directory'));
 
@@ -572,7 +581,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * -> throws if instance cannot be started
    */
   async ensureInstance(): Promise<MongoInstanceData> {
-    log('ensureInstance: Called .ensureInstance() method');
+    this.debug('ensureInstance: Called .ensureInstance() method');
 
     switch (this._state) {
       case MongoMemoryServerStates.running:
@@ -618,9 +627,9 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
         );
     }
 
-    log('ensureInstance: no running instance, calling "start()" command');
+    this.debug('ensureInstance: no running instance, calling "start()" command');
     await this.start();
-    log('ensureInstance: "start()" command was succesfully resolved');
+    this.debug('ensureInstance: "start()" command was succesfully resolved');
 
     // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
     if (!this._instanceInfo) {
@@ -636,7 +645,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * @return an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
   getUri(otherDb?: string): string {
-    log('getUri:', this.state);
+    this.debug('getUri:', this.state);
 
     switch (this.state) {
       case MongoMemoryServerStates.running:
@@ -666,7 +675,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       !isNullOrUndefined(this.auth),
       new Error('"createAuth" got called, but "this.auth" is undefined!')
     );
-    log('createAuth: options:', this.auth);
+    this.debug('createAuth: options:', this.auth);
     const con: MongoClient = await MongoClient.connect(uriTemplate(data.ip, data.port, 'admin'), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -675,7 +684,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     let db = con.db('admin'); // just to ensure it is actually the "admin" database AND to have the "Db" data
 
     // Create the root user
-    log(`createAuth: Creating Root user, name: "${this.auth.customRootName}"`);
+    this.debug(`createAuth: Creating Root user, name: "${this.auth.customRootName}"`);
     await db.command({
       createUser: this.auth.customRootName,
       pwd: 'rootuser',
@@ -688,7 +697,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     } as CreateUserMongoDB);
 
     if (this.auth.extraUsers.length > 0) {
-      log(`createAuth: Creating "${this.auth.extraUsers.length}" Custom Users`);
+      this.debug(`createAuth: Creating "${this.auth.extraUsers.length}" Custom Users`);
       this.auth.extraUsers.sort((a, b) => {
         if (a.database === 'admin') {
           return -1; // try to make all "admin" at the start of the array
@@ -705,7 +714,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
           db = con.db(user.database);
         }
 
-        log('createAuth: Creating User: ', user);
+        this.debug('createAuth: Creating User: ', user);
         await db.command({
           createUser: user.createUser,
           pwd: user.pwd,
