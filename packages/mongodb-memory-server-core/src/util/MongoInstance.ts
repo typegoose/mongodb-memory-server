@@ -542,11 +542,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     if (/\*\*\*aborting after/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod internal error');
     }
-    if (/transition to primary complete; database writes are now permitted/i.test(line)) {
-      this.isInstancePrimary = true;
-      this.debug('stdoutHandler: emitting "instancePrimary"');
-      this.emit(MongoInstanceEvents.instancePrimary);
-    }
+    // this case needs to be infront of "transition to primary complete", otherwise it might reset "isInstancePrimary" to "false"
     if (/transition to \w+ from \w+/i.test(line)) {
       const state = /transition to (\w+) from \w+/i.exec(line)?.[1] ?? 'UNKNOWN';
       this.emit(MongoInstanceEvents.instanceReplState, state);
@@ -554,6 +550,11 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       if (state !== 'PRIMARY') {
         this.isInstancePrimary = false;
       }
+    }
+    if (/transition to primary complete; database writes are now permitted/i.test(line)) {
+      this.isInstancePrimary = true;
+      this.debug('stdoutHandler: emitting "instancePrimary"');
+      this.emit(MongoInstanceEvents.instancePrimary);
     }
   }
 }
