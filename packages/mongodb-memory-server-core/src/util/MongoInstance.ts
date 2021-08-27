@@ -197,9 +197,9 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    * Debug-log with template applied
    * @param msg The Message to log
    */
-  protected debug(msg: string): void {
+  protected debug(msg: string, ...extra: unknown[]): void {
     const port = this.instanceOpts.port ?? 'unknown';
-    log(`Mongo[${port}]: ${msg}`);
+    log(`Mongo[${port}]: ${msg}`, ...extra);
   }
 
   /**
