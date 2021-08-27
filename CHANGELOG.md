@@ -1,3 +1,20 @@
+## [7.4.0-beta.6](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.5...v7.4.0-beta.6) (2021-08-27)
+
+
+### Features
+
+* **errors:** unfiy binary X_OK checking and throwing errors ([4401834](https://github.com/nodkz/mongodb-memory-server/commit/440183493bebe709e76705c947ea265e6d3b051f))
+
+
+### Fixes
+
+* **MongoInstance:** update nodejs version warning (forgot in 7.0) ([2741434](https://github.com/nodkz/mongodb-memory-server/commit/274143467058ec9f333198f4f3d96ebb69e7cc71))
+
+
+### Style
+
+* **MongoInstance:** ignore nodejs warning from coverage ([68adbbf](https://github.com/nodkz/mongodb-memory-server/commit/68adbbf3f6e922364cbe40106d9fe1a9985af4ca))
+
 ## [7.4.0-beta.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.4...v7.4.0-beta.5) (2021-08-27)
 
 
