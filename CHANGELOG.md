@@ -1,3 +1,29 @@
+## [7.4.0-beta.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.4...v7.4.0-beta.5) (2021-08-27)
+
+
+### Features
+
+* actually change "auth" to work on non-inmemory storageEngines ([7ac3758](https://github.com/nodkz/mongodb-memory-server/commit/7ac3758418dc89146d2b8f31bb0412e30c402905)), closes [#533](https://github.com/nodkz/mongodb-memory-server/issues/533)
+
+
+### Refactor
+
+* **MongoInstance:** debug: passthrough any extra arguments to the logger to handle ([5dbdded](https://github.com/nodkz/mongodb-memory-server/commit/5dbdded2b326796f730a5ae00895bcf828d2ecde))
+* **MongoMemoryServer:** improve logging ([0326b37](https://github.com/nodkz/mongodb-memory-server/commit/0326b3762c8a6ce126b81b287f27dfb5f31d5e14))
+
+
+### Style
+
+* **MongoMemoryReplSet:** add todo ([0bbc346](https://github.com/nodkz/mongodb-memory-server/commit/0bbc34673fae548f6083806912cf3e1d0de6abf5))
+* **MongoMemoryServer:** move protected function to other protected functions ([3b1dc73](https://github.com/nodkz/mongodb-memory-server/commit/3b1dc735c75818ab6f6b13f0af8d8860161b69c2))
+
+
+### Fixes
+
+* **MongoInstance:** change "instanceReplState" to get triggered on "transition" ([923aae6](https://github.com/nodkz/mongodb-memory-server/commit/923aae63af73a30a58a4cc6e9f49ddcb23f9d42b))
+* **MongoInstance:** fix resetting "isInstancePrimary" in the same line ([c91b703](https://github.com/nodkz/mongodb-memory-server/commit/c91b703dd1b09b0c4e17e7b4658d87e00dace54a))
+* **MongoMemoryReplset:** improve logging & disable "writeConcernMajorityJournalDefault" when memory ([8427df8](https://github.com/nodkz/mongodb-memory-server/commit/8427df84d8ea4da9a70a516d2552e93d83253ae4))
+
 ## [7.4.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.3...v7.4.0-beta.4) (2021-08-12)
 
 
