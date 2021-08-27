@@ -9,6 +9,8 @@ import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
 import { promises as fspromises, constants } from 'fs';
 import { KeyFileMissingError, StartBinaryFailedError } from './errors';
 
+// ignore the nodejs warning for coverage
+/* istanbul ignore next */
 if (lt(process.version, '12.22.0')) {
   console.warn('Using NodeJS below 12.22.0');
 }
