@@ -243,15 +243,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   }
 
   /**
-   * Change "this._state" to "newState" and emit "stateChange" with "newState"
-   * @param newState The new State to set & emit
-   */
-  protected stateChange(newState: MongoMemoryServerStates): void {
-    this._state = newState;
-    this.emit(MongoMemoryServerEvents.stateChange, newState);
-  }
-
-  /**
    * Start the Mongod Instance
    * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
    * @throws if state is not "new" or "stopped"
@@ -302,6 +293,15 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     this.stateChange(MongoMemoryServerStates.running);
     this.debug('start: Instance fully Started');
+  }
+
+  /**
+   * Change "this._state" to "newState" and emit "stateChange" with "newState"
+   * @param newState The new State to set & emit
+   */
+  protected stateChange(newState: MongoMemoryServerStates): void {
+    this._state = newState;
+    this.emit(MongoMemoryServerEvents.stateChange, newState);
   }
 
   /**
