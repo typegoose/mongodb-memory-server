@@ -706,7 +706,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
             const instanceInfo = server.instanceInfo;
 
             if (isNullOrUndefined(instanceInfo)) {
-              return rej(new Error('_waitForPrimary - instanceInfo not present'));
+              return rej(new Error('_waitForPrimary - instanceInfo not present')); // TODO: change to "InstanceInfoError"
             }
 
             instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);
