@@ -47,8 +47,8 @@ export class UnknownArchitectureError extends Error {
 }
 
 export class WaitForPrimaryTimeoutError extends Error {
-  constructor(public timeout: number) {
-    super(`Timed out after ${timeout}ms while waiting for a Primary`);
+  constructor(public timeout: number, public where?: string) {
+    super(`Timed out after ${timeout}ms while waiting for a Primary (where: "${where}")`);
   }
 }
 

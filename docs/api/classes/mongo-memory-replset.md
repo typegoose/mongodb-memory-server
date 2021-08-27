@@ -120,9 +120,9 @@ Creates an new [`instance`](./mongo-memory-server.md) for the ReplSet
 
 <span class="badge badge--warning">Internal</span>
 
-Typings: `protected async _waitForPrimary(timeout: number = 30000): Promise<void>`
+Typings: `protected async _waitForPrimary(timeout: number = 1000 * 30, where?: string): Promise<void>`
 
-Wait until the ReplSet has elected an Primary
+Wait until the ReplSet has elected an Primary, the `where` string will be added to the error if the timeout is reached
 
 ## Values
 

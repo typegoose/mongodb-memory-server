@@ -576,6 +576,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     assertionIsMMSRSState(MongoMemoryReplSetStates.init, this._state);
     assertion(this.servers.length > 0, new Error('One or more servers are required.'));
     const uris = this.servers.map((server) => server.getUri());
+    const isInMemory = this.servers[0].instanceInfo?.storageEngine === 'ephemeralForTest';
 
     let con: MongoClient = await MongoClient.connect(uris[0], {
       useNewUrlParser: true,
@@ -595,6 +596,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       const rsConfig = {
         _id: this._replSetOpts.name,
         members,
+        writeConcernMajorityJournalDefault: !isInMemory, // if storage engine is "ephemeralForTest" deactivate this option, otherwise enable it
         settings: {
           electionTimeoutMillis: 500,
           ...this._replSetOpts.configSettings,
@@ -608,7 +610,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         if (typeof this._replSetOpts.auth === 'object') {
           log('_initReplSet: "this._replSetOpts.auth" is a object');
 
-          await this._waitForPrimary();
+          await this._waitForPrimary(undefined, '_initReplSet authIsObject');
 
           const primary = this.servers.find(
             (server) => server.instanceInfo?.instance.isInstancePrimary
@@ -616,13 +618,13 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           assertion(!isNullOrUndefined(primary), new Error('No Primary found'));
           assertion(
             !isNullOrUndefined(primary.instanceInfo),
-            new Error('Primary dosnt have "instanceInfo" defined')
+            new Error('Primary dosnt have "instanceInfo" defined') // TODO: change to "InstanceInfoError"
           );
 
           await primary.createAuth(primary.instanceInfo);
           this._ranCreateAuth = true;
 
-          if (primary.opts.instance?.storageEngine !== 'ephemeralForTest') {
+          if (!isInMemory) {
             log('_initReplSet: closing connection for restart');
             await con.close(); // close connection in preparation for "stop"
             await this.stop(false); // stop all servers for enabling auth
@@ -662,7 +664,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         }
       }
       log('_initReplSet: ReplSet-reconfig finished');
-      await this._waitForPrimary();
+      await this._waitForPrimary(undefined, '_initReplSet beforeRunning');
       this.stateChange(MongoMemoryReplSetStates.running);
       log('_initReplSet: running');
     } finally {
@@ -688,10 +690,11 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
   /**
    * Wait until the replSet has elected a Primary
-   * @param timeout Timeout to not run infinitly
+   * @param timeout Timeout to not run infinitly, default: 30s
+   * @param where Extra Parameter for logging to know where this function was called
    * @throws if timeout is reached
    */
-  protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
+  protected async _waitForPrimary(timeout: number = 1000 * 30, where?: string): Promise<void> {
     log('_waitForPrimary: Waiting for a Primary');
     let timeoutId: NodeJS.Timeout | undefined;
 
@@ -716,7 +719,8 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       ),
       new Promise((_res, rej) => {
         timeoutId = setTimeout(() => {
-          rej(new WaitForPrimaryTimeoutError(timeout));
+          Promise.all([...this.servers.map((v) => v.stop())]); // this is not chained with "rej", this is here just so things like jest can exit at some point
+          rej(new WaitForPrimaryTimeoutError(timeout, where));
         }, timeout);
       }),
     ]);
