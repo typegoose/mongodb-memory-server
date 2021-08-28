@@ -14,8 +14,8 @@ const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-describe('single-member replica set', () => {
-  it('should start multiple times', async () => {
+describe('Restart single MongoMemoryReplSet instance', () => {
+  it('should start and stop twice', async () => {
     const opts = {
       replSet: {
         storageEngine: 'wiredTiger',
