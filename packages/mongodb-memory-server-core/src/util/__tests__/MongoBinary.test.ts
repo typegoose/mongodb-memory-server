@@ -137,7 +137,7 @@ build environment:
         expect(output).toBe(sysBinaryPath);
       });
 
-      it('should return and check an SystemBinary and warn version conflict', async () => {
+      it('should return and check an SYSTEM_BINARY and warn version conflict', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => void 0);
         // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
         // DO NOT INDENT THE TEXT
@@ -165,7 +165,7 @@ build environment:
         expect(console.warn).toHaveBeenCalledTimes(1);
       });
 
-      it('should throw an error if systemBinary is set, but no binary can be found', async () => {
+      it('should throw an error if SYSTEM_BINARY is set, but no binary can be found', async () => {
         process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
         jest.spyOn(DryMongoBinary, 'locateBinary').mockResolvedValue(undefined);
 
