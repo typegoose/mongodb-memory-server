@@ -1,3 +1,10 @@
+## [7.4.0-beta.7](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.6...v7.4.0-beta.7) (2021-08-28)
+
+
+### Features
+
+* **MongoBinary:** add ability to disable SYSTEM_BINARY version check ([331d820](https://github.com/nodkz/mongodb-memory-server/commit/331d820d2493bdfbdf37652c5387eeaeccae64e5)), closes [#529](https://github.com/nodkz/mongodb-memory-server/issues/529)
+
 ## [7.4.0-beta.6](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.5...v7.4.0-beta.6) (2021-08-27)
 
 
