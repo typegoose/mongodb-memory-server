@@ -1,3 +1,0 @@
-codecov:
-  # test enable for https://community.codecov.io/t/nearest-pull-request-base-pseudobase-commit-not-chosen-correctly/2249/11
-  allow_coverage_offsets: true
