@@ -100,16 +100,21 @@ export class MongoBinary {
           !isNullOrUndefined(spawnOutput),
           new Error('Couldnt find an version from system binary output!')
         );
-        const binaryVersion = spawnOutput[1];
 
-        if (semver.neq(options.version, binaryVersion)) {
-          // we will log the version number of the system binary and the version requested so the user can see the difference
-          console.warn(
-            'getPath: MongoMemoryServer: Possible version conflict\n' +
-              `  SystemBinary version: "${binaryVersion}"\n` +
-              `  Requested version:    "${options.version}"\n\n` +
-              '  Using SystemBinary!'
-          );
+        // dont warn if the versions dont match if "SYSTEM_BINARY_VERSION_CHECK" is false, but still test the binary if it is available to be executed
+        if (envToBool(resolveConfig(ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK))) {
+          log('getPath: Checking & Warning about version conflicts');
+          const binaryVersion = spawnOutput[1];
+
+          if (semver.neq(options.version, binaryVersion)) {
+            // we will log the version number of the system binary and the version requested so the user can see the difference
+            console.warn(
+              'getPath: MongoMemoryServer: Possible version conflict\n' +
+                `  SystemBinary version: "${binaryVersion}"\n` +
+                `  Requested version:    "${options.version}"\n\n` +
+                '  Using SystemBinary!'
+            );
+          }
         }
       } else {
         throw new Error(

@@ -21,6 +21,7 @@ export enum ResolveConfigVariables {
   ARCHIVE_NAME = 'ARCHIVE_NAME',
   RUNTIME_DOWNLOAD = 'RUNTIME_DOWNLOAD',
   USE_HTTP = 'USE_HTTP',
+  SYSTEM_BINARY_VERSION_CHECK = 'SYSTEM_BINARY_VERSION_CHECK',
 }
 
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
@@ -30,6 +31,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.PREFER_GLOBAL_PATH, 'true'],
   [ResolveConfigVariables.RUNTIME_DOWNLOAD, 'true'],
   [ResolveConfigVariables.USE_HTTP, 'false'],
+  [ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK, 'true'],
 ]);
 
 /**
