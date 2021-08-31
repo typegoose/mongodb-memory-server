@@ -1,3 +1,31 @@
+## [7.4.0-beta.8](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.7...v7.4.0-beta.8) (2021-08-31)
+
+
+### Features
+
+* **MongoMemoryReplSet:** add named error for "count" assertion ([d67202b](https://github.com/nodkz/mongodb-memory-server/commit/d67202b98157bb876377ae17d89b164f19d1f4e6))
+
+
+### Dependencies
+
+* **@google/semantic-release-replace-plugin:** upgrade to version 1.1.0 ([809f6f6](https://github.com/nodkz/mongodb-memory-server/commit/809f6f6980d63caefa515b2839a25ef67219c109))
+* **@types/jest:** upgrade to version 27.0.1 ([c26feae](https://github.com/nodkz/mongodb-memory-server/commit/c26feae8def054ebceb5ccfba720eb42b4aa05da))
+* **@typescript-eslint/*:** upgrade to version 4.30.0 ([efd914e](https://github.com/nodkz/mongodb-memory-server/commit/efd914e9c5287d22e7640210a9af0eb20301db0f))
+* **async-mutex:** upgrade to version 0.3.2 ([01e662a](https://github.com/nodkz/mongodb-memory-server/commit/01e662afc100388f9d1518c0d7691c9565f33830))
+* **eslint-plugin-prettier:** upgrade to version 4.0.0 ([79e1b2d](https://github.com/nodkz/mongodb-memory-server/commit/79e1b2d27c4496157ace7406269b5e0894b4a273))
+* **find-cache-dir:** upgrade to version 3.3.2 ([2ef3e00](https://github.com/nodkz/mongodb-memory-server/commit/2ef3e005d9a88c2f000c9b6fe7552232e612b5df))
+* **husky:** upgrade to version 7.0.2 ([3b33ff8](https://github.com/nodkz/mongodb-memory-server/commit/3b33ff8c3b97dab209984e5fdcbf2d3658f825ec))
+* **jest:** upgrade to version 27.1.0 ([fbe852b](https://github.com/nodkz/mongodb-memory-server/commit/fbe852bba7d914889a1e92566a3dbba7cfd24303))
+* **lerna:** remove dependency ([1266a57](https://github.com/nodkz/mongodb-memory-server/commit/1266a57a67b8f05228fcb5599f2331f9019cd7f1)), closes [#537](https://github.com/nodkz/mongodb-memory-server/issues/537)
+* **semantic-release:** upgrade to version 17.4.7 ([c67b291](https://github.com/nodkz/mongodb-memory-server/commit/c67b29136e016ef02c4fabd49ca593b2fa538961))
+* **ts-jest:** upgrade to version 27.0.5 ([07f3e38](https://github.com/nodkz/mongodb-memory-server/commit/07f3e38c17d3e00df4a4da06f3206f7c8f4c671b))
+* **typescript:** upgrade to version 4.4.2 ([e89df5a](https://github.com/nodkz/mongodb-memory-server/commit/e89df5a3ea1ee6142983026d55c5f4d7ff1712c8))
+
+
+### Fixes
+
+* **utils::assertion:** change to use named fallback error ([88ae810](https://github.com/nodkz/mongodb-memory-server/commit/88ae8107af5c4ca9f2cf9a1fc65d0f00f95f85e5))
+
 ## [7.4.0-beta.7](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0-beta.6...v7.4.0-beta.7) (2021-08-28)
 
 
