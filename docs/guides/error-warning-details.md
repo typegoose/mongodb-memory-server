@@ -82,3 +82,10 @@ Example: `Assert failed - no custom error`
 
 Details:  
 This Error gets thrown when no custom error to `assertion` is given, this should never happen
+
+## ReplsetCountLowError
+
+Example: `ReplSet Count needs to be 1 or higher! (specified count: "${count}")`
+
+Details:  
+ReplSet count (like `new MongoMemoryReplSet({ replSet: { count: 0 } })`) needs to be `1` or higher

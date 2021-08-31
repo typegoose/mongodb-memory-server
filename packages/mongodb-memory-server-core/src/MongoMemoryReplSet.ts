@@ -24,6 +24,7 @@ import { SpawnOptions } from 'child_process';
 import {
   AuthNotObjectError,
   InstanceInfoError,
+  ReplsetCountLowError,
   StateError,
   WaitForPrimaryTimeoutError,
 } from './util/errors';
@@ -251,7 +252,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     };
     this._replSetOpts = { ...defaults, ...val };
 
-    assertion(this._replSetOpts.count > 0, new Error('ReplSet Count needs to be 1 or higher!'));
+    assertion(this._replSetOpts.count > 0, new ReplsetCountLowError(this._replSetOpts.count));
 
     if (typeof this._replSetOpts.auth === 'object') {
       this._replSetOpts.auth = authDefault(this._replSetOpts.auth);

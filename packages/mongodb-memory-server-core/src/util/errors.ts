@@ -124,3 +124,9 @@ export class AssertionFallbackError extends Error {
     super('Assert failed - no custom error');
   }
 }
+
+export class ReplsetCountLowError extends Error {
+  constructor(public count: number) {
+    super(`ReplSet Count needs to be 1 or higher! (specified count: "${count}")`);
+  }
+}
