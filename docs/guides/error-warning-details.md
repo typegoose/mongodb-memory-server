@@ -75,3 +75,10 @@ This Error gets thrown when this package runs on an unsupported architecture by 
 ## BinaryNotFoundError
 
 *extend documentation*
+
+## AssertionFallbackError
+
+Example: `Assert failed - no custom error`
+
+Details:  
+This Error gets thrown when no custom error to `assertion` is given, this should never happen

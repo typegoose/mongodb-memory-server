@@ -3,7 +3,11 @@ import { ChildProcess } from 'child_process';
 import * as utils from '../utils';
 import * as tmp from 'tmp';
 import { resolve } from 'path';
-import { BinaryNotFoundError, InsufficientPermissionsError } from '../errors';
+import {
+  AssertionFallbackError,
+  BinaryNotFoundError,
+  InsufficientPermissionsError,
+} from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 tmp.setGracefulCleanup();
@@ -47,13 +51,18 @@ describe('utils', () => {
   });
 
   describe('assertion', () => {
+    it('should run without error', () => {
+      expect(utils.assertion(true)).toStrictEqual(void 0);
+    });
+
     it('should throw default error if none provided', () => {
-      expect.assertions(1);
+      expect.assertions(2);
       try {
         utils.assertion(false);
         fail('Expected Assertion to Throw');
       } catch (err) {
         assertIsError(err);
+        expect(err).toBeInstanceOf(AssertionFallbackError);
         expect(err.message).toMatchSnapshot();
       }
     });

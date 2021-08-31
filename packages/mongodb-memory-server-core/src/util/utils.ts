@@ -3,7 +3,11 @@ import { ChildProcess } from 'child_process';
 import { AutomaticAuth } from '../MongoMemoryServer';
 import { promises as fspromises, Stats, constants } from 'fs';
 import { LinuxOS } from './getos';
-import { BinaryNotFoundError, InsufficientPermissionsError } from './errors';
+import {
+  AssertionFallbackError,
+  BinaryNotFoundError,
+  InsufficientPermissionsError,
+} from './errors';
 
 const log = debug('MongoMS:utils');
 
@@ -76,7 +80,7 @@ export function isNullOrUndefined(val: unknown): val is null | undefined {
  */
 export function assertion(cond: unknown, error?: Error): asserts cond {
   if (!cond) {
-    throw error ?? new Error('Assert failed - no custom error');
+    throw error ?? new AssertionFallbackError();
   }
 }
 

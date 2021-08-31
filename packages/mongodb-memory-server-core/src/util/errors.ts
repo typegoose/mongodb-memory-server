@@ -115,3 +115,12 @@ export class BinaryNotFoundError extends Error {
     super(`No Binary at path "${path}" was found! (ENOENT)`);
   }
 }
+
+/**
+ * Custom Fallback Error for "utils.assertion", it is a named/custom Error to confuse less in the stacktrace
+ */
+export class AssertionFallbackError extends Error {
+  constructor() {
+    super('Assert failed - no custom error');
+  }
+}
