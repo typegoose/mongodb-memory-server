@@ -49,7 +49,7 @@
   },
   "scripts": {
     "test": "yarn --cwd packages/mongodb-memory-server-core run test",
-    "lint": "lerna run lint --stream --npm-client=yarn --no-prefix",
+    "lint": "yarn --cwd packages/mongodb-memory-server-core run lint",
     "watch": "jest --env node --watch",
     "jest": "jest --env node",
     "build": "tsc --build tsconfig.build.json",
