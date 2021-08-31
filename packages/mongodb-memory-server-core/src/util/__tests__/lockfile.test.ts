@@ -4,6 +4,7 @@ import * as path from 'path';
 import { pathExists } from '../utils';
 import { promises as fspromises } from 'fs';
 import { UnknownLockfileStatusError } from '../errors';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 let tmpDir: tmp.DirResult;
 beforeAll(() => {
@@ -106,6 +107,7 @@ describe('LockFile', () => {
         fail('Expected "lock" to fail');
       } catch (err) {
         expect(err).toBeInstanceOf(UnknownLockfileStatusError);
+        assertIsError(err);
         expect(err.message).toMatchSnapshot();
       }
     });
@@ -136,6 +138,7 @@ describe('LockFile', () => {
         fail('Expected "waitForLock" to fail');
       } catch (err) {
         expect(err).toBeInstanceOf(UnknownLockfileStatusError);
+        assertIsError(err);
         expect(err.message).toMatchSnapshot();
       }
     });

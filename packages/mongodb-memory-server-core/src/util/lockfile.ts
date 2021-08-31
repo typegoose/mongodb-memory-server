@@ -127,7 +127,7 @@ export class LockFile {
 
       return utils.isAlive(readout) ? LockFileStatus.lockedDifferent : LockFileStatus.available;
     } catch (err) {
-      if (err.code === 'ENOENT') {
+      if (utils.errorWithCode(err) && err.code === 'ENOENT') {
         log('checkLock: reading file failed with ENOENT');
 
         return LockFileStatus.available;

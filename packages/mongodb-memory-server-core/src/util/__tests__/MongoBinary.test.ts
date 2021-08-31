@@ -6,6 +6,7 @@ import resolveConfig, { envName, ResolveConfigVariables } from '../resolveConfig
 import * as utils from '../utils';
 import { DryMongoBinary } from '../DryMongoBinary';
 import * as childProcess from 'child_process';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 tmp.setGracefulCleanup();
 
@@ -88,9 +89,8 @@ describe('MongoBinary', () => {
         await MongoBinary.getPath();
         fail('Expected "getPath" to fail');
       } catch (err) {
-        expect(err.message).toEqual(
-          'MongoBinary.getPath: could not find an valid binary path! (Got: "undefined", RUNTIME_DOWNLOAD: "false")'
-        );
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
         expect(DryMongoBinary.locateBinary).toBeCalledTimes(1);
         expect(MongoBinary.download).not.toHaveBeenCalled();
       }
@@ -209,9 +209,8 @@ build environment:
           await MongoBinary.getPath();
           fail('Expected "getPath" to fail');
         } catch (err) {
-          expect(err.message).toEqual(
-            'Option "SYSTEM_BINARY" was set, but binaryPath was empty! (system binary could not be found?) [This Error should normally not be thrown, please report this]'
-          );
+          assertIsError(err);
+          expect(err.message).toMatchSnapshot();
         }
       });
     });

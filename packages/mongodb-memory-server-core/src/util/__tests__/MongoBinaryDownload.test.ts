@@ -1,6 +1,7 @@
 import { promises as fspromises } from 'fs';
 import md5file from 'md5-file';
 import * as mkdirp from 'mkdirp';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 import { DryMongoBinary } from '../DryMongoBinary';
 import { Md5CheckFailedError } from '../errors';
 import { MongoBinaryOpts } from '../MongoBinary';
@@ -273,6 +274,7 @@ describe('MongoBinaryDownload', () => {
       await du.startDownload();
       fail('Expected "startDownload" to fail');
     } catch (err) {
+      assertIsError(err);
       expect(err.message).toEqual(customError.message);
       expect(console.error).toHaveBeenCalledTimes(1);
     }

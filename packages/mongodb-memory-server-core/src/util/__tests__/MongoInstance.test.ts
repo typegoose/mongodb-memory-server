@@ -5,6 +5,7 @@ import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
 import getPort from 'get-port';
 import { StartBinaryFailedError } from '../errors';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 jest.setTimeout(100000); // 10s
 tmp.setGracefulCleanup();
@@ -109,7 +110,8 @@ describe('MongodbInstance', () => {
         inst.prepareCommandArgs();
         fail('Expected prepareCommandArgs to throw');
       } catch (err) {
-        expect(err.message).toEqual('"instanceOpts.port" is required to be set!');
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
     });
 
@@ -123,7 +125,8 @@ describe('MongodbInstance', () => {
         inst.prepareCommandArgs();
         fail('Expected prepareCommandArgs to throw');
       } catch (err) {
-        expect(err.message).toEqual('"instanceOpts.dbPath" is required to be set!');
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
     });
 

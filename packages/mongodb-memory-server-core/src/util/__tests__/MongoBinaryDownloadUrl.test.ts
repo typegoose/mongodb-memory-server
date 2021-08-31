@@ -1,3 +1,4 @@
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 import { UnknownPlatformError, UnknownArchitectureError } from '../errors';
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
@@ -573,6 +574,7 @@ describe('MongoBinaryDownloadUrl', () => {
         await du.getArchiveName();
         fail('Expected "getArchiveName" to throw');
       } catch (err) {
+        assertIsError(err);
         expect(err).toBeInstanceOf(UnknownPlatformError);
         expect(err.message).toMatchSnapshot();
       }
@@ -588,6 +590,7 @@ describe('MongoBinaryDownloadUrl', () => {
         });
         fail('Expected "translatePlatform" to throw');
       } catch (err) {
+        assertIsError(err);
         expect(err).toBeInstanceOf(UnknownPlatformError);
         expect(err.message).toMatchSnapshot();
       }
@@ -822,6 +825,7 @@ describe('MongoBinaryDownloadUrl', () => {
         MongoBinaryDownloadUrl.translateArch('ia32', 'darwin');
         fail('Expected "translateArch" to fail');
       } catch (err) {
+        assertIsError(err);
         expect(err).toBeInstanceOf(UnknownArchitectureError);
         expect(err.message).toMatchSnapshot();
       }
@@ -832,6 +836,7 @@ describe('MongoBinaryDownloadUrl', () => {
         MongoBinaryDownloadUrl.translateArch('risc', 'linux');
         fail('Expected "translateArch" to fail');
       } catch (err) {
+        assertIsError(err);
         expect(err).toBeInstanceOf(UnknownArchitectureError);
         expect(err.message).toMatchSnapshot();
       }

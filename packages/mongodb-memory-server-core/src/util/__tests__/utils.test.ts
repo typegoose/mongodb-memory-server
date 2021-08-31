@@ -4,6 +4,7 @@ import * as utils from '../utils';
 import * as tmp from 'tmp';
 import { resolve } from 'path';
 import { BinaryNotFoundError, InsufficientPermissionsError } from '../errors';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 tmp.setGracefulCleanup();
 
@@ -52,7 +53,8 @@ describe('utils', () => {
         utils.assertion(false);
         fail('Expected Assertion to Throw');
       } catch (err) {
-        expect(err.message).toEqual('Assert failed - no custom error');
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
     });
   });
@@ -161,7 +163,19 @@ describe('utils', () => {
     });
 
     it('should throw InsufficientPermissionsError', async () => {
-      jest.spyOn(fspromises, 'access');
+      // this "mockImplementationOnce" is needed, because in jest "Error != Error" when returned from built-in functions
+      const origAccess = fspromises.access; // store non-mocked function
+      const spy = jest.spyOn(fspromises, 'access').mockImplementation(async (...options) => {
+        try {
+          return await origAccess(...options);
+        } catch (err: any) {
+          // the following maps required values from original Error to jest Error
+          const newError = new Error();
+          newError.message = err.message;
+          (newError as any).code = err.code;
+          throw newError;
+        }
+      });
       const binaryPath = resolve(tmpDir.name, 'throwInsufficientPermissionsError');
 
       await fspromises.writeFile(binaryPath, '', { mode: 0o600 });
@@ -174,11 +188,23 @@ describe('utils', () => {
         expect(err).toHaveProperty('path', binaryPath);
       }
 
-      expect(fspromises.access).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('should throw BinaryNotFoundError', async () => {
-      jest.spyOn(fspromises, 'access');
+      // this "mockImplementationOnce" is needed, because in jest "Error != Error" when returned from built-in functions
+      const origAccess = fspromises.access; // store non-mocked function
+      const spy = jest.spyOn(fspromises, 'access').mockImplementation(async (...options) => {
+        try {
+          return await origAccess(...options);
+        } catch (err: any) {
+          // the following maps required values from original Error to jest Error
+          const newError = new Error();
+          newError.message = err.message;
+          (newError as any).code = err.code;
+          throw newError;
+        }
+      });
       const binaryPath = resolve(tmpDir.name, 'doesNotExist');
 
       try {
@@ -189,7 +215,7 @@ describe('utils', () => {
         expect(err).toHaveProperty('path', binaryPath);
       }
 
-      expect(fspromises.access).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });

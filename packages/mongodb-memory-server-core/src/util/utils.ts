@@ -8,6 +8,22 @@ import { BinaryNotFoundError, InsufficientPermissionsError } from './errors';
 const log = debug('MongoMS:utils');
 
 /**
+ * This is here, because NodeJS does not have a FSError type
+ */
+interface ErrorWithCode extends Error {
+  code: string;
+}
+
+/**
+ * This is here, because NodeJS does not have a FSError type
+ * @param err Value to check agains
+ * @returns `true` if it is a error with code, `false` if not
+ */
+export function errorWithCode(err: unknown): err is ErrorWithCode {
+  return err instanceof Error && 'code' in err;
+}
+
+/**
  * Return input or default database
  * @param {string} dbName
  */
@@ -201,7 +217,7 @@ export async function tryReleaseFile(
 
     return parser(output.toString());
   } catch (err) {
-    if (!['ENOENT', 'EACCES'].includes(err.code)) {
+    if (errorWithCode(err) && !['ENOENT', 'EACCES'].includes(err.code)) {
       throw err;
     }
 
@@ -238,11 +254,13 @@ export async function checkBinaryPermissions(path: string): Promise<void> {
   try {
     await fspromises.access(path, constants.X_OK); // check if the provided path exists and has the execute bit for current user
   } catch (err) {
-    if (err?.code === 'EACCES') {
-      throw new InsufficientPermissionsError(path);
-    }
-    if (err?.code === 'ENOENT') {
-      throw new BinaryNotFoundError(path);
+    if (errorWithCode(err)) {
+      if (err.code === 'EACCES') {
+        throw new InsufficientPermissionsError(path);
+      }
+      if (err.code === 'ENOENT') {
+        throw new BinaryNotFoundError(path);
+      }
     }
 
     throw err;

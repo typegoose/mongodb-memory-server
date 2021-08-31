@@ -156,7 +156,11 @@ export class DryMongoBinary {
 
       return systemBinary; // returns if "access" is successful
     } catch (err) {
-      log(`getSystemPath: can't find system binary at "${systemBinary}".\n${err.message}`);
+      log(
+        `getSystemPath: can't find system binary at "${systemBinary}".\n${
+          err instanceof Error ? err.message : err
+        }`
+      );
     }
 
     return undefined;
