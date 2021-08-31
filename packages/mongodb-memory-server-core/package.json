@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@types/tmp": "^0.2.0",
-    "async-mutex": "^0.3.0",
+    "async-mutex": "^0.3.2",
     "camelcase": "^6.1.0",
     "debug": "^4.2.0",
     "find-cache-dir": "^3.3.2",
