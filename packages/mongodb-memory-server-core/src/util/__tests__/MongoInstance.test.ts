@@ -4,6 +4,8 @@ import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
 import getPort from 'get-port';
+import { StartBinaryFailedError } from '../errors';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 jest.setTimeout(100000); // 10s
 tmp.setGracefulCleanup();
@@ -61,9 +63,9 @@ describe('MongodbInstance', () => {
         '27555',
         '--dbpath',
         tmpDir.name,
-        '--noauth',
         '--replSet',
         'testset',
+        '--noauth',
       ]);
     });
 
@@ -108,7 +110,8 @@ describe('MongodbInstance', () => {
         inst.prepareCommandArgs();
         fail('Expected prepareCommandArgs to throw');
       } catch (err) {
-        expect(err.message).toEqual('"instanceOpts.port" is required to be set!');
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
     });
 
@@ -122,8 +125,34 @@ describe('MongodbInstance', () => {
         inst.prepareCommandArgs();
         fail('Expected prepareCommandArgs to throw');
       } catch (err) {
-        expect(err.message).toEqual('"instanceOpts.dbPath" is required to be set!');
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
+    });
+
+    it('should add "keyfile" argument when auth is enabled and is a replset', () => {
+      const keyfileLocation = '/dev/null';
+      const replsetName = 'hello';
+      const inst = new MongodbInstance({
+        instance: {
+          port: 27555,
+          dbPath: tmpDir.name,
+          auth: true,
+          replSet: replsetName,
+          keyfileLocation: keyfileLocation,
+        },
+      });
+      expect(inst.prepareCommandArgs()).toEqual([
+        '--port',
+        '27555',
+        '--dbpath',
+        tmpDir.name,
+        '--replSet',
+        replsetName,
+        '--auth',
+        '--keyFile',
+        keyfileLocation,
+      ]);
     });
   });
 
@@ -216,12 +245,14 @@ describe('MongodbInstance', () => {
 
   it('"_launchMongod" should throw an error if "mongodProcess.pid" is undefined', () => {
     const mongod = new MongodbInstance({ instance: { port: 0, dbPath: '' } }); // dummy values - they shouldnt matter
+    const mockBinary = '/tmp/thisShouldNotExist';
 
     try {
-      mongod._launchMongod('thisShouldNotExist');
+      mongod._launchMongod(mockBinary);
       fail('Expected "_launchMongod" to throw');
     } catch (err) {
-      expect(err.message).toEqual('Spawned Mongo Instance PID is undefined');
+      expect(err).toBeInstanceOf(StartBinaryFailedError);
+      expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
     }
   });
 
@@ -330,14 +361,14 @@ describe('MongodbInstance', () => {
       it('should emit "instanceReplState" when member state is changed', () => {
         // actual line copied from mongod 4.0.14
         const line =
-          'STDOUT: 2020-09-30T19:41:48.388+0200 I REPL     [replexec-0] Member 127.0.0.1:34765 is now in state STARTUP';
+          '2021-08-27T18:44:01.4895064Z 2021-08-27T18:44:01.471+0000 I REPL     [replication-1] transition to RECOVERING from STARTUP2';
 
         mongod.isInstancePrimary = true;
         mongod.stdoutHandler(line);
 
         expect(events.size).toEqual(2);
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instanceReplState)).toEqual('STARTUP');
+        expect(events.get(MongoInstanceEvents.instanceReplState)).toEqual('RECOVERING');
         expect(mongod.isInstancePrimary).toEqual(false);
       });
 

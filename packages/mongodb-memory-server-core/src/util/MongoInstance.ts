@@ -2,14 +2,23 @@ import { ChildProcess, fork, spawn, SpawnOptions } from 'child_process';
 import * as path from 'path';
 import { MongoBinary, MongoBinaryOpts } from './MongoBinary';
 import debug from 'debug';
-import { assertion, uriTemplate, isNullOrUndefined, killProcess, ManagerBase } from './utils';
+import {
+  assertion,
+  uriTemplate,
+  isNullOrUndefined,
+  killProcess,
+  ManagerBase,
+  checkBinaryPermissions,
+} from './utils';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
-import { MongoClient, MongoNetworkError } from 'mongodb';
-import { promises as fspromises, constants } from 'fs';
+import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
+import { KeyFileMissingError, StartBinaryFailedError } from './errors';
 
-if (lt(process.version, '10.15.0')) {
-  console.warn('Using NodeJS below 10.15.0');
+// ignore the nodejs warning for coverage
+/* istanbul ignore next */
+if (lt(process.version, '12.22.0')) {
+  console.warn('Using NodeJS below 12.22.0');
 }
 
 const log = debug('MongoMS:MongoInstance');
@@ -106,6 +115,11 @@ export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
   ip?: string;
   replSet?: string;
   storageEngine?: StorageEngine;
+  /**
+   * Location for the "--keyfile" argument
+   * Only has an effect when "auth" is enabled and is a replset
+   */
+  keyfileLocation?: string;
 }
 
 export enum MongoInstanceEvents {
@@ -152,6 +166,12 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
   readonly spawnOpts: Readonly<SpawnOptions>;
 
   /**
+   * Extra options to append to "mongoclient.connect"
+   * Mainly used for authentication
+   */
+  extraConnectionOptions?: MongoClientOptions;
+
+  /**
    * The "mongod" Process reference
    */
   mongodProcess?: ChildProcess;
@@ -196,9 +216,9 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    * Debug-log with template applied
    * @param msg The Message to log
    */
-  protected debug(msg: string): void {
+  protected debug(msg: string, ...extra: unknown[]): void {
     const port = this.instanceOpts.port ?? 'unknown';
-    log(`Mongo[${port}]: ${msg}`);
+    log(`Mongo[${port}]: ${msg}`, ...extra);
   }
 
   /**
@@ -233,6 +253,10 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     result.push('--dbpath', this.instanceOpts.dbPath);
 
     // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
+    if (!!this.instanceOpts.replSet) {
+      this.isReplSet = true;
+      result.push('--replSet', this.instanceOpts.replSet);
+    }
     if (!!this.instanceOpts.storageEngine) {
       result.push('--storageEngine', this.instanceOpts.storageEngine);
     }
@@ -241,12 +265,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     }
     if (this.instanceOpts.auth) {
       result.push('--auth');
+
+      if (this.isReplSet) {
+        assertion(!isNullOrUndefined(this.instanceOpts.keyfileLocation), new KeyFileMissingError());
+        result.push('--keyFile', this.instanceOpts.keyfileLocation);
+      }
     } else {
       result.push('--noauth');
-    }
-    if (!!this.instanceOpts.replSet) {
-      this.isReplSet = true;
-      result.push('--replSet', this.instanceOpts.replSet);
     }
 
     const final = result.concat(this.instanceOpts.args ?? []);
@@ -275,15 +300,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     });
 
     const mongoBin = await MongoBinary.getPath(this.binaryOpts);
-    try {
-      await fspromises.access(mongoBin, constants.X_OK);
-    } catch (err) {
-      console.error(
-        `Mongod File at "${mongoBin}" does not have sufficient permissions to be used by this process\n` +
-          'Needed Permissions: Execute (--x)\n'
-      );
-      throw err;
-    }
+    await checkBinaryPermissions(mongoBin);
     this.debug('start: Starting Processes');
     this.mongodProcess = this._launchMongod(mongoBin);
     // This assertion is here because somewhere between nodejs 12 and 16 the types for "childprocess.pid" changed to include "| undefined"
@@ -306,18 +323,18 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     this.debug('stop');
 
     if (!this.mongodProcess && !this.killerProcess) {
-      log('stop: nothing to shutdown, returning');
+      this.debug('stop: nothing to shutdown, returning');
 
       return false;
     }
 
     if (!isNullOrUndefined(this.mongodProcess)) {
-      // try to run "replSetStepDown" before running "killProcess" (gracefull "SIGINT")
-      // running "&& this.isInstancePrimary" otherwise "replSetStepDown" will fail with "MongoError: not primary so can't step down"
-      if (this.isReplSet && this.isInstancePrimary) {
+      // try to run "shutdown" before running "killProcess" (gracefull "SIGINT")
+      // using this, otherwise on windows nodejs will handle "SIGINT" & "SIGTERM" & "SIGKILL" the same (instant exit)
+      if (this.isReplSet) {
         let con: MongoClient | undefined;
         try {
-          log('stop: trying replSetStepDown');
+          this.debug('stop: trying shutdownServer');
           const port = this.instanceOpts.port;
           const ip = this.instanceOpts.ip;
           assertion(
@@ -332,10 +349,12 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            ...this.extraConnectionOptions,
           });
 
           const admin = con.db('admin'); // just to ensure it is actually the "admin" database
-          await admin.command({ replSetStepDown: 1, force: true });
+          // "timeoutSecs" is set to "1" otherwise it will take at least "10" seconds to stop (very long tests)
+          await admin.command({ shutdown: 1, force: true, timeoutSecs: 1 });
         } catch (err) {
           // Quote from MongoDB Documentation (https://docs.mongodb.com/manual/reference/command/replSetStepDown/#client-connections):
           // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.
@@ -357,13 +376,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         }
       }
 
-      await killProcess(this.mongodProcess, 'mongodProcess');
+      await killProcess(this.mongodProcess, 'mongodProcess', this.instanceOpts.port);
       this.mongodProcess = undefined; // reset reference to the childProcess for "mongod"
     } else {
       this.debug('stop: mongodProcess: nothing to shutdown, skipping');
     }
     if (!isNullOrUndefined(this.killerProcess)) {
-      await killProcess(this.killerProcess, 'killerProcess');
+      await killProcess(this.killerProcess, 'killerProcess', this.instanceOpts.port);
       this.killerProcess = undefined; // reset reference to the childProcess for "mongo_killer"
     } else {
       this.debug('stop: killerProcess: nothing to shutdown, skipping');
@@ -391,7 +410,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     childProcess.on('error', this.errorHandler.bind(this));
 
     if (isNullOrUndefined(childProcess.pid)) {
-      throw new Error('Spawned Mongo Instance PID is undefined');
+      throw new StartBinaryFailedError(path.resolve(mongoBin));
     }
 
     this.emit(MongoInstanceEvents.instanceLaunched);
@@ -442,7 +461,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    * @param code The Exit code to handle
    * @fires MongoInstance#instanceClosed
    */
-  closeHandler(code: number): void {
+  closeHandler(code: number, signal: string): void {
     // check if the platform is windows, if yes check if the code is not "12" or "0" otherwise just check code is not "0"
     // because for mongodb any event on windows (like SIGINT / SIGTERM) will result in an code 12
     // https://docs.mongodb.com/manual/reference/exit-codes/#12
@@ -450,8 +469,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       this.debug('closeHandler: Mongod instance closed with an non-0 (or non 12 on windows) code!');
     }
 
-    this.debug(`closeHandler: ${code}`);
-    this.emit(MongoInstanceEvents.instanceClosed, code);
+    this.debug(`closeHandler: "${code}" "${signal}"`);
+    this.emit(MongoInstanceEvents.instanceClosed, code, signal);
   }
 
   /**
@@ -523,19 +542,19 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     if (/\*\*\*aborting after/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod internal error');
     }
-    if (/transition to primary complete; database writes are now permitted/i.test(line)) {
-      this.isInstancePrimary = true;
-      this.debug('stdoutHandler: emitting "instancePrimary"');
-      this.emit(MongoInstanceEvents.instancePrimary);
-    }
-    if (/member [\d\.:]+ is now in state \w+/i.test(line)) {
-      // "[\d\.:]+" matches "0.0.0.0:0000" (IP:PORT)
-      const state = /member [\d\.:]+ is now in state (\w+)/i.exec(line)?.[1] ?? 'UNKNOWN';
+    // this case needs to be infront of "transition to primary complete", otherwise it might reset "isInstancePrimary" to "false"
+    if (/transition to \w+ from \w+/i.test(line)) {
+      const state = /transition to (\w+) from \w+/i.exec(line)?.[1] ?? 'UNKNOWN';
       this.emit(MongoInstanceEvents.instanceReplState, state);
 
       if (state !== 'PRIMARY') {
         this.isInstancePrimary = false;
       }
+    }
+    if (/transition to primary complete; database writes are now permitted/i.test(line)) {
+      this.isInstancePrimary = true;
+      this.debug('stdoutHandler: emitting "instancePrimary"');
+      this.emit(MongoInstanceEvents.instancePrimary);
     }
   }
 }

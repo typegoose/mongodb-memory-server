@@ -1,6 +1,6 @@
 # MongoDB In-Memory Server
 
-[![Node.js CI](https://github.com/nodkz/mongodb-memory-server/workflows/Node.js%20CI/badge.svg)](https://github.com/nodkz/mongodb-memory-server/actions?query=workflow%3A"Node.js+CI")
+[![Node.js CI](https://github.com/nodkz/mongodb-memory-server/workflows/Node.js%20CI/badge.svg)](https://github.com/nodkz/mongodb-memory-server/actions/workflows/tests.yml?query=workflow%3A%22Node.js+CI%22)
 [![NPM version](https://img.shields.io/npm/v/mongodb-memory-server.svg)](https://www.npmjs.com/package/mongodb-memory-server)
 [![Downloads stat](https://img.shields.io/npm/dt/mongodb-memory-server.svg)](http://www.npmtrends.com/mongodb-memory-server)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
@@ -252,6 +252,8 @@ or
   }
 }
 ```
+
+Also see the [Enable Debug Mode](https://nodkz.github.io/mongodb-memory-server/docs/guides/enable-debug-mode) Guide.
 
 ## Contributing
 

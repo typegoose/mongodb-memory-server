@@ -9,7 +9,8 @@ import MongoMemoryServer, {
 import MongoInstance from '../util/MongoInstance';
 import * as utils from '../util/utils';
 import * as semver from 'semver';
-import { StateError } from '../util/errors';
+import { EnsureInstanceError, StateError } from '../util/errors';
+import { assertIsError } from './testUtils/test_utils';
 
 tmp.setGracefulCleanup();
 jest.setTimeout(100000); // 10s
@@ -253,8 +254,9 @@ describe('MongoMemoryServer', () => {
           usersInfo: 1,
         });
         fail('Expected "db.command" to fail');
-      } catch (err) {
-        expect(err.codeName).toEqual('Unauthorized');
+      } catch (err: any) {
+        // TODO: re-investigate if "codeName" is actually the right property
+        expect(err.codeName).toMatchSnapshot();
       }
       expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
       expect(MongoMemoryServer.prototype.createAuth).not.toHaveBeenCalled();
@@ -274,6 +276,7 @@ describe('MongoMemoryServer', () => {
           fail('Expected "start" to fail');
         } catch (err) {
           expect(err).toBeInstanceOf(StateError);
+          assertIsError(err);
           expect(err.message).toMatchSnapshot();
         }
       }
@@ -287,6 +290,7 @@ describe('MongoMemoryServer', () => {
           fail('Expected "start" to fail');
         } catch (err) {
           expect(err).toBeInstanceOf(StateError);
+          assertIsError(err);
           expect(err.message).toMatchSnapshot();
         }
       }
@@ -310,9 +314,13 @@ describe('MongoMemoryServer', () => {
       const mongoServer = new MongoMemoryServer();
       jest.spyOn(mongoServer, 'start').mockResolvedValue(void 0);
 
-      await expect(mongoServer.ensureInstance()).rejects.toThrow(
-        'Ensure-Instance failed to start an instance!'
-      );
+      try {
+        await mongoServer.ensureInstance();
+        fail('Expected "ensureInstance" to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(EnsureInstanceError);
+        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
+      }
 
       expect(mongoServer.start).toHaveBeenCalledTimes(1);
     });
@@ -334,11 +342,10 @@ describe('MongoMemoryServer', () => {
 
       try {
         await mongoServer.ensureInstance();
-        fail('Expected "ensureInstance" to throw');
+        fail('Expected "ensureInstance" to fail');
       } catch (err) {
-        expect(err.message).toEqual(
-          'MongoMemoryServer "_state" is "running" but "instanceInfo" is undefined!'
-        );
+        expect(err).toBeInstanceOf(EnsureInstanceError);
+        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
       }
     });
 
@@ -352,6 +359,7 @@ describe('MongoMemoryServer', () => {
         fail('Expected "ensureInstance" to throw');
       } catch (err) {
         expect(err).toBeInstanceOf(StateError);
+        assertIsError(err);
         expect(err.message).toMatchSnapshot();
       }
     });
@@ -537,6 +545,7 @@ describe('MongoMemoryServer', () => {
         fail('Expected "cleanup" to fail');
       } catch (err) {
         expect(err).toBeInstanceOf(StateError);
+        assertIsError(err);
         expect(err.message).toMatchSnapshot();
       }
     });
@@ -572,7 +581,8 @@ describe('MongoMemoryServer', () => {
       await mongoServer.createAuth();
       fail('Expected "createAuth" to fail');
     } catch (err) {
-      expect(err.message).toEqual('"createAuth" got called, but "this.auth" is undefined!');
+      assertIsError(err);
+      expect(err.message).toMatchSnapshot();
     }
   });
 

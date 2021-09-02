@@ -17,7 +17,7 @@ const OSRegex = {
   name: /^id\s*=\s*"?(\w*)"?$/im,
   codename: /^version_codename\s*=\s*(.*)$/im,
   release: /^version_id\s*=\s*"?(\d*(?:\.\d*)?)"?$/im,
-  id_like: /^id_like\s*=\s*"?(\w*)"?$/im,
+  id_like: /^id_like\s*=\s*"?([\w\s]*)"?$/im,
 };
 
 export interface OtherOS {
@@ -29,7 +29,7 @@ export interface LinuxOS extends OtherOS {
   dist: string;
   release: string;
   codename?: string;
-  id_like?: string;
+  id_like?: string[];
 }
 
 export type AnyOS = OtherOS | LinuxOS;
@@ -128,6 +128,6 @@ export function parseOS(input: string): LinuxOS {
     dist: input.match(OSRegex.name)?.[1].toLocaleLowerCase() ?? 'unknown',
     codename: input.match(OSRegex.codename)?.[1].toLocaleLowerCase(),
     release: input.match(OSRegex.release)?.[1].toLocaleLowerCase() ?? '',
-    id_like: input.match(OSRegex.id_like)?.[1].toLocaleLowerCase(),
+    id_like: input.match(OSRegex.id_like)?.[1].toLocaleLowerCase().split(' '),
   };
 }

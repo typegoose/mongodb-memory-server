@@ -5,7 +5,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
 import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 import { URL } from 'url';
-import { UnknownArchitecture, UnknownPlatform } from './errors';
+import { UnknownArchitectureError, UnknownPlatformError } from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -87,7 +87,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       case 'linux':
         return this.getArchiveNameLinux();
       default:
-        throw new UnknownPlatform(this.platform);
+        throw new UnknownPlatformError(this.platform);
     }
   }
 
@@ -171,6 +171,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   getLinuxOSVersionString(os: LinuxOS): string {
     if (regexHelper(/ubuntu/i, os)) {
       return this.getUbuntuVersionString(os);
+    } else if (regexHelper(/amzn/i, os)) {
+      return this.getAmazonVersionString(os);
     } else if (regexHelper(/suse/i, os)) {
       return this.getSuseVersionString(os);
     } else if (regexHelper(/(rhel|centos|scientific)/i, os)) {
@@ -201,7 +203,9 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     // warn for the fallback
     console.warn(
-      `Unknown/unsupported linux "${os.dist}(${os.id_like})". Falling back to legacy MongoDB build!`
+      `Unknown/unsupported linux "${os.dist}(${os.id_like?.join(
+        ', '
+      )})". Falling back to legacy MongoDB build!`
     );
 
     return this.getLegacyVersionString();
@@ -286,6 +290,22 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       // fallback to "70", because that is what currently is supporting 3.6 to 5.0 and should work with many
       name += '70';
     }
+
+    return name;
+  }
+
+  /**
+   * Get the version string for Amazon Distro
+   * @param os LinuxOS Object
+   */
+  getAmazonVersionString(os: LinuxOS): string {
+    let name = 'amazon';
+    const release: number = parseInt(os.release, 10);
+
+    if (release >= 2 && release <= 3) {
+      name += '2';
+    }
+    // dont add anthing as fallback, because for "amazon 1", mongodb just uses "amazon"
 
     return name;
   }
@@ -423,7 +443,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       case 'sunos':
         return 'sunos5';
       default:
-        throw new UnknownPlatform(platform);
+        throw new UnknownPlatformError(platform);
     }
   }
 
@@ -442,13 +462,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           return 'i386';
         }
 
-        throw new UnknownArchitecture(arch, mongoPlatform);
+        throw new UnknownArchitectureError(arch, mongoPlatform);
       case 'x64':
         return 'x86_64';
       case 'arm64':
         return 'arm64';
       default:
-        throw new UnknownArchitecture(arch);
+        throw new UnknownArchitectureError(arch);
     }
   }
 }
@@ -459,5 +479,8 @@ export default MongoBinaryDownloadUrl;
  * Helper function to reduce code / regex duplication
  */
 function regexHelper(regex: RegExp, os: LinuxOS): boolean {
-  return regex.test(os.dist) || (!isNullOrUndefined(os.id_like) ? regex.test(os.id_like) : false);
+  return (
+    regex.test(os.dist) ||
+    (!isNullOrUndefined(os.id_like) ? os.id_like.filter((v) => regex.test(v)).length >= 1 : false)
+  );
 }

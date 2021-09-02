@@ -7,7 +7,8 @@ import { MongoClient } from 'mongodb';
 import MongoMemoryServer from '../MongoMemoryServer';
 import * as utils from '../util/utils';
 import { MongoMemoryInstanceOpts } from '../util/MongoInstance';
-import { StateError } from '../util/errors';
+import { ReplsetCountLowError, StateError, WaitForPrimaryTimeoutError } from '../util/errors';
+import { assertIsError } from './testUtils/test_utils';
 
 jest.setTimeout(100000); // 10s
 
@@ -77,7 +78,10 @@ describe('single server replset', () => {
       new MongoMemoryReplSet({ replSet: { count: 0 } });
       fail('Expected "new MongoMemoryReplSet" to throw an error');
     } catch (err) {
-      expect(err.message).toEqual('ReplSet Count needs to be 1 or higher!');
+      expect(err).toBeInstanceOf(ReplsetCountLowError);
+      expect(err).toHaveProperty('count', 0);
+      assertIsError(err);
+      expect(err.message).toMatchSnapshot();
     }
   });
 
@@ -93,6 +97,7 @@ describe('single server replset', () => {
     } catch (err) {
       clearTimeout(timeout);
       expect(err).toBeInstanceOf(StateError);
+      assertIsError(err);
       expect(err.message).toMatchSnapshot();
     }
   });
@@ -118,6 +123,7 @@ describe('single server replset', () => {
     } catch (err) {
       clearTimeout(timeout);
       expect(err).toBeInstanceOf(StateError);
+      assertIsError(err);
       expect(err.message).toMatchSnapshot();
     }
   });
@@ -138,6 +144,7 @@ describe('single server replset', () => {
     } catch (err) {
       clearTimeout(timeout);
       expect(err).toBeInstanceOf(StateError);
+      assertIsError(err);
       expect(err.message).toMatchSnapshot();
     }
   });
@@ -191,6 +198,7 @@ describe('single server replset', () => {
     } catch (err) {
       clearTimeout(timeout);
       expect(err).toBeInstanceOf(StateError);
+      assertIsError(err);
       expect(err.message).toMatchSnapshot();
     }
   });
@@ -210,7 +218,8 @@ describe('single server replset', () => {
       fail('Expected "_initReplSet" to throw');
     } catch (err) {
       clearTimeout(timeout);
-      expect(err.message).toEqual('One or more servers are required.');
+      assertIsError(err);
+      expect(err.message).toMatchSnapshot();
     }
   });
 
@@ -249,6 +258,12 @@ describe('single server replset', () => {
     expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(1);
     expect(console.warn).toHaveBeenCalledTimes(1);
 
+    {
+      expect(replSet.servers[0].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(false);
+      expect(replSet.servers[1].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(false);
+      expect(replSet.servers[2].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(false);
+    }
+
     await con.close();
     await replSet.stop();
   });
@@ -285,6 +300,12 @@ describe('single server replset', () => {
     expect(users.users[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
     // @ts-expect-error because "initAllServers" is protected
     expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(2);
+
+    {
+      expect(replSet.servers[0].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
+      expect(replSet.servers[1].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
+      expect(replSet.servers[2].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
+    }
 
     await con.close();
     await replSet.stop();
@@ -370,6 +391,7 @@ describe('MongoMemoryReplSet', () => {
           fail('Expected assignment of "replSet.binaryOpts" to fail');
         } catch (err) {
           expect(err).toBeInstanceOf(StateError);
+          assertIsError(err);
           expect(err.message).toMatchSnapshot();
         }
       });
@@ -380,6 +402,7 @@ describe('MongoMemoryReplSet', () => {
           fail('Expected assignment of "replSet.instanceOpts" to fail');
         } catch (err) {
           expect(err).toBeInstanceOf(StateError);
+          assertIsError(err);
           expect(err.message).toMatchSnapshot();
         }
       });
@@ -390,6 +413,7 @@ describe('MongoMemoryReplSet', () => {
           fail('Expected assignment of "replSet.instanceOpts" to fail');
         } catch (err) {
           expect(err).toBeInstanceOf(StateError);
+          assertIsError(err);
           expect(err.message).toMatchSnapshot();
         }
       });
@@ -400,7 +424,10 @@ describe('MongoMemoryReplSet', () => {
         replSet.replSetOpts = { count: 0 };
         fail('Expected assignment of "replSet.instanceOpts" to fail');
       } catch (err) {
-        expect(err.message).toEqual('ReplSet Count needs to be 1 or higher!');
+        expect(err).toBeInstanceOf(ReplsetCountLowError);
+        expect(err).toHaveProperty('count', 0);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
     });
   });
@@ -426,7 +453,8 @@ describe('MongoMemoryReplSet', () => {
       await replSet._waitForPrimary(1); // 1ms to be fast (0 and 1 are equal for "setTimeout" in js)
       fail('Expected "_waitForPrimary" to throw');
     } catch (err) {
-      expect(err.message).toEqual('Timed out after 1ms while waiting for an Primary');
+      expect(err).toBeInstanceOf(WaitForPrimaryTimeoutError);
+      expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
     }
   });
 

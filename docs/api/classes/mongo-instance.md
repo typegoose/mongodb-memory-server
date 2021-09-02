@@ -23,9 +23,9 @@ Typings: `private debug(msg: string): void`
 
 Format input with debug-message template
 
-### static-run
+### create
 
-Typings: `static async run(opts: Partial<MongodOpts>): Promise<MongoInstance>`
+Typings: `static async create(opts: Partial<MongodOpts>): Promise<MongoInstance>`
 
 Create an new Instance and start it (while being an Promise)
 
@@ -35,17 +35,17 @@ Typings: `prepareCommandArgs(): string[]`
 
 Constructs the Command Arguments
 
-### run
+### start
 
-Typings: `async run(): Promise<this>`
+Typings: `async start(): Promise<void>`
 
-Start the `mongod` process
+Start the `mongod` and the watcher processes
 
-### kill
+### stop
 
-Typings: `async kill(): Promise<MongoInstance>`
+Typings: `async stop(): Promise<boolean>`
 
-Stop the `mongod` process
+Stop the `mongod` and the watcher processes
 
 :::caution
 Will not Error if instance is not running
@@ -79,7 +79,7 @@ Error handler for the `mongod` process
 
 <span class="badge badge--warning">Internal</span>
 
-Typings: `closeHandler(code: number): void`
+Typings: `closeHandler(code: number, signal: string): void`
 
 Close handler for the `mongod` process
 
@@ -97,7 +97,7 @@ STDERR handler for the `mongod` process
 
 Typings: `stdoutHandler(message: string | Buffer): void`
 
-STDOUT handler for the `mongod` process<br/>
+STDOUT handler for the `mongod` process  
 Matches process output against known formats and raise events
 
 ## Values
@@ -120,11 +120,19 @@ Typings: `readonly spawnOpts: Readonly<SpawnOptions>`
 
 Stores the Spawn Options
 
-### childProcess
+### extraConnectionOptions
 
 <span class="badge badge--warning">Internal</span>
 
-Typings: `childProcess?: ChildProcess`
+Typings: `extraConnectionOptions?: MongoClientOptions`
+
+Contains extra Connection options used for `mongoClient.connect`, this is mainly used for authentication
+
+### mongodProcess
+
+<span class="badge badge--warning">Internal</span>
+
+Typings: `mongodProcess?: ChildProcess`
 
 Stores the active process reference for the `mongod` process
 
@@ -140,11 +148,11 @@ Stores the active process reference for the killer process
 
 Typings: `isInstancePrimary: boolean`
 
-Stores that the process is an Primary (ReplSet)
+Stores that the process is an Primary (ReplSet) (event emitted when found in STDOUT)
 
 ### isInstanceReady
 
-Typings: `isInstanceReady: boolean`
+Typings: `isInstanceReady: boolean` (event emitted when found in STDOUT)
 
 Stores that the process is fully started
 
@@ -152,4 +160,4 @@ Stores that the process is fully started
 
 Typings: `isReplSet: boolean`
 
-Stores that the process is in an ReplSet
+Stores that the process is in an ReplSet, is `true` when [`instanceOpts.replSet`](#instanceopts) is defined and truthy

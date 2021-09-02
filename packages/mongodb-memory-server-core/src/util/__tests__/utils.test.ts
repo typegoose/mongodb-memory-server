@@ -1,6 +1,16 @@
 import { Stats, promises as fspromises } from 'fs';
 import { ChildProcess } from 'child_process';
 import * as utils from '../utils';
+import * as tmp from 'tmp';
+import { resolve } from 'path';
+import {
+  AssertionFallbackError,
+  BinaryNotFoundError,
+  InsufficientPermissionsError,
+} from '../errors';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
+
+tmp.setGracefulCleanup();
 
 describe('utils', () => {
   describe('uriTemplate', () => {
@@ -41,13 +51,19 @@ describe('utils', () => {
   });
 
   describe('assertion', () => {
+    it('should run without error', () => {
+      expect(utils.assertion(true)).toStrictEqual(void 0);
+    });
+
     it('should throw default error if none provided', () => {
-      expect.assertions(1);
+      expect.assertions(2);
       try {
         utils.assertion(false);
         fail('Expected Assertion to Throw');
       } catch (err) {
-        expect(err.message).toEqual('Assert failed - no custom error');
+        assertIsError(err);
+        expect(err).toBeInstanceOf(AssertionFallbackError);
+        expect(err.message).toMatchSnapshot();
       }
     });
   });
@@ -131,6 +147,84 @@ describe('utils', () => {
       );
       expect(utils.getHost('mongodb://0.0.0.0:0000/')).toEqual('0.0.0.0:0000');
       expect(utils.getHost('mongodb://user:pass@localhost:0000/')).toEqual('localhost:0000');
+    });
+  });
+
+  describe('checkBinaryPermissions', () => {
+    let tmpDir: tmp.DirResult;
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      tmpDir = tmp.dirSync({ prefix: 'mongo-mem-utils-', unsafeCleanup: true });
+    });
+    afterEach(() => {
+      tmpDir.removeCallback();
+    });
+
+    it('should throw nothing', async () => {
+      jest.spyOn(fspromises, 'access');
+      const binaryPath = resolve(tmpDir.name, 'noThrow');
+
+      await fspromises.writeFile(binaryPath, '', { mode: 0o777 });
+
+      await utils.checkBinaryPermissions(binaryPath);
+
+      expect(fspromises.access).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw InsufficientPermissionsError', async () => {
+      // this "mockImplementationOnce" is needed, because in jest "Error != Error" when returned from built-in functions
+      const origAccess = fspromises.access; // store non-mocked function
+      const spy = jest.spyOn(fspromises, 'access').mockImplementation(async (...options) => {
+        try {
+          return await origAccess(...options);
+        } catch (err: any) {
+          // the following maps required values from original Error to jest Error
+          const newError = new Error();
+          newError.message = err.message;
+          (newError as any).code = err.code;
+          throw newError;
+        }
+      });
+      const binaryPath = resolve(tmpDir.name, 'throwInsufficientPermissionsError');
+
+      await fspromises.writeFile(binaryPath, '', { mode: 0o600 });
+
+      try {
+        await utils.checkBinaryPermissions(binaryPath);
+        fail('Expected "utils.checkBinaryPermissions" to throw');
+      } catch (err) {
+        expect(err).toBeInstanceOf(InsufficientPermissionsError);
+        expect(err).toHaveProperty('path', binaryPath);
+      }
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw BinaryNotFoundError', async () => {
+      // this "mockImplementationOnce" is needed, because in jest "Error != Error" when returned from built-in functions
+      const origAccess = fspromises.access; // store non-mocked function
+      const spy = jest.spyOn(fspromises, 'access').mockImplementation(async (...options) => {
+        try {
+          return await origAccess(...options);
+        } catch (err: any) {
+          // the following maps required values from original Error to jest Error
+          const newError = new Error();
+          newError.message = err.message;
+          (newError as any).code = err.code;
+          throw newError;
+        }
+      });
+      const binaryPath = resolve(tmpDir.name, 'doesNotExist');
+
+      try {
+        await utils.checkBinaryPermissions(binaryPath);
+        fail('Expected "utils.checkBinaryPermissions" to throw');
+      } catch (err) {
+        expect(err).toBeInstanceOf(BinaryNotFoundError);
+        expect(err).toHaveProperty('path', binaryPath);
+      }
+
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -16,6 +16,7 @@ import { DryMongoBinary } from './DryMongoBinary';
 import mkdirp from 'mkdirp';
 import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
+import { Md5CheckFailedError } from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -201,7 +202,7 @@ export class MongoBinaryDownload {
     log(`makeMD5check: Local MD5: ${md5Local}, Remote MD5: ${md5Remote}`);
 
     if (md5Remote !== md5Local) {
-      throw new Error('MongoBinaryDownload: md5 check failed');
+      throw new Md5CheckFailedError(md5Local, md5Remote || 'unknown');
     }
 
     await fspromises.unlink(mongoDBArchiveMd5);
@@ -212,6 +213,7 @@ export class MongoBinaryDownload {
   /**
    * Download file from downloadUrl
    * @param downloadUrl URL to download a File
+   * @return The Path to the downloaded archive file
    */
   async download(downloadUrl: string): Promise<string> {
     log('download');

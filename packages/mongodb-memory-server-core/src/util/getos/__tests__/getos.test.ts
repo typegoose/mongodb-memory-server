@@ -15,6 +15,7 @@ describe('getos', () => {
     });
 
     it('should parse full lsb-release file', () => {
+      // output taken from @hasezoey (locally)
       const example = `DISTRIB_ID=LinuxMint
 DISTRIB_RELEASE=20.1
 DISTRIB_CODENAME=ulyssa
@@ -41,6 +42,7 @@ DISTRIB_DESCRIPTION="Linux Mint 20.1 Ulyssa"`;
     });
 
     it('should parse an full os-release file', () => {
+      // output taken from @hasezoey (locally)
       const example = `NAME="Linux Mint"
 VERSION="20.1 (Ulyssa)"
 ID=linuxmint
@@ -59,11 +61,12 @@ UBUNTU_CODENAME=focal`;
         dist: 'linuxmint',
         release: '20.1',
         codename: 'ulyssa',
-        id_like: 'ubuntu',
+        id_like: ['ubuntu'],
       });
     });
 
     it('should parse an full os-release file with quotes', () => {
+      // output taken from @hasezoey (locally) but modified to test specific case
       const example = `NAME="Linux Mint"
 VERSION="20.2 (Uma)"
 ID="linuxmint"
@@ -82,7 +85,28 @@ UBUNTU_CODENAME=focal`;
         dist: 'linuxmint',
         release: '20.2',
         codename: 'uma',
-        id_like: 'ubuntu',
+        id_like: ['ubuntu'],
+      });
+    });
+
+    it('should parse multiple "id_like"', () => {
+      // output taken from https://github.com/nodkz/mongodb-memory-server/issues/525#issuecomment-894279720
+      const example = `NAME="Amazon Linux"
+VERSION="2"
+ID="amzn"
+ID_LIKE="centos rhel fedora"
+VERSION_ID="2"
+PRETTY_NAME="Amazon Linux 2"
+ANSI_COLOR="0;33"
+CPE_NAME="cpe:2.3:o:amazon:amazon_linux:2"
+HOME_URL="https://amazonlinux.com/"`;
+
+      expect(getos.parseOS(example)).toEqual<getos.LinuxOS>({
+        os: 'linux',
+        dist: 'amzn',
+        release: '2',
+        codename: undefined,
+        id_like: ['centos', 'rhel', 'fedora'],
       });
     });
   });

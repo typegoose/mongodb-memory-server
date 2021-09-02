@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DryBinary locateBinary should throw an error if SystemBinary was provided, but not found 1`] = `"{\\"binaryPath\\":\\"/usr/local/bin/mongod\\"}"`;

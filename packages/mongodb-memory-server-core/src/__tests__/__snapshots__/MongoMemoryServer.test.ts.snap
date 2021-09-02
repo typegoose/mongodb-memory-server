@@ -1,10 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`MongoMemoryServer "createAuth" should throw an error if called without "this.auth" defined 1`] = `"\\"createAuth\\" got called, but \\"this.auth\\" is undefined!"`;
+
 exports[`MongoMemoryServer cleanup() should throw an error if state is not "stopped" 1`] = `
 "Incorrect State for operation: \\"new\\", allowed States: \\"[stopped]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
 https://nodkz.github.io/mongodb-memory-server/docs/guides/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
+
+exports[`MongoMemoryServer ensureInstance() should throw an error if "instanceInfo" is undefined but "_state" is "running" 1`] = `"{\\"isRunning\\":true,\\"message\\":\\"\\\\\\"ensureInstance\\\\\\" failed, because state was \\\\\\"running\\\\\\" but \\\\\\"instanceInfo\\\\\\" was undefined!\\"}"`;
+
+exports[`MongoMemoryServer ensureInstance() should throw an error if no "instanceInfo" is defined after calling start 1`] = `"{\\"isRunning\\":false,\\"message\\":\\"\\\\\\"ensureInstance\\\\\\" failed, because \\\\\\"instanceInfo\\\\\\" was undefined after running \\\\\\"start\\\\\\"\\"}"`;
 
 exports[`MongoMemoryServer ensureInstance() should throw an error if the given "_state" has no case 1`] = `
 "Incorrect State for operation: \\"not Existing\\", allowed States: \\"[running,new,stopped,starting]\\"
@@ -23,6 +29,8 @@ exports[`MongoMemoryServer getUri() should throw an state error, if not starting
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
 https://nodkz.github.io/mongodb-memory-server/docs/guides/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
+
+exports[`MongoMemoryServer start() "createAuth" should not be called if "disabled" is true 1`] = `"Unauthorized"`;
 
 exports[`MongoMemoryServer start() should throw an error if state is not "new" or "stopped" 1`] = `
 "Incorrect State for operation: \\"starting\\", allowed States: \\"[new,stopped]\\"

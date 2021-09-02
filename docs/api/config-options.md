@@ -92,6 +92,12 @@ Format:
 - `/path/to/binary/mongod` (POSIX)
 - `C:/path/to/binary/mongod.exe` (DOS)
 
+### SYSTEM_BINARY_VERSION_CHECK
+
+Option `SYSTEM_BINARY_VERSION_CHECK` is used to disable the version conflict check if [`SYSTEM_BINARY`](#system_binary) is set and version returned from `mongod_system_binary --version` does not match [`VERSION`](#version)
+
+Default: `true`
+
 ### MD5_CHECK
 
 Option `MD5_CHECK` is used to enable an md5 check after download

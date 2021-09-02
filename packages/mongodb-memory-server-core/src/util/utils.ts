@@ -1,10 +1,31 @@
 import debug from 'debug';
 import { ChildProcess } from 'child_process';
 import { AutomaticAuth } from '../MongoMemoryServer';
-import { promises as fspromises, Stats } from 'fs';
+import { promises as fspromises, Stats, constants } from 'fs';
 import { LinuxOS } from './getos';
+import {
+  AssertionFallbackError,
+  BinaryNotFoundError,
+  InsufficientPermissionsError,
+} from './errors';
 
 const log = debug('MongoMS:utils');
+
+/**
+ * This is here, because NodeJS does not have a FSError type
+ */
+interface ErrorWithCode extends Error {
+  code: string;
+}
+
+/**
+ * This is here, because NodeJS does not have a FSError type
+ * @param err Value to check agains
+ * @returns `true` if it is a error with code, `false` if not
+ */
+export function errorWithCode(err: unknown): err is ErrorWithCode {
+  return err instanceof Error && 'code' in err;
+}
 
 /**
  * Return input or default database
@@ -59,7 +80,7 @@ export function isNullOrUndefined(val: unknown): val is null | undefined {
  */
 export function assertion(cond: unknown, error?: Error): asserts cond {
   if (!cond) {
-    throw error ?? new Error('Assert failed - no custom error');
+    throw error ?? new AssertionFallbackError();
   }
 }
 
@@ -67,11 +88,20 @@ export function assertion(cond: unknown, error?: Error): asserts cond {
  * Kill an ChildProcess
  * @param childprocess The Process to kill
  * @param name the name used in the logs
+ * @param mongodPort the port for the mongod process (for easier logging)
  */
-export async function killProcess(childprocess: ChildProcess, name: string): Promise<void> {
+export async function killProcess(
+  childprocess: ChildProcess,
+  name: string,
+  mongodPort?: number
+): Promise<void> {
+  function ilog(msg: string) {
+    log(`Mongo[${mongodPort || 'unknown'}] killProcess: ${msg}`);
+  }
+
   // check if the childProcess (via PID) is still alive (found thanks to https://github.com/nodkz/mongodb-memory-server/issues/411)
   if (!isAlive(childprocess.pid)) {
-    log("killProcess: given childProcess's PID was not alive anymore");
+    ilog("killProcess: given childProcess's PID was not alive anymore");
 
     return;
   }
@@ -82,7 +112,7 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
   const timeoutTime = 1000 * 10;
   await new Promise<void>((res, rej) => {
     let timeout = setTimeout(() => {
-      log('killProcess: timeout triggered, trying SIGKILL');
+      ilog('killProcess: timeout triggered, trying SIGKILL');
 
       if (!debug.enabled('MongoMS:utils')) {
         console.warn(
@@ -93,16 +123,16 @@ export async function killProcess(childprocess: ChildProcess, name: string): Pro
 
       childprocess.kill('SIGKILL');
       timeout = setTimeout(() => {
-        log('killProcess: timeout triggered again, rejecting');
+        ilog('killProcess: timeout triggered again, rejecting');
         rej(new Error(`Process "${name}" didnt exit, enable debug for more information.`));
       }, timeoutTime);
     }, timeoutTime);
     childprocess.once(`exit`, (code, signal) => {
-      log(`killProcess: ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
+      ilog(`killProcess: ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
       clearTimeout(timeout);
       res();
     });
-    log(`killProcess: ${name}: sending "SIGINT"`);
+    ilog(`killProcess: ${name}: sending "SIGINT"`);
     childprocess.kill('SIGINT');
   });
 }
@@ -145,6 +175,7 @@ export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
     customRootName: 'mongodb-memory-server-root',
     customRootPwd: 'rootuser',
     extraUsers: [],
+    keyfileContent: '0123456789',
     ...opts,
   };
 }
@@ -190,7 +221,7 @@ export async function tryReleaseFile(
 
     return parser(output.toString());
   } catch (err) {
-    if (!['ENOENT', 'EACCES'].includes(err.code)) {
+    if (errorWithCode(err) && !['ENOENT', 'EACCES'].includes(err.code)) {
       throw err;
     }
 
@@ -217,4 +248,25 @@ export abstract class ManagerBase {
 export abstract class ManagerAdvanced extends ManagerBase {
   abstract getUri(otherDB?: string | boolean): string;
   abstract cleanup(force: boolean): Promise<void>;
+}
+
+/**
+ * Check that the Binary has sufficient Permissions to be executed
+ * @param path The Path to check
+ */
+export async function checkBinaryPermissions(path: string): Promise<void> {
+  try {
+    await fspromises.access(path, constants.X_OK); // check if the provided path exists and has the execute bit for current user
+  } catch (err) {
+    if (errorWithCode(err)) {
+      if (err.code === 'EACCES') {
+        throw new InsufficientPermissionsError(path);
+      }
+      if (err.code === 'ENOENT') {
+        throw new BinaryNotFoundError(path);
+      }
+    }
+
+    throw err;
+  }
 }

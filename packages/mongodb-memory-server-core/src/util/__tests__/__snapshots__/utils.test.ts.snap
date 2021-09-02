@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`utils assertion should throw default error if none provided 1`] = `"Assert failed - no custom error"`;

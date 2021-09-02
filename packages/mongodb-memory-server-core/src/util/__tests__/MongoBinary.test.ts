@@ -6,6 +6,7 @@ import resolveConfig, { envName, ResolveConfigVariables } from '../resolveConfig
 import * as utils from '../utils';
 import { DryMongoBinary } from '../DryMongoBinary';
 import * as childProcess from 'child_process';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 tmp.setGracefulCleanup();
 
@@ -88,9 +89,8 @@ describe('MongoBinary', () => {
         await MongoBinary.getPath();
         fail('Expected "getPath" to fail');
       } catch (err) {
-        expect(err.message).toEqual(
-          'MongoBinary.getPath: could not find an valid binary path! (Got: "undefined", RUNTIME_DOWNLOAD: "false")'
-        );
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
         expect(DryMongoBinary.locateBinary).toBeCalledTimes(1);
         expect(MongoBinary.download).not.toHaveBeenCalled();
       }
@@ -109,6 +109,7 @@ describe('MongoBinary', () => {
       afterEach(() => {
         delete process.env[envName(ResolveConfigVariables.VERSION)];
         delete process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)];
+        delete process.env[envName(ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK)];
       });
 
       it('should return and check an SystemBinary', async () => {
@@ -137,7 +138,7 @@ build environment:
         expect(output).toBe(sysBinaryPath);
       });
 
-      it('should return and check an SystemBinary and warn version conflict', async () => {
+      it('should return and check an SYSTEM_BINARY and warn version conflict', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => void 0);
         // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
         // DO NOT INDENT THE TEXT
@@ -157,6 +158,9 @@ build environment:
         );
         process.env[envName(ResolveConfigVariables.VERSION)] = '4.4.0'; // set it explicitly to that version to test non-matching versions
         process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
+        expect(resolveConfig(ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK)).toStrictEqual(
+          'true'
+        );
 
         const output = await MongoBinary.getPath();
         expect(childProcess.spawnSync).toHaveBeenCalledTimes(1);
@@ -165,7 +169,39 @@ build environment:
         expect(console.warn).toHaveBeenCalledTimes(1);
       });
 
-      it('should throw an error if systemBinary is set, but no binary can be found', async () => {
+      it('should return and check an SYSTEM_BINARY and dont warn version conflict if SYSTEM_BINARY_VERSION_CHECK is false', async () => {
+        jest.spyOn(console, 'warn');
+        // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
+        // DO NOT INDENT THE TEXT
+        jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
+          // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
+          {
+            stdout: Buffer.from(`db version v4.0.25
+git version: e2416422da84a0b63cde2397d60b521758b56d1b
+OpenSSL version: OpenSSL 1.1.1f  31 Mar 2020
+allocator: tcmalloc
+modules: none
+build environment:
+    distmod: ubuntu1804
+    distarch: x86_64
+    target_arch: x86_64`),
+          }
+        );
+        process.env[envName(ResolveConfigVariables.VERSION)] = '4.4.0'; // set it explicitly to that version to test non-matching versions
+        process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
+        expect(resolveConfig(ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK)).toStrictEqual(
+          'true'
+        );
+        process.env[envName(ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK)] = 'false';
+
+        const output = await MongoBinary.getPath();
+        expect(childProcess.spawnSync).toHaveBeenCalledTimes(1);
+        expect(MongoBinary.download).not.toHaveBeenCalled();
+        expect(console.warn).not.toHaveBeenCalled();
+        expect(output).toBe(sysBinaryPath);
+      });
+
+      it('should throw an error if SYSTEM_BINARY is set, but no binary can be found', async () => {
         process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
         jest.spyOn(DryMongoBinary, 'locateBinary').mockResolvedValue(undefined);
 
@@ -173,9 +209,8 @@ build environment:
           await MongoBinary.getPath();
           fail('Expected "getPath" to fail');
         } catch (err) {
-          expect(err.message).toEqual(
-            'Option "SYSTEM_BINARY" was set, but binaryPath was empty! (system binary could not be found?) [This Error should normally not be thrown, please report this]'
-          );
+          assertIsError(err);
+          expect(err.message).toMatchSnapshot();
         }
       });
     });

@@ -8,7 +8,7 @@ This file is meant to show what Docusaurus is capable of and how it looks in thi
 Sources:
 
 - https://v2.docusaurus.io/docs/
-- https://facebookincubator.github.io/infima/ (if they finally set up the website, otherwise build it locally)
+- https://facebookincubator.github.io/infima/
 
 ## Callouts / Admonitions
 

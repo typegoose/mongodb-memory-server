@@ -1,11 +1,11 @@
-import { promises as fspromises, constants } from 'fs';
 import debug from 'debug';
 import { envToBool, resolveConfig, ResolveConfigVariables } from './resolveConfig';
-import { isNullOrUndefined, pathExists } from './utils';
+import { checkBinaryPermissions, isNullOrUndefined, pathExists } from './utils';
 import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
 import getOS, { AnyOS, isLinuxOS } from './getos';
+import { NoSystemBinaryFoundError } from './errors';
 
 const log = debug('MongoMS:DryMongoBinary');
 
@@ -61,9 +61,7 @@ export class DryMongoBinary {
       const systemReturn = await this.getSystemPath(useOpts.systemBinary);
 
       if (isNullOrUndefined(systemReturn)) {
-        throw new Error(
-          `Config option "SYSTEM_BINARY" was provided with value "${useOpts.systemBinary}", but no binary could be found!`
-        );
+        throw new NoSystemBinaryFoundError(useOpts.systemBinary);
       }
 
       return systemReturn;
@@ -80,7 +78,7 @@ export class DryMongoBinary {
     const returnValue = await this.generateDownloadPath(useOpts);
 
     if (!returnValue[0]) {
-      log('locateBinary: could not find an existing binary');
+      log('locateBinary: could not find a existing binary');
 
       return undefined;
     }
@@ -149,15 +147,20 @@ export class DryMongoBinary {
    * @return System Binary path or undefined
    */
   static async getSystemPath(systemBinary: string): Promise<string | undefined> {
+    // REFACTOR: change this function to always return "string"
     log('getSystempath');
     try {
-      await fspromises.access(systemBinary, constants.X_OK); // check if the provided path exists and has the execute bit for current user
+      await checkBinaryPermissions(systemBinary);
 
       log(`getSystemPath: found system binary path at "${systemBinary}"`);
 
       return systemBinary; // returns if "access" is successful
     } catch (err) {
-      log(`getSystemPath: can't find system binary at "${systemBinary}".\n${err.message}`);
+      log(
+        `getSystemPath: can't find system binary at "${systemBinary}".\n${
+          err instanceof Error ? err.message : err
+        }`
+      );
     }
 
     return undefined;

@@ -1,4 +1,5 @@
-import { UnknownPlatform, UnknownArchitecture } from '../errors';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
+import { UnknownPlatformError, UnknownArchitectureError } from '../errors';
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
@@ -216,7 +217,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: 'linux',
             dist: 'ManjaroLinux',
             release: '20.2',
-            id_like: 'arch',
+            id_like: ['arch'],
           },
         });
         expect(await du.getDownloadUrl()).toBe(
@@ -236,7 +237,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: 'linux',
             dist: 'Arch',
             release: 'rolling',
-            id_like: 'arch',
+            id_like: ['arch'],
           },
         });
         expect(await du.getDownloadUrl()).toBe(
@@ -256,7 +257,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: 'linux',
             dist: 'ArchStrike',
             release: 'rolling',
-            id_like: 'arch',
+            id_like: ['arch'],
           },
         });
         expect(await du.getDownloadUrl()).toBe(
@@ -275,7 +276,7 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'elementary OS',
               release: '0.3',
-              id_like: 'ubuntu',
+              id_like: ['ubuntu'],
             },
           });
 
@@ -293,7 +294,7 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'elementary OS',
               release: '5.1',
-              id_like: 'ubuntu',
+              id_like: ['ubuntu'],
             },
           });
 
@@ -314,7 +315,7 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'Linux Mint',
               release: '',
-              id_like: 'ubuntu',
+              id_like: ['ubuntu'],
             },
           });
         });
@@ -387,6 +388,45 @@ describe('MongoBinaryDownloadUrl', () => {
 
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.0.24.tgz'
+          );
+        });
+      });
+
+      // see https://github.com/nodkz/mongodb-memory-server/issues/527
+      describe('for amazon', () => {
+        it('should return a archive name for Amazon 1', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.24',
+            os: {
+              os: 'linux',
+              dist: 'amzn',
+              release: '1',
+              id_like: ['centos', 'rhel', 'fedora'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon-4.0.24.tgz'
+          );
+        });
+
+        it('should return a archive name for Amazon 2', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.24',
+            os: {
+              os: 'linux',
+              dist: 'amzn',
+              release: '2',
+              id_like: ['centos', 'rhel', 'fedora'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon2-4.0.24.tgz'
           );
         });
       });
@@ -534,7 +574,8 @@ describe('MongoBinaryDownloadUrl', () => {
         await du.getArchiveName();
         fail('Expected "getArchiveName" to throw');
       } catch (err) {
-        expect(err).toBeInstanceOf(UnknownPlatform);
+        assertIsError(err);
+        expect(err).toBeInstanceOf(UnknownPlatformError);
         expect(err.message).toMatchSnapshot();
       }
     });
@@ -549,7 +590,8 @@ describe('MongoBinaryDownloadUrl', () => {
         });
         fail('Expected "translatePlatform" to throw');
       } catch (err) {
-        expect(err).toBeInstanceOf(UnknownPlatform);
+        assertIsError(err);
+        expect(err).toBeInstanceOf(UnknownPlatformError);
         expect(err.message).toMatchSnapshot();
       }
     });
@@ -783,7 +825,8 @@ describe('MongoBinaryDownloadUrl', () => {
         MongoBinaryDownloadUrl.translateArch('ia32', 'darwin');
         fail('Expected "translateArch" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(UnknownArchitecture);
+        assertIsError(err);
+        expect(err).toBeInstanceOf(UnknownArchitectureError);
         expect(err.message).toMatchSnapshot();
       }
     });
@@ -793,7 +836,8 @@ describe('MongoBinaryDownloadUrl', () => {
         MongoBinaryDownloadUrl.translateArch('risc', 'linux');
         fail('Expected "translateArch" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(UnknownArchitecture);
+        assertIsError(err);
+        expect(err).toBeInstanceOf(UnknownArchitectureError);
         expect(err.message).toMatchSnapshot();
       }
     });

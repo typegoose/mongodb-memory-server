@@ -21,6 +21,7 @@ export enum ResolveConfigVariables {
   ARCHIVE_NAME = 'ARCHIVE_NAME',
   RUNTIME_DOWNLOAD = 'RUNTIME_DOWNLOAD',
   USE_HTTP = 'USE_HTTP',
+  SYSTEM_BINARY_VERSION_CHECK = 'SYSTEM_BINARY_VERSION_CHECK',
 }
 
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
@@ -30,6 +31,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.PREFER_GLOBAL_PATH, 'true'],
   [ResolveConfigVariables.RUNTIME_DOWNLOAD, 'true'],
   [ResolveConfigVariables.USE_HTTP, 'false'],
+  [ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK, 'true'],
 ]);
 
 /**
@@ -114,7 +116,7 @@ export function envName(variableName: ResolveConfigVariables): string {
  */
 export function envToBool(env: string = ''): boolean {
   if (typeof env !== 'string') {
-    log('envToBool: input was not an string!');
+    log('envToBool: input was not a string!');
 
     return false;
   }
@@ -123,9 +125,16 @@ export function envToBool(env: string = ''): boolean {
 }
 
 // enable debug if "MONGOMS_DEBUG" is true
-if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG))) {
+if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
   debug.enable('MongoMS:*');
+  log('Debug Mode Enabled, through Environment Variable');
 }
 
-// run this always after debug is enabled
+// run this after env debug enable to be able to debug this function too
 findPackageJson();
+
+// enable debug if "config.mongodbMemoryServer.debug" is true
+if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
+  debug.enable('MongoMS:*');
+  log('Debug Mode Enabled, through package.json');
+}

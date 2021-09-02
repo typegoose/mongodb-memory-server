@@ -8,6 +8,7 @@ import {
   getHost,
   isNullOrUndefined,
   ManagerAdvanced,
+  statPath,
   uriTemplate,
 } from './util/utils';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -20,9 +21,20 @@ import {
   StorageEngine,
 } from './util/MongoInstance';
 import { SpawnOptions } from 'child_process';
-import { StateError } from './util/errors';
+import {
+  AuthNotObjectError,
+  InstanceInfoError,
+  ReplsetCountLowError,
+  StateError,
+  WaitForPrimaryTimeoutError,
+} from './util/errors';
+import * as tmp from 'tmp';
+import { promises as fs } from 'fs';
+import { resolve } from 'path';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
+
+tmp.setGracefulCleanup();
 
 // "setImmediate" is used to ensure the functions are async, otherwise the process might evaluate the one function before other async functions (like "start")
 // and so skip to next state check or return before actually ready
@@ -142,9 +154,14 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   servers: MongoMemoryServer[] = [];
 
   // "!" is used, because the getters are used instead of the "_" values
+  /** Options for individual instances */
   protected _instanceOpts!: MongoMemoryInstanceOptsBase[];
+  /** Options for the Binary across all instances */
   protected _binaryOpts!: MongoBinaryOpts;
+  /** Options for the Replset itself and defaults for instances */
   protected _replSetOpts!: Required<ReplSetOpts>;
+  /** TMPDIR for the keyfile, when auth is used */
+  protected _keyfiletmp?: tmp.DirResult;
 
   protected _state: MongoMemoryReplSetStates = MongoMemoryReplSetStates.stopped;
   protected _ranCreateAuth: boolean = false;
@@ -235,7 +252,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     };
     this._replSetOpts = { ...defaults, ...val };
 
-    assertion(this._replSetOpts.count > 0, new Error('ReplSet Count needs to be 1 or higher!'));
+    assertion(this._replSetOpts.count > 0, new ReplsetCountLowError(this._replSetOpts.count));
 
     if (typeof this._replSetOpts.auth === 'object') {
       this._replSetOpts.auth = authDefault(this._replSetOpts.auth);
@@ -363,6 +380,29 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     if (this.servers.length > 0) {
       log('initAllServers: lenght of "servers" is higher than 0, starting existing servers');
+
+      if (this._ranCreateAuth) {
+        log('initAllServers: "_ranCreateAuth" is true, changing "auth" to on');
+        const keyfilepath = resolve((await this.ensureKeyFile()).name, 'keyfile');
+        for (const server of this.servers) {
+          assertion(
+            !isNullOrUndefined(server.instanceInfo),
+            new InstanceInfoError('MongoMemoryReplSet.initAllServers')
+          );
+          assertion(typeof this._replSetOpts.auth === 'object', new AuthNotObjectError());
+          server.instanceInfo.instance.instanceOpts.auth = true;
+          server.instanceInfo.instance.instanceOpts.keyfileLocation = keyfilepath;
+          server.instanceInfo.instance.extraConnectionOptions = {
+            authSource: 'admin',
+            authMechanism: 'SCRAM-SHA-256',
+            auth: {
+              user: this._replSetOpts.auth.customRootName as string, // cast because these are existing
+              password: this._replSetOpts.auth.customRootPwd as string,
+            },
+          };
+        }
+      }
+
       await Promise.all(this.servers.map((s) => s.start(true)));
 
       return;
@@ -395,11 +435,44 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   }
 
   /**
+   * Ensure "_keyfiletmp" is defined
+   * @returns the ensured "_keyfiletmp" value
+   */
+  protected async ensureKeyFile(): Promise<tmp.DirResult> {
+    log('ensureKeyFile');
+
+    if (isNullOrUndefined(this._keyfiletmp)) {
+      this._keyfiletmp = tmp.dirSync({
+        mode: 0o766,
+        prefix: 'mongo-mem-keyfile-',
+        unsafeCleanup: true,
+      });
+    }
+
+    const keyfilepath = resolve(this._keyfiletmp.name, 'keyfile');
+
+    // if path does not exist or have no access, create it (or fail)
+    if (!(await statPath(keyfilepath))) {
+      log('ensureKeyFile: creating Keyfile');
+
+      assertion(typeof this._replSetOpts.auth === 'object', new AuthNotObjectError());
+
+      await fs.writeFile(
+        resolve(this._keyfiletmp.name, 'keyfile'),
+        this._replSetOpts.auth.keyfileContent ?? '0123456789',
+        { mode: 0o700 } // this is because otherwise mongodb errors with "permissions are too open" on unix systems
+      );
+    }
+
+    return this._keyfiletmp;
+  }
+
+  /**
    * Stop the underlying `mongod` instance(s).
    * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
    */
   async stop(runCleanup: boolean = true): Promise<boolean> {
-    log('stop' + isNullOrUndefined(process.exitCode) ? '' : ': called by process-event');
+    log(`stop: called by ${isNullOrUndefined(process.exitCode) ? 'manual' : 'process exit'}`);
 
     if (this._state === MongoMemoryReplSetStates.stopped) {
       return false;
@@ -444,6 +517,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     process.removeListener('beforeExit', this.cleanup);
 
     await Promise.all(this.servers.map((s) => s.cleanup(force)));
+
+    // cleanup the keyfile tmpdir
+    if (!isNullOrUndefined(this._keyfiletmp)) {
+      this._keyfiletmp.removeCallback();
+      this._keyfiletmp = undefined;
+    }
 
     this.servers = [];
 
@@ -498,6 +577,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     assertionIsMMSRSState(MongoMemoryReplSetStates.init, this._state);
     assertion(this.servers.length > 0, new Error('One or more servers are required.'));
     const uris = this.servers.map((server) => server.getUri());
+    const isInMemory = this.servers[0].instanceInfo?.storageEngine === 'ephemeralForTest';
 
     let con: MongoClient = await MongoClient.connect(uris[0], {
       useNewUrlParser: true,
@@ -517,6 +597,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       const rsConfig = {
         _id: this._replSetOpts.name,
         members,
+        writeConcernMajorityJournalDefault: !isInMemory, // if storage engine is "ephemeralForTest" deactivate this option, otherwise enable it
         settings: {
           electionTimeoutMillis: 500,
           ...this._replSetOpts.configSettings,
@@ -528,9 +609,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         await adminDb.command({ replSetInitiate: rsConfig });
 
         if (typeof this._replSetOpts.auth === 'object') {
-          log('_initReplSet: "this._replSetOpts.auth" is an object');
+          log('_initReplSet: "this._replSetOpts.auth" is a object');
 
-          await this._waitForPrimary();
+          await this._waitForPrimary(undefined, '_initReplSet authIsObject');
 
           const primary = this.servers.find(
             (server) => server.instanceInfo?.instance.isInstancePrimary
@@ -538,13 +619,13 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           assertion(!isNullOrUndefined(primary), new Error('No Primary found'));
           assertion(
             !isNullOrUndefined(primary.instanceInfo),
-            new Error('Primary dosnt have an "instanceInfo" defined')
+            new Error('Primary dosnt have "instanceInfo" defined') // TODO: change to "InstanceInfoError"
           );
 
           await primary.createAuth(primary.instanceInfo);
           this._ranCreateAuth = true;
 
-          if (primary.opts.instance?.storageEngine !== 'ephemeralForTest') {
+          if (!isInMemory) {
             log('_initReplSet: closing connection for restart');
             await con.close(); // close connection in preparation for "stop"
             await this.stop(false); // stop all servers for enabling auth
@@ -584,7 +665,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         }
       }
       log('_initReplSet: ReplSet-reconfig finished');
-      await this._waitForPrimary();
+      await this._waitForPrimary(undefined, '_initReplSet beforeRunning');
       this.stateChange(MongoMemoryReplSetStates.running);
       log('_initReplSet: running');
     } finally {
@@ -609,15 +690,16 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   }
 
   /**
-   * Wait until the replSet has elected an Primary
-   * @param timeout Timeout to not run infinitly
+   * Wait until the replSet has elected a Primary
+   * @param timeout Timeout to not run infinitly, default: 30s
+   * @param where Extra Parameter for logging to know where this function was called
    * @throws if timeout is reached
    */
-  protected async _waitForPrimary(timeout: number = 30000): Promise<void> {
-    log('_waitForPrimary: Waiting for an Primary');
+  protected async _waitForPrimary(timeout: number = 1000 * 30, where?: string): Promise<void> {
+    log('_waitForPrimary: Waiting for a Primary');
     let timeoutId: NodeJS.Timeout | undefined;
 
-    // "race" because not all servers will be an primary
+    // "race" because not all servers will be a primary
     await Promise.race([
       ...this.servers.map(
         (server) =>
@@ -625,7 +707,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
             const instanceInfo = server.instanceInfo;
 
             if (isNullOrUndefined(instanceInfo)) {
-              return rej(new Error('_waitForPrimary - instanceInfo not present'));
+              return rej(new Error('_waitForPrimary - instanceInfo not present')); // TODO: change to "InstanceInfoError"
             }
 
             instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);
@@ -638,7 +720,8 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       ),
       new Promise((_res, rej) => {
         timeoutId = setTimeout(() => {
-          rej(new Error(`Timed out after ${timeout}ms while waiting for an Primary`));
+          Promise.all([...this.servers.map((v) => v.stop())]); // this is not chained with "rej", this is here just so things like jest can exit at some point
+          rej(new WaitForPrimaryTimeoutError(timeout, where));
         }, timeout);
       }),
     ]);

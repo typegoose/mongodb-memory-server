@@ -1,7 +1,9 @@
 import { promises as fspromises } from 'fs';
 import md5file from 'md5-file';
 import * as mkdirp from 'mkdirp';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 import { DryMongoBinary } from '../DryMongoBinary';
+import { Md5CheckFailedError } from '../errors';
 import { MongoBinaryOpts } from '../MongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
@@ -145,9 +147,14 @@ describe('MongoBinaryDownload', () => {
 
     const du = new MongoBinaryDownload({ downloadDir: '/', checkMD5: true });
     jest.spyOn(du, 'download').mockResolvedValue('');
-    await expect(du.makeMD5check('', '')).rejects.toMatchInlineSnapshot(
-      `[Error: MongoBinaryDownload: md5 check failed]`
-    );
+
+    try {
+      await du.makeMD5check('', '');
+      fail('Expected "makeMD5check" to fail');
+    } catch (err) {
+      expect(err).toBeInstanceOf(Md5CheckFailedError);
+      expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
+    }
   });
 
   it('false value of checkMD5 attribute disables makeMD5check validation', async () => {
@@ -267,6 +274,7 @@ describe('MongoBinaryDownload', () => {
       await du.startDownload();
       fail('Expected "startDownload" to fail');
     } catch (err) {
+      assertIsError(err);
       expect(err.message).toEqual(customError.message);
       expect(console.error).toHaveBeenCalledTimes(1);
     }

@@ -7,7 +7,21 @@ This Guide will show how `mongodb-memory-server` can be used with different fram
 
 ## jest
 
-For useage with `jest` it is recommended to use the [`globalSetup`](https://jestjs.io/docs/en/configuration#globalsetup-string) and [`globalTeardown`](https://jestjs.io/docs/en/configuration#globalteardown-string) options
+<span class="badge badge--secondary">jest version 27</span>
+
+For usage with `jest` it is recommended to use the [`globalSetup`](https://jestjs.io/docs/en/configuration#globalsetup-string) and [`globalTeardown`](https://jestjs.io/docs/en/configuration#globalteardown-string) options
+
+`config.ts`:
+
+```ts
+// this file could be anything (like a json directly imported)
+
+export = {
+  Memory: true,
+  IP: '127.0.0.1',
+  Port: '27017',
+}
+```
 
 `jest.config.json`:
 
@@ -85,6 +99,8 @@ Use [`--maxWorkers 4`](https://jestjs.io/docs/configuration#maxworkers-number--s
 :::
 
 ## mocha / chai
+
+<span class="badge badge--secondary">mocha version (unknown)</span>
 
 Start Mocha with `--timeout 60000` cause first download of MongoDB binaries may take a time.
 

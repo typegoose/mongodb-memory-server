@@ -6,7 +6,7 @@ import mkdirp from 'mkdirp';
 import { promises as fspromises } from 'fs';
 import { Mutex } from 'async-mutex';
 import { v4 as uuidv4 } from 'uuid';
-import { UnknownLockfileStatus } from './errors';
+import { UnableToUnlockLockfileError, UnknownLockfileStatusError } from './errors';
 
 const log = debug('MongoMS:LockFile');
 
@@ -82,7 +82,7 @@ export class LockFile {
       case LockFileStatus.available:
         return this.createLock(useFile);
       default:
-        throw new UnknownLockfileStatus(status);
+        throw new UnknownLockfileStatusError(status);
     }
   }
 
@@ -123,11 +123,11 @@ export class LockFile {
         return LockFileStatus.lockedSelf;
       }
 
-      log(`checkLock: Lock File Aready exists, for an different process: "${readout}"`);
+      log(`checkLock: Lock File Aready exists, for a different process: "${readout}"`);
 
       return utils.isAlive(readout) ? LockFileStatus.lockedDifferent : LockFileStatus.available;
     } catch (err) {
-      if (err.code === 'ENOENT') {
+      if (utils.errorWithCode(err) && err.code === 'ENOENT') {
         log('checkLock: reading file failed with ENOENT');
 
         return LockFileStatus.available;
@@ -187,7 +187,7 @@ export class LockFile {
       case LockFileStatus.available:
         return this.createLock(file);
       default:
-        throw new UnknownLockfileStatus(lockStatus);
+        throw new UnknownLockfileStatusError(lockStatus);
     }
   }
 
@@ -270,13 +270,9 @@ export class LockFile {
 
         return;
       case LockFileStatus.lockedSelf:
-        throw new Error(
-          `Cannot unlock file "${this.file}", because it is not locked by this instance!`
-        );
+        throw new UnableToUnlockLockfileError(true, this.file);
       default:
-        throw new Error(
-          `Cannot unlock Lock File "${this.file}" because it is not locked by this process!`
-        );
+        throw new UnableToUnlockLockfileError(false, this.file);
     }
   }
 
