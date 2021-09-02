@@ -5,7 +5,13 @@ title: 'Details for Errors & Warnings'
 
 ## StateError
 
-Example: `Incorrect State for operation: "running", allowed States: "[init]"`
+Example:
+
+```txt
+Incorrect State for operation: "${gotState}", allowed States: "[${wantedStates.join(',')}]"
+This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
+https://nodkz.github.io/mongodb-memory-server/docs/guides/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything
+```
 
 Details:  
 This Error gets thrown if an function (or setter) is called, but the state is not what it should be.  
@@ -13,21 +19,24 @@ This Error gets thrown if an function (or setter) is called, but the state is no
 
 ## UnknownLockfileStatusError
 
-Example: `Unknown LockFile Status: "-1"`
+Example: `Unknown LockFile Status: "${status}"`
 
 Details:  
 This Error gets thrown if an number outside the `LockFileStatus` Enum is used
 
 ## UnableToUnlockLockfileError
 
-Example: `Unknown Platform: "unknown"`
+Example: `Cannot unlock file "${file}", because it is not locked by this ${thisInstance ? 'instance' : 'process'}`
 
 Details:  
 This Error gets thrown when this package cannot get what platform it is running on
 
 ## UnknownArchitectureError
 
-Example: `Unsupported Architecture: "risc"`
+Example:
+
+- `Unsupported Architecture-Platform combination: arch: "${arch}", platform: "${platform}"`
+- `Unsupported Architecture: "${arch}"`
 
 Details:  
 This Error gets thrown when this package runs on an unsupported architecture by mongodb
