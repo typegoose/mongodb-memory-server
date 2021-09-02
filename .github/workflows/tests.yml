@@ -44,7 +44,7 @@ jobs:
           CI: true
       - name: Send codecov.io stats
         if: matrix.node-version == '12.x'
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
 
   publish:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta'
