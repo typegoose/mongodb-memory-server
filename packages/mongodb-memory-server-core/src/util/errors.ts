@@ -52,6 +52,7 @@ export class WaitForPrimaryTimeoutError extends Error {
   }
 }
 
+// REFACTOR: consider merging this with InstanceInfoError
 export class EnsureInstanceError extends Error {
   constructor(public isRunning: boolean) {
     super();
