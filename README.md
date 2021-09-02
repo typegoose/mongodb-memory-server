@@ -253,6 +253,8 @@ or
 }
 ```
 
+Also see the [Enable Debug Mode](https://nodkz.github.io/mongodb-memory-server/docs/guides/enable-debug-mode) Guide.
+
 ## Contributing
 
 Contributing Guidelines are setup in [CONTRIBUTING](./.github/CONTRIBUTING.md)
