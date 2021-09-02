@@ -213,6 +213,7 @@ export class MongoBinaryDownload {
   /**
    * Download file from downloadUrl
    * @param downloadUrl URL to download a File
+   * @return The Path to the downloaded archive file
    */
   async download(downloadUrl: string): Promise<string> {
     log('download');
