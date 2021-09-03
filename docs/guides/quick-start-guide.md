@@ -51,6 +51,8 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 // This will create an new instance of "MongoMemoryReplSet" and automatically start all Servers
 const replset = await MongoMemoryReplSet.create({ replSet: { count: 4 } }); // This will create an ReplSet with 4 members
+// To use Transactions, the "storageEngine" needs to be changed to `wiredTiger`
+const replset = await MongoMemoryReplSet.create({ replSet: { count: 4, storageEngine: 'wiredTiger' } }); // This will create an ReplSet with 4 members and storage-engine "wiredTiger"
 
 const uri = replset.getUri();
 
