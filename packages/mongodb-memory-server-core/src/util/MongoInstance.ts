@@ -276,7 +276,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
 
     const final = result.concat(this.instanceOpts.args ?? []);
 
-    this.debug('prepareCommandArgs: final arugment array:' + JSON.stringify(final));
+    this.debug('prepareCommandArgs: final argument array:' + JSON.stringify(final));
 
     return final;
   }
