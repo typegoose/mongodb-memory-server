@@ -1,3 +1,10 @@
+### [7.4.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0...v7.4.1) (2021-09-20)
+
+
+### Fixes
+
+* **MongoInstance:** fix typo ([#542](https://github.com/nodkz/mongodb-memory-server/issues/542)) ([7124f2d](https://github.com/nodkz/mongodb-memory-server/commit/7124f2dfbbc8d3dc92a7f462376c49211f8a8935))
+
 ## [7.4.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.3.6...v7.4.0) (2021-09-02)
 
 
