@@ -1,3 +1,21 @@
+## [8.0.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.1...v8.0.0-beta.1) (2021-09-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mongodb:** Upgrade to mongodb(nodejs) 4.1
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 27.0.2 ([e079f0d](https://github.com/nodkz/mongodb-memory-server/commit/e079f0d7af18e4a7a39b6c16b51a9dd39c910b8a))
+* **@typescript-eslint/*:** upgrade to version 4.31.2 ([c8d34b1](https://github.com/nodkz/mongodb-memory-server/commit/c8d34b1fb7b957a391fff93fc2f2013972492274))
+* **conventional-changelog-conventionalcommits:** upgrade to version 4.6.1 ([d00f6a9](https://github.com/nodkz/mongodb-memory-server/commit/d00f6a9b4fd6717292a3133dba77fa0ce878f4ce))
+* **jest:** upgrade to version 27.2.1 ([695527f](https://github.com/nodkz/mongodb-memory-server/commit/695527fb999cd2b16316dd6a240d2622b13c5b96))
+* **mongodb:** upgrade to version 4.1 ([6cf5502](https://github.com/nodkz/mongodb-memory-server/commit/6cf55023c2ace7448a80c88d6067f8dbb7742572))
+* **prettier:** upgrade to version 2.4.1 ([36cd70f](https://github.com/nodkz/mongodb-memory-server/commit/36cd70f13ba229a718a941a3f113170abf794c51))
+* **tslib:** upgrade to version 2.3.1 ([1a36352](https://github.com/nodkz/mongodb-memory-server/commit/1a36352fcaaa6c45796cb1d1c2a0e4b509acbfdd))
+* **typescript:** upgrade to version 4.4.3 ([84e407b](https://github.com/nodkz/mongodb-memory-server/commit/84e407b6b14ae986ab9d4ac6a1d5caa3f694861b))
+
 ### [7.4.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0...v7.4.1) (2021-09-20)
 
 
