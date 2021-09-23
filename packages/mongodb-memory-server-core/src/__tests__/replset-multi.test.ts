@@ -15,10 +15,7 @@ describe('multi-member replica set', () => {
   it('should be possible to connect replicaset after waitUntilRunning resolveds', async () => {
     const replSet = await MongoMemoryReplSet.create({ replSet: { count: 3 } });
 
-    const con = await MongoClient.connect(replSet.getUri(), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const con = await MongoClient.connect(replSet.getUri(), {});
 
     // await while all SECONDARIES will be ready
     await new Promise((resolve) => setTimeout(resolve, 2000));

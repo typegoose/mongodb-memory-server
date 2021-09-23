@@ -347,14 +347,14 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           );
 
           con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
             ...this.extraConnectionOptions,
+            directConnection: true,
           });
 
           const admin = con.db('admin'); // just to ensure it is actually the "admin" database
           // "timeoutSecs" is set to "1" otherwise it will take at least "10" seconds to stop (very long tests)
           await admin.command({ shutdown: 1, force: true, timeoutSecs: 1 });
+          this.debug('stop: after admin shutdown command');
         } catch (err) {
           // Quote from MongoDB Documentation (https://docs.mongodb.com/manual/reference/command/replSetStepDown/#client-connections):
           // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.

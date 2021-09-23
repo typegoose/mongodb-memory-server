@@ -682,10 +682,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       new Error('"createAuth" got called, but "this.auth" is undefined!')
     );
     this.debug('createAuth: options:', this.auth);
-    const con: MongoClient = await MongoClient.connect(uriTemplate(data.ip, data.port, 'admin'), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const con: MongoClient = await MongoClient.connect(
+      uriTemplate(data.ip, data.port, 'admin'),
+      {}
+    );
 
     let db = con.db('admin'); // just to ensure it is actually the "admin" database AND to have the "Db" data
 

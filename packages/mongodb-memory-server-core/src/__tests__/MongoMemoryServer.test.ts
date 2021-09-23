@@ -87,22 +87,20 @@ describe('MongoMemoryServer', () => {
       const con: MongoClient = await MongoClient.connect(
         utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
         {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
           authSource: 'admin',
           authMechanism: 'SCRAM-SHA-256',
           auth: {
-            user: mongoServer.auth.customRootName,
+            username: mongoServer.auth.customRootName,
             password: mongoServer.auth.customRootPwd,
           },
         }
       );
       const db = con.db('admin');
-      const users: { users: { user: string }[] } = await db.command({
+      const users: { users?: { user: string }[] } = await db.command({
         usersInfo: mongoServer.auth.customRootName,
       });
       expect(users.users).toHaveLength(1);
-      expect(users.users[0].user).toEqual(mongoServer.auth.customRootName);
+      expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
       expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledTimes(1);
 
@@ -126,22 +124,20 @@ describe('MongoMemoryServer', () => {
       const con: MongoClient = await MongoClient.connect(
         utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
         {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
           authSource: 'admin',
           authMechanism: 'SCRAM-SHA-256',
           auth: {
-            user: mongoServer.auth.customRootName,
+            username: mongoServer.auth.customRootName,
             password: mongoServer.auth.customRootPwd,
           },
         }
       );
       const db = con.db('admin');
-      const users: { users: { user: string }[] } = await db.command({
+      const users: { users?: { user: string }[] } = await db.command({
         usersInfo: mongoServer.auth.customRootName,
       });
       expect(users.users).toHaveLength(1);
-      expect(users.users[0].user).toEqual(mongoServer.auth.customRootName);
+      expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
       expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(2);
 
       await con.close();
@@ -190,20 +186,19 @@ describe('MongoMemoryServer', () => {
       const con: MongoClient = await MongoClient.connect(
         utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
         {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
           authSource: 'admin',
           authMechanism: 'SCRAM-SHA-256',
           auth: {
-            user: mongoServer.auth.customRootName,
+            username: mongoServer.auth.customRootName,
             password: mongoServer.auth.customRootPwd,
           },
         }
       );
       let db = con.db('admin');
-      const users: { users: { user: string }[] } = await db.command({
+      const users: { users?: { user: string }[] } = await db.command({
         usersInfo: 1,
       });
+      utils.assertion(!utils.isNullOrUndefined(users.users));
       expect(users.users).toHaveLength(4);
       expect(
         users.users.filter((v) => v.user === mongoServer.auth!.customRootName).length > 0
@@ -213,9 +208,10 @@ describe('MongoMemoryServer', () => {
       expect(users.users.filter((v) => v.user === 'AdminUser').length > 0).toEqual(true);
       expect(users.users.filter((v) => v.user === 'OtherDBUser').length > 0).toEqual(false);
       db = con.db('otherdb');
-      const usersOtherDb: { users: { user: string }[] } = await db.command({
+      const usersOtherDb: { users?: { user: string }[] } = await db.command({
         usersInfo: 1,
       });
+      utils.assertion(!utils.isNullOrUndefined(usersOtherDb.users));
       expect(usersOtherDb.users).toHaveLength(1);
       expect(usersOtherDb.users.filter((v) => v.user === 'OtherDBUser').length > 0).toEqual(true);
       expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
@@ -243,10 +239,7 @@ describe('MongoMemoryServer', () => {
 
       const con: MongoClient = await MongoClient.connect(
         utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        }
+        {}
       );
       const db = con.db('admin');
       try {

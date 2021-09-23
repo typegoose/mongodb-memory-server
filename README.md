@@ -212,7 +212,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 const mongoServer = await MongoMemoryServer.create();
 
 (async () => {
-  await mongoose.connect(mongoServer.getUri(), { useNewUrlParser: true, dbName: "verifyMASTER", useCreateIndex: true, useUnifiedTopology: true });
+  await mongoose.connect(mongoServer.getUri(), { dbName: "verifyMASTER", useCreateIndex: true });
 
   // your code here
   

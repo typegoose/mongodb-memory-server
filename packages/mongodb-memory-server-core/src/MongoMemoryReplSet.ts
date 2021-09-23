@@ -396,7 +396,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
             authSource: 'admin',
             authMechanism: 'SCRAM-SHA-256',
             auth: {
-              user: this._replSetOpts.auth.customRootName as string, // cast because these are existing
+              username: this._replSetOpts.auth.customRootName as string, // cast because these are existing
               password: this._replSetOpts.auth.customRootPwd as string,
             },
           };
@@ -404,6 +404,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       }
 
       await Promise.all(this.servers.map((s) => s.start(true)));
+      log('initAllServers: finished starting existing instances again');
 
       return;
     }
@@ -432,6 +433,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     log('initAllServers: waiting for all servers to finish starting');
     // ensures all servers are listening for connection
     await Promise.all(this.servers.map((s) => s.start()));
+    log('initAllServers: finished starting all servers initially');
   }
 
   /**
@@ -580,8 +582,8 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     const isInMemory = this.servers[0].instanceInfo?.storageEngine === 'ephemeralForTest';
 
     let con: MongoClient = await MongoClient.connect(uris[0], {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // somehow since mongodb-nodejs 4.0, this option is needed when the server is set to be in a replset
+      directConnection: true,
     });
     log('_initReplSet: connected');
 
@@ -633,12 +635,10 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
             await this.initAllServers(); // start all servers again with "auth" enabled
 
             con = await MongoClient.connect(this.getUri('admin'), {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
               authSource: 'admin',
               authMechanism: 'SCRAM-SHA-256',
               auth: {
-                user: this._replSetOpts.auth.customRootName as string, // cast because these are existing
+                username: this._replSetOpts.auth.customRootName as string, // cast because these are existing
                 password: this._replSetOpts.auth.customRootPwd as string,
               },
             });
