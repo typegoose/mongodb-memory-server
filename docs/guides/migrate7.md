@@ -24,11 +24,11 @@ Example:
 ```ts
 // this no longer works
 const mongo = new MongoMemoryServer();
-const uri = await getUri(); // ERROR: instance not started
+const uri = await mongo.getUri(); // ERROR: instance not started
 
 // it is now
 const mongo = await MongoMemoryServer.create();
-const uri = getUri();
+const uri = mongo.getUri();
 ```
 
 ### getUri is no longer async
