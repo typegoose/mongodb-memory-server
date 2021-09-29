@@ -1,3 +1,17 @@
+## [8.0.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.1...v8.0.0-beta.2) (2021-09-29)
+
+
+### Features
+
+* **DryMongoBinary::generateOptions:** parse options from ARCHIVE_NAME or DOWNLOAD_URL ([808cc7e](https://github.com/nodkz/mongodb-memory-server/commit/808cc7e6566893ff4243420af718aa5514b72f72)), closes [#528](https://github.com/nodkz/mongodb-memory-server/issues/528)
+* **errors:** add errors "ParseArchiveRegexError" and "NoRegexMatchError" ([fb02eac](https://github.com/nodkz/mongodb-memory-server/commit/fb02eac6371c98ae1ff334db50d068be8ac5d843))
+* **MongoBinaryDownloadUrl::translateArch:** handle more variations of the same arch ([0a22679](https://github.com/nodkz/mongodb-memory-server/commit/0a22679d01a3792b6534b7de6c5d838c91c6646a))
+
+
+### Fixes
+
+* **resolveConfig:** fix debug enable ([9c8cbb7](https://github.com/nodkz/mongodb-memory-server/commit/9c8cbb7674c05c978d0fcdc3c6123ecc9afc1fb0))
+
 ## [8.0.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.1...v8.0.0-beta.1) (2021-09-23)
 
 
