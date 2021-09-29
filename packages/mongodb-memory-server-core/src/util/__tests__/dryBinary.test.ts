@@ -6,7 +6,8 @@ import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
 import mkdirp from 'mkdirp';
 import { LinuxOS, OtherOS } from '../getos';
-import { NoSystemBinaryFoundError } from '../errors';
+import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from '../errors';
+import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 tmp.setGracefulCleanup();
 
@@ -402,7 +403,14 @@ describe('DryBinary', () => {
     let osmock: LinuxOS;
     const mockBinary: string = '/custom/path';
 
-    beforeAll(() => {
+    beforeEach(() => {
+      delete process.env[envName(ResolveConfigVariables.DOWNLOAD_DIR)];
+      delete process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)];
+      delete process.env[envName(ResolveConfigVariables.VERSION)];
+      delete process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)];
+      delete process.env[envName(ResolveConfigVariables.DOWNLOAD_URL)];
+      process.env['INIT_CWD'] = undefined; // removing this, because it would mess with stuff - but still should be used when available (postinstall)
+
       jest.spyOn(binary.DryMongoBinary, 'generateDownloadPath').mockImplementation(async (opts) => {
         return [true, opts.downloadDir ? opts.downloadDir : mockBinary];
       });
@@ -412,14 +420,8 @@ describe('DryBinary', () => {
         release: '20.04',
       };
     });
-    beforeEach(() => {
-      delete process.env[envName(ResolveConfigVariables.DOWNLOAD_DIR)];
-      delete process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)];
-      delete process.env[envName(ResolveConfigVariables.VERSION)];
-      process.env['INIT_CWD'] = undefined; // removing this, because it would mess with stuff - but still should be used when available (postinstall)
-    });
 
-    afterAll(() => {
+    afterEach(() => {
       jest.restoreAllMocks();
     });
 
@@ -482,6 +484,202 @@ describe('DryBinary', () => {
         os: options.os,
         downloadDir: path.dirname(envdldir),
       });
+    });
+
+    it('should use "parseArchiveNameRegex" when DOWNLOAD_URL is defined', async () => {
+      const parseArchiveNameRegexSpy = jest.spyOn(binary.DryMongoBinary, 'parseArchiveNameRegex');
+      const envURL = 'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.25.tgz';
+      process.env[envName(ResolveConfigVariables.DOWNLOAD_URL)] = envURL;
+      const customos: OtherOS = {
+        os: 'win32',
+      };
+      const origOptions: Required<binary.DryMongoBinaryOptions> = {
+        version: '4.4.4',
+        arch: 'arm64',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '',
+      };
+
+      const output = await binary.DryMongoBinary.generateOptions(origOptions);
+
+      expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
+        version: '4.0.25',
+        arch: 'x86_64',
+        downloadDir: path.dirname(origOptions.downloadDir),
+        systemBinary: '',
+        os: {
+          os: 'linux',
+          dist: 'ubuntu',
+          release: '',
+        },
+      });
+
+      expect(parseArchiveNameRegexSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should use "parseArchiveNameRegex" when ARCHIVE_NAME is defined', async () => {
+      const parseArchiveNameRegexSpy = jest.spyOn(binary.DryMongoBinary, 'parseArchiveNameRegex');
+      const envARCHIVE = 'mongodb-linux-x86_64-ubuntu1604-4.0.24.tgz';
+      process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)] = envARCHIVE;
+      const customos: OtherOS = {
+        os: 'win32',
+      };
+      const origOptions: Required<binary.DryMongoBinaryOptions> = {
+        version: '4.4.4',
+        arch: 'arm64',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '',
+      };
+
+      const output = await binary.DryMongoBinary.generateOptions(origOptions);
+
+      expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
+        version: '4.0.24',
+        arch: 'x86_64',
+        downloadDir: path.dirname(origOptions.downloadDir),
+        systemBinary: '',
+        os: {
+          os: 'linux',
+          dist: 'ubuntu',
+          release: '',
+        },
+      });
+
+      expect(parseArchiveNameRegexSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('parseArchiveNameRegex', () => {
+    it('should parse and overwrite input options LINUX-UBUNTU', async () => {
+      const input = 'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.25.tgz';
+      // The following options are made different to check that the function actually changes them
+      const customos: OtherOS = {
+        os: 'win32',
+      };
+      const origOptions: Required<binary.DryMongoBinaryOptions> = {
+        version: '4.4.4',
+        arch: 'arm64',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '',
+      };
+
+      const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
+
+      expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
+        version: '4.0.25',
+        arch: 'x86_64',
+        downloadDir: origOptions.downloadDir,
+        systemBinary: '',
+        os: {
+          os: 'linux',
+          dist: 'ubuntu',
+          release: '',
+        },
+      });
+    });
+
+    it('should parse and overwrite input options MACOS', async () => {
+      const input = 'http://downloads.mongodb.org/osx/mongodb-osx-ssl-x86_64-4.0.25.tgz';
+      // The following options are made different to check that the function actually changes them
+      const customos: OtherOS = {
+        os: 'win32',
+      };
+      const origOptions: Required<binary.DryMongoBinaryOptions> = {
+        version: '4.4.4',
+        arch: 'arm64',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '',
+      };
+
+      const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
+
+      expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
+        version: '4.0.25',
+        arch: 'x86_64',
+        downloadDir: origOptions.downloadDir,
+        systemBinary: '',
+        os: {
+          os: 'osx',
+        },
+      });
+    });
+
+    it('should parse and overwrite input options WINDOWS', async () => {
+      const input =
+        'https://downloads.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-4.0.25.zip';
+      // The following options are made different to check that the function actually changes them
+      const customos: OtherOS = {
+        os: 'osx',
+      };
+      const origOptions: Required<binary.DryMongoBinaryOptions> = {
+        version: '4.4.4',
+        arch: 'arm64',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '',
+      };
+
+      const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
+
+      expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
+        version: '4.0.25',
+        arch: 'x86_64',
+        downloadDir: origOptions.downloadDir,
+        systemBinary: '',
+        os: {
+          os: 'win32',
+        },
+      });
+    });
+
+    it('should throw a Error when no matches are found [NoRegexMatchError]', async () => {
+      const customos: OtherOS = {
+        os: 'win32',
+      };
+      const origOptions: Required<binary.DryMongoBinaryOptions> = {
+        version: '4.4.4',
+        arch: 'arm64',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '',
+      };
+
+      try {
+        binary.DryMongoBinary.parseArchiveNameRegex('', origOptions);
+
+        fail('Expected generateOptions to throw "NoRegexMatchError"');
+      } catch (err) {
+        expect(err).toBeInstanceOf(NoRegexMatchError);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+      }
+    });
+
+    it('should throw a Error when no "version" is found [ParseArchiveRegexError]', async () => {
+      const customos: OtherOS = {
+        os: 'win32',
+      };
+      const origOptions: Required<binary.DryMongoBinaryOptions> = {
+        version: '4.4.4',
+        arch: 'arm64',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '',
+      };
+
+      try {
+        binary.DryMongoBinary.parseArchiveNameRegex('mongodb-linux-x86_64-u-4.tgz', origOptions);
+
+        fail('Expected generateOptions to throw "ParseArchiveRegexError"');
+      } catch (err) {
+        expect(err).toBeInstanceOf(ParseArchiveRegexError);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+      }
     });
   });
 });
