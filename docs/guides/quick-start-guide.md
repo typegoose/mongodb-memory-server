@@ -8,7 +8,7 @@ This Guide will show how to setup this package for basic use
 ## Requirements
 
 - NodeJS: 12.22+
-- Typescript: 4.0+ (if used)
+- Typescript: 4.4+ (if used)
 
 When on Linux, one of the following are required:
 
