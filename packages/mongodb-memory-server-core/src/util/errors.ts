@@ -131,3 +131,17 @@ export class ReplsetCountLowError extends Error {
     super(`ReplSet Count needs to be 1 or higher! (specified count: "${count}")`);
   }
 }
+
+export class ParseArchiveRegexError extends Error {
+  constructor(public key: string) {
+    super(`Expected "${key}" to be found in regex groups`);
+  }
+}
+
+export class NoRegexMatchError extends Error {
+  constructor(public name: string, public extra?: string) {
+    super();
+    const addExtra = !!extra ? `(${extra})` : '';
+    this.message = `Expected "${name}" to have Regex Matches${addExtra}`;
+  }
+}
