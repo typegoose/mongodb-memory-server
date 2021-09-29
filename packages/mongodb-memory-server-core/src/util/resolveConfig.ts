@@ -125,7 +125,7 @@ export function envToBool(env: string = ''): boolean {
 }
 
 // enable debug if "MONGOMS_DEBUG" is true
-if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
+if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG))) {
   debug.enable('MongoMS:*');
   log('Debug Mode Enabled, through Environment Variable');
 }
@@ -134,7 +134,7 @@ if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
 findPackageJson();
 
 // enable debug if "config.mongodbMemoryServer.debug" is true
-if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
+if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG))) {
   debug.enable('MongoMS:*');
   log('Debug Mode Enabled, through package.json');
 }
