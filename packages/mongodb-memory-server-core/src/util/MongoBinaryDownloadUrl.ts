@@ -463,10 +463,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         }
 
         throw new UnknownArchitectureError(arch, mongoPlatform);
+      case 'x86_64':
       case 'x64':
         return 'x86_64';
       case 'arm64':
         return 'arm64';
+      case 'aarch64':
+        return 'aarch64';
       default:
         throw new UnknownArchitectureError(arch);
     }
