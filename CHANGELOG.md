@@ -1,3 +1,10 @@
+### [7.4.2](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.1...v7.4.2) (2021-09-29)
+
+
+### Fixes
+
+* **resolveConfig:** fix debug enable ([aff6838](https://github.com/nodkz/mongodb-memory-server/commit/aff68382cb681b55516c053e9d4864d0b590ab25))
+
 ### [7.4.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0...v7.4.1) (2021-09-20)
 
 
