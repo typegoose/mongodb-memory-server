@@ -1,3 +1,16 @@
+## [8.0.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.2...v8.0.0-beta.3) (2021-09-30)
+
+
+### Features
+
+* replace "mkdirp" with "utils.mkdir" ([7579b47](https://github.com/nodkz/mongodb-memory-server/commit/7579b47aa61d4135ca8700f86a6c9c67419469b3))
+* **utils:** add function "mkdir" ([44eeb53](https://github.com/nodkz/mongodb-memory-server/commit/44eeb5393b994482740712c3130f02e7f1e90e56))
+
+
+### Dependencies
+
+* **mkdirp:** remove unused dependency ([c078ae8](https://github.com/nodkz/mongodb-memory-server/commit/c078ae8a6777855bdada3461b9f6ea9750975de6))
+
 ## [8.0.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.1...v8.0.0-beta.2) (2021-09-29)
 
 
