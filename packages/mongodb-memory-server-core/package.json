@@ -33,7 +33,6 @@
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/find-cache-dir": "^3.2.1",
-    "@types/mkdirp": "^1.0.2",
     "@types/semver": "^7.3.8",
     "@types/tar-stream": "^2.1.0",
     "@types/uuid": "^8.0.0",
@@ -49,7 +48,6 @@
     "get-port": "^5.1.1",
     "https-proxy-agent": "^5.0.0",
     "md5-file": "^5.0.0",
-    "mkdirp": "^1.0.4",
     "mongodb": "^4.1.2",
     "new-find-package-json": "^1.1.0",
     "semver": "^7.3.5",
