@@ -270,3 +270,12 @@ export async function checkBinaryPermissions(path: string): Promise<void> {
     throw err;
   }
 }
+
+/**
+ * Make Directory, wrapper for native mkdir with recursive true
+ * @param path The Path to create
+ * @returns Nothing
+ */
+export async function mkdir(path: string): Promise<void> {
+  await fspromises.mkdir(path, { recursive: true });
+}
