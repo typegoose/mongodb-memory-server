@@ -2,7 +2,6 @@ import { EventEmitter } from 'events';
 import * as utils from './utils';
 import debug from 'debug';
 import * as path from 'path';
-import mkdirp from 'mkdirp';
 import { promises as fspromises } from 'fs';
 import { Mutex } from 'async-mutex';
 import { v4 as uuidv4 } from 'uuid';
@@ -210,7 +209,7 @@ export class LockFile {
           throw new RepeatError(true);
         }
 
-        await mkdirp(path.dirname(file));
+        await utils.mkdir(path.dirname(file));
 
         await fspromises.writeFile(file, `${process.pid.toString()} ${uuid}`);
 

@@ -11,9 +11,8 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
-import { assertion, pathExists } from './utils';
+import { assertion, mkdir, pathExists } from './utils';
 import { DryMongoBinary } from './DryMongoBinary';
-import mkdirp from 'mkdirp';
 import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
 import { Md5CheckFailedError } from './errors';
@@ -152,7 +151,7 @@ export class MongoBinaryDownload {
     log('startDownload');
     const mbdUrl = new MongoBinaryDownloadUrl(this.binaryOpts);
 
-    await mkdirp(this.downloadDir);
+    await mkdir(this.downloadDir);
 
     try {
       await fspromises.access(this.downloadDir, constants.X_OK | constants.W_OK); // check that this process has permissions to create files & modify file contents & read file contents
@@ -277,7 +276,7 @@ export class MongoBinaryDownload {
     const mongodbFullPath = await this.getPath();
     log(`extract: archive: "${mongoDBArchive}" final: "${mongodbFullPath}"`);
 
-    await mkdirp(path.dirname(mongodbFullPath));
+    await mkdir(path.dirname(mongodbFullPath));
 
     const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?)|(?:.*\.dll))$/i.test(file);
 

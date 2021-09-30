@@ -1,6 +1,5 @@
 import { promises as fspromises } from 'fs';
 import md5file from 'md5-file';
-import * as mkdirp from 'mkdirp';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 import { DryMongoBinary } from '../DryMongoBinary';
 import { Md5CheckFailedError } from '../errors';
@@ -11,7 +10,6 @@ import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
 
 jest.mock('md5-file');
-jest.mock('mkdirp');
 
 describe('MongoBinaryDownload', () => {
   afterEach(() => {
@@ -248,7 +246,7 @@ describe('MongoBinaryDownload', () => {
   it('should return the mongodb archive path (startDownload)', async () => {
     const downloadUrl = 'https://fastdl.mongodb.org/linux/mongod-something-something.tgz';
     const archivePath = '/path/to/archive.tgz';
-    jest.spyOn(mkdirp, 'default').mockResolvedValue(void 0);
+    jest.spyOn(utils, 'mkdir').mockResolvedValue(void 0);
     jest.spyOn(fspromises, 'access').mockResolvedValue(void 0);
     jest.spyOn(MongoBinaryDownloadUrl.prototype, 'getDownloadUrl').mockResolvedValue(downloadUrl);
 
@@ -264,7 +262,7 @@ describe('MongoBinaryDownload', () => {
 
   it('should return the mongodb archive path (startDownload)', async () => {
     const customError = new Error('custom fs error');
-    jest.spyOn(mkdirp, 'default').mockResolvedValue(void 0);
+    jest.spyOn(utils, 'mkdir').mockResolvedValue(void 0);
     jest.spyOn(fspromises, 'access').mockRejectedValue(customError);
     jest.spyOn(console, 'error').mockImplementation(() => void 0);
 

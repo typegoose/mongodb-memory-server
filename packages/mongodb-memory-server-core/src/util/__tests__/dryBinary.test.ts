@@ -4,7 +4,6 @@ import * as tmp from 'tmp';
 import { constants, promises as fspromises } from 'fs';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
-import mkdirp from 'mkdirp';
 import { LinuxOS, OtherOS } from '../getos';
 import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
@@ -70,9 +69,9 @@ describe('DryBinary', () => {
 
       // Create all directories
       {
-        await mkdirp(path.resolve(tmpDir.name, 'node_modules/mongodb-memory-server')); // mock being in an postinstall directory path
-        await mkdirp(path.resolve(tmpDir.name, 'node_modules/.cache')); // mock having an local modules cache
-        await mkdirp(path.resolve(tmpDir.name, 'homedir/.cache/mongodb-binaries')); // mock having an "legacy" global directory
+        await utils.mkdir(path.resolve(tmpDir.name, 'node_modules/mongodb-memory-server')); // mock being in an postinstall directory path
+        await utils.mkdir(path.resolve(tmpDir.name, 'node_modules/.cache')); // mock having an local modules cache
+        await utils.mkdir(path.resolve(tmpDir.name, 'homedir/.cache/mongodb-binaries')); // mock having an "legacy" global directory
         await fspromises.writeFile(path.resolve(tmpDir.name, 'package.json'), '');
       }
     });
