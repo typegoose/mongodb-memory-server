@@ -259,7 +259,7 @@ export class DryMongoBinary {
   static async generatePaths(
     opts: DryMongoBinaryOptions & DryMongoBinaryNameOptions
   ): Promise<DryMongoBinaryPaths> {
-    log('generatePaths');
+    log('generatePaths', opts);
     const final: DryMongoBinaryPaths = {
       legacyHomeCache: '',
       modulesCache: '',
