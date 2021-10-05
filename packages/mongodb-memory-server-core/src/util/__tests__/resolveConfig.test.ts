@@ -3,9 +3,11 @@ import * as tmp from 'tmp';
 import resolveConfig, {
   envToBool,
   findPackageJson,
+  processConfigOption,
   ResolveConfigVariables,
 } from '../resolveConfig';
 import { assertion, isNullOrUndefined } from '../utils';
+import camelCase from 'camelcase';
 
 tmp.setGracefulCleanup();
 
@@ -114,6 +116,52 @@ describe('resolveConfig', () => {
         // @ts-expect-error "envToBool" only supports "string" as a input
         envToBool(true)
       ).toStrictEqual(false);
+    });
+  });
+
+  describe('processConfigOptions', () => {
+    it('should return a empty object when input was not a object', () => {
+      expect(processConfigOption(undefined, '')).toStrictEqual({});
+
+      expect(processConfigOption('', '')).toStrictEqual({});
+    });
+
+    it('should return the input with being processed (relative)', () => {
+      const filePath = '/some/path/to/somewhere';
+      const downloadDirPath = './relative/';
+      const systemBinaryPath = './sysBinary/';
+      const ccDownloadDir = camelCase(ResolveConfigVariables.DOWNLOAD_DIR);
+      const ccSystemBinary = camelCase(ResolveConfigVariables.SYSTEM_BINARY);
+      const input = {
+        [ccDownloadDir]: downloadDirPath,
+        [ccSystemBinary]: systemBinaryPath,
+        somethingRandom: 'hello',
+      };
+
+      const output = processConfigOption(input, filePath);
+
+      expect(output.somethingRandom).toStrictEqual('hello');
+      expect(output[ccDownloadDir]).toStrictEqual('/some/path/to/somewhere/relative');
+      expect(output[ccSystemBinary]).toStrictEqual('/some/path/to/somewhere/sysBinary');
+    });
+
+    it('should return the input with being processed (absolute)', () => {
+      const filePath = '/some/path/to/somewhere';
+      const downloadDirPath = '/relative/';
+      const systemBinaryPath = '/sysBinary/';
+      const ccDownloadDir = camelCase(ResolveConfigVariables.DOWNLOAD_DIR);
+      const ccSystemBinary = camelCase(ResolveConfigVariables.SYSTEM_BINARY);
+      const input = {
+        [ccDownloadDir]: downloadDirPath,
+        [ccSystemBinary]: systemBinaryPath,
+        somethingRandom: 'hello',
+      };
+
+      const output = processConfigOption(input, filePath);
+
+      expect(output.somethingRandom).toStrictEqual('hello');
+      expect(output[ccDownloadDir]).toStrictEqual('/relative');
+      expect(output[ccSystemBinary]).toStrictEqual('/sysBinary');
     });
   });
 });
