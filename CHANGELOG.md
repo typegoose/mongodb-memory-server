@@ -1,3 +1,15 @@
+## [8.0.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.3...v8.0.0-beta.4) (2021-10-05)
+
+
+### Features
+
+* **resolveConfig::findPackageJson:** re-write internals to be more maintainable ([8f16a2a](https://github.com/nodkz/mongodb-memory-server/commit/8f16a2a004a23f42b119ec96490b42a88eaded16))
+
+
+### Style
+
+* **DryMongoBinary::generatePaths:** log options ([02befa8](https://github.com/nodkz/mongodb-memory-server/commit/02befa87016fc9384c89b07858fc83dbf05bdf0b))
+
 ## [8.0.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.2...v8.0.0-beta.3) (2021-09-30)
 
 
