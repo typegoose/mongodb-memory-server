@@ -1,6 +1,7 @@
 import { promises as fspromises } from 'fs';
 import * as tmp from 'tmp';
 import resolveConfig, { findPackageJson, ResolveConfigVariables } from '../resolveConfig';
+import { assertion, isNullOrUndefined } from '../utils';
 
 tmp.setGracefulCleanup();
 
@@ -25,7 +26,7 @@ describe('resolveConfig', () => {
   const originalDir = process.cwd();
   let tmpObj: tmp.DirResult;
 
-  describe('configuration from closest package.json', () => {
+  describe('findPackageJson', () => {
     beforeAll(async () => {
       // Set up test project/subproject structure in a temporary directory:
       //
@@ -62,24 +63,27 @@ describe('resolveConfig', () => {
       // expect to get the outer package.json
       process.chdir(`${tmpObj.name}/project`);
       const out = findPackageJson();
+      assertion(!isNullOrUndefined(out));
       expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('3.0.0');
-      expect(out.inner).toBe(false);
+      expect(out.config.inner).toBe(false);
     });
 
     test('in subproject', () => {
       // expect to get the inner package.json
       process.chdir(`${tmpObj.name}/project/subproject`);
       const out = findPackageJson();
+      assertion(!isNullOrUndefined(out));
       expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('4.0.0');
-      expect(out.inner).toBe(true);
+      expect(out.config.inner).toBe(true);
     });
 
     test('with explicit directory in reInitializePackageJson', () => {
       // expect to get the inner package.json
       process.chdir(`${tmpObj.name}/project`);
       const out = findPackageJson(`${tmpObj.name}/project/subproject`);
+      assertion(!isNullOrUndefined(out));
       expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('4.0.0');
-      expect(out.inner).toBe(true);
+      expect(out.config.inner).toBe(true);
     });
   });
 });
