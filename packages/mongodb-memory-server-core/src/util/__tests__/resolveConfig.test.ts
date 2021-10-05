@@ -1,6 +1,10 @@
 import { promises as fspromises } from 'fs';
 import * as tmp from 'tmp';
-import resolveConfig, { findPackageJson, ResolveConfigVariables } from '../resolveConfig';
+import resolveConfig, {
+  envToBool,
+  findPackageJson,
+  ResolveConfigVariables,
+} from '../resolveConfig';
 import { assertion, isNullOrUndefined } from '../utils';
 
 tmp.setGracefulCleanup();
@@ -25,6 +29,10 @@ const innerPackageJson = {
 describe('resolveConfig', () => {
   const originalDir = process.cwd();
   let tmpObj: tmp.DirResult;
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   describe('findPackageJson', () => {
     beforeAll(async () => {
@@ -84,6 +92,28 @@ describe('resolveConfig', () => {
       assertion(!isNullOrUndefined(out));
       expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('4.0.0');
       expect(out.config.inner).toBe(true);
+    });
+  });
+
+  describe('envToBool', () => {
+    it('should resolve all supported cases to right booleans', () => {
+      expect(envToBool('1')).toStrictEqual(true);
+      expect(envToBool('on')).toStrictEqual(true);
+      expect(envToBool('ON')).toStrictEqual(true);
+      expect(envToBool('yes')).toStrictEqual(true);
+      expect(envToBool('YES')).toStrictEqual(true);
+      expect(envToBool('true')).toStrictEqual(true);
+      expect(envToBool('TRUE')).toStrictEqual(true);
+
+      expect(envToBool('anythingelse')).toStrictEqual(false);
+      expect(envToBool('false')).toStrictEqual(false);
+    });
+
+    it('should return false when input is not a string', () => {
+      expect(
+        // @ts-expect-error "envToBool" only supports "string" as a input
+        envToBool(true)
+      ).toStrictEqual(false);
     });
   });
 });
