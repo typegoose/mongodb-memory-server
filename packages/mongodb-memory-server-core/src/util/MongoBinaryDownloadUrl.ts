@@ -5,7 +5,11 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
 import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 import { URL } from 'url';
-import { UnknownArchitectureError, UnknownPlatformError } from './errors';
+import {
+  KnownVersionIncompatibilityError,
+  UnknownArchitectureError,
+  UnknownPlatformError,
+} from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -220,14 +224,16 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     const release: number = parseFloat(os.release);
 
     if (release >= 10 || ['unstable', 'testing'].includes(os.release)) {
-      if (semver.lte(this.version, '4.2.0')) {
-        log(
-          `getDebianVersionString: requested version "${this.version}" not available for osrelease "${release}", using "92"`
+      if (semver.lt(this.version, '4.2.1')) {
+        throw new KnownVersionIncompatibilityError(
+          `Debian ${release}`,
+          this.version,
+          '>=4.2.1',
+          'Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release'
         );
-        name += '92';
-      } else {
-        name += '10';
       }
+
+      name += '10';
     } else if (release >= 9) {
       name += '92';
     } else if (release >= 8.1) {

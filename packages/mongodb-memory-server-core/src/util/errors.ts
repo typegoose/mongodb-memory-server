@@ -145,3 +145,17 @@ export class NoRegexMatchError extends Error {
     this.message = `Expected "${name}" to have Regex Matches${addExtra}`;
   }
 }
+
+export class KnownVersionIncompatibilityError extends Error {
+  constructor(
+    public dist: string,
+    public requested_version: string,
+    public available_versions: string,
+    public extra?: string
+  ) {
+    super();
+
+    const addExtra = !!extra ? `\n${extra}` : '';
+    this.message = `Requested Version "${requested_version}" is not available for "${dist}"! Available Versions: "${available_versions}"${addExtra}`;
+  }
+}
