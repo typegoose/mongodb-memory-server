@@ -223,6 +223,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = 'debian';
     const release: number = parseFloat(os.release);
 
+    // Note: Debian 11 is compatible with the binaries for debian 10
     if (release >= 10 || ['unstable', 'testing'].includes(os.release)) {
       if (semver.lt(this.version, '4.2.1')) {
         throw new KnownVersionIncompatibilityError(
