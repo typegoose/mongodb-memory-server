@@ -173,6 +173,22 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('for debian 10 for 4.2.1', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.2.1',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '10',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-4.2.1.tgz'
+          );
+        });
+
         it('should throw a Error when requesting a version below 4.2.1 for debian 10+ [#554] [KnownVersionIncompatibilityError]', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
