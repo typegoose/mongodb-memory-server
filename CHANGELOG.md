@@ -1,3 +1,15 @@
+## [8.0.0-beta.5](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.4...v8.0.0-beta.5) (2021-10-08)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** change to throw a error when debian 10 used for versions below 4.2.0 ([bfb0ec4](https://github.com/nodkz/mongodb-memory-server/commit/bfb0ec4c1ab8d8991bdf735d64cc130d7863f0a1)), closes [#554](https://github.com/nodkz/mongodb-memory-server/issues/554) [#448](https://github.com/nodkz/mongodb-memory-server/issues/448)
+
+
+### Style
+
+* **MongoBinaryDownloadUrl:** add note for debian 11 ([81c85f1](https://github.com/nodkz/mongodb-memory-server/commit/81c85f1675fe3af549b4781fecb35c66e811a992))
+
 ## [8.0.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.3...v8.0.0-beta.4) (2021-10-05)
 
 
