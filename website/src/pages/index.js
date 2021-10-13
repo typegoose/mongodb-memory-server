@@ -9,33 +9,26 @@ import styles from './styles.module.css';
 const features = [
   {
     title: 'Easy to Use',
-    description: (
-      <>
-        mongodb-memory-server was build with "easy-to-use" in mind
-      </>
-    ),
+    description: <>mongodb-memory-server was build with "easy-to-use" in mind</>,
   },
   {
     title: 'Focus on What Matters',
-    description: (
-      <>
-        mongodb-memory-server can be quickly added to projects on many systems
-      </>
-    ),
+    description: <>mongodb-memory-server can be quickly added to projects on many systems</>,
   },
   {
     title: 'Supports Many Systems',
     description: (
       <>
-        mongodb-memory-server supports many different systems without problems
-        (exceptions are some linux distributions)
+        mongodb-memory-server supports many different systems without problems (exceptions are some
+        linux distributions)
       </>
     ),
   },
 ];
 
-function Feature({imageUrl, title, description}) {
+function Feature({ imageUrl, title, description }) {
   const imgUrl = useBaseUrl(imageUrl);
+
   return (
     <div className={clsx('col col--4', styles.feature)}>
       {imgUrl && (
@@ -51,11 +44,13 @@ function Feature({imageUrl, title, description}) {
 
 function Home() {
   const context = useDocusaurusContext();
-  const {siteConfig = {}} = context;
+  const { siteConfig = {} } = context;
+
   return (
     <Layout
       title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      description="Description will go into a meta tag in <head />"
+    >
       <header className={clsx('hero hero--primary', styles.heroBanner)}>
         <div className="container">
           <h1 className="hero__title">{siteConfig.title}</h1>
@@ -64,9 +59,10 @@ function Home() {
             <Link
               className={clsx(
                 'button button--outline button--secondary button--lg',
-                styles.getStarted,
+                styles.getStarted
               )}
-              to={useBaseUrl('docs/')}>
+              to={useBaseUrl('docs/')}
+            >
               Get Started
             </Link>
           </div>

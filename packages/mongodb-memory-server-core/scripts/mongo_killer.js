@@ -22,6 +22,7 @@ function isNullOrUndefined(val) {
 function isAlive(pid) {
   try {
     process.kill(pid, 0);
+
     return true;
   } catch (err) {
     return false;
