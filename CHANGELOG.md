@@ -1,3 +1,17 @@
+### [7.4.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.2...v7.4.3) (2021-10-05)
+
+
+### Fixes
+
+* **resolveConfig::findPackageJson:** actually apply processing to path options ([25c4119](https://github.com/nodkz/mongodb-memory-server/commit/25c41195a245a0c22bba65c91b798cb088c5e885)), closes [#548](https://github.com/nodkz/mongodb-memory-server/issues/548)
+
+### [7.4.2](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.1...v7.4.2) (2021-09-29)
+
+
+### Fixes
+
+* **resolveConfig:** fix debug enable ([aff6838](https://github.com/nodkz/mongodb-memory-server/commit/aff68382cb681b55516c053e9d4864d0b590ab25))
+
 ### [7.4.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0...v7.4.1) (2021-09-20)
 
 

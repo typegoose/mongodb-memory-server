@@ -50,7 +50,7 @@ let packageJsonConfig: Record<string, string> = {};
  * @param directory Set an custom directory to search the config in (default: process.cwd())
  */
 export function findPackageJson(directory?: string): Record<string, string> {
-  let filename: string | undefined;
+  let filepath: string | undefined;
   for (const filename of findSync(directory || process.cwd())) {
     log(`findPackageJson: Found package.json at "${filename}"`);
     const readout: Record<string, any> = JSON.parse(readFileSync(filename).toString());
@@ -60,29 +60,24 @@ export function findPackageJson(directory?: string): Record<string, string> {
 
       // the optional chaining is needed, because typescript wont accept an "isNullOrUndefined" in the if with "&& Object.keys"
       packageJsonConfig = readout?.config?.mongodbMemoryServer;
+      filepath = path.dirname(filename);
       break;
     }
   }
 
   // block for all file-path resolving
-  if (filename) {
+  if (filepath) {
     // These are so that "camelCase" doesnt get executed much & de-duplicate code
     // "cc*" means "camelcase"
     const ccDownloadDir = camelCase(ResolveConfigVariables.DOWNLOAD_DIR);
     const ccSystemBinary = camelCase(ResolveConfigVariables.SYSTEM_BINARY);
 
     if (ccDownloadDir in packageJsonConfig) {
-      packageJsonConfig[ccDownloadDir] = path.resolve(
-        path.dirname(filename),
-        packageJsonConfig[ccDownloadDir]
-      );
+      packageJsonConfig[ccDownloadDir] = path.resolve(filepath, packageJsonConfig[ccDownloadDir]);
     }
 
     if (ccSystemBinary in packageJsonConfig) {
-      packageJsonConfig[ccSystemBinary] = path.resolve(
-        path.dirname(filename),
-        packageJsonConfig[ccSystemBinary]
-      );
+      packageJsonConfig[ccSystemBinary] = path.resolve(filepath, packageJsonConfig[ccSystemBinary]);
     }
   }
 
@@ -125,7 +120,7 @@ export function envToBool(env: string = ''): boolean {
 }
 
 // enable debug if "MONGOMS_DEBUG" is true
-if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
+if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG))) {
   debug.enable('MongoMS:*');
   log('Debug Mode Enabled, through Environment Variable');
 }
@@ -134,7 +129,7 @@ if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
 findPackageJson();
 
 // enable debug if "config.mongodbMemoryServer.debug" is true
-if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled) {
+if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG))) {
   debug.enable('MongoMS:*');
   log('Debug Mode Enabled, through package.json');
 }
