@@ -13,7 +13,7 @@ module.exports = {
     "Guides": [
       {
         "Integration Examples": [
-          "guides/integration-examples"
+          "guides/integration-examples/test-runners"
         ],
         "Miscellaneous": [
           "guides/enable-debug-mode",
