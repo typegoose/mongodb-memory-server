@@ -17,7 +17,10 @@ module.exports = {
     ],
     Guides: [
       {
-        'Integration Examples': ['guides/integration-examples/test-runners'],
+        'Integration Examples': [
+          'guides/integration-examples/test-runners',
+          'guides/integration-examples/docker',
+        ],
         Miscellaneous: [
           'guides/enable-debug-mode',
           'guides/known-issues',
