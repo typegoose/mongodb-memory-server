@@ -48,7 +48,7 @@
   },
   "scripts": {
     "test": "yarn --cwd packages/mongodb-memory-server-core run test",
-    "lint": "eslint -c ./.eslintrc.js 'packages/mongodb-memory-server-core/src/**/*.{js,ts}'",
+    "lint": "eslint -c ./.eslintrc.js './**/*.{js,ts}'",
     "watch": "yarn --cwd packages/mongodb-memory-server-core run watch",
     "build": "tsc --build tsconfig.build.json",
     "semantic-release": "semantic-release",
