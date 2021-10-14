@@ -427,7 +427,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.debug(`_startUpInstance: Creating new MongoDB instance with options:`, mongodOptions);
 
     const instance = await MongoInstance.create(mongodOptions);
-    this.debug('_startUpInstance: Instance Started');
+    this.debug(`_startUpInstance: Instance Started, createAuth: "${createAuth}"`);
 
     // "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
     if (!isNullOrUndefined(this.auth) && createAuth) {
