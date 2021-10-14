@@ -1,3 +1,16 @@
+### [7.4.4](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.3...v7.4.4) (2021-10-14)
+
+
+### Fixes
+
+* **MongoMemoryServer:** change that "instance.auth" is not required to be set for enabling auth ([4e4a41d](https://github.com/nodkz/mongodb-memory-server/commit/4e4a41d8d9975f8739ac0e92cdce040917e4d9cd))
+* **MongoMemoryServer:** change to log value "createAuth" ([9c3fea0](https://github.com/nodkz/mongodb-memory-server/commit/9c3fea0f08e875382c0c1e9dfd62a315aee8a2e1))
+
+
+### Style
+
+* **MongoInstance:** add more tsdoc ([36c1971](https://github.com/nodkz/mongodb-memory-server/commit/36c19715e7820a902f6533899b4a9ecd3cb91348))
+
 ### [7.4.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.2...v7.4.3) (2021-10-05)
 
 
