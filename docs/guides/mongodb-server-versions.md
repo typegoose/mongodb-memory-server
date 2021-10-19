@@ -21,6 +21,8 @@ There are some exceptions:
 
 The versions with a brocken default binary may get deprecated (when possible).
 
+For Packages that are named with a version (like `mongodb-memory-server-global-4.2`), the patch version (`0.0.X`) of a binary may be changed with minor (`0.X.0`) releases.
+
 ## Version Table
 
 | `mongodb-memory-server-core` Version | Default MongoDB Version |
