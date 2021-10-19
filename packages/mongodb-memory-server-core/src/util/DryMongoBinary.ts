@@ -1,5 +1,5 @@
 import debug from 'debug';
-import { envToBool, resolveConfig, ResolveConfigVariables } from './resolveConfig';
+import { DEFAULT_VERSION, envToBool, resolveConfig, ResolveConfigVariables } from './resolveConfig';
 import { assertion, checkBinaryPermissions, isNullOrUndefined, pathExists } from './utils';
 import * as path from 'path';
 import { arch, homedir, platform } from 'os';
@@ -106,7 +106,7 @@ export class DryMongoBinary {
     opts?: DryMongoBinaryOptions
   ): Promise<Required<DryMongoBinaryOptions>> {
     log('generateOptions');
-    const defaultVersion = resolveConfig(ResolveConfigVariables.VERSION) ?? '4.0.25';
+    const defaultVersion = resolveConfig(ResolveConfigVariables.VERSION) ?? DEFAULT_VERSION;
     const ensuredOpts: DryMongoBinaryOptions = isNullOrUndefined(opts)
       ? { version: defaultVersion }
       : opts;

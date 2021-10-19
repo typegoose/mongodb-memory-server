@@ -25,6 +25,7 @@ module.exports = {
           'guides/enable-debug-mode',
           'guides/known-issues',
           'guides/error-warning-details',
+          'guides/mongodb-server-versions',
         ],
       },
     ],

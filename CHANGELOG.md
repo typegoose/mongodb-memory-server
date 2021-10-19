@@ -83,6 +83,13 @@
 * **tslib:** upgrade to version 2.3.1 ([1a36352](https://github.com/nodkz/mongodb-memory-server/commit/1a36352fcaaa6c45796cb1d1c2a0e4b509acbfdd))
 * **typescript:** upgrade to version 4.4.3 ([84e407b](https://github.com/nodkz/mongodb-memory-server/commit/84e407b6b14ae986ab9d4ac6a1d5caa3f694861b))
 
+### [7.4.6](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.5...v7.4.6) (2021-10-19)
+
+
+### Fixes
+
+* **resolveConfig:** change default version to be a constant (non-changeable) ([11c9547](https://github.com/nodkz/mongodb-memory-server/commit/11c95471ef7a400374491fe8055708a133f4ae6d))
+
 ### [7.4.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.4...v7.4.5) (2021-10-19)
 
 
