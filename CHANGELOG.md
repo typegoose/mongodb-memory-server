@@ -1,3 +1,10 @@
+### [7.4.6](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.5...v7.4.6) (2021-10-19)
+
+
+### Fixes
+
+* **resolveConfig:** change default version to be a constant (non-changeable) ([11c9547](https://github.com/nodkz/mongodb-memory-server/commit/11c95471ef7a400374491fe8055708a133f4ae6d))
+
 ### [7.4.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.4...v7.4.5) (2021-10-19)
 
 
