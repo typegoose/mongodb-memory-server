@@ -26,7 +26,7 @@ export enum ResolveConfigVariables {
 
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 /** This Value exists here, because "defaultValues" can be changed with "setDefaultValue", but this property is constant */
-export const DEFAULT_VERSION = '4.0.25';
+export const DEFAULT_VERSION = '4.0.27';
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
   [ResolveConfigVariables.VERSION, DEFAULT_VERSION],

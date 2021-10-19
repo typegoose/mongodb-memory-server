@@ -70,7 +70,7 @@ export class MongoBinary {
    * Probe all supported paths for an binary and return the binary path
    * @param opts Options configuring which binary to search for
    * @throws {Error} if no valid BinaryPath has been found
-   * @return The first found BinaryPath
+   * @returns The first found BinaryPath
    */
   static async getPath(opts: MongoBinaryOpts = {}): Promise<string> {
     log('getPath');
