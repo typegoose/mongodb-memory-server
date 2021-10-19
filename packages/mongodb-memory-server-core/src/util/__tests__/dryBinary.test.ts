@@ -2,7 +2,7 @@ import * as binary from '../DryMongoBinary';
 import * as path from 'path';
 import * as tmp from 'tmp';
 import { constants, promises as fspromises } from 'fs';
-import { envName, ResolveConfigVariables } from '../resolveConfig';
+import { DEFAULT_VERSION, envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
 import mkdirp from 'mkdirp';
 import { LinuxOS, OtherOS } from '../getos';
@@ -428,7 +428,7 @@ describe('DryBinary', () => {
 
       expect(output).toStrictEqual(
         expect.objectContaining({
-          version: '4.0.25',
+          version: DEFAULT_VERSION,
           systemBinary: '',
           os: osmock,
           downloadDir: path.dirname(mockBinary),
