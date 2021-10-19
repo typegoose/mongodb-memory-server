@@ -1,3 +1,10 @@
+### [7.4.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.4...v7.4.5) (2021-10-19)
+
+
+### Fixes
+
+* add "@types/mongodb" to dependencies, because of exposing a mongodb type ([6346922](https://github.com/nodkz/mongodb-memory-server/commit/634692225201ed38e4fa306e40497a434ad6a4be)), closes [#558](https://github.com/nodkz/mongodb-memory-server/issues/558)
+
 ### [7.4.4](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.3...v7.4.4) (2021-10-14)
 
 
