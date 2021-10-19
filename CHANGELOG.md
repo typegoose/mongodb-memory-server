@@ -1,3 +1,19 @@
+## [8.0.0-beta.7](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.6...v8.0.0-beta.7) (2021-10-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **resolveConfig:** Default MongoDB Binary version is now "5.0.3"
+
+### Features
+
+* **resolveConfig:** upgrade default mongodb version to 5.0.3 ([75a722a](https://github.com/nodkz/mongodb-memory-server/commit/75a722ab12c6b8055be731fdd85634acb337a1e0)), closes [#555](https://github.com/nodkz/mongodb-memory-server/issues/555)
+
+
+### Fixes
+
+* **resolveConfig:** change default version to be a constant (non-changeable) ([11c9547](https://github.com/nodkz/mongodb-memory-server/commit/11c95471ef7a400374491fe8055708a133f4ae6d))
+
 ## [8.0.0-beta.6](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.5...v8.0.0-beta.6) (2021-10-19)
 
 
