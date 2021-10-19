@@ -27,6 +27,7 @@ For Packages that are named with a version (like `mongodb-memory-server-global-4
 
 | `mongodb-memory-server-core` Version | Default MongoDB Version |
 | :----------------------------------: | :---------------------: |
+| 7.5.x - 7.5.x                        | 4.0.27                  |
 | 7.0.x - 7.4.x                        | 4.0.25                  |
 | 6.4.x - 6.9.x                        | 4.0.14                  |
 | 6.0.x - 6.4.x                        | 4.0.3                   |
