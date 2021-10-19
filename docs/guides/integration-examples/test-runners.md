@@ -1,6 +1,6 @@
 ---
-id: integration-examples
-title: 'Integration Examples'
+id: test-runners
+title: 'Integration with Test Runners'
 ---
 
 This Guide will show how `mongodb-memory-server` can be used with different frameworks

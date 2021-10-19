@@ -108,6 +108,41 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop();
     });
 
+    it('should make use of "AutomaticAuth" even when "instance.auth" is not set (wiredTiger)', async () => {
+      jest.spyOn(MongoInstance.prototype, 'start');
+      const mongoServer = await MongoMemoryServer.create({
+        auth: {},
+        instance: {
+          storageEngine: 'wiredTiger',
+        },
+      });
+
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
+
+      const con: MongoClient = await MongoClient.connect(
+        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
+        {
+          authSource: 'admin',
+          authMechanism: 'SCRAM-SHA-256',
+          auth: {
+            username: mongoServer.auth.customRootName,
+            password: mongoServer.auth.customRootPwd,
+          },
+        }
+      );
+      const db = con.db('admin');
+      const users: { users?: { user: string }[] } = await db.command({
+        usersInfo: mongoServer.auth.customRootName,
+      });
+      expect(users.users).toHaveLength(1);
+      expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(2);
+
+      await con.close();
+      await mongoServer.stop();
+    });
+
     it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       const mongoServer = await MongoMemoryServer.create({
@@ -253,6 +288,36 @@ describe('MongoMemoryServer', () => {
       }
       expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
       expect(MongoMemoryServer.prototype.createAuth).not.toHaveBeenCalled();
+      expect(mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth'));
+
+      await con.close();
+      await mongoServer.stop();
+    });
+
+    it('"createAuth" should not be called if "instance.auth" is false', async () => {
+      jest.spyOn(MongoInstance.prototype, 'start');
+      jest.spyOn(MongoMemoryServer.prototype, 'createAuth');
+      const mongoServer = await MongoMemoryServer.create({
+        auth: {},
+        instance: {
+          auth: false,
+          storageEngine: 'ephemeralForTest',
+        },
+      });
+
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
+      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
+
+      const con: MongoClient = await MongoClient.connect(
+        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin')
+      );
+      const db = con.db('admin');
+      await db.command({
+        usersInfo: 1,
+      });
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryServer.prototype.createAuth).not.toHaveBeenCalled();
+      expect(mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth'));
 
       await con.close();
       await mongoServer.stop();

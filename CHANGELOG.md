@@ -67,6 +67,40 @@
 * **tslib:** upgrade to version 2.3.1 ([1a36352](https://github.com/nodkz/mongodb-memory-server/commit/1a36352fcaaa6c45796cb1d1c2a0e4b509acbfdd))
 * **typescript:** upgrade to version 4.4.3 ([84e407b](https://github.com/nodkz/mongodb-memory-server/commit/84e407b6b14ae986ab9d4ac6a1d5caa3f694861b))
 
+### [7.4.5](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.4...v7.4.5) (2021-10-19)
+
+
+### Fixes
+
+* add "@types/mongodb" to dependencies, because of exposing a mongodb type ([6346922](https://github.com/nodkz/mongodb-memory-server/commit/634692225201ed38e4fa306e40497a434ad6a4be)), closes [#558](https://github.com/nodkz/mongodb-memory-server/issues/558)
+
+### [7.4.4](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.3...v7.4.4) (2021-10-14)
+
+
+### Fixes
+
+* **MongoMemoryServer:** change that "instance.auth" is not required to be set for enabling auth ([4e4a41d](https://github.com/nodkz/mongodb-memory-server/commit/4e4a41d8d9975f8739ac0e92cdce040917e4d9cd))
+* **MongoMemoryServer:** change to log value "createAuth" ([9c3fea0](https://github.com/nodkz/mongodb-memory-server/commit/9c3fea0f08e875382c0c1e9dfd62a315aee8a2e1))
+
+
+### Style
+
+* **MongoInstance:** add more tsdoc ([36c1971](https://github.com/nodkz/mongodb-memory-server/commit/36c19715e7820a902f6533899b4a9ecd3cb91348))
+
+### [7.4.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.2...v7.4.3) (2021-10-05)
+
+
+### Fixes
+
+* **resolveConfig::findPackageJson:** actually apply processing to path options ([25c4119](https://github.com/nodkz/mongodb-memory-server/commit/25c41195a245a0c22bba65c91b798cb088c5e885)), closes [#548](https://github.com/nodkz/mongodb-memory-server/issues/548)
+
+### [7.4.2](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.1...v7.4.2) (2021-09-29)
+
+
+### Fixes
+
+* **resolveConfig:** fix debug enable ([aff6838](https://github.com/nodkz/mongodb-memory-server/commit/aff68382cb681b55516c053e9d4864d0b590ab25))
+
 ### [7.4.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.0...v7.4.1) (2021-09-20)
 
 

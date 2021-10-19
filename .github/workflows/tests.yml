@@ -37,7 +37,7 @@ jobs:
       - name: TSCheck
         run: yarn --cwd packages/mongodb-memory-server-core run tscheck
       - name: ESLint
-        run: yarn --cwd packages/mongodb-memory-server-core run eslint
+        run: yarn run lint
       - name: Tests
         run: yarn --cwd packages/mongodb-memory-server-core run coverage --colors
         env:

@@ -48,11 +48,12 @@
   },
   "scripts": {
     "test": "yarn --cwd packages/mongodb-memory-server-core run test",
-    "lint": "yarn --cwd packages/mongodb-memory-server-core run lint",
+    "lint": "eslint -c ./.eslintrc.js './**/*.{js,ts}'",
     "watch": "yarn --cwd packages/mongodb-memory-server-core run watch",
     "build": "tsc --build tsconfig.build.json",
     "semantic-release": "semantic-release",
     "readme:toc": "doctoc ./README.md",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "website": "yarn --cwd website/ run start"
   }
 }

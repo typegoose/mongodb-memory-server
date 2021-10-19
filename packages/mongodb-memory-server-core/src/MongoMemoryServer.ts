@@ -380,7 +380,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     }
 
     const createAuth: boolean =
-      !!instOpts.auth && // check if auth is even meant to be enabled
+      (typeof instOpts.auth === 'boolean' ? instOpts.auth : true) && // check if auth is even meant to be enabled
       !isNullOrUndefined(this.auth) && // check if "this.auth" is defined
       !this.auth.disable && // check that "this.auth.disable" is falsey
       (this.auth.force || isNew) && // check that either "isNew" or "this.auth.force" is "true"
@@ -427,7 +427,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.debug(`_startUpInstance: Creating new MongoDB instance with options:`, mongodOptions);
 
     const instance = await MongoInstance.create(mongodOptions);
-    this.debug('_startUpInstance: Instance Started');
+    this.debug(`_startUpInstance: Instance Started, createAuth: "${createAuth}"`);
 
     // "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
     if (!isNullOrUndefined(this.auth) && createAuth) {

@@ -25,3 +25,16 @@ MONGOMS_DEBUG=1 npm run command
   }
 }
 ```
+
+## Extra Notes
+
+### npm quirks
+
+Starting with NPM 7, scripts (like `postinstall`) will run in parallel and will not output any logging, but sometimes in `mongodb-memory-server` it is required to provide the Debug Log from a `postinstall` script.
+
+Temporarly this can be change to use:
+
+```sh
+# Change scripts to be executed on the NPM main proccess instead of workers AND log script output
+MONGOMS_DEBUG=1 npm install --foreground-scripts
+```

@@ -1,3 +1,7 @@
-flow-typed/*
-lib/*
-.eslintrc.js
+**/flow-typed/*
+**/lib/*
+**/build/*
+#website/* #dont ignore website (like sidebars.js)
+website/build/*
+**/coverage/*
+#*.js # dont ignore top-level js files

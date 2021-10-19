@@ -99,25 +99,65 @@ export interface ReplicaMemberConfig {
 }
 
 export interface MongoMemoryInstanceOptsBase {
+  /**
+   * Extra Arguments to add
+   */
   args?: string[];
+  /**
+   * Set which port to use
+   * Adds "--port"
+   * @default from get-port
+   */
   port?: number;
+  /**
+   * Set which storage path to use
+   * Adds "--"
+   * @default TmpDir
+   */
   dbPath?: string;
+  /**
+   * Set which Storage Engine to use
+   * Adds "--storageEngine"
+   * @default "ephemeralForTest"
+   */
   storageEngine?: StorageEngine;
+  /**
+   * Set the Replica-Member-Config
+   * Only has a effect when started with "MongoMemoryReplSet"
+   */
   replicaMemberConfig?: ReplicaMemberConfig;
 }
 
 export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
+  /**
+   * Set which parameter will be used
+   * true -> "--auth"
+   * false -> "--noauth"
+   * @default false
+   */
   auth?: boolean;
+  /**
+   * Currently unused option
+   * @default undefined
+   */
   dbName?: string;
   /**
    * for binding to all IP addresses set it to `::,0.0.0.0`, by default '127.0.0.1'
+   * Adds "--bind_ip"
+   * @default undefined
    */
   ip?: string;
+  /**
+   * Set that this instance is part of a replset
+   * Adds "--replSet"
+   * @default undefined
+   */
   replSet?: string;
-  storageEngine?: StorageEngine;
   /**
    * Location for the "--keyfile" argument
    * Only has an effect when "auth" is enabled and is a replset
+   * Adds "--keyfile"
+   * @default undefined
    */
   keyfileLocation?: string;
 }

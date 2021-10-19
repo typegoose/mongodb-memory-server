@@ -14,8 +14,13 @@ List of currently [Supported Systems](https://nodkz.github.io/mongodb-memory-ser
 
 ## Versions
 
-- Wanted System: `Linux Mint 20.1`
-- Architecture: `x86_64`
+<!--
+"Wanted System" formatting like: "Windows 10 1804" / "Ubuntu 20.04" / "MacOS 10"
+Possible "Architecture": "x86_64" / "aarch64" / "arm64"
+-->
+
+- Wanted System: `Distro / System here`
+- Architecture: `arch here`
 
 ## Detection
 
