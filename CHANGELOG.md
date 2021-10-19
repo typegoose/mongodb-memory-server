@@ -1,3 +1,10 @@
+### [7.5.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.5.0...v7.5.1) (2021-10-19)
+
+
+### Fixes
+
+* **MongoInstance:** try to fix some CodeQL redos ([9fc3a33](https://github.com/nodkz/mongodb-memory-server/commit/9fc3a338326f9e0d3e511aff5794236ba133ac5d))
+
 ## [7.5.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.4.6...v7.5.0) (2021-10-19)
 
 
