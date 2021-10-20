@@ -1,3 +1,21 @@
+## [8.0.0-beta.8](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.7...v8.0.0-beta.8) (2021-10-20)
+
+
+### Features
+
+* upgrade default mongodb binary version to 4.0.27 ([c82e56c](https://github.com/nodkz/mongodb-memory-server/commit/c82e56ce452f6859477f46c321cc6b44ac9e91ba))
+* upgrade mongodb patch version for "-global-*" packages ([01a6ded](https://github.com/nodkz/mongodb-memory-server/commit/01a6deda21ffe8c52e5b7ebbab532ab7ef88583e))
+
+
+### Style
+
+* fix tsdoc "[@return](https://github.com/return)" -> "[@returns](https://github.com/returns)" ([ffbc0ca](https://github.com/nodkz/mongodb-memory-server/commit/ffbc0caa9bf67ff669a9369ba030ecae92f2f7dc))
+
+
+### Fixes
+
+* **MongoInstance:** try to fix some CodeQL redos ([9fc3a33](https://github.com/nodkz/mongodb-memory-server/commit/9fc3a338326f9e0d3e511aff5794236ba133ac5d))
+
 ## [8.0.0-beta.7](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.6...v8.0.0-beta.7) (2021-10-19)
 
 
