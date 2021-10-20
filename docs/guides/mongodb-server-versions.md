@@ -42,5 +42,6 @@ If the branch is named like `old/`, then it means that this package will not be 
 | :---------------------------------: | :----------------------: | :------------: |
 | `mongodb-memory-server-global-4.4`  | 4.4.10                   | `master`       |
 | `mongodb-memory-server-global-4.2`  | 4.2.17                   | `master`       |
+| `mongodb-memory-server-global-4.0`  | 4.0.27                   | `master`       |
 | `mongodb-memory-server-global-3.6`  | 3.6.23                   | `master`       |
 | `mongodb-memory-server-global-3.4`  | 3.4.20                   | `old/6.x`      |
