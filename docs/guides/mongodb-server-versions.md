@@ -23,7 +23,7 @@ The versions with a brocken default binary may get deprecated (when possible).
 
 For Packages that are named with a version (like `mongodb-memory-server-global-4.2`), the patch version (`0.0.X`) of a binary may be changed with minor (`0.X.0`) releases.
 
-## Version Table
+## `mongodb-memory-server-core` Version Table
 
 | `mongodb-memory-server-core` Version | Default MongoDB Version |
 | :----------------------------------: | :---------------------: |
@@ -31,3 +31,16 @@ For Packages that are named with a version (like `mongodb-memory-server-global-4
 | 7.0.x - 7.4.x                        | 4.0.25                  |
 | 6.4.x - 6.9.x                        | 4.0.14                  |
 | 6.0.x - 6.4.x                        | 4.0.3                   |
+
+## `mongodb-memory-server-global-*` Version Table
+
+This Section will show all `mongodb-memory-server-global-*` packages that ever existed for this Project, what Version they provide in the latest version and what Branch they will be updated from.
+
+If the branch is named like `old/`, then it means that this package will not be updated for new major versions anymore. (Example if the package is in `old/6.x`, then it will not get any updates to 7.0 or higher)
+
+| Package Name                        | Provided MongoDB Version | Current Branch |
+| :---------------------------------: | :----------------------: | :------------: |
+| `mongodb-memory-server-global-4.4`  | 4.4.10                   | `master`       |
+| `mongodb-memory-server-global-4.2`  | 4.2.17                   | `master`       |
+| `mongodb-memory-server-global-3.6`  | 3.6.23                   | `master`       |
+| `mongodb-memory-server-global-3.4`  | 3.4.20                   | `old/6.x`      |
