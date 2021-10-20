@@ -206,7 +206,7 @@ export class DryMongoBinary {
 
   /**
    * Get the full path with filename
-   * @return Absoulte Path with FileName
+   * @returns Absoulte Path with FileName
    */
   static getBinaryName(opts: DryMongoBinaryNameOptions): string {
     log('getBinaryName');
@@ -228,7 +228,7 @@ export class DryMongoBinary {
   /**
    * Probe if the provided "systemBinary" is an existing path
    * @param systemBinary The Path to probe for an System-Binary
-   * @return System Binary path or undefined
+   * @returns System Binary path or undefined
    */
   static async getSystemPath(systemBinary: string): Promise<string | undefined> {
     // REFACTOR: change this function to always return "string"
@@ -254,7 +254,7 @@ export class DryMongoBinary {
    * Generate an "MongoBinaryPaths" object
    *
    * This Function should not hit the FileSystem
-   * @return an finished "MongoBinaryPaths" object
+   * @returns an finished "MongoBinaryPaths" object
    */
   static async generatePaths(
     opts: DryMongoBinaryOptions & DryMongoBinaryNameOptions
@@ -310,7 +310,7 @@ export class DryMongoBinary {
 
   /**
    * Generate the Path where an Binary will be located
-   * @return "boolean" indicating if the binary exists at the provided path, and "string" the path to use for the binary
+   * @returns "boolean" indicating if the binary exists at the provided path, and "string" the path to use for the binary
    */
   static async generateDownloadPath(
     opts: DryMongoBinaryOptions & DryMongoBinaryNameOptions

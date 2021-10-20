@@ -1,15 +1,15 @@
 {
-  "name": "mongodb-memory-server-global-3.6",
+  "name": "mongodb-memory-server-global-4.0",
   "version": "8.0.0-beta.7",
-  "mongodb_version": "3.6.23",
-  "description": "MongoDB Server for testing (auto-download 3.6 version to ~/.cache/mongodb-binaries).",
+  "mongodb_version": "4.0.27",
+  "description": "MongoDB Server for testing (auto-download 4.0 version to ~/.cache/mongodb-binaries).",
   "main": "index.js",
   "types": "index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/nodkz/mongodb-memory-server.git",
-    "directory": "packages/mongodb-memory-server-global-3.6"
+    "directory": "packages/mongodb-memory-server-global-4.4"
   },
   "engines": {
     "node": ">=12.22.0"
@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "mongodb-memory-server-core": "8.0.0-beta.7",
-    "tslib": "^2.3.1"
+    "tslib": "^2.3.0"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js"

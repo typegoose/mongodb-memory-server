@@ -110,7 +110,7 @@ export class MongoBinaryDownload {
 
   /**
    * Get the full path with filename
-   * @return Absoulte Path with FileName
+   * @returns Absoulte Path with FileName
    */
   protected async getPath(): Promise<string> {
     const opts = await DryMongoBinary.generateOptions(this.binaryOpts);
@@ -212,7 +212,7 @@ export class MongoBinaryDownload {
   /**
    * Download file from downloadUrl
    * @param downloadUrl URL to download a File
-   * @return The Path to the downloaded archive file
+   * @returns The Path to the downloaded archive file
    */
   async download(downloadUrl: string): Promise<string> {
     log('download');

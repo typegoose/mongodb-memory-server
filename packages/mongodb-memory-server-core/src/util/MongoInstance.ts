@@ -553,6 +553,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     if (/permission denied/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod permission denied');
     }
+    // Cannot fix CodeQL warning, without a example output of what to expect
     if (/Data directory .*? not found/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Data directory not found');
     }
@@ -570,9 +571,9 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           'You need to manually install libcurl4\n'
       );
     }
-    if (/lib[\w-.]+: cannot open shared object/i.test(line)) {
+    if (/lib[\w-.]+(?=: cannot open shared object)/i.test(line)) {
       const lib =
-        line.match(/(lib[\w-.]+): cannot open shared object/i)?.[1].toLocaleLowerCase() ??
+        line.match(/(lib[\w-.]+)(?=: cannot open shared object)/i)?.[1].toLocaleLowerCase() ??
         'unknown';
       this.emit(
         MongoInstanceEvents.instanceError,
