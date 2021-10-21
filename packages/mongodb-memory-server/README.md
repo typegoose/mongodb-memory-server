@@ -8,6 +8,7 @@
 [![codecov.io](https://codecov.io/github/nodkz/mongodb-memory-server/coverage.svg?branch=master)](https://codecov.io/github/nodkz/mongodb-memory-server?branch=master)
 [![Backers on Open Collective](https://opencollective.com/mongodb-memory-server/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/mongodb-memory-server/sponsors/badge.svg)](#sponsors)
+[![mongodb-memory-server](https://snyk.io/advisor/npm-package/mongodb-memory-server/badge.svg)](https://snyk.io/advisor/npm-package/mongodb-memory-server)
 
 Main default package which downloads mongod binary to `./node_modules/.cache` directory on package install.
 

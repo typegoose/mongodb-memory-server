@@ -8,6 +8,7 @@
 [![codecov.io](https://codecov.io/github/nodkz/mongodb-memory-server/coverage.svg?branch=master)](https://codecov.io/github/nodkz/mongodb-memory-server?branch=master)
 [![Backers on Open Collective](https://opencollective.com/mongodb-memory-server/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/mongodb-memory-server/sponsors/badge.svg)](#sponsors)
+[![mongodb-memory-server-global-3.6](https://snyk.io/advisor/npm-package/mongodb-memory-server-global-3.6/badge.svg)](https://snyk.io/advisor/npm-package/mongodb-memory-server-global-3.6)
 
 Main default package which downloads `v3.6` mongod binary to `%HOME/.cache/mongodb-binaries` directory on package install.
 
