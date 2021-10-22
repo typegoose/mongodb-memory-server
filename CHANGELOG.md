@@ -1,3 +1,10 @@
+## [8.0.0-beta.9](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.8...v8.0.0-beta.9) (2021-10-22)
+
+
+### Fixes
+
+* **DryMongoBinary::parseArchiveNameRegex:** change regex to include "macos" ([#562](https://github.com/nodkz/mongodb-memory-server/issues/562)) ([9d5bdbf](https://github.com/nodkz/mongodb-memory-server/commit/9d5bdbfb711223f36d284bd4f435c938cddb4a0c))
+
 ## [8.0.0-beta.8](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.7...v8.0.0-beta.8) (2021-10-20)
 
 
