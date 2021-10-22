@@ -160,7 +160,7 @@ export class DryMongoBinary {
     log(`parseArchiveNameRegex (input: "${input}")`);
 
     const archiveMatches =
-      /mongodb-(?<platform>linux|win32|osx)(?:-ssl-|-)(?<arch>\w{4,})(?:-(?<dist>\w+)|)(?:-ssl-|-)(?:v|)(?<version>[\d.]+(?:-latest|))\./gim.exec(
+      /mongodb-(?<platform>linux|win32|osx|macos)(?:-ssl-|-)(?<arch>\w{4,})(?:-(?<dist>\w+)|)(?:-ssl-|-)(?:v|)(?<version>[\d.]+(?:-latest|))\./gim.exec(
         input
       );
 
