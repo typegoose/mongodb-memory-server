@@ -607,6 +607,33 @@ describe('DryBinary', () => {
       });
     });
 
+    it('should parse and overwrite input options MACOS with macos in archive name', async () => {
+      const input = 'http://downloads.mongodb.org/osx/mongodb-macos-x86_64-5.0.3.tgz';
+      // The following options are made different to check that the function actually changes them
+      const customos: OtherOS = {
+        os: 'win32',
+      };
+      const origOptions: Required<binary.DryMongoBinaryOptions> = {
+        version: '5.0.3',
+        arch: 'arm64',
+        os: customos,
+        downloadDir: '/path/to/somewhere',
+        systemBinary: '',
+      };
+
+      const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
+
+      expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
+        version: '5.0.3',
+        arch: 'x86_64',
+        downloadDir: origOptions.downloadDir,
+        systemBinary: '',
+        os: {
+          os: 'macos',
+        },
+      });
+    });
+
     it('should parse and overwrite input options WINDOWS', async () => {
       const input =
         'https://downloads.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-4.0.25.zip';
