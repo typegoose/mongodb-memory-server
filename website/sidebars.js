@@ -29,6 +29,6 @@ module.exports = {
         ],
       },
     ],
-    Migration: ['guides/migration/migrate7'],
+    Migration: ['guides/migration/migrate8', 'guides/migration/migrate7'],
   },
 };
