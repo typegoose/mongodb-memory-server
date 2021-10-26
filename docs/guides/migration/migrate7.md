@@ -45,7 +45,7 @@ Until 7.0.0, `new` (`constructor`) automatically started the instance, which is 
 This will make it easier to work with sharing the project folder (like host to docker)
 
 :::note
-This package will **not** delete the old binaries, these need to be manually deleted, see [storage paths](../api/config-options.md#download_dir) for where binaries are stored
+This package will **not** delete the old binaries, these need to be manually deleted, see [storage paths](../../api/config-options.md#download_dir) for where binaries are stored
 :::
 
 ### getConnectionString got removed
@@ -90,7 +90,7 @@ This was changed to allow mongodb and mongoose URI's to work at the same time (t
 
 ### Config Values are now collected in an enum
 
-Config values like `DOWNLOAD_DIR` are now collected in an enum called `ResolveConfigVariables`, [see more here](../api/config-options.md)
+Config values like `DOWNLOAD_DIR` are now collected in an enum called `ResolveConfigVariables`, [see more here](../../api/config-options.md)
 
 ### Config helper function "envName"
 
