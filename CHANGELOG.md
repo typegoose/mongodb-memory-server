@@ -1,3 +1,14 @@
+## [8.0.0-beta.10](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.9...v8.0.0-beta.10) (2021-10-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* There is now no more "beforeExit" listener added
+
+### Features
+
+* remove all "beforeExit" listeners ([f3d8a19](https://github.com/nodkz/mongodb-memory-server/commit/f3d8a19161afd319be6acf877da1f131275e6e70)), closes [#563](https://github.com/nodkz/mongodb-memory-server/issues/563)
+
 ## [8.0.0-beta.9](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.8...v8.0.0-beta.9) (2021-10-22)
 
 
