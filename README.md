@@ -230,8 +230,7 @@ For additional information it is recommended to read this article [Testing a Gra
 
 There isn't currently an official MongoDB release for alpine linux. This means that we can't pull binaries for Alpine
 (or any other platform that isn't officially supported by MongoDB), but you can use a Docker image that already has mongod
-built in and then set the [`MONGOMS_SYSTEM_BINARY`](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options#system_binary) variable to point at that binary. This should allow you to use
-`mongodb-memory-server` on any system on which you can install mongod manually.
+built in and then set the [`MONGOMS_SYSTEM_BINARY`](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options#system_binary) variable to point at that binary. This should allow you to use `mongodb-memory-server` on any system on which you can install mongod manually.
 
 ### Enable Debug Mode
 
