@@ -205,14 +205,14 @@ A example test file for a *single* [MongoMemoryReplSet](https://github.com/nodkz
 ### Provide connection string to mongoose
 
 ```js
-// assuming mongoose@5.x
+// assuming mongoose@6.x
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const mongoServer = await MongoMemoryServer.create();
 
 (async () => {
-  await mongoose.connect(mongoServer.getUri(), { dbName: "verifyMASTER", useCreateIndex: true });
+  await mongoose.connect(mongoServer.getUri(), { dbName: "verifyMASTER" });
 
   // your code here
   
