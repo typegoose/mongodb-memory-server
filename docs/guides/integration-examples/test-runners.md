@@ -131,10 +131,6 @@ describe('...', () => {
 });
 ```
 
-:::info
-Mocha may not call `process.on('exit')` events, resulting in temporary files persisting when using a storage engine that is not `ephemeralForTest`, see [Github Issue #530](https://github.com/nodkz/mongodb-memory-server/issues/530).
-:::
-
 ## AVA test runner
 
 For AVA written [detailed tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) how to test mongoose models by @zellwk.
