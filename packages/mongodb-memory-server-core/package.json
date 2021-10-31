@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@types/mongodb": "^3.6.20",
-    "@types/tmp": "^0.2.0",
+    "@types/tmp": "^0.2.2",
     "async-mutex": "^0.3.2",
     "camelcase": "^6.1.0",
     "debug": "^4.2.0",
