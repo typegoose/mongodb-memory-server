@@ -51,7 +51,7 @@
     "https-proxy-agent": "^5.0.0",
     "md5-file": "^5.0.0",
     "mkdirp": "^1.0.4",
-    "mongodb": "^3.6.9",
+    "mongodb": "^3.7.3",
     "new-find-package-json": "^1.1.0",
     "semver": "^7.3.5",
     "tar-stream": "^2.1.4",
