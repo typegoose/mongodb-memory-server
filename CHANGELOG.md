@@ -1,3 +1,30 @@
+## [8.0.0-beta.11](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.10...v8.0.0-beta.11) (2021-11-01)
+
+
+### Features
+
+* **errors:** add Error "StdoutInstanceError" ([382e7c6](https://github.com/nodkz/mongodb-memory-server/commit/382e7c68916a5fb661dd1a49415e49e5ed73d27f))
+* **MongoInstance::stdoutHandler:** change "instanceError" events to use "StdoutInstanceError" ([3daa5ea](https://github.com/nodkz/mongodb-memory-server/commit/3daa5ea1ff5b68eceb1722e29b1f15285587043a))
+* **MongoInstance::stdoutHandler:** change to handle "expection in initAndListen" ([7774e9e](https://github.com/nodkz/mongodb-memory-server/commit/7774e9e17055b59f64bc5bcd40cff3425bd2f606))
+
+
+### Dependencies
+
+* **@types/semver:** upgrade to version 7.3.9 ([53f0354](https://github.com/nodkz/mongodb-memory-server/commit/53f0354bf5c8d5f060adca7efeed61c3613a23d4))
+* **@types/tar-stream:** upgrade to version 2.2.2 ([babce7f](https://github.com/nodkz/mongodb-memory-server/commit/babce7fb2dd2af082483129e568e38c35d88bc03))
+* **@types/tmp:** upgrade to version 0.2.2 ([8f5efe3](https://github.com/nodkz/mongodb-memory-server/commit/8f5efe34e92c4ff360cd776a61cc45d18b9f373c))
+* **@typescript-eslint/*:** upgrade to version 5.2.0 ([41f2a9a](https://github.com/nodkz/mongodb-memory-server/commit/41f2a9a0029884d10dced567a5f45b913011f65a))
+* **commitlint:** upgrade to version 14.1.0 ([5ea0921](https://github.com/nodkz/mongodb-memory-server/commit/5ea0921240a8f564003e7e8de7e75696bd658a1b))
+* **doctoc:** upgrade to version 2.1.0 ([8cb7243](https://github.com/nodkz/mongodb-memory-server/commit/8cb72437f52423e279c1d650e3e80569e8adb4be))
+* **eslint:** upgrade to version 8.1.0 ([6790a0c](https://github.com/nodkz/mongodb-memory-server/commit/6790a0c8284f3ebff42743697a719e7093aead12))
+* **husky:** upgrade to version 7.0.4 ([65a7042](https://github.com/nodkz/mongodb-memory-server/commit/65a70428d9b85cd1797466220991d22669648af3))
+* **jest:** upgrade to version 27.3.1 ([8577380](https://github.com/nodkz/mongodb-memory-server/commit/85773802a251a5257d666eb5cebc07d4a26e90fc))
+* **lint-staged:** upgrade to version 11.2.6 ([493d894](https://github.com/nodkz/mongodb-memory-server/commit/493d8942b640ad464a1910c6edc1822a1c0d24a4))
+* **mongodb:** upgrade to version 3.7.3 ([fcc2f70](https://github.com/nodkz/mongodb-memory-server/commit/fcc2f706f5d1066001dad6760b47ff084465ee4f))
+* **mongodb:** upgrade to version 4.1.3 ([9516bed](https://github.com/nodkz/mongodb-memory-server/commit/9516bedf9a2bd55bfe78b86528430f4c8a235f2a))
+* **ts-jest:** upgrade to version 27.0.7 ([9b0fb3c](https://github.com/nodkz/mongodb-memory-server/commit/9b0fb3cd295b873500f2323e8d949832c5aa1ea1))
+* **typescript:** upgrade to version 4.4.4 ([63606e4](https://github.com/nodkz/mongodb-memory-server/commit/63606e4186fc05f00ffe67abb7fbcc6d4b8cd76e))
+
 ## [8.0.0-beta.10](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0-beta.9...v8.0.0-beta.10) (2021-10-26)
 
 
