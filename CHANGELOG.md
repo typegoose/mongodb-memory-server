@@ -135,6 +135,14 @@
 * **tslib:** upgrade to version 2.3.1 ([1a36352](https://github.com/nodkz/mongodb-memory-server/commit/1a36352fcaaa6c45796cb1d1c2a0e4b509acbfdd))
 * **typescript:** upgrade to version 4.4.3 ([84e407b](https://github.com/nodkz/mongodb-memory-server/commit/84e407b6b14ae986ab9d4ac6a1d5caa3f694861b))
 
+## [7.6.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.5.1...v7.6.0) (2021-10-31)
+
+
+### Dependencies
+
+* **@types/tmp:** upgrade to version 0.2.2 ([8f5efe3](https://github.com/nodkz/mongodb-memory-server/commit/8f5efe34e92c4ff360cd776a61cc45d18b9f373c))
+* **mongodb:** upgrade to version 3.7.3 ([fcc2f70](https://github.com/nodkz/mongodb-memory-server/commit/fcc2f706f5d1066001dad6760b47ff084465ee4f))
+
 ### [7.5.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.5.0...v7.5.1) (2021-10-19)
 
 
