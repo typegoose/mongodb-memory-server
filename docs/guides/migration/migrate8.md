@@ -6,7 +6,7 @@ title: 'Migrate to version 8.0.0'
 Here are the Important changes made for 8.0.0
 
 :::caution Important, Read this first
-This Guide is written for migration from version `7.5.0` to `8.0.0`, for versions `>8.0.0 <9.0.0`, please consult the [CHANGELOG](https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md)
+This Guide is written for migration from version `7.6.0` to `8.0.0`, for versions `>8.0.0 <9.0.0`, please consult the [CHANGELOG](https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md)
 :::
 
 ## Breaking Changes
