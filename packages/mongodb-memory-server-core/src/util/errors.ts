@@ -159,3 +159,13 @@ export class KnownVersionIncompatibilityError extends Error {
     this.message = `Requested Version "${requested_version}" is not available for "${dist}"! Available Versions: "${available_versions}"${addExtra}`;
   }
 }
+
+/**
+ * Basic Error wrapper for "instanceError" events from "stdoutHandler"
+ */
+export class StdoutInstanceError extends Error {
+  // not using "public variable: type", because it is a basic wrapper for "Error"
+  constructor(msg: string) {
+    super(msg);
+  }
+}
