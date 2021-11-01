@@ -13,7 +13,7 @@ import {
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
-import { KeyFileMissingError, StartBinaryFailedError } from './errors';
+import { KeyFileMissingError, StartBinaryFailedError, StdoutInstanceError } from './errors';
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */
@@ -544,11 +544,14 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     if (/address already in use/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
-        `Port "${this.instanceOpts.port}" already in use`
+        new StdoutInstanceError(`Port "${this.instanceOpts.port}" already in use`)
       );
     }
     if (/mongod instance already running/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, 'Mongod already running');
+      this.emit(
+        MongoInstanceEvents.instanceError,
+        new StdoutInstanceError('Mongod already running')
+      );
     }
     if (/permission denied/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceError, 'Mongod permission denied');
@@ -560,15 +563,19 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     if (/CURL_OPENSSL_3['\s]+not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
-        'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
-          'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
+        new StdoutInstanceError(
+          'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
+            'You should manually install libcurl3 or try to use an newer version of MongoDB'
+        )
       );
     }
     if (/CURL_OPENSSL_4['\s]+not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
-        'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
-          'You need to manually install libcurl4\n'
+        new StdoutInstanceError(
+          'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
+            'You need to manually install libcurl4'
+        )
       );
     }
     if (/lib[\w-.]+(?=: cannot open shared object)/i.test(line)) {
@@ -577,11 +584,16 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         'unknown';
       this.emit(
         MongoInstanceEvents.instanceError,
-        `Instance Failed to start because an library file is missing: "${lib}"`
+        new StdoutInstanceError(
+          `Instance Failed to start because an library file is missing: "${lib}"`
+        )
       );
     }
     if (/\*\*\*aborting after/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, 'Mongod internal error');
+      this.emit(
+        MongoInstanceEvents.instanceError,
+        new StdoutInstanceError('Mongod internal error')
+      );
     }
     // this case needs to be infront of "transition to primary complete", otherwise it might reset "isInstancePrimary" to "false"
     if (/transition to \w+ from \w+/i.test(line)) {

@@ -4,7 +4,7 @@ import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
 import getPort from 'get-port';
-import { StartBinaryFailedError } from '../errors';
+import { StartBinaryFailedError, StdoutInstanceError } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 jest.setTimeout(100000); // 10s
@@ -175,14 +175,20 @@ describe('MongodbInstance', () => {
       binary: { version },
     });
 
-    await expect(
-      MongodbInstance.create({
+    try {
+      await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir.name },
         binary: { version },
-      })
-    ).rejects.toEqual(`Port "${gotPort}" already in use`);
+      });
 
-    await mongod.stop();
+      fail('Expected to Fail');
+    } catch (err) {
+      expect(err).toBeInstanceOf(StdoutInstanceError);
+      assertIsError(err); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+      expect(err.message).toEqual(`Port "${gotPort}" already in use`);
+    } finally {
+      await mongod.stop();
+    }
   });
 
   it('should wait until childprocess and killerprocess are killed', async () => {
@@ -268,7 +274,7 @@ describe('MongodbInstance', () => {
 
   describe('test events', () => {
     let mongod: MongodbInstance;
-    let events: Map<MongoInstanceEvents | string, string>;
+    let events: Map<MongoInstanceEvents | string, unknown>;
     beforeEach(() => {
       mongod = new MongodbInstance({ instance: { port: 1001, dbPath: 'hello' } });
       events = new Map();
@@ -322,7 +328,11 @@ describe('MongodbInstance', () => {
 
         expect(events.size).toEqual(2);
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instanceError)).toEqual('Port "1001" already in use');
+
+        const event = events.get(MongoInstanceEvents.instanceError);
+        expect(event).toBeInstanceOf(StdoutInstanceError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toEqual('Port "1001" already in use');
       });
 
       it('should emit "instanceError" when curl-open-ssl-3 is not found', () => {
@@ -334,9 +344,13 @@ describe('MongodbInstance', () => {
 
         expect(events.size).toEqual(2);
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instanceError)).toEqual(
+
+        const event = events.get(MongoInstanceEvents.instanceError);
+        expect(event).toBeInstanceOf(StdoutInstanceError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toEqual(
           'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
-            'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
+            'You should manually install libcurl3 or try to use an newer version of MongoDB'
         );
       });
 
@@ -349,9 +363,13 @@ describe('MongodbInstance', () => {
 
         expect(events.size).toEqual(2);
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instanceError)).toEqual(
+
+        const event = events.get(MongoInstanceEvents.instanceError);
+        expect(event).toBeInstanceOf(StdoutInstanceError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toEqual(
           'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
-            'You need to manually install libcurl4\n'
+            'You need to manually install libcurl4'
         );
       });
 
@@ -391,7 +409,11 @@ describe('MongodbInstance', () => {
 
         expect(events.size).toEqual(2);
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instanceError)).toEqual(
+
+        const event = events.get(MongoInstanceEvents.instanceError);
+        expect(event).toBeInstanceOf(StdoutInstanceError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toEqual(
           'Instance Failed to start because an library file is missing: "libcrypto.so.10"'
         );
       });
