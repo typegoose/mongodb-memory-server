@@ -21,7 +21,7 @@
     "commitlint": "13.1.0",
     "conventional-changelog-conventionalcommits": "4.6.1",
     "cross-env": "7.0.3",
-    "doctoc": "2.0.1",
+    "doctoc": "2.1.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "4.0.0",
