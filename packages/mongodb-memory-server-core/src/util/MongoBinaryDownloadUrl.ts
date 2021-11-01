@@ -5,7 +5,11 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
 import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 import { URL } from 'url';
-import { UnknownArchitectureError, UnknownPlatformError } from './errors';
+import {
+  KnownVersionIncompatibilityError,
+  UnknownArchitectureError,
+  UnknownPlatformError,
+} from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -219,15 +223,18 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = 'debian';
     const release: number = parseFloat(os.release);
 
+    // Note: Debian 11 is compatible with the binaries for debian 10
     if (release >= 10 || ['unstable', 'testing'].includes(os.release)) {
-      if (semver.lte(this.version, '4.2.0')) {
-        log(
-          `getDebianVersionString: requested version "${this.version}" not available for osrelease "${release}", using "92"`
+      if (semver.lt(this.version, '4.2.1')) {
+        throw new KnownVersionIncompatibilityError(
+          `Debian ${release}`,
+          this.version,
+          '>=4.2.1',
+          'Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release'
         );
-        name += '92';
-      } else {
-        name += '10';
       }
+
+      name += '10';
     } else if (release >= 9) {
       name += '92';
     } else if (release >= 8.1) {
@@ -463,10 +470,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         }
 
         throw new UnknownArchitectureError(arch, mongoPlatform);
+      case 'x86_64':
       case 'x64':
         return 'x86_64';
       case 'arm64':
         return 'arm64';
+      case 'aarch64':
+        return 'aarch64';
       default:
         throw new UnknownArchitectureError(arch);
     }

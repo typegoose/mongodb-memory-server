@@ -23,10 +23,15 @@ The versions with a brocken default binary may get deprecated (when possible).
 
 For Packages that are named with a version (like `mongodb-memory-server-global-4.2`), the patch version (`0.0.X`) of a binary may be changed with minor (`0.X.0`) releases.
 
+:::note
+Starting with MongoDB version 5.0, the default versions for `mongodb-memory-server-core` will only be major `X.0` versions (no `X.X` versions), see [MongoDB Versioning](https://docs.mongodb.com/manual/reference/versioning/#std-label-release-version-numbers).
+:::
+
 ## `mongodb-memory-server-core` Version Table
 
 | `mongodb-memory-server-core` Version | Default MongoDB Version |
 | :----------------------------------: | :---------------------: |
+| 8.0.x - 8.0.x                        | 5.0.3                   |
 | 7.5.x - 7.5.x                        | 4.0.27                  |
 | 7.0.x - 7.4.x                        | 4.0.25                  |
 | 6.4.x - 6.9.x                        | 4.0.14                  |

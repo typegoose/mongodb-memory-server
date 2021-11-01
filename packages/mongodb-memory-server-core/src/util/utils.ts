@@ -101,7 +101,7 @@ export async function killProcess(
 
   // check if the childProcess (via PID) is still alive (found thanks to https://github.com/nodkz/mongodb-memory-server/issues/411)
   if (!isAlive(childprocess.pid)) {
-    ilog("killProcess: given childProcess's PID was not alive anymore");
+    ilog("given childProcess's PID was not alive anymore");
 
     return;
   }
@@ -269,4 +269,13 @@ export async function checkBinaryPermissions(path: string): Promise<void> {
 
     throw err;
   }
+}
+
+/**
+ * Make Directory, wrapper for native mkdir with recursive true
+ * @param path The Path to create
+ * @returns Nothing
+ */
+export async function mkdir(path: string): Promise<void> {
+  await fspromises.mkdir(path, { recursive: true });
 }

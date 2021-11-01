@@ -81,10 +81,6 @@ Typings: `async cleanup(force: boolean): Promise<void>`
 
 Cleanup all files used by this instance
 
-:::tip
-Runs automatically on `process.on('beforeExit')` [This can add many listeners if many instances are used without an replset]
-:::
-
 ### ensureInstance
 
 Typings: `async ensureInstance(): Promise<MongoInstanceData>`

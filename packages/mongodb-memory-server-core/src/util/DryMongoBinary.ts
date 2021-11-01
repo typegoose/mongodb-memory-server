@@ -1,11 +1,11 @@
 import debug from 'debug';
 import { DEFAULT_VERSION, envToBool, resolveConfig, ResolveConfigVariables } from './resolveConfig';
-import { checkBinaryPermissions, isNullOrUndefined, pathExists } from './utils';
+import { assertion, checkBinaryPermissions, isNullOrUndefined, pathExists } from './utils';
 import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
-import getOS, { AnyOS, isLinuxOS } from './getos';
-import { NoSystemBinaryFoundError } from './errors';
+import getOS, { AnyOS, isLinuxOS, OtherOS } from './getos';
+import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from './errors';
 
 const log = debug('MongoMS:DryMongoBinary');
 
@@ -32,6 +32,16 @@ export interface DryMongoBinaryPaths {
   legacyHomeCache: string;
   modulesCache: string;
   relative: string;
+}
+
+/**
+ * Interface for "DryMongoBinary.parseArchiveNameRegex"'s regex groups
+ */
+export interface DryMongoBinaryArchiveRegexGroups {
+  platform?: string;
+  arch?: string;
+  dist?: string;
+  version?: string;
 }
 
 /**
@@ -117,7 +127,81 @@ export class DryMongoBinary {
 
     final.downloadDir = path.dirname((await this.generateDownloadPath(final))[1]);
 
+    // if truthy
+    if (
+      resolveConfig(ResolveConfigVariables.ARCHIVE_NAME) ||
+      resolveConfig(ResolveConfigVariables.DOWNLOAD_URL)
+    ) {
+      // "DOWNLOAD_URL" will be used over "ARCHIVE_NAME"
+      // the "as string" cast is there because it is already checked that one of the 2 exists, and "resolveConfig" ensures it only returns strings
+      const input = (resolveConfig(ResolveConfigVariables.DOWNLOAD_URL) ||
+        resolveConfig(ResolveConfigVariables.ARCHIVE_NAME)) as string;
+
+      log(
+        `generateOptions: ARCHIVE_NAME or DOWNLOAD_URL defined, generating options based on that (input: "${input}")`
+      );
+
+      return this.parseArchiveNameRegex(input, final);
+    }
+
     return final;
+  }
+
+  /**
+   * Parse "input" into DryMongoBinaryOptions
+   * @param input The Input to be parsed with the regex
+   * @param opts The Options which will be augmented with "input"
+   * @returns The Augmented options
+   */
+  static parseArchiveNameRegex(
+    input: string,
+    opts: Required<DryMongoBinaryOptions>
+  ): Required<DryMongoBinaryOptions> {
+    log(`parseArchiveNameRegex (input: "${input}")`);
+
+    const archiveMatches =
+      /mongodb-(?<platform>linux|win32|osx|macos)(?:-ssl-|-)(?<arch>\w{4,})(?:-(?<dist>\w+)|)(?:-ssl-|-)(?:v|)(?<version>[\d.]+(?:-latest|))\./gim.exec(
+        input
+      );
+
+    assertion(!isNullOrUndefined(archiveMatches), new NoRegexMatchError('input'));
+
+    // this error is kinda impossible to test, because the regex we use either has matches that are groups or no matches
+    assertion(!isNullOrUndefined(archiveMatches.groups), new NoRegexMatchError('input', 'groups'));
+
+    const groups: DryMongoBinaryArchiveRegexGroups = archiveMatches.groups;
+
+    assertion(
+      typeof groups.version === 'string' && groups.version.length > 1,
+      new ParseArchiveRegexError('version')
+    );
+    // the following 2 assertions are hard to test, because the regex has restrictions that are more strict than the assertions
+    assertion(
+      typeof groups.platform === 'string' && groups.platform.length > 1,
+      new ParseArchiveRegexError('platform')
+    );
+    assertion(
+      typeof groups.arch === 'string' && groups.arch.length >= 4,
+      new ParseArchiveRegexError('arch')
+    );
+
+    opts.version = groups.version;
+    opts.arch = groups.arch;
+
+    if (groups.platform === 'linux') {
+      const distMatches = !!groups.dist ? /([a-z]+)(\d*)/gim.exec(groups.dist) : null;
+
+      opts.os = {
+        os: 'linux',
+        dist: typeof distMatches?.[1] === 'string' ? distMatches[1] : 'unknown',
+        // "release" should be able to be discarded in this case
+        release: '',
+      };
+    } else {
+      opts.os = { os: groups.platform } as OtherOS;
+    }
+
+    return opts;
   }
 
   /**
@@ -175,7 +259,7 @@ export class DryMongoBinary {
   static async generatePaths(
     opts: DryMongoBinaryOptions & DryMongoBinaryNameOptions
   ): Promise<DryMongoBinaryPaths> {
-    log('generatePaths');
+    log('generatePaths', opts);
     const final: DryMongoBinaryPaths = {
       legacyHomeCache: '',
       modulesCache: '',

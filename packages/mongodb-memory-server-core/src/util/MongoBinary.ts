@@ -1,11 +1,10 @@
 import os from 'os';
 import path from 'path';
-import mkdirp from 'mkdirp';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
-import { assertion, isNullOrUndefined } from './utils';
+import { assertion, isNullOrUndefined, mkdir } from './utils';
 import { spawnSync } from 'child_process';
 import { LockFile } from './lockfile';
 import { DryMongoBinary, BaseDryMongoBinaryOptions } from './DryMongoBinary';
@@ -30,7 +29,7 @@ export class MongoBinary {
     log('download');
     const { downloadDir, version } = options;
     // create downloadDir
-    await mkdirp(downloadDir);
+    await mkdir(downloadDir);
 
     /** Lockfile path */
     const lockfile = path.resolve(downloadDir, `${version}.lock`);

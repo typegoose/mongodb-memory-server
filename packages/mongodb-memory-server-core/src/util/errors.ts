@@ -131,3 +131,41 @@ export class ReplsetCountLowError extends Error {
     super(`ReplSet Count needs to be 1 or higher! (specified count: "${count}")`);
   }
 }
+
+export class ParseArchiveRegexError extends Error {
+  constructor(public key: string) {
+    super(`Expected "${key}" to be found in regex groups`);
+  }
+}
+
+export class NoRegexMatchError extends Error {
+  constructor(public name: string, public extra?: string) {
+    super();
+    const addExtra = !!extra ? `(${extra})` : '';
+    this.message = `Expected "${name}" to have Regex Matches${addExtra}`;
+  }
+}
+
+export class KnownVersionIncompatibilityError extends Error {
+  constructor(
+    public dist: string,
+    public requested_version: string,
+    public available_versions: string,
+    public extra?: string
+  ) {
+    super();
+
+    const addExtra = !!extra ? `\n${extra}` : '';
+    this.message = `Requested Version "${requested_version}" is not available for "${dist}"! Available Versions: "${available_versions}"${addExtra}`;
+  }
+}
+
+/**
+ * Basic Error wrapper for "instanceError" events from "stdoutHandler"
+ */
+export class StdoutInstanceError extends Error {
+  // not using "public variable: type", because it is a basic wrapper for "Error"
+  constructor(msg: string) {
+    super(msg);
+  }
+}

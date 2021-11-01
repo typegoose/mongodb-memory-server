@@ -89,10 +89,6 @@ Typings: `async cleanup(force: boolean = false): Promise<void>`
 
 Cleanup all files used by this ReplSet & instances
 
-:::tip
-Runs automatically on `process.on('beforeExit')`
-:::
-
 ### waitUntilRunning
 
 Typings: `async waitUntilRunning(): Promise<void>`

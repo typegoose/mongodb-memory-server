@@ -56,7 +56,7 @@ export = async function globalSetup() {
   }
 
   // The following is to make sure the database is clean before an test starts
-  await mongoose.connect(`${process.env.MONGO_URI}/${config.DataBase}`, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(`${process.env.MONGO_URI}/${config.DataBase}`, { });
   await mongoose.connection.db.dropDatabase();
   await mongoose.disconnect();
 };
@@ -130,10 +130,6 @@ describe('...', () => {
   });
 });
 ```
-
-:::info
-Mocha may not call `process.on('exit')` events, resulting in temporary files persisting when using a storage engine that is not `ephemeralForTest`, see [Github Issue #530](https://github.com/nodkz/mongodb-memory-server/issues/530).
-:::
 
 ## AVA test runner
 

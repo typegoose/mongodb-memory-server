@@ -12,16 +12,10 @@ describe('Multiple MongoMemoryServer', () => {
 
   beforeAll(async () => {
     mongoServer1 = await MongoMemoryServer.create();
-    con1 = await MongoClient.connect(mongoServer1.getUri(), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    con1 = await MongoClient.connect(mongoServer1.getUri(), {});
 
     mongoServer2 = await MongoMemoryServer.create();
-    con2 = await MongoClient.connect(mongoServer2.getUri(), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    con2 = await MongoClient.connect(mongoServer2.getUri(), {});
   });
 
   afterAll(async () => {
@@ -46,13 +40,13 @@ describe('Multiple MongoMemoryServer', () => {
     expect(db1).toBeDefined();
     const col1 = db1.collection('test');
     const result1 = await col1.insertMany([{ a: 1 }, { b: 1 }]);
-    expect(result1.result).toMatchSnapshot();
+    expect(result1.insertedCount).toStrictEqual(2);
     expect(await col1.countDocuments({})).toBe(2);
 
     expect(db2).toBeDefined();
     const col2 = db2.collection('test');
     const result2 = await col2.insertMany([{ a: 2 }, { b: 2 }]);
-    expect(result2.result).toMatchSnapshot();
+    expect(result2.insertedCount).toStrictEqual(2);
     expect(await col2.countDocuments({})).toBe(2);
   });
 

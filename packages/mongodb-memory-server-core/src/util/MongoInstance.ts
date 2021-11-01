@@ -13,7 +13,7 @@ import {
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
-import { KeyFileMissingError, StartBinaryFailedError } from './errors';
+import { KeyFileMissingError, StartBinaryFailedError, StdoutInstanceError } from './errors';
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */
@@ -387,14 +387,14 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           );
 
           con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
             ...this.extraConnectionOptions,
+            directConnection: true,
           });
 
           const admin = con.db('admin'); // just to ensure it is actually the "admin" database
           // "timeoutSecs" is set to "1" otherwise it will take at least "10" seconds to stop (very long tests)
           await admin.command({ shutdown: 1, force: true, timeoutSecs: 1 });
+          this.debug('stop: after admin shutdown command');
         } catch (err) {
           // Quote from MongoDB Documentation (https://docs.mongodb.com/manual/reference/command/replSetStepDown/#client-connections):
           // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.
@@ -544,31 +544,40 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     if (/address already in use/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
-        `Port "${this.instanceOpts.port}" already in use`
+        new StdoutInstanceError(`Port "${this.instanceOpts.port}" already in use`)
       );
     }
-    if (/mongod instance already running/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, 'Mongod already running');
-    }
-    if (/permission denied/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, 'Mongod permission denied');
-    }
-    // Cannot fix CodeQL warning, without a example output of what to expect
-    if (/Data directory .*? not found/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, 'Data directory not found');
+    if (/exception in initAndListen: \w+[^:]: .+[^,], terminating/i.test(line)) {
+      // in pre-4.0 mongodb this exception may have been "permission denied" and "Data directory /path not found"
+
+      // this variable cannot actually be "null", because of the previous test
+      const matches = /exception in initAndListen: (\w+[^:]): (.+[^,]), terminating/i.exec(line);
+
+      const { 1: errorName, 2: origError } = matches || [];
+
+      this.emit(
+        MongoInstanceEvents.instanceError,
+        new StdoutInstanceError(
+          `Instance Failed to start with "${errorName}". Original Error:\n` + origError
+        )
+      );
     }
     if (/CURL_OPENSSL_3['\s]+not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
-        'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
-          'You should manually install libcurl3 or try to use an newer version of MongoDB\n'
+        new StdoutInstanceError(
+          'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
+            'You should manually install libcurl3 or try to use an newer version of MongoDB'
+        )
       );
     }
     if (/CURL_OPENSSL_4['\s]+not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
-        'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
-          'You need to manually install libcurl4\n'
+        new StdoutInstanceError(
+          'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
+            'You need to manually install libcurl4'
+        )
       );
     }
     if (/lib[\w-.]+(?=: cannot open shared object)/i.test(line)) {
@@ -577,11 +586,16 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         'unknown';
       this.emit(
         MongoInstanceEvents.instanceError,
-        `Instance Failed to start because an library file is missing: "${lib}"`
+        new StdoutInstanceError(
+          `Instance Failed to start because an library file is missing: "${lib}"`
+        )
       );
     }
     if (/\*\*\*aborting after/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, 'Mongod internal error');
+      this.emit(
+        MongoInstanceEvents.instanceError,
+        new StdoutInstanceError('Mongod internal error')
+      );
     }
     // this case needs to be infront of "transition to primary complete", otherwise it might reset "isInstancePrimary" to "false"
     if (/transition to \w+ from \w+/i.test(line)) {
