@@ -302,9 +302,6 @@ describe('MongodbInstance', () => {
     describe('stdoutHandler()', () => {
       // All the lines used to test here should be sourced from actual mongod output!
 
-      // TODO: add test for "mongod instance already running"
-      // TODO: add test for "permission denied"
-      // TODO: add test for "Data directory .*? not found"
       // TODO: add test for "aborting after"
 
       it('should emit "instanceReady" when waiting for connections', () => {
@@ -416,6 +413,88 @@ describe('MongodbInstance', () => {
         expect(event.message).toEqual(
           'Instance Failed to start because an library file is missing: "libcrypto.so.10"'
         );
+      });
+
+      describe('should emit "instanceError" when "excepetion in initAndListen" is thrown', () => {
+        it('DbPathInUse (Not a directory)', () => {
+          // actual line copied from mongod 4.0.27
+          // can be reproduced with "mongodb --dbpath /dev/null"
+          const line =
+            '2021-11-01T12:05:02.810+0100 I STORAGE  [initandlisten] exception in initAndListen: DBPathInUse: Unable to create/open the lock file: /dev/null/mongod.lock (Not a directory). Ensure the user executing mongod is the owner of the lock file and has the appropriate permissions. Also make sure that another mongod instance is not already running on the /dev/null directory, terminating';
+
+          mongod.stdoutHandler(line);
+
+          expect(events.size).toEqual(2);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+
+          const event = events.get(MongoInstanceEvents.instanceError);
+          expect(event).toBeInstanceOf(StdoutInstanceError);
+          assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+          expect(event.message).toEqual(
+            'Instance Failed to start with "DBPathInUse". Original Error:\n' +
+              'Unable to create/open the lock file: /dev/null/mongod.lock (Not a directory). Ensure the user executing mongod is the owner of the lock file and has the appropriate permissions. Also make sure that another mongod instance is not already running on the /dev/null directory'
+          );
+        });
+
+        it('DbPathInUse (already running)', () => {
+          // actual line copied from mongod 4.0.27
+          // can be reproduced with having one instance of "mongodb --dbpath /tmp/db --port 3000" and trying another with "mongodb --dbpath /tmp/db --port 3001"
+          const line =
+            '2021-11-01T13:03:56.660+0100 I STORAGE  [initandlisten] exception in initAndListen: DBPathInUse: Unable to lock the lock file: /tmp/hellodb/mongod.lock (Resource temporarily unavailable). Another mongod instance is already running on the /tmp/hellodb directory, terminating';
+
+          mongod.stdoutHandler(line);
+
+          expect(events.size).toEqual(2);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+
+          const event = events.get(MongoInstanceEvents.instanceError);
+          expect(event).toBeInstanceOf(StdoutInstanceError);
+          assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+          expect(event.message).toEqual(
+            'Instance Failed to start with "DBPathInUse". Original Error:\n' +
+              'Unable to lock the lock file: /tmp/hellodb/mongod.lock (Resource temporarily unavailable). Another mongod instance is already running on the /tmp/hellodb directory'
+          );
+        });
+
+        it('Location28596', () => {
+          // actual line copied from mongod 4.0.27
+          // can be reproduced with "mongodb --dbpath /root" (while not being root)
+          const line =
+            '2021-11-01T12:05:34.302+0100 I STORAGE  [initandlisten] exception in initAndListen: Location28596: Unable to determine status of lock file in the data directory /root: boost::filesystem::status: Permission denied: "/root/mongod.lock", terminating';
+
+          mongod.stdoutHandler(line);
+
+          expect(events.size).toEqual(2);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+
+          const event = events.get(MongoInstanceEvents.instanceError);
+          expect(event).toBeInstanceOf(StdoutInstanceError);
+          assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+          expect(event.message).toEqual(
+            'Instance Failed to start with "Location28596". Original Error:\n' +
+              'Unable to determine status of lock file in the data directory /root: boost::filesystem::status: Permission denied: "/root/mongod.lock"'
+          );
+        });
+
+        it('NonExistentPath', () => {
+          // actual line copied from mongod 4.0.27
+          // can be reproduced with "mongodb --dbpath /root" (while not being root)
+          const line =
+            "2021-11-01T12:08:05.077+0100 I STORAGE  [initandlisten] exception in initAndListen: NonExistentPath: Data directory /tmp/hello not found. Create the missing directory or specify another path using (1) the --dbpath command line option, or (2) by adding the 'storage.dbPath' option in the configuration file., terminating";
+
+          mongod.stdoutHandler(line);
+
+          expect(events.size).toEqual(2);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+
+          const event = events.get(MongoInstanceEvents.instanceError);
+          expect(event).toBeInstanceOf(StdoutInstanceError);
+          assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+          expect(event.message).toEqual(
+            'Instance Failed to start with "NonExistentPath". Original Error:\n' +
+              "Data directory /tmp/hello not found. Create the missing directory or specify another path using (1) the --dbpath command line option, or (2) by adding the 'storage.dbPath' option in the configuration file."
+          );
+        });
       });
     });
   });

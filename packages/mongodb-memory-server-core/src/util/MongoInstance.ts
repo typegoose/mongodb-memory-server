@@ -547,18 +547,20 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         new StdoutInstanceError(`Port "${this.instanceOpts.port}" already in use`)
       );
     }
-    if (/mongod instance already running/i.test(line)) {
+    if (/exception in initAndListen: \w+[^:]: .+[^,], terminating/i.test(line)) {
+      // in pre-4.0 mongodb this exception may have been "permission denied" and "Data directory /path not found"
+
+      // this variable cannot actually be "null", because of the previous test
+      const matches = /exception in initAndListen: (\w+[^:]): (.+[^,]), terminating/i.exec(line);
+
+      const { 1: errorName, 2: origError } = matches || [];
+
       this.emit(
         MongoInstanceEvents.instanceError,
-        new StdoutInstanceError('Mongod already running')
+        new StdoutInstanceError(
+          `Instance Failed to start with "${errorName}". Original Error:\n` + origError
+        )
       );
-    }
-    if (/permission denied/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, 'Mongod permission denied');
-    }
-    // Cannot fix CodeQL warning, without a example output of what to expect
-    if (/Data directory .*? not found/i.test(line)) {
-      this.emit(MongoInstanceEvents.instanceError, 'Data directory not found');
     }
     if (/CURL_OPENSSL_3['\s]+not found/i.test(line)) {
       this.emit(
