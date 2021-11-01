@@ -3,6 +3,7 @@ import { findSync } from 'new-find-package-json';
 import debug from 'debug';
 import * as path from 'path';
 import { readFileSync } from 'fs';
+import { isNullOrUndefined } from './utils';
 
 const log = debug('MongoMS:ResolveConfig');
 
@@ -26,7 +27,7 @@ export enum ResolveConfigVariables {
 
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 /** This Value exists here, because "defaultValues" can be changed with "setDefaultValue", but this property is constant */
-export const DEFAULT_VERSION = '4.0.27';
+export const DEFAULT_VERSION = '5.0.3';
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
   [ResolveConfigVariables.VERSION, DEFAULT_VERSION],
@@ -35,6 +36,13 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.USE_HTTP, 'false'],
   [ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK, 'true'],
 ]);
+
+interface PackageJSON {
+  /** The Path where the package.json was found (directory, not the file) */
+  filePath: string;
+  /** The Options that were parsed from the package.json */
+  config: Record<string, string>;
+}
 
 /**
  * Set an Default value for an specific key
@@ -46,44 +54,69 @@ export function setDefaultValue(key: ResolveConfigVariables, value: string): voi
   defaultValues.set(key, value);
 }
 
-let packageJsonConfig: Record<string, string> = {};
+// let packageJsonConfig: Record<string, string> = {};
+let packagejson: PackageJSON | undefined = undefined;
 /**
  * Find the nearest package.json (that has an non-empty config field) for the provided directory
  * @param directory Set an custom directory to search the config in (default: process.cwd())
+ * @returns what "packagejson" variable is
  */
-export function findPackageJson(directory?: string): Record<string, string> {
-  let filepath: string | undefined;
+export function findPackageJson(directory?: string): PackageJSON | undefined {
   for (const filename of findSync(directory || process.cwd())) {
     log(`findPackageJson: Found package.json at "${filename}"`);
     const readout: Record<string, any> = JSON.parse(readFileSync(filename).toString());
 
-    if (Object.keys(readout?.config?.mongodbMemoryServer ?? {}).length > 0) {
+    /** Shorthand for the long path */
+    const config = readout?.config?.mongodbMemoryServer;
+
+    if (!isNullOrUndefined(config) && Object.keys(config ?? {}).length > 0) {
       log(`findPackageJson: Found package with non-empty config field at "${filename}"`);
 
-      // the optional chaining is needed, because typescript wont accept an "isNullOrUndefined" in the if with "&& Object.keys"
-      packageJsonConfig = readout?.config?.mongodbMemoryServer;
-      filepath = path.dirname(filename);
+      const filepath = path.dirname(filename);
+
+      packagejson = {
+        filePath: filepath,
+        config: processConfigOption(config, filepath),
+      };
       break;
     }
   }
 
-  // block for all file-path resolving
-  if (filepath) {
-    // These are so that "camelCase" doesnt get executed much & de-duplicate code
-    // "cc*" means "camelcase"
-    const ccDownloadDir = camelCase(ResolveConfigVariables.DOWNLOAD_DIR);
-    const ccSystemBinary = camelCase(ResolveConfigVariables.SYSTEM_BINARY);
+  return packagejson;
+}
 
-    if (ccDownloadDir in packageJsonConfig) {
-      packageJsonConfig[ccDownloadDir] = path.resolve(filepath, packageJsonConfig[ccDownloadDir]);
-    }
+/**
+ * Apply Proccessing to input options (like resolving paths)
+ * @param input The input to process
+ * @param filepath The FilePath for the input to resolve relative paths to (needs to be a dirname and absolute)
+ * @returns always returns a object
+ */
+export function processConfigOption(input: unknown, filepath: string): Record<string, string> {
+  log('processConfigOption', input, filepath);
 
-    if (ccSystemBinary in packageJsonConfig) {
-      packageJsonConfig[ccSystemBinary] = path.resolve(filepath, packageJsonConfig[ccSystemBinary]);
-    }
+  if (typeof input !== 'object') {
+    log('processConfigOptions: input was not a object');
+
+    return {};
   }
 
-  return packageJsonConfig;
+  // cast because it was tested before that "input" is a object and the key can only be a string in a package.json
+  const returnobj = input as Record<string, string>;
+
+  // These are so that "camelCase" doesnt get executed much & de-duplicate code
+  // "cc*" means "camelcase"
+  const ccDownloadDir = camelCase(ResolveConfigVariables.DOWNLOAD_DIR);
+  const ccSystemBinary = camelCase(ResolveConfigVariables.SYSTEM_BINARY);
+
+  if (ccDownloadDir in returnobj) {
+    returnobj[ccDownloadDir] = path.resolve(filepath, returnobj[ccDownloadDir]);
+  }
+
+  if (ccSystemBinary in returnobj) {
+    returnobj[ccSystemBinary] = path.resolve(filepath, returnobj[ccSystemBinary]);
+  }
+
+  return returnobj;
 }
 
 /**
@@ -93,7 +126,7 @@ export function findPackageJson(directory?: string): Record<string, string> {
 export function resolveConfig(variableName: ResolveConfigVariables): string | undefined {
   return (
     process.env[envName(variableName)] ??
-    packageJsonConfig[camelCase(variableName)] ??
+    packagejson?.config[camelCase(variableName)] ??
     defaultValues.get(variableName)
   )?.toString();
 }

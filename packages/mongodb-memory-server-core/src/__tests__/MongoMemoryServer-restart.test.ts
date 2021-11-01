@@ -2,6 +2,7 @@
 import { MongoClient } from 'mongodb';
 import { v4 } from 'uuid';
 import { MongoMemoryServer } from '../index';
+import { assertion, isNullOrUndefined } from '../util/utils';
 
 // This is an Example test, do not merge it with others and do not delete this file
 
@@ -18,10 +19,7 @@ describe('Restart single MongoMemoryServer instance', () => {
     let insertedDoc: Record<string, any>;
     // first connect and insert
     {
-      const connection = await MongoClient.connect(instance.getUri(), {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
+      const connection = await MongoClient.connect(instance.getUri(), {});
       const db = connection.db(databaseName);
 
       expect(db).toBeDefined();
@@ -29,7 +27,9 @@ describe('Restart single MongoMemoryServer instance', () => {
 
       const result = await collection.insertOne({ hello: 'there', doc: 1 });
 
-      insertedDoc = result.ops[0];
+      const doc = await collection.findOne({ _id: result.insertedId });
+      assertion(!isNullOrUndefined(doc));
+      insertedDoc = doc;
 
       await connection.close();
     }
@@ -42,10 +42,7 @@ describe('Restart single MongoMemoryServer instance', () => {
 
     // second connect and check
     {
-      const connection = await MongoClient.connect(instance.getUri(), {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
+      const connection = await MongoClient.connect(instance.getUri(), {});
       const db = connection.db(databaseName);
 
       expect(db).toBeDefined();

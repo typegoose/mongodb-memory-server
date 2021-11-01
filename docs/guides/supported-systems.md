@@ -60,7 +60,7 @@ For Arm64 MongoDB only provides binaries for `ubuntu1604`
 
 (uses mongodb's `debian` release)<br/>
 Lowest supported Distribution version is `71`<br/>
-Highest version is `10`<br/>
+Highest version is `11`<br/>
 Default version is `10` (when in `unstable` or `testing`, otherwise none)
 
 ### Fedora

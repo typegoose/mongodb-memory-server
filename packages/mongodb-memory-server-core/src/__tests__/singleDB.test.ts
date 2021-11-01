@@ -10,10 +10,7 @@ describe('Single MongoMemoryServer', () => {
 
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
-    con = await MongoClient.connect(mongoServer.getUri(), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    con = await MongoClient.connect(mongoServer.getUri(), {});
   });
 
   afterAll(async () => {
@@ -31,7 +28,7 @@ describe('Single MongoMemoryServer', () => {
     expect(db).toBeDefined();
     const col = db.collection('test');
     const result = await col.insertMany([{ a: 1 }, { b: 1 }]);
-    expect(result.result).toMatchSnapshot();
+    expect(result.insertedCount).toStrictEqual(2);
     expect(await col.countDocuments({})).toBe(2);
   });
 });

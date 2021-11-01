@@ -276,17 +276,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     this.stateChange(MongoMemoryServerStates.starting);
 
-    // check if not replset (because MongoMemoryReplSet has an own beforeExit listener) and
-    // check if an "beforeExit" listener for "this.cleanup" is already defined for this class, if not add one
-    if (
-      isNullOrUndefined(this.opts.instance?.replSet) &&
-      process
-        .listeners('beforeExit')
-        .findIndex((f: (...args: any[]) => any) => f === this.cleanup) <= -1
-    ) {
-      process.on('beforeExit', this.cleanup);
-    }
-
     await this._startUpInstance(forceSamePort).catch((err) => {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
         console.warn('Starting the instance failed, enable debug for more information');
@@ -505,25 +494,13 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Remove the defined dbPath
-   * This function gets automatically called on process event "beforeExit" (with force being "false")
    * @param force Remove the dbPath even if it is no "tmpDir" (and re-check if tmpDir actually removed it)
    * @throws If "state" is not "stopped"
    * @throws If "instanceInfo" is not defined
    * @throws If an fs error occured
    */
-  async cleanup(force: boolean): Promise<void>;
-  /**
-   * This Overload is used for the "beforeExit" listener (ignore this)
-   * @internal
-   */
-  async cleanup(code?: number): Promise<void>;
-  async cleanup(force: boolean | number = false): Promise<void> {
-    if (typeof force !== 'boolean') {
-      force = false;
-    }
-
+  async cleanup(force: boolean = false): Promise<void> {
     assertionIsMMSState(MongoMemoryServerStates.stopped, this.state);
-    process.removeListener('beforeExit', this.cleanup);
 
     if (isNullOrUndefined(this._instanceInfo)) {
       this.debug('cleanup: "instanceInfo" is undefined');
@@ -682,10 +659,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       new Error('"createAuth" got called, but "this.auth" is undefined!')
     );
     this.debug('createAuth: options:', this.auth);
-    const con: MongoClient = await MongoClient.connect(uriTemplate(data.ip, data.port, 'admin'), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const con: MongoClient = await MongoClient.connect(
+      uriTemplate(data.ip, data.port, 'admin'),
+      {}
+    );
 
     let db = con.db('admin'); // just to ensure it is actually the "admin" database AND to have the "Db" data
 
