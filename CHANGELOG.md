@@ -1,3 +1,10 @@
+### [7.6.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.6.0...v7.6.1) (2021-11-05)
+
+
+### Fixes
+
+* **MongoMemoryServer:** invert `isNew` for dbPaths ([0d2e16b](https://github.com/nodkz/mongodb-memory-server/commit/0d2e16b6bbe6c31b99eac3b84458d90bd05d56fd))
+
 ## [7.6.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.5.1...v7.6.0) (2021-10-31)
 
 
