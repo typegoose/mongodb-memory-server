@@ -373,7 +373,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
         );
         const files = await fspromises.readdir(data.dbPath);
 
-        isNew = files.length > 0; // if there already files in the directory, assume that the database is not new
+        isNew = files.length === 0; // if there are no files in the directory, assume that the database is new
       }
     } else {
       isNew = false;
