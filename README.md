@@ -225,7 +225,7 @@ For additional information it is recommended to read this article [Testing a Gra
 
 ### Test Runner Examples
 
-[Documentation for Integration Examples](https://nodkz.github.io/mongodb-memory-server/docs/guides/integration-examples)
+[Documentation for Test Runner Integration Examples](https://nodkz.github.io/mongodb-memory-server/docs/guides/integration-examples/test-runners)
 
 ### Docker Alpine
 
