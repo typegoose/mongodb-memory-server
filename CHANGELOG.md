@@ -1,3 +1,10 @@
+### [7.6.2](https://github.com/nodkz/mongodb-memory-server/compare/v7.6.1...v7.6.2) (2021-11-05)
+
+
+### Fixes
+
+* update migration docs urls to include new /migration/ path ([#572](https://github.com/nodkz/mongodb-memory-server/issues/572)) ([9b136d9](https://github.com/nodkz/mongodb-memory-server/commit/9b136d9edda0c3c5b9e8cad53bd100363dd71457))
+
 ### [7.6.1](https://github.com/nodkz/mongodb-memory-server/compare/v7.6.0...v7.6.1) (2021-11-05)
 
 
