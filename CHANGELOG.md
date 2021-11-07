@@ -1,3 +1,10 @@
+### [7.6.3](https://github.com/nodkz/mongodb-memory-server/compare/v7.6.2...v7.6.3) (2021-11-07)
+
+
+### Fixes
+
+* **MongoMemoryServer:** use non-static password for authentication creation ([25b04cf](https://github.com/nodkz/mongodb-memory-server/commit/25b04cf7b4a62ca0a65d4af6850907b48280327e)), closes [#575](https://github.com/nodkz/mongodb-memory-server/issues/575)
+
 ### [7.6.2](https://github.com/nodkz/mongodb-memory-server/compare/v7.6.1...v7.6.2) (2021-11-05)
 
 
