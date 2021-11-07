@@ -670,7 +670,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.debug(`createAuth: Creating Root user, name: "${this.auth.customRootName}"`);
     await db.command({
       createUser: this.auth.customRootName,
-      pwd: 'rootuser',
+      pwd: this.auth.customRootPwd,
       mechanisms: ['SCRAM-SHA-256'],
       customData: {
         createdBy: 'mongodb-memory-server',
