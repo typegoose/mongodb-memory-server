@@ -482,13 +482,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       return false;
     }
 
-    // assert here, otherwise typescript is not happy
-    // TODO: remove check, typescript does not need this anymore
-    assertion(
-      !isNullOrUndefined(this._instanceInfo.instance),
-      new Error('"instanceInfo.instance" is undefined!')
-    );
-
     this.debug(
       `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.mongodProcess?.pid}` // "undefined" would say more than ""
     );
