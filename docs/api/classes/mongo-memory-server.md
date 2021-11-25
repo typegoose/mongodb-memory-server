@@ -37,6 +37,9 @@ Typings: `async start(forceSamePort: boolean = false): Promise<boolean>`
 
 Used to start an new Instance or to Re-Start an stopped instance
 
+with `forceSamePort` set to `true` and having `instance.port` set, it will use that port and not generate a new port.  
+with `forceSamePort` set to `true` and not having `instance.port` set, it will generate a new free port.  
+
 :::caution
 Will Error if instance is already running
 :::
@@ -53,7 +56,10 @@ Finds an new non-locked port
 
 <span class="badge badge--warning">Internal</span>
 
-Typings: `protected async getStartOptions(): Promise<MongoMemoryServerGetStartOptions>`
+Typings: `protected async getStartOptions(forceSamePort: boolean = false): Promise<MongoMemoryServerGetStartOptions>`
+
+with `forceSamePort` set to `true` and having `instance.port` set, it will use that port and not generate a new port.  
+with `forceSamePort` set to `true` and not having `instance.port` set, it will generate a new free port.  
 
 Constructs the Starting Options
 
@@ -70,6 +76,8 @@ Internal Functions used by [`start`](#start)
 Typings: `async stop(runCleanup: boolean = true): Promise<boolean>`
 
 Stop an running instance
+
+with `runCleanup` will run [`.cleanup`](#cleanup) after stopping with `force = false`
 
 :::caution
 Will not Error if instance is not running
