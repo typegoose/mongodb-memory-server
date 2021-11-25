@@ -679,6 +679,54 @@ describe('MongoMemoryServer', () => {
       expect(readdirSpy).toHaveBeenCalledTimes(1);
       expect(options.createAuth).toEqual(false);
     });
+
+    it('should generate a port when no suggestion is defined', async () => {
+      const mongoServer = new MongoMemoryServer();
+      const newPortSpy = jest
+        // @ts-expect-error "getNewPort" is protected
+        .spyOn(mongoServer, 'getNewPort')
+        // @ts-expect-error it somehow gets a wrong function type
+        .mockImplementation((port) => Promise.resolve(port ? port : 2000));
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(newPortSpy).toHaveBeenCalledTimes(1);
+      expect(typeof options.data.port === 'number').toBeTruthy();
+    });
+
+    it('should use a predefined port as a suggestion for a port', async () => {
+      const predefinedPort = 10000;
+
+      const mongoServer = new MongoMemoryServer({ instance: { port: predefinedPort } });
+      const newPortSpy = jest
+        // @ts-expect-error "getNewPort" is protected
+        .spyOn(mongoServer, 'getNewPort')
+        // @ts-expect-error it somehow gets a wrong function type
+        .mockImplementation((port) => Promise.resolve(port ? port : 2000));
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(newPortSpy).toHaveBeenCalledWith(predefinedPort);
+      expect(options.data.port).toStrictEqual(predefinedPort);
+    });
+
+    it('should use a predefined port for a port with "forceSamePort" on', async () => {
+      const predefinedPort = 30000;
+
+      const mongoServer = new MongoMemoryServer({ instance: { port: predefinedPort } });
+      const newPortSpy = jest
+        // @ts-expect-error "getNewPort" is protected
+        .spyOn(mongoServer, 'getNewPort')
+        .mockImplementation(() => fail('Expected this function to not be called'));
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions(true);
+
+      expect(newPortSpy).not.toHaveBeenCalled();
+      expect(options.data.port).toStrictEqual(predefinedPort);
+    });
   });
 
   it('"getDbPath" should return the dbPath', async () => {

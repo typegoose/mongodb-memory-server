@@ -326,8 +326,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   /**
    * Construct Instance Starting Options
    */
-  protected async getStartOptions(): Promise<MongoMemoryServerGetStartOptions> {
-    this.debug('getStartOptions');
+  protected async getStartOptions(
+    forceSamePort: boolean = false
+  ): Promise<MongoMemoryServerGetStartOptions> {
+    this.debug(`getStartOptions: forceSamePort: ${forceSamePort}`);
     /** Shortcut to this.opts.instance */
     const instOpts = this.opts.instance ?? {};
     /**
@@ -335,8 +337,16 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
      */
     let isNew: boolean = true;
 
+    // use pre-defined port if available, otherwise generate a new port
+    let port = typeof instOpts.port === 'number' ? instOpts.port : undefined;
+
+    // if "forceSamePort" is not true, and get a available port
+    if (!forceSamePort || isNullOrUndefined(port)) {
+      port = await this.getNewPort(port);
+    }
+
     const data: StartupInstanceData = {
-      port: await this.getNewPort(instOpts.port),
+      port: port,
       dbName: generateDbName(instOpts.dbName),
       ip: instOpts.ip ?? '127.0.0.1',
       storageEngine: instOpts.storageEngine ?? 'ephemeralForTest',
@@ -412,7 +422,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       return;
     }
 
-    const { mongodOptions, createAuth, data } = await this.getStartOptions();
+    const { mongodOptions, createAuth, data } = await this.getStartOptions(forceSamePort);
     this.debug(`_startUpInstance: Creating new MongoDB instance with options:`, mongodOptions);
 
     const instance = await MongoInstance.create(mongodOptions);
@@ -473,6 +483,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     }
 
     // assert here, otherwise typescript is not happy
+    // TODO: remove check, typescript does not need this anymore
     assertion(
       !isNullOrUndefined(this._instanceInfo.instance),
       new Error('"instanceInfo.instance" is undefined!')
