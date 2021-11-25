@@ -1,3 +1,22 @@
+### [8.0.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.1...v8.0.2) (2021-11-07)
+
+
+### Fixes
+
+* **MongoMemoryServer:** use non-static password for authentication creation ([c72427d](https://github.com/nodkz/mongodb-memory-server/commit/c72427d700a4241ce584b61dc4be3ed0f2deb1f5)), closes [#575](https://github.com/nodkz/mongodb-memory-server/issues/575)
+
+### [8.0.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.0...v8.0.1) (2021-11-05)
+
+
+### Fixes
+
+* **MongoMemoryServer:** invert `isNew` for dbPaths ([6b8845e](https://github.com/nodkz/mongodb-memory-server/commit/6b8845e20c22a43f09ac588a87834cc2f16363e3))
+
+
+### Style
+
+* update migration docs urls to include new /migration/ path ([#572](https://github.com/nodkz/mongodb-memory-server/issues/572)) ([b3897ed](https://github.com/nodkz/mongodb-memory-server/commit/b3897ed3c67c94ac66ff93ac0ef5a9c3cbc77c3f))
+
 ## [8.0.0](https://github.com/nodkz/mongodb-memory-server/compare/v7.6.0...v8.0.0) (2021-11-01)
 
 

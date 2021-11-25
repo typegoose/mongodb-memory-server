@@ -11,6 +11,8 @@ import * as utils from '../util/utils';
 import * as semver from 'semver';
 import { EnsureInstanceError, StateError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
+import { promises as fspromises } from 'fs';
+import * as path from 'path';
 
 tmp.setGracefulCleanup();
 jest.setTimeout(100000); // 10s
@@ -606,6 +608,124 @@ describe('MongoMemoryServer', () => {
         assertIsError(err);
         expect(err.message).toMatchSnapshot();
       }
+    });
+  });
+
+  describe('getStartOptions()', () => {
+    it('should create a tmpdir if "dbPath" is not set', async () => {
+      // somehow, jest cannot redefine function "dirSync", so this is disabled
+      // const tmpSpy = jest.spyOn(tmp, 'dirSync');
+      const mongoServer = new MongoMemoryServer({});
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      // see comment above
+      // expect(tmpSpy).toHaveBeenCalledTimes(1);
+      expect(options.data.tmpDir).toBeDefined();
+      // jest "expect" do not act as typescript typeguards
+      utils.assertion(
+        !utils.isNullOrUndefined(options.data.dbPath),
+        new Error('Expected "options.data.dbPath" to be defined')
+      );
+      expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
+    });
+
+    it('should resolve "isNew" to "true" and set "createAuth" to "true" when dbPath is set, but empty', async () => {
+      const readdirSpy = jest.spyOn(fspromises, 'readdir');
+      const tmpDbPath = tmp.dirSync({ prefix: 'mongo-mem-getStartOptions1-', unsafeCleanup: true });
+
+      const mongoServer = new MongoMemoryServer({
+        instance: { dbPath: tmpDbPath.name },
+        auth: {},
+      });
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(options.data.tmpDir).toBeUndefined();
+      utils.assertion(
+        !utils.isNullOrUndefined(options.data.dbPath),
+        new Error('Expected "options.data.dbPath" to be defined')
+      );
+      expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
+      expect(options.data.dbPath).toEqual(tmpDbPath.name);
+      expect(readdirSpy).toHaveBeenCalledTimes(1);
+      expect(options.createAuth).toEqual(true);
+    });
+
+    it('should resolve "isNew" to "false" and set "createAuth" to "false" when dbPath is set, but not empty', async () => {
+      const readdirSpy = jest.spyOn(fspromises, 'readdir');
+      const tmpDbPath = tmp.dirSync({ prefix: 'mongo-mem-getStartOptions1-', unsafeCleanup: true });
+
+      // create dummy file, to make the directory non-empty
+      await fspromises.writeFile(path.resolve(tmpDbPath.name, 'testfile'), '');
+
+      const mongoServer = new MongoMemoryServer({
+        instance: { dbPath: tmpDbPath.name },
+        auth: {},
+      });
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(options.data.tmpDir).toBeUndefined();
+      utils.assertion(
+        !utils.isNullOrUndefined(options.data.dbPath),
+        new Error('Expected "options.data.dbPath" to be defined')
+      );
+      expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
+      expect(options.data.dbPath).toEqual(tmpDbPath.name);
+      expect(readdirSpy).toHaveBeenCalledTimes(1);
+      expect(options.createAuth).toEqual(false);
+    });
+
+    it('should generate a port when no suggestion is defined', async () => {
+      const mongoServer = new MongoMemoryServer();
+      const newPortSpy = jest
+        // @ts-expect-error "getNewPort" is protected
+        .spyOn(mongoServer, 'getNewPort')
+        // @ts-expect-error it somehow gets a wrong function type
+        .mockImplementation((port) => Promise.resolve(port ? port : 2000));
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(newPortSpy).toHaveBeenCalledTimes(1);
+      expect(typeof options.data.port === 'number').toBeTruthy();
+    });
+
+    it('should use a predefined port as a suggestion for a port', async () => {
+      const predefinedPort = 10000;
+
+      const mongoServer = new MongoMemoryServer({ instance: { port: predefinedPort } });
+      const newPortSpy = jest
+        // @ts-expect-error "getNewPort" is protected
+        .spyOn(mongoServer, 'getNewPort')
+        // @ts-expect-error it somehow gets a wrong function type
+        .mockImplementation((port) => Promise.resolve(port ? port : 2000));
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(newPortSpy).toHaveBeenCalledWith(predefinedPort);
+      expect(options.data.port).toStrictEqual(predefinedPort);
+    });
+
+    it('should use a predefined port for a port with "forceSamePort" on', async () => {
+      const predefinedPort = 30000;
+
+      const mongoServer = new MongoMemoryServer({ instance: { port: predefinedPort } });
+      const newPortSpy = jest
+        // @ts-expect-error "getNewPort" is protected
+        .spyOn(mongoServer, 'getNewPort')
+        .mockImplementation(() => fail('Expected this function to not be called'));
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions(true);
+
+      expect(newPortSpy).not.toHaveBeenCalled();
+      expect(options.data.port).toStrictEqual(predefinedPort);
     });
   });
 

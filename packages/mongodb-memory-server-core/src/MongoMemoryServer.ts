@@ -326,8 +326,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   /**
    * Construct Instance Starting Options
    */
-  protected async getStartOptions(): Promise<MongoMemoryServerGetStartOptions> {
-    this.debug('getStartOptions');
+  protected async getStartOptions(
+    forceSamePort: boolean = false
+  ): Promise<MongoMemoryServerGetStartOptions> {
+    this.debug(`getStartOptions: forceSamePort: ${forceSamePort}`);
     /** Shortcut to this.opts.instance */
     const instOpts = this.opts.instance ?? {};
     /**
@@ -335,8 +337,16 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
      */
     let isNew: boolean = true;
 
+    // use pre-defined port if available, otherwise generate a new port
+    let port = typeof instOpts.port === 'number' ? instOpts.port : undefined;
+
+    // if "forceSamePort" is not true, and get a available port
+    if (!forceSamePort || isNullOrUndefined(port)) {
+      port = await this.getNewPort(port);
+    }
+
     const data: StartupInstanceData = {
-      port: await this.getNewPort(instOpts.port),
+      port: port,
       dbName: generateDbName(instOpts.dbName),
       ip: instOpts.ip ?? '127.0.0.1',
       storageEngine: instOpts.storageEngine ?? 'ephemeralForTest',
@@ -362,7 +372,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
         );
         const files = await fspromises.readdir(data.dbPath);
 
-        isNew = files.length > 0; // if there already files in the directory, assume that the database is not new
+        isNew = files.length === 0; // if there are no files in the directory, assume that the database is new
       }
     } else {
       isNew = false;
@@ -412,7 +422,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       return;
     }
 
-    const { mongodOptions, createAuth, data } = await this.getStartOptions();
+    const { mongodOptions, createAuth, data } = await this.getStartOptions(forceSamePort);
     this.debug(`_startUpInstance: Creating new MongoDB instance with options:`, mongodOptions);
 
     const instance = await MongoInstance.create(mongodOptions);
@@ -471,12 +481,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
       return false;
     }
-
-    // assert here, otherwise typescript is not happy
-    assertion(
-      !isNullOrUndefined(this._instanceInfo.instance),
-      new Error('"instanceInfo.instance" is undefined!')
-    );
 
     this.debug(
       `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.mongodProcess?.pid}` // "undefined" would say more than ""
@@ -670,7 +674,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.debug(`createAuth: Creating Root user, name: "${this.auth.customRootName}"`);
     await db.command({
       createUser: this.auth.customRootName,
-      pwd: 'rootuser',
+      pwd: this.auth.customRootPwd,
       mechanisms: ['SCRAM-SHA-256'],
       customData: {
         createdBy: 'mongodb-memory-server',
