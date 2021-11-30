@@ -675,6 +675,7 @@ describe('MongoBinaryDownloadUrl', () => {
         })
       ).toBe('ubuntu1204');
     });
+
     it('should return a archive name for Ubuntu 18.04', () => {
       const oldMongoVersion = downloadUrl.version;
       downloadUrl.version = '3.6.3';
@@ -695,6 +696,7 @@ describe('MongoBinaryDownloadUrl', () => {
       ).toBe('ubuntu1804');
       downloadUrl.version = oldMongoVersion;
     });
+
     it('should return a archive name for Ubuntu 20.04', () => {
       const oldMongoVersion = downloadUrl.version;
       downloadUrl.version = '3.6.3';
