@@ -1,3 +1,10 @@
+### [8.0.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.3...v8.0.4) (2021-11-30)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** translate ubuntu 2104 to 2004 ([1ad603f](https://github.com/nodkz/mongodb-memory-server/commit/1ad603ffc10b929312cbb98788da4f5bc5291819)), closes [#582](https://github.com/nodkz/mongodb-memory-server/issues/582)
+
 ### [8.0.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.2...v8.0.3) (2021-11-25)
 
 
