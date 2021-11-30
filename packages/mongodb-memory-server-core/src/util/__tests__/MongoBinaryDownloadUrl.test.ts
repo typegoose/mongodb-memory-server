@@ -640,10 +640,13 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getUbuntuVersionString()', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
     });
 
     it('should return a archive name for Ubuntu 14.10', () => {
@@ -813,12 +816,14 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getLegacyVersionString()', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
     });
-
     it('should return an empty string', () => {
       expect(downloadUrl.getLegacyVersionString()).toBe('');
     });
