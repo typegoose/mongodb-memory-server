@@ -1,3 +1,15 @@
+### [8.0.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.2...v8.0.3) (2021-11-25)
+
+
+### Fixes
+
+* **MongoMemoryServer::getStartOptions:** use "forceSamePort", even when instance is not defined ([1170ad5](https://github.com/nodkz/mongodb-memory-server/commit/1170ad568936242171780e53905d6ff535a017bc)), closes [#578](https://github.com/nodkz/mongodb-memory-server/issues/578)
+
+
+### Refactor
+
+* **MongoMemoryServer::stop:** remove assertion for typescript types ([df5b888](https://github.com/nodkz/mongodb-memory-server/commit/df5b888aeb6731b3a6fd54f9109d49caa920fcbc))
+
 ### [8.0.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.1...v8.0.2) (2021-11-07)
 
 
