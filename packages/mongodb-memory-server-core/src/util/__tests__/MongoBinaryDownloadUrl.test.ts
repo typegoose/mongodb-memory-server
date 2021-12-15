@@ -640,13 +640,17 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getUbuntuVersionString()', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
     });
 
     it('should return a archive name for Ubuntu 14.10', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getUbuntuVersionString({
           os: 'linux',
@@ -657,6 +661,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for Ubuntu 14.04', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getUbuntuVersionString({
           os: 'linux',
@@ -667,6 +672,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for Ubuntu 12.04', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getUbuntuVersionString({
           os: 'linux',
@@ -741,6 +747,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 6.2', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -751,6 +758,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 7.0', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -761,6 +769,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 7.1', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -771,6 +780,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 8.0', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -781,6 +791,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 8.1', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -791,6 +802,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 9.0', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -813,13 +825,17 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getLegacyVersionString()', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
     });
 
     it('should return an empty string', () => {
+      downloadUrl.version = '3.6.3';
       expect(downloadUrl.getLegacyVersionString()).toBe('');
     });
   });
