@@ -301,11 +301,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   /**
    * Returns an mongodb URI that is setup with all replSet servers
    * @param otherDb add an database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
+   * @param otherIp change the ip in the generated uri, default will otherwise always be "127.0.0.1"
    * @throws if state is not "running"
    * @throws if an server doesnt have "instanceInfo.port" defined
    * @returns an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
-  getUri(otherDb?: string): string {
+  getUri(otherDb?: string, otherIp?: string): string {
     log('getUri:', this.state);
     switch (this.state) {
       case MongoMemoryReplSetStates.running:
@@ -323,8 +324,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       .map((s) => {
         const port = s.instanceInfo?.port;
         assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
+        const ip = otherIp || '127.0.0.1';
 
-        return `127.0.0.1:${port}`;
+        return `${ip}:${port}`;
       })
       .join(',');
 

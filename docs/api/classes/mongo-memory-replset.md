@@ -45,6 +45,10 @@ Typings: `getUri(otherDb?: string): string`
 
 Get an mongodb-usable uri (can also be used in mongoose)
 
+When no arguments are set, the URI will always use ip `127.0.0.1` and end with `/?replicaSet=ReplSetName` (not setting a database).  
+When setting `otherDbName`, the value of `otherDbName` will be appended after `/` and before any query arguments.  
+When setting `otherIp`, the ip will be the value of `otherIp` instead of `127.0.0.1` (for all instances).
+
 ### start
 
 Typings: `async start(): Promise<void>`

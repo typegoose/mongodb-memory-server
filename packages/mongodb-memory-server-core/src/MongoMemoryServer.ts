@@ -629,10 +629,13 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   /**
    * Generate the Connection string used by mongodb
    * @param otherDb add an database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
+   * @param otherIp change the ip in the generated uri, default will otherwise always be "127.0.0.1"
+   * @throws if state is not "running" (or "starting")
+   * @throws if an server doesnt have "instanceInfo.port" defined
    * @returns an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
-  getUri(otherDb?: string): string {
-    this.debug('getUri:', this.state);
+  getUri(otherDb?: string, otherIp?: string): string {
+    this.debug('getUri:', this.state, otherDb, otherIp);
 
     switch (this.state) {
       case MongoMemoryServerStates.running:
@@ -648,7 +651,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     assertionInstanceInfo(this._instanceInfo);
 
-    return uriTemplate(this._instanceInfo.ip, this._instanceInfo.port, generateDbName(otherDb));
+    return uriTemplate(otherIp || '127.0.0.1', this._instanceInfo.port, generateDbName(otherDb));
   }
 
   /**
