@@ -1,3 +1,26 @@
+## [8.1.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.4...v8.1.0) (2021-12-22)
+
+
+### Features
+
+* change "getUri" to always return ip "127.0.0.1" instead of "ip" property ([2409489](https://github.com/nodkz/mongodb-memory-server/commit/24094899b792c55bbaf8404c988c9cb226a2948b)), closes [#586](https://github.com/nodkz/mongodb-memory-server/issues/586)
+
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 27.0.3 ([202aef2](https://github.com/nodkz/mongodb-memory-server/commit/202aef2454b69dfa0f5edf333335c7b5fcaf9bd2))
+* **@types/tmp:** upgrade to version 0.2.3 ([4a18cb9](https://github.com/nodkz/mongodb-memory-server/commit/4a18cb985538105460bcadf5628560f9b08ec89e))
+* **@types/uuid:** upgrade to version 8.3.3 ([4ea1aef](https://github.com/nodkz/mongodb-memory-server/commit/4ea1aef2d3d170420488d25f28e90e38a06a3ebe))
+* **@typescript-eslint/*:** upgrade to version 5.8.0 ([dc67374](https://github.com/nodkz/mongodb-memory-server/commit/dc673745666b8ee2e4d1ef78fa5ab83073df13e5))
+* **camelcase:** upgrade to version 6.2.1 ([42e535d](https://github.com/nodkz/mongodb-memory-server/commit/42e535d5f87b5f405001730771dd5042f5159321))
+* **commitlint:** upgrade to version 15.0.0 ([e3700d0](https://github.com/nodkz/mongodb-memory-server/commit/e3700d029ae6ee5e77d0fcdbccc6689c64e98150))
+* **debug:** upgrade to version 4.3.3 ([0f2384d](https://github.com/nodkz/mongodb-memory-server/commit/0f2384dd1d45965dbc97b750ff9e2f8b3ef855d5))
+* **eslint:** upgrade to version 8.5.0 ([5ed28f8](https://github.com/nodkz/mongodb-memory-server/commit/5ed28f81fdd9ea9c3af0f7d030efdd426f4b2ab6))
+* **jest:** upgrade to version 27.4.5 ([014d42f](https://github.com/nodkz/mongodb-memory-server/commit/014d42fd7a96cc74755381410c2e9bf6ba633ec0))
+* **mongodb:** upgrade to version 4.2.2 ([d7c2430](https://github.com/nodkz/mongodb-memory-server/commit/d7c2430503d0bdef557a5012b9c529caa0e6f52b))
+* **prettier:** upgrade to version 2.5.1 ([53f574b](https://github.com/nodkz/mongodb-memory-server/commit/53f574be5881db30a8632eda8662750d140c3c2f))
+* **ts-jest:** upgrade to version 27.1.2 ([3b979d7](https://github.com/nodkz/mongodb-memory-server/commit/3b979d74de309b0220de6beb6bf3039ffd0700df))
+
 ### [8.0.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.0.3...v8.0.4) (2021-11-30)
 
 
