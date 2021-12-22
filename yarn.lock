@@ -1296,13 +1296,13 @@
   dependencies:
     "@types/node" "*"
 
-"@typescript-eslint/eslint-plugin@5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.2.0.tgz#2bdb247cc2e2afce7efbce09afb9a6f0a8a08434"
-  integrity sha512-qQwg7sqYkBF4CIQSyRQyqsYvP+g/J0To9ZPVNJpfxfekl5RmdvQnFFTVVwpRtaUDFNvjfe/34TgY/dpc3MgNTw==
+"@typescript-eslint/eslint-plugin@5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.8.0.tgz#52cd9305ceef98a5333f9492d519e6c6c7fe7d43"
+  integrity sha512-spu1UW7QuBn0nJ6+psnfCc3iVoQAifjKORgBngKOmC8U/1tbe2YJMzYQqDGYB4JCss7L8+RM2kKLb1B1Aw9BNA==
   dependencies:
-    "@typescript-eslint/experimental-utils" "5.2.0"
-    "@typescript-eslint/scope-manager" "5.2.0"
+    "@typescript-eslint/experimental-utils" "5.8.0"
+    "@typescript-eslint/scope-manager" "5.8.0"
     debug "^4.3.2"
     functional-red-black-tree "^1.0.1"
     ignore "^5.1.8"
@@ -1310,60 +1310,60 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
-"@typescript-eslint/experimental-utils@5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-5.2.0.tgz#e3b2cb9cd0aff9b50f68d9a414c299fd26b067e6"
-  integrity sha512-fWyT3Agf7n7HuZZRpvUYdFYbPk3iDCq6fgu3ulia4c7yxmPnwVBovdSOX7RL+k8u6hLbrXcdAehlWUVpGh6IEw==
+"@typescript-eslint/experimental-utils@5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-5.8.0.tgz#0916ffe98d34b3c95e3652efa0cace61a7b25728"
+  integrity sha512-KN5FvNH71bhZ8fKtL+lhW7bjm7cxs1nt+hrDZWIqb6ViCffQcWyLunGrgvISgkRojIDcXIsH+xlFfI4RCDA0xA==
   dependencies:
     "@types/json-schema" "^7.0.9"
-    "@typescript-eslint/scope-manager" "5.2.0"
-    "@typescript-eslint/types" "5.2.0"
-    "@typescript-eslint/typescript-estree" "5.2.0"
+    "@typescript-eslint/scope-manager" "5.8.0"
+    "@typescript-eslint/types" "5.8.0"
+    "@typescript-eslint/typescript-estree" "5.8.0"
     eslint-scope "^5.1.1"
     eslint-utils "^3.0.0"
 
-"@typescript-eslint/parser@5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.2.0.tgz#dc081aa89de16b5676b10215519af3aa7b58fb72"
-  integrity sha512-Uyy4TjJBlh3NuA8/4yIQptyJb95Qz5PX//6p8n7zG0QnN4o3NF9Je3JHbVU7fxf5ncSXTmnvMtd/LDQWDk0YqA==
+"@typescript-eslint/parser@5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.8.0.tgz#b39970b21c1d7bc4a6018507fb29b380328d2587"
+  integrity sha512-Gleacp/ZhRtJRYs5/T8KQR3pAQjQI89Dn/k+OzyCKOsLiZH2/Vh60cFBTnFsHNI6WAD+lNUo/xGZ4NeA5u0Ipw==
   dependencies:
-    "@typescript-eslint/scope-manager" "5.2.0"
-    "@typescript-eslint/types" "5.2.0"
-    "@typescript-eslint/typescript-estree" "5.2.0"
+    "@typescript-eslint/scope-manager" "5.8.0"
+    "@typescript-eslint/types" "5.8.0"
+    "@typescript-eslint/typescript-estree" "5.8.0"
     debug "^4.3.2"
 
-"@typescript-eslint/scope-manager@5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.2.0.tgz#7ce8e4ab2baaa0ad5282913ea8e13ce03ec6a12a"
-  integrity sha512-RW+wowZqPzQw8MUFltfKYZfKXqA2qgyi6oi/31J1zfXJRpOn6tCaZtd9b5u9ubnDG2n/EMvQLeZrsLNPpaUiFQ==
+"@typescript-eslint/scope-manager@5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.8.0.tgz#2371095b4fa4c7be6a80b380f4e1b49c715e16f4"
+  integrity sha512-x82CYJsLOjPCDuFFEbS6e7K1QEWj7u5Wk1alw8A+gnJiYwNnDJk0ib6PCegbaPMjrfBvFKa7SxE3EOnnIQz2Gg==
   dependencies:
-    "@typescript-eslint/types" "5.2.0"
-    "@typescript-eslint/visitor-keys" "5.2.0"
+    "@typescript-eslint/types" "5.8.0"
+    "@typescript-eslint/visitor-keys" "5.8.0"
 
-"@typescript-eslint/types@5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.2.0.tgz#7ad32d15abddb0ee968a330f0ea182ea544ef7cf"
-  integrity sha512-cTk6x08qqosps6sPyP2j7NxyFPlCNsJwSDasqPNjEQ8JMD5xxj2NHxcLin5AJQ8pAVwpQ8BMI3bTxR0zxmK9qQ==
+"@typescript-eslint/types@5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.8.0.tgz#e7fa74ec35d9dbe3560d039d3d8734986c3971e0"
+  integrity sha512-LdCYOqeqZWqCMOmwFnum6YfW9F3nKuxJiR84CdIRN5nfHJ7gyvGpXWqL/AaW0k3Po0+wm93ARAsOdzlZDPCcXg==
 
-"@typescript-eslint/typescript-estree@5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.2.0.tgz#c22e0ff6f8a4a3f78504a80ebd686fe2870a68ae"
-  integrity sha512-RsdXq2XmVgKbm9nLsE3mjNUM7BTr/K4DYR9WfFVMUuozHWtH5gMpiNZmtrMG8GR385EOSQ3kC9HiEMJWimxd/g==
+"@typescript-eslint/typescript-estree@5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.8.0.tgz#900469ba9d5a37f4482b014ecce4a5dbb86cb4dd"
+  integrity sha512-srfeZ3URdEcUsSLbkOFqS7WoxOqn8JNil2NSLO9O+I2/Uyc85+UlfpEvQHIpj5dVts7KKOZnftoJD/Fdv0L7nQ==
   dependencies:
-    "@typescript-eslint/types" "5.2.0"
-    "@typescript-eslint/visitor-keys" "5.2.0"
+    "@typescript-eslint/types" "5.8.0"
+    "@typescript-eslint/visitor-keys" "5.8.0"
     debug "^4.3.2"
     globby "^11.0.4"
     is-glob "^4.0.3"
     semver "^7.3.5"
     tsutils "^3.21.0"
 
-"@typescript-eslint/visitor-keys@5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.2.0.tgz#03522d35df98474f08e0357171a7d1b259a88f55"
-  integrity sha512-Nk7HizaXWWCUBfLA/rPNKMzXzWS8Wg9qHMuGtT+v2/YpPij4nVXrVJc24N/r5WrrmqK31jCrZxeHqIgqRzs0Xg==
+"@typescript-eslint/visitor-keys@5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.8.0.tgz#22d4ed96fe2451135299239feedb9fe1dcec780c"
+  integrity sha512-+HDIGOEMnqbxdAHegxvnOqESUH6RWFRR2b8qxP1W9CZnnYh4Usz6MBL+2KMAgPk/P0o9c1HqnYtwzVH6GTIqug==
   dependencies:
-    "@typescript-eslint/types" "5.2.0"
+    "@typescript-eslint/types" "5.8.0"
     eslint-visitor-keys "^3.0.0"
 
 JSONStream@^1.0.4:
