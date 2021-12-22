@@ -125,6 +125,17 @@ describe('single server replset', () => {
     }
   });
 
+  it('"getUri" should return "otherIp" if set', async () => {
+    const replSet = await MongoMemoryReplSet.create();
+    const uri = replSet.getUri(undefined, '0.0.0.0');
+    expect(uri.split(',').length).toEqual(1);
+    expect(uri.includes('replicaSet=testset')).toBeTruthy();
+    expect(uri.includes('0.0.0.0')).toBeTruthy();
+    expect(uri.includes('127.0.0.1')).toBeFalsy();
+
+    await replSet.stop();
+  });
+
   it('"start" should throw an error if _state is not "stopped"', async () => {
     const replSet = new MongoMemoryReplSet();
     const timeout = setTimeout(() => {

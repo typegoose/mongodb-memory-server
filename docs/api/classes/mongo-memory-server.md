@@ -101,9 +101,13 @@ Will Error if instance cannot be started
 
 ### getUri
 
-Typings: `getUri(otherDbName?: string): string`
+Typings: `getUri(otherDbName?: string, otherIp?: string): string`
 
 Get an mongodb-usable uri (can also be used in mongoose)
+
+When no arguments are set, the URI will always use ip `127.0.0.1` and end with `/` (not setting a database).  
+When setting `otherDbName`, the value of `otherDbName` will be appended after `/` and before any query arguments.  
+When setting `otherIp`, the ip will be the value of `otherIp` instead of `127.0.0.1`.
 
 ### createAuth
 

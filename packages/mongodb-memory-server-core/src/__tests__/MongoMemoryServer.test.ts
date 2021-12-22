@@ -551,6 +551,11 @@ describe('MongoMemoryServer', () => {
       expect(getUri).toThrowError(StateError);
       expect(getUri).toThrowErrorMatchingSnapshot();
     });
+
+    it('should return "otherIp" if set', () => {
+      const port: number = mongoServer.instanceInfo!.port;
+      expect(mongoServer.getUri(undefined, '0.0.0.0')).toStrictEqual(`mongodb://0.0.0.0:${port}/`);
+    });
   });
 
   describe('cleanup()', () => {
