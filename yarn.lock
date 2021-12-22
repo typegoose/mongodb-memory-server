@@ -1258,10 +1258,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/tmp@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@types/tmp/-/tmp-0.2.2.tgz#424537a3b91828cb26aaf697f21ae3cd1b69f7e7"
-  integrity sha512-MhSa0yylXtVMsyT8qFpHA1DLHj4DvQGH5ntxrhHSh8PxUVNi35Wk+P5hVgqbO2qZqOotqr9jaoPRL+iRjWYm/A==
+"@types/tmp@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@types/tmp/-/tmp-0.2.3.tgz#908bfb113419fd6a42273674c00994d40902c165"
+  integrity sha512-dDZH/tXzwjutnuk4UacGgFRwV+JSLaXL1ikvidfJprkb7L9Nx1njcRHHmi3Dsvt7pgqqTEeucQuOrWHPFgzVHA==
 
 "@types/uuid@^8.3.3":
   version "8.3.3"
