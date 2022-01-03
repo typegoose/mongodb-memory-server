@@ -114,7 +114,7 @@ await mongod.stop();
 All options are optional.
 
 ```js
-const mongod = new MongoMemoryServer({
+const mongod = await MongoMemoryServer.create({
   instance: {
     port?: number, // by default choose any free port
     ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`,
