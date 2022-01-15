@@ -477,13 +477,11 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     }
 
     if (this._state === MongoMemoryServerStates.stopped) {
-      this.debug(`stop: state is "stopped", so already stopped`);
-
-      return false;
+      this.debug('stop: state is "stopped", trying to stop / kill anyway');
     }
 
     this.debug(
-      `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.mongodProcess?.pid}` // "undefined" would say more than ""
+      `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance?.mongodProcess?.pid}` // "undefined" would say more than ""
     );
     await this._instanceInfo.instance.stop();
 

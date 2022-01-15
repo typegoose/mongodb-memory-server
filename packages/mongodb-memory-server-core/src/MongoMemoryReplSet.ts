@@ -470,7 +470,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     log(`stop: called by ${isNullOrUndefined(process.exitCode) ? 'manual' : 'process exit'}`);
 
     if (this._state === MongoMemoryReplSetStates.stopped) {
-      return false;
+      log('stop: state is "stopped", trying to stop / kill anyway');
     }
 
     const bool = await Promise.all(this.servers.map((s) => s.stop(false)))
