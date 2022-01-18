@@ -13,8 +13,9 @@ Make sure you read [Mastering-Markdown](https://guides.github.com/features/maste
 ## Versions
 
 - NodeJS: 0.0.0
-- mongodb-memory-server-*: 0.0.0
+- mongodb-memory-server-*: 0.0.0 <!--"latest" is not a version-->
 - mongodb(the binary version): 0.0.0
+- mongodb(the js package): 0.0.0
 - mongoose: 0.0.0 <!--remove this if not used-->
 - system: <!--either Windows, MacOS, Linux (with distro and distro version)-->
 
