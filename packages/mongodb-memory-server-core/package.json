@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-core",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "description": "MongoDB Server for testing (core package, without autodownload). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "lib/index",
   "types": "lib/index.d.ts",
@@ -35,7 +35,7 @@
     "@types/find-cache-dir": "^3.2.1",
     "@types/semver": "^7.3.9",
     "@types/tar-stream": "^2.2.2",
-    "@types/uuid": "^8.3.3",
+    "@types/uuid": "^8.3.4",
     "@types/yauzl": "^2.9.1",
     "rimraf": "^3.0.2"
   },

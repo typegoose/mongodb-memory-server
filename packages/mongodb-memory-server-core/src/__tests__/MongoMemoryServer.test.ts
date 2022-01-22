@@ -476,16 +476,21 @@ describe('MongoMemoryServer', () => {
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
     });
 
-    it('should return "true" if instance is already stopped', async () => {
+    it('should still run "stop" even if state is already "stopped"', async () => {
       const mongoServer = new MongoMemoryServer();
+      const instance = new MongoInstance({});
+      const instanceStopSpy = jest
+        .spyOn(instance, 'stop')
+        .mockImplementation(() => Promise.resolve(true));
       // @ts-expect-error because "_instanceInfo" is protected
-      mongoServer._instanceInfo = {};
+      mongoServer._instanceInfo = { instance: instance };
       // @ts-expect-error because "_state" is protected
       mongoServer._state = MongoMemoryServerStates.stopped;
       jest.spyOn(utils, 'isNullOrUndefined');
       jest.spyOn(utils, 'assertion');
 
-      expect(await mongoServer.stop()).toEqual(false);
+      expect(await mongoServer.stop(false)).toEqual(true);
+      expect(instanceStopSpy).toHaveBeenCalledTimes(1);
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
       expect(utils.assertion).not.toHaveBeenCalled();
     });

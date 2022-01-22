@@ -353,10 +353,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     await ensureAsync()
       .then(() => this.initAllServers())
       .then(() => this._initReplSet())
-      .catch((err) => {
+      .catch(async (err) => {
         if (!debug.enabled('MongoMS:MongoMemoryReplSet')) {
           console.warn('Starting the ReplSet failed, enable debug for more information');
         }
+
+        await this.stop(false); // still try to close the instance that was spawned, without cleanup for investigation
 
         this.stateChange(MongoMemoryReplSetStates.stopped);
 
@@ -470,7 +472,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     log(`stop: called by ${isNullOrUndefined(process.exitCode) ? 'manual' : 'process exit'}`);
 
     if (this._state === MongoMemoryReplSetStates.stopped) {
-      return false;
+      log('stop: state is "stopped", trying to stop / kill anyway');
     }
 
     const bool = await Promise.all(this.servers.map((s) => s.stop(false)))

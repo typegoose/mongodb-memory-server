@@ -276,10 +276,12 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     this.stateChange(MongoMemoryServerStates.starting);
 
-    await this._startUpInstance(forceSamePort).catch((err) => {
+    await this._startUpInstance(forceSamePort).catch(async (err) => {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
         console.warn('Starting the instance failed, enable debug for more information');
       }
+
+      await this.stop(false); // still try to close the instance that was spawned, without cleanup for investigation
 
       this.stateChange(MongoMemoryServerStates.stopped);
 
@@ -477,13 +479,11 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     }
 
     if (this._state === MongoMemoryServerStates.stopped) {
-      this.debug(`stop: state is "stopped", so already stopped`);
-
-      return false;
+      this.debug('stop: state is "stopped", trying to stop / kill anyway');
     }
 
     this.debug(
-      `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance.mongodProcess?.pid}` // "undefined" would say more than ""
+      `stop: Stopping MongoDB server on port ${this._instanceInfo.port} with pid ${this._instanceInfo.instance?.mongodProcess?.pid}` // "undefined" would say more than ""
     );
     await this._instanceInfo.instance.stop();
 
