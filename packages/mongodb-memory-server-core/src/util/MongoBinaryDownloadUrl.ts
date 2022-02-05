@@ -330,7 +330,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * @param os LinuxOS Object
    */
   getSuseVersionString(os: LinuxOS): string {
-    const releaseMatch: RegExpMatchArray | null = os.release.match(/(^11|^12)/);
+    const releaseMatch: RegExpMatchArray | null = os.release.match(/(^11|^12|^15)/);
 
     return releaseMatch ? `suse${releaseMatch[0]}` : '';
   }
