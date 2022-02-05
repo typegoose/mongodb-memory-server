@@ -42,7 +42,7 @@
   "dependencies": {
     "@types/tmp": "^0.2.3",
     "async-mutex": "^0.3.2",
-    "camelcase": "^6.2.1",
+    "camelcase": "^6.3.0",
     "debug": "^4.3.3",
     "find-cache-dir": "^3.3.2",
     "get-port": "^5.1.1",
