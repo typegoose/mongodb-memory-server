@@ -1,3 +1,10 @@
+### [8.2.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.2.0...v8.2.1) (2022-02-05)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl.ts:** Add current openSUSE Leap relase version ([a9ccdbf](https://github.com/nodkz/mongodb-memory-server/commit/a9ccdbfb1fc20d7322d15a01d3e02919aab5a3c9))
+
 ## [8.2.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.1.0...v8.2.0) (2022-01-16)
 
 
