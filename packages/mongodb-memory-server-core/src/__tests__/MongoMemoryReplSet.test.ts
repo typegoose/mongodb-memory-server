@@ -474,19 +474,144 @@ describe('MongoMemoryReplSet', () => {
     });
   });
 
-  it('"cleanup" should run cleanup on all instances', async () => {
-    const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
-    const instance = replSet.servers[0];
-    const dbPath = instance.instanceInfo!.dbPath;
-    jest.spyOn(instance, 'cleanup');
-    expect(await utils.statPath(dbPath)).toBeTruthy();
+  describe('.stop()', () => {
+    it('should call cleanup by default', async () => {
+      const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
 
-    await replSet.stop(false);
-    expect(await utils.statPath(dbPath)).toBeTruthy();
+      const cleanupSpy = jest.spyOn(replSet, 'cleanup');
+      const cleanupInstance0Spy = jest
+        .spyOn(replSet.servers[0], 'cleanup')
+        .mockResolvedValue(void 0);
 
-    await replSet.cleanup();
-    expect(await utils.statPath(dbPath)).toBeFalsy();
-    expect(instance.cleanup).toHaveBeenCalledTimes(1);
+      await replSet.stop();
+
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: false } as utils.Cleanup);
+      expect(cleanupInstance0Spy).toHaveBeenCalledWith({
+        doCleanup: true,
+        force: false,
+      } as utils.Cleanup);
+    });
+
+    it('should call cleanup with mapped boolean', async () => {
+      const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
+
+      const cleanupSpy = jest.spyOn(replSet, 'cleanup');
+      const cleanupInstance0Spy = jest
+        .spyOn(replSet.servers[0], 'cleanup')
+        .mockResolvedValue(void 0);
+
+      await replSet.stop(false);
+
+      expect(cleanupSpy).not.toHaveBeenCalled();
+      expect(cleanupInstance0Spy).not.toHaveBeenCalled();
+
+      cleanupInstance0Spy.mockClear();
+      cleanupSpy.mockClear();
+
+      await replSet.stop(true);
+
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: false } as utils.Cleanup);
+      expect(cleanupInstance0Spy).toHaveBeenCalledWith({
+        doCleanup: true,
+        force: false,
+      } as utils.Cleanup);
+    });
+
+    it('should call cleanup and pass-through cleanup options', async () => {
+      const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
+
+      const cleanupSpy = jest.spyOn(replSet, 'cleanup');
+      const cleanupInstance0Spy = jest
+        .spyOn(replSet.servers[0], 'cleanup')
+        .mockResolvedValue(void 0);
+
+      await replSet.stop({ doCleanup: false, force: false });
+
+      expect(cleanupSpy).not.toHaveBeenCalled();
+      expect(cleanupInstance0Spy).not.toHaveBeenCalled();
+
+      cleanupInstance0Spy.mockClear();
+      cleanupSpy.mockClear();
+
+      await replSet.stop({ doCleanup: true, force: true });
+
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: true } as utils.Cleanup);
+      expect(cleanupInstance0Spy).toHaveBeenCalledWith({
+        doCleanup: true,
+        force: true,
+      } as utils.Cleanup);
+    });
+  });
+
+  describe('.cleanup()', () => {
+    it('should run cleanup with defaults', async () => {
+      const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
+
+      const cleanupSpy = jest.spyOn(replSet, 'cleanup');
+      const cleanupInstance0Spy = jest
+        .spyOn(replSet.servers[0], 'cleanup')
+        .mockResolvedValue(void 0);
+
+      await replSet.stop({ doCleanup: false });
+      await replSet.cleanup();
+
+      expect(cleanupSpy).toHaveBeenCalledWith();
+      expect(cleanupInstance0Spy).toHaveBeenCalledWith({
+        doCleanup: true,
+        force: false,
+      } as utils.Cleanup);
+    });
+
+    it('should run cleanup with boolean', async () => {
+      const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
+
+      const cleanupSpy = jest.spyOn(replSet, 'cleanup');
+      const cleanupInstance0Spy = jest
+        .spyOn(replSet.servers[0], 'cleanup')
+        .mockResolvedValue(void 0);
+
+      await replSet.stop({ doCleanup: false });
+      await replSet.cleanup(false);
+
+      expect(cleanupSpy).toHaveBeenCalledWith(false);
+      expect(cleanupInstance0Spy).toHaveBeenCalledWith({
+        doCleanup: true,
+        force: false,
+      } as utils.Cleanup);
+
+      cleanupSpy.mockClear();
+
+      await replSet.start();
+
+      const cleanupInstance1Spy = jest
+        .spyOn(replSet.servers[0], 'cleanup')
+        .mockResolvedValue(void 0);
+
+      await replSet.stop({ doCleanup: false });
+      await replSet.cleanup(true);
+      expect(cleanupInstance1Spy).toHaveBeenCalledWith({
+        doCleanup: true,
+        force: true,
+      } as utils.Cleanup);
+    });
+
+    it('should run cleanup with cleanup options and pass-through options to lower', async () => {
+      const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
+
+      const cleanupSpy = jest.spyOn(replSet, 'cleanup');
+      const cleanupInstance0Spy = jest
+        .spyOn(replSet.servers[0], 'cleanup')
+        .mockResolvedValue(void 0);
+
+      await replSet.stop({ doCleanup: false });
+      await replSet.cleanup({ doCleanup: true, force: true });
+
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: true } as utils.Cleanup);
+      expect(cleanupInstance0Spy).toHaveBeenCalledWith({
+        doCleanup: true,
+        force: true,
+      } as utils.Cleanup);
+    });
   });
 
   it('"waitUntilRunning" should clear stateChange listener', async () => {

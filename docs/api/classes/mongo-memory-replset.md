@@ -77,11 +77,11 @@ Ensures and returns that [`_keyfiletmp`](#_keyfiletmp) is defined an exists and 
 
 ### stop
 
-Typings: `async stop(runCleanup: boolean = true): Promise<boolean>`
+Typings: `async stop(cleanupOptions?: Cleanup): Promise<boolean>`
 
-Stop an running instance
+Stop an running instance, this function will by default call [`.cleanup`](#cleanup) with `{ doCleanup: true, force: false }`.
 
-This function will by default run [`.cleanup`](#cleanup), this must be set to `false` to be able to restart (and an engine other than `ephemeralForTest` must be used)
+With `cleanupOptions` options for cleanup can be manually set.
 
 :::caution
 Will not Error if instance is not running
@@ -89,9 +89,11 @@ Will not Error if instance is not running
 
 ### cleanup
 
-Typings: `async cleanup(force: boolean = false): Promise<void>`
+Typings: `async cleanup(options?: Cleanup): Promise<void>`
 
-Cleanup all files used by this ReplSet & instances
+Cleanup all files used by this ReplSet's instances, by default `{ doCleanup: true, force: false }` is used.
+
+With `options` can be set how to run a cleanup.
 
 ### waitUntilRunning
 
