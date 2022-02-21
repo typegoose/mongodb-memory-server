@@ -621,6 +621,9 @@ describe('MongoMemoryServer', () => {
   });
 
   describe('cleanup()', () => {
+    /** Cleanup the created tmp-dir, even if the cleanup test tested to not clean it up */
+    let tmpdir: tmp.DirResult | undefined;
+
     // "beforeAll" dosnt work here, thanks to the top-level "afterAll" hook
     beforeEach(() => {
       jest.spyOn(utils, 'statPath');
@@ -628,9 +631,19 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(semver.default, 'lt'); // it needs to be ".default" otherwise "lt" is only an getter
     });
 
+    afterEach(() => {
+      if (!utils.isNullOrUndefined(tmpdir)) {
+        tmpdir.removeCallback();
+
+        tmpdir = undefined; // reset, just to be sure its clean
+      }
+    });
+
     it('should properly cleanup with tmpDir with default no force (old)', async () => {
       const mongoServer = await MongoMemoryServer.create();
       const dbPath = mongoServer.instanceInfo!.dbPath;
+
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
 
       await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup();
@@ -645,6 +658,8 @@ describe('MongoMemoryServer', () => {
     it('should properly cleanup with tmpDir and re-check with force (old)', async () => {
       const mongoServer = await MongoMemoryServer.create();
       const dbPath = mongoServer.instanceInfo!.dbPath;
+
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
 
       await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup(true);
@@ -661,6 +676,8 @@ describe('MongoMemoryServer', () => {
       const mongoServer = await MongoMemoryServer.create({ instance: { dbPath: tmpDir.name } });
       const dbPath = mongoServer.instanceInfo!.dbPath;
 
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
       await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup(true);
 
@@ -673,10 +690,12 @@ describe('MongoMemoryServer', () => {
 
     it('should properly cleanup with tmpDir with default no force (new)', async () => {
       const mongoServer = await MongoMemoryServer.create();
+      const dbPath = mongoServer.instanceInfo!.dbPath;
 
       const cleanupSpy = jest.spyOn(mongoServer, 'cleanup');
 
-      const dbPath = mongoServer.instanceInfo!.dbPath;
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
       await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup();
       expect(utils.statPath).not.toHaveBeenCalled();
@@ -692,6 +711,8 @@ describe('MongoMemoryServer', () => {
 
       const cleanupSpy = jest.spyOn(mongoServer, 'cleanup');
 
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
       const dbPath = mongoServer.instanceInfo!.dbPath;
       await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup({ doCleanup: true, force: true });
@@ -706,10 +727,12 @@ describe('MongoMemoryServer', () => {
     it('should properly cleanup with force (without tmpDir) (new)', async () => {
       const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-cleanup-', unsafeCleanup: true });
       const mongoServer = await MongoMemoryServer.create({ instance: { dbPath: tmpDir.name } });
+      const dbPath = mongoServer.instanceInfo!.dbPath;
 
       const cleanupSpy = jest.spyOn(mongoServer, 'cleanup');
 
-      const dbPath = mongoServer.instanceInfo!.dbPath;
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
       await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup({ doCleanup: true, force: true });
       expect(utils.statPath).toHaveBeenCalledTimes(1);
