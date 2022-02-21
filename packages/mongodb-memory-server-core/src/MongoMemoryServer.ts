@@ -9,6 +9,7 @@ import {
   authDefault,
   statPath,
   ManagerAdvanced,
+  Cleanup,
 } from './util/utils';
 import { MongoInstance, MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -467,9 +468,31 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   /**
    * Stop the current In-Memory Instance
    * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
+   *
+   * @deprecated replace argument with `Cleanup` interface object
    */
-  async stop(runCleanup: boolean = true): Promise<boolean> {
+  async stop(runCleanup: boolean): Promise<boolean>; // TODO: for next major release (9.0), this should be removed
+  /**
+   * Stop the current In-Memory Instance
+   * @param cleanupOptions Set how to run ".cleanup", by default only `{ doCleanup: true }` is used
+   */
+  async stop(cleanupOptions?: Cleanup): Promise<boolean>;
+  async stop(cleanupOptions?: boolean | Cleanup): Promise<boolean> {
     this.debug('stop: Called .stop() method');
+
+    /** Default to cleanup temporary, but not custom dbpaths */
+    let cleanup: Cleanup = { doCleanup: true, force: false };
+
+    // handle the old way of setting wheter to cleanup or not
+    // TODO: for next major release (9.0), this should be removed
+    if (typeof cleanupOptions === 'boolean') {
+      cleanup.doCleanup = cleanupOptions;
+    }
+
+    // handle the new way of setting what and how to cleanup
+    if (typeof cleanupOptions === 'object') {
+      cleanup = cleanupOptions;
+    }
 
     // just return "true" if there was never an instance
     if (isNullOrUndefined(this._instanceInfo)) {
@@ -489,8 +512,8 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     this.stateChange(MongoMemoryServerStates.stopped);
 
-    if (runCleanup) {
-      await this.cleanup(false);
+    if (cleanup.doCleanup) {
+      await this.cleanup(cleanup);
     }
 
     return true;
@@ -502,9 +525,43 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * @throws If "state" is not "stopped"
    * @throws If "instanceInfo" is not defined
    * @throws If an fs error occured
+   *
+   * @deprecated replace argument with `Cleanup` interface object
    */
-  async cleanup(force: boolean = false): Promise<void> {
+  async cleanup(force: boolean): Promise<void>; // TODO: for next major release (9.0), this should be removed
+  /**
+   * Remove the defined dbPath
+   * @param options Set how to run a cleanup, by default `{ doCleanup: true }` is used
+   * @throws If "state" is not "stopped"
+   * @throws If "instanceInfo" is not defined
+   * @throws If an fs error occured
+   */
+  async cleanup(options?: Cleanup): Promise<void>;
+  async cleanup(options?: boolean | Cleanup): Promise<void> {
     assertionIsMMSState(MongoMemoryServerStates.stopped, this.state);
+
+    /** Default to doing cleanup, but not forcing it */
+    let cleanup: Cleanup = { doCleanup: true, force: false };
+
+    // handle the old way of setting wheter to cleanup or not
+    // TODO: for next major release (9.0), this should be removed
+    if (typeof options === 'boolean') {
+      cleanup.force = options;
+    }
+
+    // handle the new way of setting what and how to cleanup
+    if (typeof options === 'object') {
+      cleanup = options;
+    }
+
+    this.debug(`cleanup:`, cleanup);
+
+    // dont do cleanup, if "doCleanup" is false
+    if (!cleanup.doCleanup) {
+      this.debug('cleanup: "doCleanup" is set to false');
+
+      return;
+    }
 
     if (isNullOrUndefined(this._instanceInfo)) {
       this.debug('cleanup: "instanceInfo" is undefined');
@@ -517,8 +574,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       new Error('Cannot cleanup because "instance.mongodProcess" is still defined')
     );
 
-    this.debug(`cleanup: force ${force}`);
-
     const tmpDir = this._instanceInfo.tmpDir;
 
     if (!isNullOrUndefined(tmpDir)) {
@@ -526,7 +581,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       tmpDir.removeCallback();
     }
 
-    if (force) {
+    if (cleanup.force) {
       const dbPath: string = this._instanceInfo.dbPath;
       const res = await statPath(dbPath);
 

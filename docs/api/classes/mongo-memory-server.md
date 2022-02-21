@@ -73,11 +73,11 @@ Internal Functions used by [`start`](#start)
 
 ### stop
 
-Typings: `async stop(runCleanup: boolean = true): Promise<boolean>`
+Typings: `async stop(cleanupOptions?: Cleanup): Promise<boolean>`
 
-Stop an running instance
+Stop an running instance, this function will by default call [`.cleanup`](#cleanup) with `{ doCleanup: true, force: false }`.
 
-with `runCleanup` will run [`.cleanup`](#cleanup) after stopping with `force = false`
+With `cleanupOptions` options for cleanup can be manually set.
 
 :::caution
 Will not Error if instance is not running
@@ -85,9 +85,11 @@ Will not Error if instance is not running
 
 ### cleanup
 
-Typings: `async cleanup(force: boolean): Promise<void>`
+Typings: `async cleanup(options?: Cleanup): Promise<void>`
 
-Cleanup all files used by this instance
+Cleanup all files used by this instance, by default `{ doCleanup: true, force: false }` is used.
+
+With `options` can be set how to run a cleanup.
 
 ### ensureInstance
 

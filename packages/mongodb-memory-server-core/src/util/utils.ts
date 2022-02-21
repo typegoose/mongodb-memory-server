@@ -232,6 +232,22 @@ export async function tryReleaseFile(
 }
 
 /**
+ * Cleanup interface to provide easy to understand arguments for clean-up
+ */
+export interface Cleanup {
+  /**
+   * Setting this to `true` will activate cleanup
+   * @default true
+   */
+  doCleanup?: boolean;
+  /**
+   * Setting this to `true` will cleanup the directory even if it is *not* a temporary directory
+   * @default false
+   */
+  force?: boolean;
+}
+
+/**
  * This Class is used to have unified types for base-manager functions
  */
 export abstract class ManagerBase {
@@ -239,7 +255,9 @@ export abstract class ManagerBase {
   // abstract static create(opts: Record<string, any>): Promise<new (...args: any) => any>;
   abstract start(forceSamePort: boolean): Promise<void>;
   abstract start(): Promise<void>;
-  abstract stop(cleanup: boolean): Promise<boolean>;
+  /** @deprecated replace argument with `Cleanup` interface object */
+  abstract stop(cleanup: boolean): Promise<boolean>; // TODO: for next major release (9.0), this should be removed
+  abstract stop(cleanup: Cleanup): Promise<boolean>;
 }
 
 /**
@@ -247,7 +265,9 @@ export abstract class ManagerBase {
  */
 export abstract class ManagerAdvanced extends ManagerBase {
   abstract getUri(otherDB?: string | boolean): string;
-  abstract cleanup(force: boolean): Promise<void>;
+  /** @deprecated replace argument with `Cleanup` interface object */
+  abstract cleanup(force: boolean): Promise<void>; // TODO: for next major release (9.0), this should be removed
+  abstract cleanup(cleanup: Cleanup): Promise<void>;
 }
 
 /**
