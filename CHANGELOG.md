@@ -1,3 +1,20 @@
+## [8.4.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.3.0...v8.4.0) (2022-02-21)
+
+
+### Features
+
+* change cleanup to use object instead of just boolean ([19849e2](https://github.com/nodkz/mongodb-memory-server/commit/19849e2333e5e10196cd454a9032ce05f20865aa)), closes [#581](https://github.com/nodkz/mongodb-memory-server/issues/581)
+
+
+### Dependencies
+
+* **@typescript-eslint/*:** upgrade to version 5.12.0 ([96427cb](https://github.com/nodkz/mongodb-memory-server/commit/96427cbb29ea2b3ef2a7b089c4fb62747a6137af))
+* **commitlint:** upgrade to version 16.2.1 ([e379d8f](https://github.com/nodkz/mongodb-memory-server/commit/e379d8fe5b475ec475d683c6e0b70adca44639a4))
+* **eslint:** upgrade to version 8.9.0 ([84ab0a0](https://github.com/nodkz/mongodb-memory-server/commit/84ab0a0564a57d95d223f706b973515e1ff49b85))
+* **eslint-config-prettier:** upgrade to version 8.4.0 ([71fed0e](https://github.com/nodkz/mongodb-memory-server/commit/71fed0ebd95673cf05fe7d71728baed52122287e))
+* **jest:** upgrade to version 27.5.1 ([60ac034](https://github.com/nodkz/mongodb-memory-server/commit/60ac034787ba4ff360e7b62625b42e877576ad73))
+* **mongodb:** upgrade to version 4.4.0 ([124551b](https://github.com/nodkz/mongodb-memory-server/commit/124551b14835fed498918714fef147551c6fd95d))
+
 ## [8.3.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.2.1...v8.3.0) (2022-02-05)
 
 
