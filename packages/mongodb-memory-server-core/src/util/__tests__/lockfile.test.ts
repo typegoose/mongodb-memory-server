@@ -6,6 +6,7 @@ import { promises as fspromises } from 'fs';
 import { UnknownLockfileStatusError } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
+tmp.setGracefulCleanup();
 let tmpDir: tmp.DirResult;
 beforeAll(() => {
   tmpDir = tmp.dirSync({ prefix: 'reuse-mongo-mem-', unsafeCleanup: true });

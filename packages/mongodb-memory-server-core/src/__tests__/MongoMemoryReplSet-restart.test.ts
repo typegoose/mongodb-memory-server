@@ -1,6 +1,7 @@
 import MongoMemoryReplSet, { MongoMemoryReplSetOpts } from '../MongoMemoryReplSet';
 import * as tmp from 'tmp';
 
+tmp.setGracefulCleanup();
 let tmpDir: tmp.DirResult;
 beforeEach(() => {
   tmpDir = tmp.dirSync({ prefix: 'reuse-mongo-mem-', unsafeCleanup: true });
