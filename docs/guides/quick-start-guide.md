@@ -17,6 +17,8 @@ When on Linux, one of the following are required:
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
 - manually specify which version & system should be used
 
+On Linux, you will also need `libcurl` (or `libcurl3` on some older distro versions). This will probably only be an issue on "slim" Docker images.
+
 ## Choose the right package
 
 There are multiple packages for this project, here are the differences:
