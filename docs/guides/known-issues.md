@@ -24,8 +24,7 @@ Workaround:
 
 ## libcurl on slim Docker images
 
-Docker images of the "slim" variety often don't have `libcurl` installed,
-such as [the official Node.js image](https://hub.docker.com/_/node) or [sitespeed.io node](https://hub.docker.com/r/sitespeedio/node).
+Docker images of the "slim" variety often don't have `libcurl` installed, such as [the official Node.js image](https://hub.docker.com/_/node) or [sitespeed.io node](https://hub.docker.com/r/sitespeedio/node).  
 If you don't install it manually, then `mongodb-memory-server` will not start up in your container, with the following exception message:
 
 > Instance Exited before being ready and without throwing an error!
@@ -33,5 +32,5 @@ If you don't install it manually, then `mongodb-memory-server` will not start up
 This can easily be resolved by installing it in your image:
 
 ```sh
-$ apt-get install libcurl4
+apt-get install libcurl4
 ```
