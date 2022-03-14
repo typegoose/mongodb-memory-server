@@ -1,3 +1,10 @@
+### [8.4.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.4.0...v8.4.1) (2022-03-14)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl::getUbuntuVersionString:** guard against no mapping ([b28b104](https://github.com/nodkz/mongodb-memory-server/commit/b28b104dd6070e594838fe1e409c1fa5b4b63348)), closes [#616](https://github.com/nodkz/mongodb-memory-server/issues/616)
+
 ## [8.4.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.3.0...v8.4.0) (2022-02-21)
 
 
