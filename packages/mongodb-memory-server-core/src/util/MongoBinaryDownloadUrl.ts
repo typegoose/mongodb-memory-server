@@ -340,10 +340,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * @param os LinuxOS Object
    */
   getUbuntuVersionString(os: LinuxOS): string {
-    const ubuntuOS: LinuxOS = {
-      ...os,
-      dist: 'ubuntu',
-    };
+    let ubuntuOS: LinuxOS | undefined = undefined;
 
     // "id_like" processing (version conversion) [this is an block to be collapsible]
     {
@@ -355,8 +352,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           20: '20.04',
         };
 
-        ubuntuOS.release =
-          mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[20];
+        ubuntuOS = {
+          os: 'linux',
+          dist: 'ubuntu',
+          release:
+            mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[20],
+        };
       }
 
       if (/^elementary\s?os\s*$/i.test(os.dist)) {
@@ -371,7 +372,29 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         const [elementaryMajor, elementaryMinor] = os.release.split('.').map((el) => parseInt(el));
         const realMajor = elementaryMajor || elementaryMinor;
 
-        ubuntuOS.release = elementaryToUbuntuRelease[realMajor] || elementaryToUbuntuRelease[6];
+        ubuntuOS = {
+          os: 'linux',
+          dist: 'ubuntu',
+          release: elementaryToUbuntuRelease[realMajor] || elementaryToUbuntuRelease[6],
+        };
+      }
+    }
+
+    if (isNullOrUndefined(ubuntuOS)) {
+      // Warn against distros that have a ID_LIKE set to "ubuntu", but no other upstream information and are not specially mapped (see above)
+      if (!/^ubuntu(?:| linux)\s*$/i.test(os.dist)) {
+        console.warn(
+          `Unmapped distro "${os.dist}" with ID_LIKE "ubuntu", defaulting to highest ubuntu version!\n` +
+            'This means that your distro does not have a internal mapping in MMS or does not have a upstream release file (like "/etc/upstream-release/lsb-release"), but has set a ID_LIKE'
+        );
+
+        ubuntuOS = {
+          os: 'linux',
+          dist: 'ubuntu',
+          release: '20.04', // TODO: try to keep this up-to-date to the latest LTS
+        };
+      } else {
+        ubuntuOS = os;
       }
     }
 

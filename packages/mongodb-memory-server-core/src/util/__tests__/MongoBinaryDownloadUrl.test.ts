@@ -734,6 +734,23 @@ describe('MongoBinaryDownloadUrl', () => {
         })
       ).toBe('ubuntu2004');
     });
+
+    it('should return default version with warning when using ID_LIKE but not being ubuntu', () => {
+      // Test for https://github.com/nodkz/mongodb-memory-server/issues/616
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+
+      downloadUrl.version = '5.0.3';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'zorin',
+          release: '16',
+          id_like: ['ubuntu'],
+        })
+      ).toBe('ubuntu2004');
+
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('getDebianVersionString()', () => {
