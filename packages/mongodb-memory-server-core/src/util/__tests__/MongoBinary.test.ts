@@ -138,6 +138,32 @@ build environment:
         expect(output).toBe(sysBinaryPath);
       });
 
+      it('should return and check an SystemBinary and match even if binary has patch version', async () => {
+        // Output taken from mongodb x64 for "debian" version "4.2.19-11-ge2f2736"
+        // DO NOT INDENT THE TEXT
+        jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
+          // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
+          {
+            stdout: Buffer.from(`db version v4.2.19-11-ge2f2736
+git version: e2f27369cdfb8c417b026afb323c810226417206
+OpenSSL version: OpenSSL 1.1.1n  15 Mar 2022
+allocator: tcmalloc
+modules: none
+build environment:
+    distmod: debian10
+    distarch: x86_64
+    target_arch: x86_64`),
+          }
+        );
+        process.env[envName(ResolveConfigVariables.VERSION)] = '4.2.19'; // set it explicitly to that version to test matching versions
+        process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
+
+        const output = await MongoBinary.getPath();
+        expect(childProcess.spawnSync).toHaveBeenCalledTimes(1);
+        expect(MongoBinary.download).not.toHaveBeenCalled();
+        expect(output).toBe(sysBinaryPath);
+      });
+
       it('should return and check an SYSTEM_BINARY and warn version conflict', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => void 0);
         // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
