@@ -1,3 +1,10 @@
+### [8.4.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.4.1...v8.4.2) (2022-03-29)
+
+
+### Fixes
+
+* **MongoBinary::getPath:** fix mongo binary version matching regex ([#625](https://github.com/nodkz/mongodb-memory-server/issues/625)) ([79911d7](https://github.com/nodkz/mongodb-memory-server/commit/79911d7a006849da76b0346e8cbcf26c6f6aec34)), closes [#624](https://github.com/nodkz/mongodb-memory-server/issues/624)
+
 ### [8.4.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.4.0...v8.4.1) (2022-03-14)
 
 
