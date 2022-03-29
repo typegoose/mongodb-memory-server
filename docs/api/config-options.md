@@ -53,9 +53,11 @@ Search for what version is used:
 - [`windows`](https://www.mongodb.org/dl/win32)
 - [`linux`](https://dl.mongodb.org/dl/linux)
 
-When using `SYSTEM_BINARY` and `SYSTEM_BINARY_VERSION_CHECK`, ONLY the major, minor, and patch versions of the system binary will be compared against the desired binary.
+:::note
+When using [`SYSTEM_BINARY`](#system_binary) and [`SYSTEM_BINARY_VERSION_CHECK`](#system_binary_version_check), ONLY the major, minor, and patch versions of the system binary will be compared against the desired binary.
 
 That is, a system binary version of `4.2.19-11-ge2f2736a` will match a mongodb required version of `4.2.19`. DO NOT set the mongodb required version to the full `4.2.19-11-ge2f2736a` version as the check which examines the binary version will strip the additional tags.
+:::
 
 ### DEBUG
 
