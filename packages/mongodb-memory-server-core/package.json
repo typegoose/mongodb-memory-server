@@ -46,7 +46,7 @@
     "debug": "^4.3.4",
     "find-cache-dir": "^3.3.2",
     "get-port": "^5.1.1",
-    "https-proxy-agent": "^5.0.0",
+    "https-proxy-agent": "^5.0.1",
     "md5-file": "^5.0.0",
     "mongodb": "^4.4.0",
     "new-find-package-json": "^1.1.0",
