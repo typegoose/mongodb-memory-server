@@ -1,3 +1,21 @@
+## [8.5.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.4.2...v8.5.0) (2022-04-16)
+
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 27.4.1 ([2d5a4da](https://github.com/nodkz/mongodb-memory-server/commit/2d5a4dab7740eb87cffe251bdedd88f73fe0c3da))
+* **@types/yauzl:** upgrade to version 2.10.0 ([a1eb48d](https://github.com/nodkz/mongodb-memory-server/commit/a1eb48d870e1324f1df826ecdc85539f3f8c5b25))
+* **@typescript-eslint/*:** upgrade to version 5.19.0 ([62b115e](https://github.com/nodkz/mongodb-memory-server/commit/62b115e9eca76b6521259e076bea19ae159dcdce))
+* **commitlint:** upgrade to version 16.2.3 ([2ab1d39](https://github.com/nodkz/mongodb-memory-server/commit/2ab1d39be862cc45cd68ba5a07bbff431ee1df4f))
+* **debug:** upgrade to version 4.3.4 ([4d99ac6](https://github.com/nodkz/mongodb-memory-server/commit/4d99ac646bf351ba8f2e598b7f200fbc8abf5778))
+* **eslint:** upgrade to version 8.13.0 ([6fa2ddd](https://github.com/nodkz/mongodb-memory-server/commit/6fa2dddc188600c6fc0cc060c39cf01befaaea5f))
+* **eslint-config-prettier:** upgrade to version 8.5.0 ([ff5b6cc](https://github.com/nodkz/mongodb-memory-server/commit/ff5b6cce0ca6370f9826142d131202b6b9a2f259))
+* **https-proxy-agent:** upgrade to version 5.0.1 ([0abccc4](https://github.com/nodkz/mongodb-memory-server/commit/0abccc4230631b455a3a87a4e62f523186de4591))
+* **mongodb:** upgrade to version 4.5.0 ([72501f0](https://github.com/nodkz/mongodb-memory-server/commit/72501f05a800db79eefa988dace56b3f95625c5d))
+* **prettier:** upgrade to version 2.6.2 ([6bd115b](https://github.com/nodkz/mongodb-memory-server/commit/6bd115b18a7a3745f49f0f742e81531683245221))
+* **semver:** upgrade to version 7.3.7 ([e839d72](https://github.com/nodkz/mongodb-memory-server/commit/e839d722487989a60814a5b3387bad7cf79a58a7))
+* **ts-jest:** upgrade to version 27.1.4 ([aade2be](https://github.com/nodkz/mongodb-memory-server/commit/aade2bee1dc6e3087b99a9cb848860c1ce5b13b5))
+
 ### [8.4.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.4.1...v8.4.2) (2022-03-29)
 
 
