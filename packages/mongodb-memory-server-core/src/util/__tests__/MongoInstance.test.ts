@@ -497,5 +497,25 @@ describe('MongodbInstance', () => {
         });
       });
     });
+
+    describe('checkErrorInLine()', () => {
+      it('should emit "instanceError" when shared libraries fail to load', () => {
+        // actual line copied from mongod 5.0.3
+        const line =
+          '/root/.cache/mongodb-binaries/mongod-x64-ubuntu-5.0.3: error while loading shared libraries: libcrypto.so.1.1: cannot open shared object file: No such file or directory';
+
+        // @ts-expect-error "checkErrorInLine" is protected
+        mongod.checkErrorInLine(line);
+
+        expect(events.size).toEqual(1);
+
+        const event = events.get(MongoInstanceEvents.instanceError);
+        expect(event).toBeInstanceOf(StdoutInstanceError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toEqual(
+          'Instance Failed to start because an library file is missing: "libcrypto.so.1.1"'
+        );
+      });
+    });
   });
 });
