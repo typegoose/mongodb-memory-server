@@ -411,7 +411,7 @@ describe('MongodbInstance', () => {
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toEqual(
-          'Instance Failed to start because an library file is missing: "libcrypto.so.10"'
+          'Instance failed to start because a library is missing or cannot be opened: "libcrypto.so.10"'
         );
       });
 
@@ -513,7 +513,7 @@ describe('MongodbInstance', () => {
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toEqual(
-          'Instance Failed to start because an library file is missing: "libcrypto.so.1.1"'
+          'Instance failed to start because a library is missing or cannot be opened: "libcrypto.so.1.1"'
         );
       });
     });

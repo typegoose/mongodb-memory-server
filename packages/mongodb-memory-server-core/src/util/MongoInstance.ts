@@ -614,7 +614,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       this.emit(
         MongoInstanceEvents.instanceError,
         new StdoutInstanceError(
-          `Instance Failed to start because an library file is missing: "${lib}"`
+          `Instance failed to start because a library is missing or cannot be opened: "${lib}"`
         )
       );
     }
