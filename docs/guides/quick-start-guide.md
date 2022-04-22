@@ -5,6 +5,18 @@ title: 'Quick Start Guide'
 
 This Guide will show how to setup this package for basic use
 
+:::note
+The Examples on this page assume Top-Level async-await for readability.  
+If Top-Level async-await is not available for your case, the code can in most cases be wrapped like:
+
+```ts
+(async () => {
+  // async code in where
+})();
+```
+
+:::
+
 ## Requirements
 
 - NodeJS: 12.22+
