@@ -607,9 +607,9 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         )
       );
     }
-    if (/lib[\w-.]+(?=: cannot open shared object)/i.test(line)) {
+    if (/lib[^:]+(?=: cannot open shared object)/i.test(line)) {
       const lib =
-        line.match(/(lib[\w-.]+)(?=: cannot open shared object)/i)?.[1].toLocaleLowerCase() ??
+        line.match(/(lib[^:]+)(?=: cannot open shared object)/i)?.[1].toLocaleLowerCase() ??
         'unknown';
       this.emit(
         MongoInstanceEvents.instanceError,
