@@ -519,8 +519,11 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    * @fires MongoInstance#instanceSTDERR
    */
   stderrHandler(message: string | Buffer): void {
-    this.debug(`stderrHandler: ""${message.toString()}""`); // denoting the STDERR string with double quotes, because the stdout might also use quotes
-    this.emit(MongoInstanceEvents.instanceSTDERR, message);
+    const line: string = message.toString().trim();
+    this.debug(`stderrHandler: ""${line}""`); // denoting the STDERR string with double quotes, because the stdout might also use quotes
+    this.emit(MongoInstanceEvents.instanceSTDERR, line);
+
+    this.checkErrorInLine(line);
   }
 
   /**
@@ -541,6 +544,30 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     if (/waiting for connections/i.test(line)) {
       this.emit(MongoInstanceEvents.instanceReady);
     }
+
+    this.checkErrorInLine(line);
+
+    // this case needs to be infront of "transition to primary complete", otherwise it might reset "isInstancePrimary" to "false"
+    if (/transition to \w+ from \w+/i.test(line)) {
+      const state = /transition to (\w+) from \w+/i.exec(line)?.[1] ?? 'UNKNOWN';
+      this.emit(MongoInstanceEvents.instanceReplState, state);
+
+      if (state !== 'PRIMARY') {
+        this.isInstancePrimary = false;
+      }
+    }
+    if (/transition to primary complete; database writes are now permitted/i.test(line)) {
+      this.isInstancePrimary = true;
+      this.debug('stdoutHandler: emitting "instancePrimary"');
+      this.emit(MongoInstanceEvents.instancePrimary);
+    }
+  }
+
+  /**
+   * Run Checks on the line if the lines contain any thrown errors
+   * @param line The Line to check
+   */
+  protected checkErrorInLine(line: string) {
     if (/address already in use/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
@@ -596,20 +623,6 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         MongoInstanceEvents.instanceError,
         new StdoutInstanceError('Mongod internal error')
       );
-    }
-    // this case needs to be infront of "transition to primary complete", otherwise it might reset "isInstancePrimary" to "false"
-    if (/transition to \w+ from \w+/i.test(line)) {
-      const state = /transition to (\w+) from \w+/i.exec(line)?.[1] ?? 'UNKNOWN';
-      this.emit(MongoInstanceEvents.instanceReplState, state);
-
-      if (state !== 'PRIMARY') {
-        this.isInstancePrimary = false;
-      }
-    }
-    if (/transition to primary complete; database writes are now permitted/i.test(line)) {
-      this.isInstancePrimary = true;
-      this.debug('stdoutHandler: emitting "instancePrimary"');
-      this.emit(MongoInstanceEvents.instancePrimary);
     }
   }
 }
