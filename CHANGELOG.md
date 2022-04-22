@@ -1,3 +1,12 @@
+### [8.5.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.5.0...v8.5.1) (2022-04-22)
+
+
+### Fixes
+
+* **MongoInstance:** change that stderrHandler also runs error checks ([4b57634](https://github.com/nodkz/mongodb-memory-server/commit/4b57634ef4f7b96e8250f6fa1f206889715e4a0e)), closes [#632](https://github.com/nodkz/mongodb-memory-server/issues/632)
+* **MongoInstance::checkErrorInLine:** fix regex for "cannot open shared object" ([287bcb9](https://github.com/nodkz/mongodb-memory-server/commit/287bcb943f8afb9c6ea6cdb31a1011be8a6d97a0))
+* **MongoInstance::checkErrorInLine:** improve error message for "cannot open shared object" ([e930248](https://github.com/nodkz/mongodb-memory-server/commit/e93024830c7a83981d73ce17fca87021aa95d00a))
+
 ## [8.5.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.4.2...v8.5.0) (2022-04-16)
 
 
