@@ -356,7 +356,10 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       .then(() => this._initReplSet())
       .catch(async (err) => {
         if (!debug.enabled('MongoMS:MongoMemoryReplSet')) {
-          console.warn('Starting the ReplSet failed, enable debug for more information');
+          console.warn(
+            'Starting the MongoMemoryReplSet Instance failed, enable debug log for more information. Error:\n',
+            err
+          );
         }
 
         await this.stop(false); // still try to close the instance that was spawned, without cleanup for investigation

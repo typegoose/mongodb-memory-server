@@ -279,7 +279,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     await this._startUpInstance(forceSamePort).catch(async (err) => {
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
-        console.warn('Starting the instance failed, enable debug for more information');
+        console.warn(
+          'Starting the MongoMemoryServer Instance failed, enable debug log for more information. Error:\n',
+          err
+        );
       }
 
       await this.stop(false); // still try to close the instance that was spawned, without cleanup for investigation
