@@ -1,3 +1,11 @@
+### [8.5.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.5.1...v8.5.2) (2022-04-29)
+
+
+### Fixes
+
+* **MongoMemory*::start:** add log of the error when async chain throws ([c57da4c](https://github.com/nodkz/mongodb-memory-server/commit/c57da4c3f0e4112c9305e62e217d282923343d4e))
+* **MongoMemory*::start:** change error warning to include the error ([238350c](https://github.com/nodkz/mongodb-memory-server/commit/238350c72699c9b558aea2a3a350207244a1f6c4))
+
 ### [8.5.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.5.0...v8.5.1) (2022-04-22)
 
 
