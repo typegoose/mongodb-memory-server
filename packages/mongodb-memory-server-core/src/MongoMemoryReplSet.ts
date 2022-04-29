@@ -362,6 +362,8 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           );
         }
 
+        log('ensureAsync chain threw a Error: ', err);
+
         await this.stop(false); // still try to close the instance that was spawned, without cleanup for investigation
 
         this.stateChange(MongoMemoryReplSetStates.stopped);
