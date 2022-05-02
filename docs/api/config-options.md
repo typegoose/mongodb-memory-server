@@ -128,6 +128,12 @@ Option `USE_HTTP` is used to use `http` over `https`
 
 Default: `false`
 
+### USE_ARCHIVE_NAME_FOR_BINARY_NAME
+
+Option `USE_ARCHIVE_NAME_FOR_BINARY_NAME` is used to use the archive name as binary name
+
+Default: `false`
+
 ## How to use them in the package.json
 
 To use the config options in the `package.json`, they need to be camelCased (and without `_`), and need to be in the property `config.mongodbMemoryServer`

@@ -42,20 +42,27 @@ export function isLinuxOS(os: AnyOS): os is LinuxOS {
   return os.os === 'linux';
 }
 
+/**
+ * Cache the "getOS" call, so that not much has to be re-executed over and over
+ */
+let cachedOs: AnyOS | undefined;
+
 /** Get an OS object */
 export async function getOS(): Promise<AnyOS> {
-  /** Node builtin function for first determinations */
-  const osName = platform();
+  if (!cachedOs) {
+    /** Node builtin function for first determinations */
+    const osName = platform();
 
-  // Linux is a special case.
-  if (osName === 'linux') {
-    return await getLinuxInformation();
+    // Linux is a special case.
+    if (osName === 'linux') {
+      cachedOs = await getLinuxInformation();
+    } else {
+      cachedOs = { os: osName };
+    }
   }
 
-  return { os: osName };
+  return cachedOs;
 }
-
-export default getOS;
 
 /** Function to outsource Linux Information Parsing */
 async function getLinuxInformation(): Promise<LinuxOS> {
