@@ -45,7 +45,7 @@ If the branch is named like `old/`, then it means that this package will not be 
 
 | Package Name                        | Provided MongoDB Version | Current Branch |
 | :---------------------------------: | :----------------------: | :------------: |
-| `mongodb-memory-server-global-4.4`  | 4.4.10                   | `master`       |
+| `mongodb-memory-server-global-4.4`  | 4.4.12                   | `master`       |
 | `mongodb-memory-server-global-4.2`  | 4.2.18                   | `master`       |
 | `mongodb-memory-server-global-4.0`  | 4.0.28                   | `master`       |
 | `mongodb-memory-server-global-3.6`  | 3.6.23                   | `old/7.x`      |
