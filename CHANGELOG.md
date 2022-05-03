@@ -1,3 +1,18 @@
+## [8.6.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.2...v8.6.0-beta.3) (2022-05-03)
+
+
+### Features
+
+* update binary 4.4 to 4.4.13 ([ddaf3f9](https://github.com/nodkz/mongodb-memory-server/commit/ddaf3f988efd85fa71f72dcc94aa3950dfda6f0a))
+
+
+### Style
+
+* **DryMongoBinary:** add tsdoc to interfaces ([ba0349c](https://github.com/nodkz/mongodb-memory-server/commit/ba0349ca7373e4974e449a1da270ec1f72edb490))
+* **MongoBinaryDownload::makeMD5Check:** change variable names to better represent what they do ([f8c2f05](https://github.com/nodkz/mongodb-memory-server/commit/f8c2f05c7b307a597076fbfef09d0bc9d4e45872))
+* **resolveConfig:** add tsdoc to some values and interfaces ([9b9f327](https://github.com/nodkz/mongodb-memory-server/commit/9b9f327a3a952ce155129e3d08ec54ba5406802c))
+* **resolveConfig:** remove commented out variable ([ac854c9](https://github.com/nodkz/mongodb-memory-server/commit/ac854c920ca53c55f8cb249533de7bffe4735ad9))
+
 ## [8.6.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.1...v8.6.0-beta.2) (2022-05-03)
 
 
