@@ -244,7 +244,7 @@ describe('MongodbInstance', () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir.name },
-        binary: { version: '5.0.3' },
+        binary: { version: '5.0.8' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
