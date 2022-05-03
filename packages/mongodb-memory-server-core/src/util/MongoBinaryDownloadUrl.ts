@@ -284,7 +284,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * Get the version string for Red Hat Enterprise Linux
    * @param os LinuxOS Object
    */
-  // TODO: add tests for RHEL
+  // TODO: add tests for getRhelVersionString
   getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const { release } = os;
@@ -338,6 +338,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * Get the version string for Suse / OpenSuse
    * @param os LinuxOS Object
    */
+  // TODO: add tests for getSuseVersionString
   getSuseVersionString(os: LinuxOS): string {
     const releaseMatch: RegExpMatchArray | null = os.release.match(/(^11|^12|^15)/);
 
