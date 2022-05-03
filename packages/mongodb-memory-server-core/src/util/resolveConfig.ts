@@ -60,7 +60,6 @@ export function setDefaultValue(key: ResolveConfigVariables, value: string): voi
   defaultValues.set(key, value);
 }
 
-// let packageJsonConfig: Record<string, string> = {};
 /** Cache the found package.json file */
 let packagejson: PackageJSON | undefined = undefined;
 /**
