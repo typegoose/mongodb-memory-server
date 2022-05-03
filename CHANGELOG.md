@@ -1,6 +1,8 @@
 ### [8.5.3-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.5.2...v8.5.3-beta.1) (2022-05-03)
 
 
+Note: this release is a "error" because this change was included earlier, but had the wrong merge branch on merge
+
 ### Fixes
 
 * **MongoBinaryDownloadUrl.ts:** Add current openSUSE Leap relase version ([2904d7e](https://github.com/nodkz/mongodb-memory-server/commit/2904d7e88e9c4db1a68a071d5994b4c4b30070e2))
