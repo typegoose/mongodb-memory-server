@@ -1,9 +1,8 @@
-import { AnyOS, LinuxOS } from './getos';
+import { getOS, AnyOS, LinuxOS } from './getos';
 import { resolveConfig, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
-import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 import { URL } from 'url';
 import {
   KnownVersionIncompatibilityError,
@@ -14,10 +13,10 @@ import {
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
 export interface MongoBinaryDownloadUrlOpts {
-  version: NonNullable<BaseDryMongoBinaryOptions['version']>;
+  version: string;
   platform: string;
-  arch: NonNullable<BaseDryMongoBinaryOptions['arch']>;
-  os?: BaseDryMongoBinaryOptions['os'];
+  arch: string;
+  os?: AnyOS;
 }
 
 /**
@@ -150,7 +149,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     // the highest version for "i686" seems to be 3.3
     if (this.arch !== 'i686') {
       if (!this.os) {
-        this.os = (await DryMongoBinary.generateOptions()).os;
+        this.os = await getOS();
       }
 
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);

@@ -1,9 +1,11 @@
 import * as binary from '../DryMongoBinary';
+import { DryMongoBinary } from '../DryMongoBinary';
 import * as path from 'path';
 import * as tmp from 'tmp';
 import { constants, promises as fspromises } from 'fs';
 import { DEFAULT_VERSION, envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
+import * as getOs from '../getos';
 import { LinuxOS, OtherOS } from '../getos';
 import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
@@ -86,7 +88,7 @@ describe('DryBinary', () => {
       process.chdir(path.resolve(tmpDir.name));
       opts = await binary.DryMongoBinary.generateOptions({ version });
       delete opts.downloadDir; // delete, because these tests are about "generatePaths", which will prioritise "opts.downloadDir" over env
-      binaryName = binary.DryMongoBinary.getBinaryName(opts);
+      binaryName = await binary.DryMongoBinary.getBinaryName(opts);
     });
     afterEach(() => {
       delete process.env[envName(ResolveConfigVariables.DOWNLOAD_DIR)];
@@ -153,6 +155,76 @@ describe('DryBinary', () => {
         modulesCache: '', // because not being in an project
       } as binary.DryMongoBinaryPaths);
     });
+  });
+
+  describe('getBinaryName', () => {
+    const platforms = [
+      {
+        platformOptions: {
+          platform: 'linux',
+          arch: 'x86_64',
+          os: {
+            os: 'linux',
+            dist: 'Ubuntu Linux',
+            release: '20.04',
+          },
+        },
+        archiverResult: 'mongodb-linux-x86_64-ubuntu2004-5.0.3',
+        nonArchiveResult: 'mongod-x86_64-Ubuntu Linux-5.0.3',
+      },
+      {
+        platformOptions: {
+          platform: 'darwin',
+          arch: 'arm64',
+          os: {
+            os: 'osx',
+          },
+        },
+        archiverResult: 'mongodb-macos-x86_64-5.0.3',
+        nonArchiveResult: 'mongod-arm64-osx-5.0.3',
+      },
+      {
+        platformOptions: {
+          platform: 'win32',
+          arch: 'x86_64',
+          os: {
+            os: 'win32',
+          },
+        },
+        archiverResult: 'mongodb-windows-x86_64-5.0.3',
+        nonArchiveResult: 'mongod-x86_64-win32-5.0.3.exe',
+      },
+    ];
+
+    beforeAll(() => {
+      delete process.env[envName(ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME)];
+    });
+
+    afterEach(() => {
+      delete process.env[envName(ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME)];
+    });
+
+    it.each(platforms)(
+      'should return binary name matching archive name for $platformOptions.platform-$platformOptions.arch',
+      async ({ platformOptions, archiverResult }) => {
+        process.env[envName(ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME)] = 'true';
+
+        expect(
+          await DryMongoBinary.getBinaryName({ ...platformOptions, version: '5.0.3' })
+        ).toEqual(archiverResult);
+      }
+    );
+
+    it.each(platforms)(
+      'should return binary name not matching archive name for $platformOptions.platform-$platformOptions.arch',
+      async ({ platformOptions, nonArchiveResult }) => {
+        process.env[envName(ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME)] = 'false';
+
+        expect(
+          await DryMongoBinary.getBinaryName({ ...platformOptions, version: '5.0.3' })
+        ).toEqual(nonArchiveResult);
+      }
+    );
   });
 
   describe('generateDownloadPath', () => {
@@ -400,6 +472,7 @@ describe('DryBinary', () => {
 
   describe('generateOptions', () => {
     let osmock: LinuxOS;
+    let getosSpy: jest.SpyInstance<ReturnType<typeof getOs.getOS>>;
     const mockBinary: string = '/custom/path';
 
     beforeEach(() => {
@@ -413,11 +486,12 @@ describe('DryBinary', () => {
       jest.spyOn(binary.DryMongoBinary, 'generateDownloadPath').mockImplementation(async (opts) => {
         return [true, opts.downloadDir ? opts.downloadDir : mockBinary];
       });
-      osmock = binary.DryMongoBinary.cachedGetOs = {
+      osmock = {
         dist: 'ubuntu',
         os: 'linux',
         release: '20.04',
       };
+      getosSpy = jest.spyOn(getOs, 'getOS').mockResolvedValue(osmock);
     });
 
     afterEach(() => {
@@ -433,8 +507,11 @@ describe('DryBinary', () => {
           systemBinary: '',
           os: osmock,
           downloadDir: path.dirname(mockBinary),
+          platform: 'linux',
         })
       );
+
+      expect(getosSpy).toHaveBeenCalled();
     });
 
     it('should use provided options instead of defaults', async () => {
@@ -447,6 +524,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '/also/somewhere',
+        platform: 'linux',
       };
       const output = await binary.DryMongoBinary.generateOptions(options);
 
@@ -456,7 +534,10 @@ describe('DryBinary', () => {
         systemBinary: options.systemBinary,
         os: options.os,
         downloadDir: path.dirname(options.downloadDir),
+        platform: 'linux',
       });
+
+      expect(getosSpy).not.toHaveBeenCalled();
     });
 
     it('should use env over provided options and defaults', async () => {
@@ -473,6 +554,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '/also/somewhere',
+        platform: 'linux',
       };
       const output = await binary.DryMongoBinary.generateOptions(options);
 
@@ -482,7 +564,10 @@ describe('DryBinary', () => {
         systemBinary: envsbdir,
         os: options.os,
         downloadDir: path.dirname(envdldir),
+        platform: 'linux',
       });
+
+      expect(getosSpy).not.toHaveBeenCalled();
     });
 
     it('should use "parseArchiveNameRegex" when DOWNLOAD_URL is defined', async () => {
@@ -498,6 +583,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '',
+        platform: 'linux',
       };
 
       const output = await binary.DryMongoBinary.generateOptions(origOptions);
@@ -512,9 +598,11 @@ describe('DryBinary', () => {
           dist: 'ubuntu',
           release: '',
         },
+        platform: 'linux',
       });
 
       expect(parseArchiveNameRegexSpy).toHaveBeenCalledTimes(1);
+      expect(getosSpy).not.toHaveBeenCalled();
     });
 
     it('should use "parseArchiveNameRegex" when ARCHIVE_NAME is defined', async () => {
@@ -530,6 +618,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '',
+        platform: 'linux',
       };
 
       const output = await binary.DryMongoBinary.generateOptions(origOptions);
@@ -544,9 +633,11 @@ describe('DryBinary', () => {
           dist: 'ubuntu',
           release: '',
         },
+        platform: 'linux',
       });
 
       expect(parseArchiveNameRegexSpy).toHaveBeenCalledTimes(1);
+      expect(getosSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -563,6 +654,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '',
+        platform: 'linux',
       };
 
       const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
@@ -577,6 +669,7 @@ describe('DryBinary', () => {
           dist: 'ubuntu',
           release: '',
         },
+        platform: 'linux',
       });
     });
 
@@ -592,6 +685,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '',
+        platform: 'darwin',
       };
 
       const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
@@ -604,6 +698,7 @@ describe('DryBinary', () => {
         os: {
           os: 'osx',
         },
+        platform: 'darwin',
       });
     });
 
@@ -619,6 +714,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '',
+        platform: 'darwin',
       };
 
       const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
@@ -631,6 +727,7 @@ describe('DryBinary', () => {
         os: {
           os: 'macos',
         },
+        platform: 'darwin',
       });
     });
 
@@ -647,6 +744,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '',
+        platform: 'win32',
       };
 
       const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
@@ -659,6 +757,7 @@ describe('DryBinary', () => {
         os: {
           os: 'win32',
         },
+        platform: 'win32',
       });
     });
 
@@ -672,6 +771,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '',
+        platform: 'win32',
       };
 
       try {
@@ -695,6 +795,7 @@ describe('DryBinary', () => {
         os: customos,
         downloadDir: '/path/to/somewhere',
         systemBinary: '',
+        platform: 'win32',
       };
 
       try {

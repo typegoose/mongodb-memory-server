@@ -115,7 +115,10 @@ export class MongoBinaryDownload {
   protected async getPath(): Promise<string> {
     const opts = await DryMongoBinary.generateOptions(this.binaryOpts);
 
-    return DryMongoBinary.combineBinaryName(this.downloadDir, DryMongoBinary.getBinaryName(opts));
+    return DryMongoBinary.combineBinaryName(
+      this.downloadDir,
+      await DryMongoBinary.getBinaryName(opts)
+    );
   }
 
   /**
