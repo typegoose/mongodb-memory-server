@@ -10,6 +10,7 @@ import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 
 const log = debug('MongoMS:DryMongoBinary');
 
+/** Interface for general options required to pass-around (all optional) */
 export interface BaseDryMongoBinaryOptions {
   version?: string;
   downloadDir?: string;
@@ -19,10 +20,12 @@ export interface BaseDryMongoBinaryOptions {
   systemBinary?: string;
 }
 
+/** Interface for general options required to pass-aroung (version not optional) */
 export interface DryMongoBinaryOptions extends BaseDryMongoBinaryOptions {
   version: NonNullable<BaseDryMongoBinaryOptions['version']>;
 }
 
+/** Interface for the options arguments in function "DryMongoBinary.getBinaryName" */
 export interface DryMongoBinaryNameOptions {
   version: NonNullable<DryMongoBinaryOptions['version']>;
   arch: NonNullable<DryMongoBinaryOptions['arch']>;
@@ -30,10 +33,15 @@ export interface DryMongoBinaryNameOptions {
   os: NonNullable<DryMongoBinaryOptions['os']>;
 }
 
+/** Interface to store all generated Paths that would be possible a binary would be in */
 export interface DryMongoBinaryPaths {
+  /** Path from `DOWNLOAD_DIR` config option */
   resolveConfig: string;
+  /** Path for "~/.config/" (user home) */
   legacyHomeCache: string;
+  /** Path for "PROJECT/node_modules/.cache/" (project local cache) */
   modulesCache: string;
+  /** Path for relative to CWD "CWD/" (relative CWD path) */
   relative: string;
 }
 
