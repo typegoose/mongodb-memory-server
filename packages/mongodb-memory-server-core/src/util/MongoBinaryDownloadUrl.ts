@@ -461,6 +461,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu2004';
     }
 
+    // TODO: change or remove "14" default, since it no-longer is supported above 4.0
     // the "04" version always exists for ubuntu, use that as default
     return `ubuntu${ubuntuYear || 14}04`;
   }
