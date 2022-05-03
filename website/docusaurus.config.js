@@ -8,11 +8,12 @@ module.exports = {
   organizationName: 'nodkz',
   projectName: 'mongodb-memory-server',
   themeConfig: {
-    //algolia: {
-    //  apiKey: '',
-    //  indexName: 'mongodb-memory-server',
-    //  algoliaOptions: {},
-    //},
+    algolia: {
+      apiKey: '8fe2db2c68a589011ca177c3f6098a76',
+      appId: '3KTVP2YGJO',
+      indexName: 'docusaurus',
+      contextualSearch: false, // since docusaurus v2.beta-15, it is defaulted to "true", but somehow breaks current search
+    },
     navbar: {
       title: 'mongodb-memory-server',
       // logo: {

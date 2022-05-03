@@ -78,6 +78,8 @@ And one of those (on Linux):
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
 - manually specify which version & system should be used
 
+On Linux, you will also need `libcurl4` (or `libcurl3` on some older distro versions). This will probably only be an issue on "slim" Docker images.
+
 ### Choose the Correct Package
 
 [Choose the right package for the task](https://nodkz.github.io/mongodb-memory-server/docs/guides/quick-start-guide#choose-the-right-package)
@@ -225,7 +227,7 @@ For additional information it is recommended to read this article [Testing a Gra
 
 ### Test Runner Examples
 
-[Documentation for Integration Examples](https://nodkz.github.io/mongodb-memory-server/docs/guides/integration-examples)
+[Documentation for Test Runner Integration Examples](https://nodkz.github.io/mongodb-memory-server/docs/guides/integration-examples/test-runners)
 
 ### Docker Alpine
 

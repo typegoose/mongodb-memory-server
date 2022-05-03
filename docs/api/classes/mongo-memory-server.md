@@ -37,6 +37,9 @@ Typings: `async start(forceSamePort: boolean = false): Promise<boolean>`
 
 Used to start an new Instance or to Re-Start an stopped instance
 
+with `forceSamePort` set to `true` and having `instance.port` set, it will use that port and not generate a new port.  
+with `forceSamePort` set to `true` and not having `instance.port` set, it will generate a new free port.  
+
 :::caution
 Will Error if instance is already running
 :::
@@ -53,7 +56,10 @@ Finds an new non-locked port
 
 <span class="badge badge--warning">Internal</span>
 
-Typings: `protected async getStartOptions(): Promise<MongoMemoryServerGetStartOptions>`
+Typings: `protected async getStartOptions(forceSamePort: boolean = false): Promise<MongoMemoryServerGetStartOptions>`
+
+with `forceSamePort` set to `true` and having `instance.port` set, it will use that port and not generate a new port.  
+with `forceSamePort` set to `true` and not having `instance.port` set, it will generate a new free port.  
 
 Constructs the Starting Options
 
@@ -67,9 +73,11 @@ Internal Functions used by [`start`](#start)
 
 ### stop
 
-Typings: `async stop(runCleanup: boolean = true): Promise<boolean>`
+Typings: `async stop(cleanupOptions?: Cleanup): Promise<boolean>`
 
-Stop an running instance
+Stop an running instance, this function will by default call [`.cleanup`](#cleanup) with `{ doCleanup: true, force: false }`.
+
+With `cleanupOptions` options for cleanup can be manually set.
 
 :::caution
 Will not Error if instance is not running
@@ -77,9 +85,11 @@ Will not Error if instance is not running
 
 ### cleanup
 
-Typings: `async cleanup(force: boolean): Promise<void>`
+Typings: `async cleanup(options?: Cleanup): Promise<void>`
 
-Cleanup all files used by this instance
+Cleanup all files used by this instance, by default `{ doCleanup: true, force: false }` is used.
+
+With `options` can be set how to run a cleanup.
 
 ### ensureInstance
 
@@ -93,9 +103,13 @@ Will Error if instance cannot be started
 
 ### getUri
 
-Typings: `getUri(otherDbName?: string): string`
+Typings: `getUri(otherDbName?: string, otherIp?: string): string`
 
 Get an mongodb-usable uri (can also be used in mongoose)
+
+When no arguments are set, the URI will always use ip `127.0.0.1` and end with `/` (not setting a database).  
+When setting `otherDbName`, the value of `otherDbName` will be appended after `/` and before any query arguments.  
+When setting `otherIp`, the ip will be the value of `otherIp` instead of `127.0.0.1`.
 
 ### createAuth
 

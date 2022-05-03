@@ -45,7 +45,7 @@ Depends on the distribution, many common ones should just work right out of the 
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `1404`<br/>
-Highest version is `2004`<br/>
+Highest version is `2104`<br/>
 Default version is `1404`
 :::note
 Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an lower version of mongodb for an higher version of ubuntu

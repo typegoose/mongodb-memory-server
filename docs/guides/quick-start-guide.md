@@ -5,6 +5,18 @@ title: 'Quick Start Guide'
 
 This Guide will show how to setup this package for basic use
 
+:::note
+The Examples on this page assume Top-Level async-await for readability.  
+If Top-Level async-await is not available for your case, the code can in most cases be wrapped like:
+
+```ts
+(async () => {
+  // async code in where
+})();
+```
+
+:::
+
 ## Requirements
 
 - NodeJS: 12.22+
@@ -16,6 +28,8 @@ When on Linux, one of the following are required:
 - having an `/etc/os-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html)
 - having an `/etc/*-release` file that is compliant to the [OS-Release Spec](https://www.freedesktop.org/software/systemd/man/os-release.html) (and does not include `lsb`)
 - manually specify which version & system should be used
+
+On Linux, you will also need `libcurl` (or `libcurl3` on some older distro versions). This will probably only be an issue on "slim" Docker images.
 
 ## Choose the right package
 

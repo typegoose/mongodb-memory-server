@@ -45,6 +45,10 @@ Typings: `getUri(otherDb?: string): string`
 
 Get an mongodb-usable uri (can also be used in mongoose)
 
+When no arguments are set, the URI will always use ip `127.0.0.1` and end with `/?replicaSet=ReplSetName` (not setting a database).  
+When setting `otherDbName`, the value of `otherDbName` will be appended after `/` and before any query arguments.  
+When setting `otherIp`, the ip will be the value of `otherIp` instead of `127.0.0.1` (for all instances).
+
 ### start
 
 Typings: `async start(): Promise<void>`
@@ -73,11 +77,11 @@ Ensures and returns that [`_keyfiletmp`](#_keyfiletmp) is defined an exists and 
 
 ### stop
 
-Typings: `async stop(runCleanup: boolean = true): Promise<boolean>`
+Typings: `async stop(cleanupOptions?: Cleanup): Promise<boolean>`
 
-Stop an running instance
+Stop an running instance, this function will by default call [`.cleanup`](#cleanup) with `{ doCleanup: true, force: false }`.
 
-This function will by default run [`.cleanup`](#cleanup), this must be set to `false` to be able to restart (and an engine other than `ephemeralForTest` must be used)
+With `cleanupOptions` options for cleanup can be manually set.
 
 :::caution
 Will not Error if instance is not running
@@ -85,9 +89,11 @@ Will not Error if instance is not running
 
 ### cleanup
 
-Typings: `async cleanup(force: boolean = false): Promise<void>`
+Typings: `async cleanup(options?: Cleanup): Promise<void>`
 
-Cleanup all files used by this ReplSet & instances
+Cleanup all files used by this ReplSet's instances, by default `{ doCleanup: true, force: false }` is used.
+
+With `options` can be set how to run a cleanup.
 
 ### waitUntilRunning
 

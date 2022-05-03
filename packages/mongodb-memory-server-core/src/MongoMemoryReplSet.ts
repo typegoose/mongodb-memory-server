@@ -3,6 +3,7 @@ import { MongoMemoryServer, AutomaticAuth, MongoMemoryServerOpts } from './Mongo
 import {
   assertion,
   authDefault,
+  Cleanup,
   ensureAsync,
   generateDbName,
   getHost,
@@ -301,11 +302,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   /**
    * Returns an mongodb URI that is setup with all replSet servers
    * @param otherDb add an database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
+   * @param otherIp change the ip in the generated uri, default will otherwise always be "127.0.0.1"
    * @throws if state is not "running"
    * @throws if an server doesnt have "instanceInfo.port" defined
    * @returns an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
-  getUri(otherDb?: string): string {
+  getUri(otherDb?: string, otherIp?: string): string {
     log('getUri:', this.state);
     switch (this.state) {
       case MongoMemoryReplSetStates.running:
@@ -323,8 +325,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       .map((s) => {
         const port = s.instanceInfo?.port;
         assertion(!isNullOrUndefined(port), new Error('Instance Port is undefined!'));
+        const ip = otherIp || '127.0.0.1';
 
-        return `127.0.0.1:${port}`;
+        return `${ip}:${port}`;
       })
       .join(',');
 
@@ -351,10 +354,17 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     await ensureAsync()
       .then(() => this.initAllServers())
       .then(() => this._initReplSet())
-      .catch((err) => {
+      .catch(async (err) => {
         if (!debug.enabled('MongoMS:MongoMemoryReplSet')) {
-          console.warn('Starting the ReplSet failed, enable debug for more information');
+          console.warn(
+            'Starting the MongoMemoryReplSet Instance failed, enable debug log for more information. Error:\n',
+            err
+          );
         }
+
+        log('ensureAsync chain threw a Error: ', err);
+
+        await this.stop(false); // still try to close the instance that was spawned, without cleanup for investigation
 
         this.stateChange(MongoMemoryReplSetStates.stopped);
 
@@ -463,12 +473,34 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   /**
    * Stop the underlying `mongod` instance(s).
    * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
+   *
+   * @deprecated replace argument with `Cleanup` interface object
    */
-  async stop(runCleanup: boolean = true): Promise<boolean> {
+  async stop(runCleanup: boolean): Promise<boolean>; // TODO: for next major release (9.0), this should be removed
+  /**
+   * Stop the underlying `mongod` instance(s).
+   * @param cleanupOptions Set how to run ".cleanup", by default only `{ doCleanup: true }` is used
+   */
+  async stop(cleanupOptions?: Cleanup): Promise<boolean>;
+  async stop(cleanupOptions?: boolean | Cleanup): Promise<boolean> {
     log(`stop: called by ${isNullOrUndefined(process.exitCode) ? 'manual' : 'process exit'}`);
 
+    /** Default to cleanup temporary, but not custom dbpaths */
+    let cleanup: Cleanup = { doCleanup: true, force: false };
+
+    // handle the old way of setting wheter to cleanup or not
+    // TODO: for next major release (9.0), this should be removed
+    if (typeof cleanupOptions === 'boolean') {
+      cleanup.doCleanup = cleanupOptions;
+    }
+
+    // handle the new way of setting what and how to cleanup
+    if (typeof cleanupOptions === 'object') {
+      cleanup = cleanupOptions;
+    }
+
     if (this._state === MongoMemoryReplSetStates.stopped) {
-      return false;
+      log('stop: state is "stopped", trying to stop / kill anyway');
     }
 
     const bool = await Promise.all(this.servers.map((s) => s.stop(false)))
@@ -489,8 +521,8 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       return bool;
     }
 
-    if (runCleanup) {
-      await this.cleanup(false);
+    if (cleanup.doCleanup) {
+      await this.cleanup(cleanup);
     }
 
     return true;
@@ -502,12 +534,46 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
    * @throws If "state" is not "stopped"
    * @throws If "instanceInfo" is not defined
    * @throws If an fs error occured
+   *
+   * @deprecated replace argument with `Cleanup` interface object
    */
-  async cleanup(force: boolean = false): Promise<void> {
+  async cleanup(force: boolean): Promise<void>; // TODO: for next major release (9.0), this should be removed
+  /**
+   * Remove the defined dbPath's
+   * @param options Set how to run a cleanup, by default `{ doCleanup: true }` is used
+   * @throws If "state" is not "stopped"
+   * @throws If "instanceInfo" is not defined
+   * @throws If an fs error occured
+   */
+  async cleanup(options?: Cleanup): Promise<void>;
+  async cleanup(options?: boolean | Cleanup): Promise<void> {
     assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
     log(`cleanup for "${this.servers.length}" servers`);
 
-    await Promise.all(this.servers.map((s) => s.cleanup(force)));
+    /** Default to doing cleanup, but not forcing it */
+    let cleanup: Cleanup = { doCleanup: true, force: false };
+
+    // handle the old way of setting wheter to cleanup or not
+    // TODO: for next major release (9.0), this should be removed
+    if (typeof options === 'boolean') {
+      cleanup.force = options;
+    }
+
+    // handle the new way of setting what and how to cleanup
+    if (typeof options === 'object') {
+      cleanup = options;
+    }
+
+    log(`cleanup:`, cleanup);
+
+    // dont do cleanup, if "doCleanup" is false
+    if (!cleanup.doCleanup) {
+      log('cleanup: "doCleanup" is set to false');
+
+      return;
+    }
+
+    await Promise.all(this.servers.map((s) => s.cleanup(cleanup)));
 
     // cleanup the keyfile tmpdir
     if (!isNullOrUndefined(this._keyfiletmp)) {

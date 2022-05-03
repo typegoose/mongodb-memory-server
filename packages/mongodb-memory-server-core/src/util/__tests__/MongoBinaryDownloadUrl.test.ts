@@ -640,13 +640,17 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getUbuntuVersionString()', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
     });
 
     it('should return a archive name for Ubuntu 14.10', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getUbuntuVersionString({
           os: 'linux',
@@ -657,6 +661,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for Ubuntu 14.04', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getUbuntuVersionString({
           os: 'linux',
@@ -667,6 +672,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for Ubuntu 12.04', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getUbuntuVersionString({
           os: 'linux',
@@ -675,6 +681,7 @@ describe('MongoBinaryDownloadUrl', () => {
         })
       ).toBe('ubuntu1204');
     });
+
     it('should return a archive name for Ubuntu 18.04', () => {
       const oldMongoVersion = downloadUrl.version;
       downloadUrl.version = '3.6.3';
@@ -695,6 +702,7 @@ describe('MongoBinaryDownloadUrl', () => {
       ).toBe('ubuntu1804');
       downloadUrl.version = oldMongoVersion;
     });
+
     it('should return a archive name for Ubuntu 20.04', () => {
       const oldMongoVersion = downloadUrl.version;
       downloadUrl.version = '3.6.3';
@@ -715,6 +723,34 @@ describe('MongoBinaryDownloadUrl', () => {
       ).toBe('ubuntu1804');
       downloadUrl.version = oldMongoVersion;
     });
+
+    it('should return a archive name for Ubuntu 21.04 using 2004', () => {
+      downloadUrl.version = '5.0.3';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '21.04',
+        })
+      ).toBe('ubuntu2004');
+    });
+
+    it('should return default version with warning when using ID_LIKE but not being ubuntu', () => {
+      // Test for https://github.com/nodkz/mongodb-memory-server/issues/616
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+
+      downloadUrl.version = '5.0.3';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'zorin',
+          release: '16',
+          id_like: ['ubuntu'],
+        })
+      ).toBe('ubuntu2004');
+
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('getDebianVersionString()', () => {
@@ -728,6 +764,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 6.2', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -738,6 +775,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 7.0', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -748,6 +786,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 7.1', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -758,6 +797,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 8.0', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -768,6 +808,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 8.1', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -778,6 +819,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return a archive name for debian 9.0', () => {
+      downloadUrl.version = '3.6.3';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -800,13 +842,17 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getLegacyVersionString()', () => {
-    const downloadUrl = new MongoBinaryDownloadUrl({
-      platform: 'linux',
-      arch: 'x64',
-      version: '3.6.3',
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+      });
     });
 
     it('should return an empty string', () => {
+      downloadUrl.version = '3.6.3';
       expect(downloadUrl.getLegacyVersionString()).toBe('');
     });
   });

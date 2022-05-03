@@ -3,7 +3,7 @@ id: docker
 title: 'Integration with Docker'
 ---
 
-This Guide will show how `mongodb-memory-server` can be used with Docker & dockefiles.
+This Guide will show how `mongodb-memory-server` can be used with Docker & dockerfiles.
 
 ## Important Notes before Starting
 
@@ -57,7 +57,7 @@ RUN npm install
 # ...
 ```
 
-### `dockefile`
+### `dockerfile`
 
 The following is the recommended way to make a image with mongodb-memory-server
 

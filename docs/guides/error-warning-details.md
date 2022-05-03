@@ -10,7 +10,7 @@ Example:
 ```txt
 Incorrect State for operation: "${gotState}", allowed States: "[${wantedStates.join(',')}]"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
-https://nodkz.github.io/mongodb-memory-server/docs/guides/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything
+https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything
 ```
 
 Details:  

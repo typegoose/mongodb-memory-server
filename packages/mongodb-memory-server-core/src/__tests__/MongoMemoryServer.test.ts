@@ -11,6 +11,8 @@ import * as utils from '../util/utils';
 import * as semver from 'semver';
 import { EnsureInstanceError, StateError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
+import { promises as fspromises } from 'fs';
+import * as path from 'path';
 
 tmp.setGracefulCleanup();
 jest.setTimeout(100000); // 10s
@@ -474,18 +476,80 @@ describe('MongoMemoryServer', () => {
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
     });
 
-    it('should return "true" if instance is already stopped', async () => {
+    it('should still run "stop" even if state is already "stopped"', async () => {
       const mongoServer = new MongoMemoryServer();
+      const instance = new MongoInstance({});
+      const instanceStopSpy = jest
+        .spyOn(instance, 'stop')
+        .mockImplementation(() => Promise.resolve(true));
       // @ts-expect-error because "_instanceInfo" is protected
-      mongoServer._instanceInfo = {};
+      mongoServer._instanceInfo = { instance: instance };
       // @ts-expect-error because "_state" is protected
       mongoServer._state = MongoMemoryServerStates.stopped;
       jest.spyOn(utils, 'isNullOrUndefined');
       jest.spyOn(utils, 'assertion');
 
-      expect(await mongoServer.stop()).toEqual(false);
+      expect(await mongoServer.stop(false)).toEqual(true);
+      expect(instanceStopSpy).toHaveBeenCalledTimes(1);
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
       expect(utils.assertion).not.toHaveBeenCalled();
+    });
+
+    it('should call cleanup by default', async () => {
+      const mongoServer = new MongoMemoryServer();
+
+      // mock "_instanceInfo" as if the instance had already been started once
+      {
+        const instance = new MongoInstance({});
+        // @ts-expect-error because "_instanceInfo" is protected
+        mongoServer._instanceInfo = { instance: instance };
+      }
+
+      const cleanupSpy = jest.spyOn(mongoServer, 'cleanup').mockResolvedValue(void 0);
+
+      await mongoServer.stop();
+
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: false } as utils.Cleanup);
+    });
+
+    it('should call cleanup with mapped boolean', async () => {
+      const mongoServer = new MongoMemoryServer();
+
+      // mock "_instanceInfo" as if the instance had already been started once
+      {
+        const instance = new MongoInstance({});
+        // @ts-expect-error because "_instanceInfo" is protected
+        mongoServer._instanceInfo = { instance: instance };
+      }
+
+      const cleanupSpy = jest.spyOn(mongoServer, 'cleanup').mockResolvedValue(void 0);
+
+      await mongoServer.stop(false);
+
+      expect(cleanupSpy).not.toHaveBeenCalled();
+
+      cleanupSpy.mockClear();
+
+      await mongoServer.stop(true);
+
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: false } as utils.Cleanup);
+    });
+
+    it('should call cleanup and pass-through cleanup options', async () => {
+      const mongoServer = new MongoMemoryServer();
+
+      // mock "_instanceInfo" as if the instance had already been started once
+      {
+        const instance = new MongoInstance({});
+        // @ts-expect-error because "_instanceInfo" is protected
+        mongoServer._instanceInfo = { instance: instance };
+      }
+
+      const cleanupSpy = jest.spyOn(mongoServer, 'cleanup').mockResolvedValue(void 0);
+
+      await mongoServer.stop({ doCleanup: true, force: true });
+
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: true } as utils.Cleanup);
     });
   });
 
@@ -549,9 +613,17 @@ describe('MongoMemoryServer', () => {
       expect(getUri).toThrowError(StateError);
       expect(getUri).toThrowErrorMatchingSnapshot();
     });
+
+    it('should return "otherIp" if set', () => {
+      const port: number = mongoServer.instanceInfo!.port;
+      expect(mongoServer.getUri(undefined, '0.0.0.0')).toStrictEqual(`mongodb://0.0.0.0:${port}/`);
+    });
   });
 
   describe('cleanup()', () => {
+    /** Cleanup the created tmp-dir, even if the cleanup test tested to not clean it up */
+    let tmpdir: tmp.DirResult | undefined;
+
     // "beforeAll" dosnt work here, thanks to the top-level "afterAll" hook
     beforeEach(() => {
       jest.spyOn(utils, 'statPath');
@@ -559,23 +631,39 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(semver.default, 'lt'); // it needs to be ".default" otherwise "lt" is only an getter
     });
 
-    it('should properly cleanup with tmpDir', async () => {
+    afterEach(() => {
+      if (!utils.isNullOrUndefined(tmpdir)) {
+        tmpdir.removeCallback();
+
+        tmpdir = undefined; // reset, just to be sure its clean
+      }
+    });
+
+    it('should properly cleanup with tmpDir with default no force (old)', async () => {
       const mongoServer = await MongoMemoryServer.create();
       const dbPath = mongoServer.instanceInfo!.dbPath;
-      await mongoServer.stop(false);
+
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
+      await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup();
-      expect(utils.statPath).toHaveBeenCalledTimes(0);
+
+      expect(utils.statPath).not.toHaveBeenCalled();
       expect(semver.lt).not.toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
     });
 
-    it('should properly cleanup with tmpDir and re-check with force', async () => {
+    it('should properly cleanup with tmpDir and re-check with force (old)', async () => {
       const mongoServer = await MongoMemoryServer.create();
       const dbPath = mongoServer.instanceInfo!.dbPath;
-      await mongoServer.stop(false);
+
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
+      await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup(true);
+
       expect(utils.statPath).toHaveBeenCalledTimes(1);
       expect(semver.lt).not.toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
@@ -583,17 +671,76 @@ describe('MongoMemoryServer', () => {
       expect(mongoServer.instanceInfo).toBeUndefined();
     });
 
-    it('should properly cleanup with force (without tmpDir)', async () => {
+    it('should properly cleanup with force (without tmpDir) (old)', async () => {
       const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-cleanup-', unsafeCleanup: true });
       const mongoServer = await MongoMemoryServer.create({ instance: { dbPath: tmpDir.name } });
       const dbPath = mongoServer.instanceInfo!.dbPath;
-      await mongoServer.stop(false);
+
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
+      await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup(true);
+
       expect(utils.statPath).toHaveBeenCalledTimes(1);
       expect(semver.lt).toHaveBeenCalled(); // not testing on how many, because it would change with nodejs version
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
+    });
+
+    it('should properly cleanup with tmpDir with default no force (new)', async () => {
+      const mongoServer = await MongoMemoryServer.create();
+      const dbPath = mongoServer.instanceInfo!.dbPath;
+
+      const cleanupSpy = jest.spyOn(mongoServer, 'cleanup');
+
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
+      await mongoServer.stop({ doCleanup: false });
+      await mongoServer.cleanup();
+      expect(utils.statPath).not.toHaveBeenCalled();
+      expect(semver.lt).not.toHaveBeenCalled();
+      expect(await utils.statPath(dbPath)).toBeUndefined();
+      expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
+      expect(mongoServer.instanceInfo).toBeUndefined();
+      expect(cleanupSpy).toHaveBeenCalledWith();
+    });
+
+    it('should properly cleanup with tmpDir and re-check with force (new)', async () => {
+      const mongoServer = await MongoMemoryServer.create();
+
+      const cleanupSpy = jest.spyOn(mongoServer, 'cleanup');
+
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
+      const dbPath = mongoServer.instanceInfo!.dbPath;
+      await mongoServer.stop({ doCleanup: false });
+      await mongoServer.cleanup({ doCleanup: true, force: true });
+      expect(utils.statPath).toHaveBeenCalledTimes(1);
+      expect(semver.lt).not.toHaveBeenCalled();
+      expect(await utils.statPath(dbPath)).toBeUndefined();
+      expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
+      expect(mongoServer.instanceInfo).toBeUndefined();
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: true } as utils.Cleanup);
+    });
+
+    it('should properly cleanup with force (without tmpDir) (new)', async () => {
+      const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-cleanup-', unsafeCleanup: true });
+      const mongoServer = await MongoMemoryServer.create({ instance: { dbPath: tmpDir.name } });
+      const dbPath = mongoServer.instanceInfo!.dbPath;
+
+      const cleanupSpy = jest.spyOn(mongoServer, 'cleanup');
+
+      tmpdir = mongoServer.instanceInfo?.tmpDir;
+
+      await mongoServer.stop({ doCleanup: false });
+      await mongoServer.cleanup({ doCleanup: true, force: true });
+      expect(utils.statPath).toHaveBeenCalledTimes(1);
+      expect(semver.lt).toHaveBeenCalled(); // not testing on how many, because it would change with nodejs version
+      expect(await utils.statPath(dbPath)).toBeUndefined();
+      expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
+      expect(mongoServer.instanceInfo).toBeUndefined();
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: true } as utils.Cleanup);
     });
 
     it('should throw an error if state is not "stopped"', async () => {
@@ -606,6 +753,124 @@ describe('MongoMemoryServer', () => {
         assertIsError(err);
         expect(err.message).toMatchSnapshot();
       }
+    });
+  });
+
+  describe('getStartOptions()', () => {
+    it('should create a tmpdir if "dbPath" is not set', async () => {
+      // somehow, jest cannot redefine function "dirSync", so this is disabled
+      // const tmpSpy = jest.spyOn(tmp, 'dirSync');
+      const mongoServer = new MongoMemoryServer({});
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      // see comment above
+      // expect(tmpSpy).toHaveBeenCalledTimes(1);
+      expect(options.data.tmpDir).toBeDefined();
+      // jest "expect" do not act as typescript typeguards
+      utils.assertion(
+        !utils.isNullOrUndefined(options.data.dbPath),
+        new Error('Expected "options.data.dbPath" to be defined')
+      );
+      expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
+    });
+
+    it('should resolve "isNew" to "true" and set "createAuth" to "true" when dbPath is set, but empty', async () => {
+      const readdirSpy = jest.spyOn(fspromises, 'readdir');
+      const tmpDbPath = tmp.dirSync({ prefix: 'mongo-mem-getStartOptions1-', unsafeCleanup: true });
+
+      const mongoServer = new MongoMemoryServer({
+        instance: { dbPath: tmpDbPath.name },
+        auth: {},
+      });
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(options.data.tmpDir).toBeUndefined();
+      utils.assertion(
+        !utils.isNullOrUndefined(options.data.dbPath),
+        new Error('Expected "options.data.dbPath" to be defined')
+      );
+      expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
+      expect(options.data.dbPath).toEqual(tmpDbPath.name);
+      expect(readdirSpy).toHaveBeenCalledTimes(1);
+      expect(options.createAuth).toEqual(true);
+    });
+
+    it('should resolve "isNew" to "false" and set "createAuth" to "false" when dbPath is set, but not empty', async () => {
+      const readdirSpy = jest.spyOn(fspromises, 'readdir');
+      const tmpDbPath = tmp.dirSync({ prefix: 'mongo-mem-getStartOptions1-', unsafeCleanup: true });
+
+      // create dummy file, to make the directory non-empty
+      await fspromises.writeFile(path.resolve(tmpDbPath.name, 'testfile'), '');
+
+      const mongoServer = new MongoMemoryServer({
+        instance: { dbPath: tmpDbPath.name },
+        auth: {},
+      });
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(options.data.tmpDir).toBeUndefined();
+      utils.assertion(
+        !utils.isNullOrUndefined(options.data.dbPath),
+        new Error('Expected "options.data.dbPath" to be defined')
+      );
+      expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
+      expect(options.data.dbPath).toEqual(tmpDbPath.name);
+      expect(readdirSpy).toHaveBeenCalledTimes(1);
+      expect(options.createAuth).toEqual(false);
+    });
+
+    it('should generate a port when no suggestion is defined', async () => {
+      const mongoServer = new MongoMemoryServer();
+      const newPortSpy = jest
+        // @ts-expect-error "getNewPort" is protected
+        .spyOn(mongoServer, 'getNewPort')
+        // @ts-expect-error it somehow gets a wrong function type
+        .mockImplementation((port) => Promise.resolve(port ? port : 2000));
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(newPortSpy).toHaveBeenCalledTimes(1);
+      expect(typeof options.data.port === 'number').toBeTruthy();
+    });
+
+    it('should use a predefined port as a suggestion for a port', async () => {
+      const predefinedPort = 10000;
+
+      const mongoServer = new MongoMemoryServer({ instance: { port: predefinedPort } });
+      const newPortSpy = jest
+        // @ts-expect-error "getNewPort" is protected
+        .spyOn(mongoServer, 'getNewPort')
+        // @ts-expect-error it somehow gets a wrong function type
+        .mockImplementation((port) => Promise.resolve(port ? port : 2000));
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions();
+
+      expect(newPortSpy).toHaveBeenCalledWith(predefinedPort);
+      expect(options.data.port).toStrictEqual(predefinedPort);
+    });
+
+    it('should use a predefined port for a port with "forceSamePort" on', async () => {
+      const predefinedPort = 30000;
+
+      const mongoServer = new MongoMemoryServer({ instance: { port: predefinedPort } });
+      const newPortSpy = jest
+        // @ts-expect-error "getNewPort" is protected
+        .spyOn(mongoServer, 'getNewPort')
+        .mockImplementation(() => fail('Expected this function to not be called'));
+
+      // @ts-expect-error "getStartOptions" is protected
+      const options = await mongoServer.getStartOptions(true);
+
+      expect(newPortSpy).not.toHaveBeenCalled();
+      expect(options.data.port).toStrictEqual(predefinedPort);
     });
   });
 
