@@ -196,18 +196,18 @@ export class MongoBinaryDownload {
       return undefined;
     }
 
-    const mongoDBArchiveMd5 = await this.download(urlForReferenceMD5);
-    const signatureContent = (await fspromises.readFile(mongoDBArchiveMd5)).toString('utf-8');
+    const archiveMD5Path = await this.download(urlForReferenceMD5);
+    const signatureContent = (await fspromises.readFile(archiveMD5Path)).toString('utf-8');
     const regexMatch = signatureContent.match(/^\s*([\w\d]+)\s*/i);
-    const md5Remote = regexMatch ? regexMatch[1] : null;
-    const md5Local = md5File.sync(mongoDBArchive);
-    log(`makeMD5check: Local MD5: ${md5Local}, Remote MD5: ${md5Remote}`);
+    const md5SigRemote = regexMatch ? regexMatch[1] : null;
+    const md5SigLocal = md5File.sync(mongoDBArchive);
+    log(`makeMD5check: Local MD5: ${md5SigLocal}, Remote MD5: ${md5SigRemote}`);
 
-    if (md5Remote !== md5Local) {
-      throw new Md5CheckFailedError(md5Local, md5Remote || 'unknown');
+    if (md5SigRemote !== md5SigLocal) {
+      throw new Md5CheckFailedError(md5SigLocal, md5SigRemote || 'unknown');
     }
 
-    await fspromises.unlink(mongoDBArchiveMd5);
+    await fspromises.unlink(archiveMD5Path);
 
     return true;
   }
