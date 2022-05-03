@@ -1,3 +1,21 @@
+## [8.6.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.1...v8.6.0-beta.2) (2022-05-03)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl::getDebianVersionString:** use debian11 when possible ([8100b2f](https://github.com/nodkz/mongodb-memory-server/commit/8100b2ff42b404831d8f87f7f2040df528f33a09))
+* update binary 4.0 to 4.0.28 ([f26f739](https://github.com/nodkz/mongodb-memory-server/commit/f26f73920edfbf55c09e8b0e1df633fa89a6b251))
+* update binary 4.2 to 4.2.18 ([3a47739](https://github.com/nodkz/mongodb-memory-server/commit/3a477395f4730b2455ac4260f713d252d5033c9c))
+* update binary 4.4 to 4.4.12 ([cde2a4a](https://github.com/nodkz/mongodb-memory-server/commit/cde2a4a3fdc7631045cdbf8251611f87dbf26bad))
+* update binary 5.0 to 5.0.8 ([a56e02b](https://github.com/nodkz/mongodb-memory-server/commit/a56e02b7a1dfa889a57dbed3bd6bcf0d6fece9d1))
+
+
+### Style
+
+* **MongoBinaryDownloadUrl:** add more todo notes ([1a1bfa7](https://github.com/nodkz/mongodb-memory-server/commit/1a1bfa7521a01133c774a47811a90edb8a970947))
+* **MongoBinaryDownloadUrl:** add todo for ubuntu "14" default ([75d8d24](https://github.com/nodkz/mongodb-memory-server/commit/75d8d244133f0c2c4e7da67886294d44f4005a11))
+* **MongoBinaryDownloadUrl:** change comment to be more helpful ([2f70f53](https://github.com/nodkz/mongodb-memory-server/commit/2f70f5378bd26490df8c664c56058b630e06296d))
+
 ## [8.6.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.5.3-beta.1...v8.6.0-beta.1) (2022-05-03)
 
 
