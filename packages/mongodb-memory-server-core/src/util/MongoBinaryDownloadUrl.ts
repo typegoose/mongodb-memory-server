@@ -300,7 +300,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         name += '55';
       }
     }
-    // fallback
+    // fallback if name has not been modified yet
     if (name === 'rhel') {
       log('getRhelVersionString: falling back to "70"');
       // fallback to "70", because that is what currently is supporting 3.6 to 5.0 and should work with many
