@@ -205,6 +205,38 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('for debian 11 for 5.0.7 (using debian 10 binaries)', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.7',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '11',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-5.0.7.tgz'
+          );
+        });
+
+        it('for debian 11 for 5.0.8', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.8',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '11',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-5.0.8.tgz'
+          );
+        });
+
         it('should throw a Error when requesting a version below 4.2.1 for debian 10+ [#554] [KnownVersionIncompatibilityError]', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -214,6 +246,28 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'debian',
               release: '10',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a KnownVersionIncompatibilityError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
+            expect(err.message).toMatchSnapshot();
+          }
+        });
+
+        it('should throw a Error when requesting a version below 4.2.1 for debian 11+ [#554] [KnownVersionIncompatibilityError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.25',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '11',
             },
           });
 

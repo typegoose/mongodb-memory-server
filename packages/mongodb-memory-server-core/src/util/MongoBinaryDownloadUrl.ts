@@ -222,8 +222,26 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = 'debian';
     const release: number = parseFloat(os.release);
 
-    // Note: Debian 11 is compatible with the binaries for debian 10
-    if (release >= 10 || ['unstable', 'testing'].includes(os.release)) {
+    if (release >= 11 || ['unstable', 'testing'].includes(os.release)) {
+      // Debian 11 is compatible with the binaries for debian 10
+      // but does not have binaries for before 5.0.8
+      if (semver.lt(this.version, '5.0.8')) {
+        log('debian11 detected, but version below 5.0.8 requested, using debian10');
+        name += '10';
+      } else {
+        name += '11';
+      }
+    } else if (release >= 10) {
+      name += '10';
+    } else if (release >= 9) {
+      name += '92';
+    } else if (release >= 8.1) {
+      name += '81';
+    } else if (release >= 7.1) {
+      name += '71';
+    }
+
+    if (release >= 10) {
       if (semver.lt(this.version, '4.2.1')) {
         throw new KnownVersionIncompatibilityError(
           `Debian ${release}`,
@@ -232,14 +250,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           'Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release'
         );
       }
-
-      name += '10';
-    } else if (release >= 9) {
-      name += '92';
-    } else if (release >= 8.1) {
-      name += '81';
-    } else if (release >= 7.1) {
-      name += '71';
     }
 
     return name;
