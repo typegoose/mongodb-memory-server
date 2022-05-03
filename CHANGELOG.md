@@ -1,3 +1,20 @@
+## [8.6.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.5.3-beta.1...v8.6.0-beta.1) (2022-05-03)
+
+
+### Features
+
+* add environment variable to use archive name for binary name ([2fc0e1a](https://github.com/nodkz/mongodb-memory-server/commit/2fc0e1a52295e88dd78505fff03613a6a0741c07)), closes [#609](https://github.com/nodkz/mongodb-memory-server/issues/609)
+
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 27.5.0 ([7749b59](https://github.com/nodkz/mongodb-memory-server/commit/7749b595709055dc56e62cb769a36178da57e1f7))
+* **@typescript-eslint/*:** upgrade to version 5.22.0 ([e495884](https://github.com/nodkz/mongodb-memory-server/commit/e495884991e94c03fc8a1f082fe83db1aa183881))
+* **commitlint:** upgrade to version 16.2.4 ([ad3b242](https://github.com/nodkz/mongodb-memory-server/commit/ad3b242de7df80e74aeb17efe053f3b415ee14c7))
+* **eslint:** upgrade to version 8.14.0 ([08fb188](https://github.com/nodkz/mongodb-memory-server/commit/08fb188a6cb90a8ad5e3fdc16792b02f4dabb6e2))
+* **jest:** upgrade to version 28.0.3 ([1521838](https://github.com/nodkz/mongodb-memory-server/commit/15218382d94bdd4402507b11ae88ea99f9a45970))
+* **tslib:** upgrade to version 2.4.0 ([0f4713d](https://github.com/nodkz/mongodb-memory-server/commit/0f4713db2ec091d2fca7a3627f9dab0159c5e93d))
+
 ### [8.5.3-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.5.2...v8.5.3-beta.1) (2022-05-03)
 
 
