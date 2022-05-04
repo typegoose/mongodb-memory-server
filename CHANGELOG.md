@@ -1,3 +1,22 @@
+## [8.6.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.3...v8.6.0-beta.4) (2022-05-04)
+
+
+### Features
+
+* **MongoMemoryReplSet:** change generic "instanceinfo missing" errors to "InstanceInfoError" ([27934a4](https://github.com/nodkz/mongodb-memory-server/commit/27934a4420ac7347248039e7f23886de3b3f419a))
+
+
+### Style
+
+* **MongoMemoryReplSet::_initReplSet:** add todo ([884bda5](https://github.com/nodkz/mongodb-memory-server/commit/884bda5d49adc8eb0f2c48b0e09d2a05c643cfbb))
+* **MongoMemoryReplSet::stop:** rename internal variable to make more sense ([a86c321](https://github.com/nodkz/mongodb-memory-server/commit/a86c321a9340ffc0de5eff0a709bcfc2cf21c870))
+* **MongoMemoryServer::createAuth:** change comment to make more sense ([4df5b41](https://github.com/nodkz/mongodb-memory-server/commit/4df5b4182d1a09fed673dcab8ecd30421e2b4797))
+
+
+### Refactor
+
+* change uses of deprecated ".stop(false)" to explicit object ([dbcd00a](https://github.com/nodkz/mongodb-memory-server/commit/dbcd00a8342f2293c26d103523c7f0828492c974))
+
 ## [8.6.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.2...v8.6.0-beta.3) (2022-05-03)
 
 
