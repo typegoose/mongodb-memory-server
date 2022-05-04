@@ -682,6 +682,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           await primary.createAuth(primary.instanceInfo);
           this._ranCreateAuth = true;
 
+          // TODO: maybe change the static "isInMemory" to be for each server individually, based on "storageEngine", not just the first one
           if (!isInMemory) {
             log('_initReplSet: closing connection for restart');
             await con.close(); // close connection in preparation for "stop"
