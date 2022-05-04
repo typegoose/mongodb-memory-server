@@ -489,7 +489,7 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(utils, 'isNullOrUndefined');
       jest.spyOn(utils, 'assertion');
 
-      expect(await mongoServer.stop(false)).toEqual(true);
+      expect(await mongoServer.stop({ doCleanup: false, force: false })).toEqual(true);
       expect(instanceStopSpy).toHaveBeenCalledTimes(1);
       expect(utils.isNullOrUndefined).toHaveBeenCalledTimes(1);
       expect(utils.assertion).not.toHaveBeenCalled();
@@ -912,12 +912,12 @@ describe('MongoMemoryServer', () => {
   it('should start & stop multiple times without creating new instances & directories', async () => {
     const mongoServer = await MongoMemoryServer.create();
     const dbPath = mongoServer.instanceInfo!.dbPath;
-    await mongoServer.stop(false);
+    await mongoServer.stop({ doCleanup: false, force: false });
     expect(await utils.statPath(dbPath)).toBeTruthy();
     expect(mongoServer.instanceInfo).toBeTruthy();
     await mongoServer.start();
     expect(mongoServer.instanceInfo!.dbPath).toEqual(dbPath);
-    await mongoServer.stop(false);
+    await mongoServer.stop({ doCleanup: false, force: false });
     expect(await utils.statPath(dbPath)).toBeTruthy();
     expect(mongoServer.instanceInfo).toBeTruthy();
 

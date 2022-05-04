@@ -364,7 +364,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
         log('ensureAsync chain threw a Error: ', err);
 
-        await this.stop(false); // still try to close the instance that was spawned, without cleanup for investigation
+        await this.stop({ doCleanup: false, force: false }); // still try to close the instance that was spawned, without cleanup for investigation
 
         this.stateChange(MongoMemoryReplSetStates.stopped);
 
@@ -503,7 +503,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       log('stop: state is "stopped", trying to stop / kill anyway');
     }
 
-    const successfullyStopped = await Promise.all(this.servers.map((s) => s.stop(false)))
+    const successfullyStopped = await Promise.all(
+      this.servers.map((s) => s.stop({ doCleanup: false, force: false }))
+    )
       .then(() => {
         this.stateChange(MongoMemoryReplSetStates.stopped);
 
@@ -686,7 +688,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           if (!isInMemory) {
             log('_initReplSet: closing connection for restart');
             await con.close(); // close connection in preparation for "stop"
-            await this.stop(false); // stop all servers for enabling auth
+            await this.stop({ doCleanup: false, force: false }); // stop all servers for enabling auth
             log('_initReplSet: starting all server again with auth');
             await this.initAllServers(); // start all servers again with "auth" enabled
 
