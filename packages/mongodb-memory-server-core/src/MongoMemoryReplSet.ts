@@ -503,7 +503,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       log('stop: state is "stopped", trying to stop / kill anyway');
     }
 
-    const bool = await Promise.all(this.servers.map((s) => s.stop(false)))
+    const successfullyStopped = await Promise.all(this.servers.map((s) => s.stop(false)))
       .then(() => {
         this.stateChange(MongoMemoryReplSetStates.stopped);
 
@@ -517,8 +517,8 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       });
 
     // return early if the instances failed to stop
-    if (!bool) {
-      return bool;
+    if (!successfullyStopped) {
+      return false;
     }
 
     if (cleanup.doCleanup) {
