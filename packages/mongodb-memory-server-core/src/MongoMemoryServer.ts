@@ -757,7 +757,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
           return -1; // try to make all "admin" at the start of the array
         }
 
-        return a.database === b.database ? 0 : 1; // "0" to sort same databases continuesly, "-1" if nothing before/above applies
+        return a.database === b.database ? 0 : 1; // "0" to sort all databases that are the same after each other, and "1" to for pushing it back
       });
 
       for (const user of this.auth.extraUsers) {
