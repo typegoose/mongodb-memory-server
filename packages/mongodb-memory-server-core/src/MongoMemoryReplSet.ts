@@ -676,9 +676,10 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
             (server) => server.instanceInfo?.instance.isInstancePrimary
           );
           assertion(!isNullOrUndefined(primary), new Error('No Primary found'));
+          // this should be defined at this point, but is checked anyway (thanks to types)
           assertion(
             !isNullOrUndefined(primary.instanceInfo),
-            new Error('Primary dosnt have "instanceInfo" defined') // TODO: change to "InstanceInfoError"
+            new InstanceInfoError('_initReplSet authIsObject primary')
           );
 
           await primary.createAuth(primary.instanceInfo);
@@ -764,8 +765,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           new Promise<void>((res, rej) => {
             const instanceInfo = server.instanceInfo;
 
+            // this should be defined at this point, but is checked anyway (thanks to types)
             if (isNullOrUndefined(instanceInfo)) {
-              return rej(new Error('_waitForPrimary - instanceInfo not present')); // TODO: change to "InstanceInfoError"
+              return rej(new InstanceInfoError('_waitForPrimary Primary race'));
             }
 
             instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);
