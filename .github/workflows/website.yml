@@ -12,8 +12,13 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: read
+
 jobs:
   website:
+    permissions:
+      contents: write  # for JamesIves/github-pages-deploy-action to push changes in repo
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
