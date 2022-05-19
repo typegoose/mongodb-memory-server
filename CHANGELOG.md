@@ -1,3 +1,11 @@
+## [8.6.0-beta.6](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.5...v8.6.0-beta.6) (2022-05-19)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl::translateArch:** add deprecation notice for "ia32" ([2614d18](https://github.com/nodkz/mongodb-memory-server/commit/2614d181c4cecf96540ca8c52d44b8be7fe4cf12)), closes [#638](https://github.com/nodkz/mongodb-memory-server/issues/638)
+* **MongoMemoryServer::createAuth:** handle connection erroring and maybe not closing ([9bad913](https://github.com/nodkz/mongodb-memory-server/commit/9bad91302b503c7627829ae2359fb8832909b7ac))
+
 ## [8.6.0-beta.5](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.4...v8.6.0-beta.5) (2022-05-19)
 
 
