@@ -9,6 +9,7 @@ import {
   UnknownArchitectureError,
   UnknownPlatformError,
 } from './errors';
+import { deprecate } from 'util';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -514,6 +515,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   static translateArch(arch: string, mongoPlatform: string): string {
     switch (arch) {
       case 'ia32':
+        deprecate(
+          () => {},
+          'mongodb-memory-server will fully drop support for ia32 in 9.0',
+          'MMS001'
+        )();
+
         if (mongoPlatform === 'linux') {
           return 'i686';
         } else if (mongoPlatform === 'win32') {
