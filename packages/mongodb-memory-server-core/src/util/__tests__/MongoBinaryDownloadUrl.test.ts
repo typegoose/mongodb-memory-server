@@ -302,6 +302,26 @@ describe('MongoBinaryDownloadUrl', () => {
         expect(console.warn).toHaveBeenCalledTimes(1);
       });
 
+      it('fallback unknown', async () => {
+        jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'x64',
+          version: '3.6.3',
+          os: {
+            os: 'linux',
+            dist: 'unknown', // "unknown" to test the case of failing to parse a name
+            release: '',
+          },
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
+        );
+        expect(console.warn).toHaveBeenCalledTimes(2);
+      });
+
       it('for manjaro', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
