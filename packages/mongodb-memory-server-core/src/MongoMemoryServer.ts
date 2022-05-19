@@ -731,61 +731,64 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       {}
     );
 
-    let db = con.db('admin'); // just to ensure it is actually the "admin" database AND to have the "Db" data
+    try {
+      let db = con.db('admin'); // just to ensure it is actually the "admin" database AND to have the "Db" data
 
-    // Create the root user
-    this.debug(`createAuth: Creating Root user, name: "${this.auth.customRootName}"`);
-    await db.command({
-      createUser: this.auth.customRootName,
-      pwd: this.auth.customRootPwd,
-      mechanisms: ['SCRAM-SHA-256'],
-      customData: {
-        createdBy: 'mongodb-memory-server',
-        as: 'ROOTUSER',
-      },
-      roles: ['root'],
-      // "writeConcern" is needced, otherwise replset servers might fail with "auth failed: such user does not exist"
-      writeConcern: {
-        w: 'majority',
-      },
-    } as CreateUserMongoDB);
+      // Create the root user
+      this.debug(`createAuth: Creating Root user, name: "${this.auth.customRootName}"`);
+      await db.command({
+        createUser: this.auth.customRootName,
+        pwd: this.auth.customRootPwd,
+        mechanisms: ['SCRAM-SHA-256'],
+        customData: {
+          createdBy: 'mongodb-memory-server',
+          as: 'ROOTUSER',
+        },
+        roles: ['root'],
+        // "writeConcern" is needced, otherwise replset servers might fail with "auth failed: such user does not exist"
+        writeConcern: {
+          w: 'majority',
+        },
+      } as CreateUserMongoDB);
 
-    if (this.auth.extraUsers.length > 0) {
-      this.debug(`createAuth: Creating "${this.auth.extraUsers.length}" Custom Users`);
-      this.auth.extraUsers.sort((a, b) => {
-        if (a.database === 'admin') {
-          return -1; // try to make all "admin" at the start of the array
+      if (this.auth.extraUsers.length > 0) {
+        this.debug(`createAuth: Creating "${this.auth.extraUsers.length}" Custom Users`);
+        this.auth.extraUsers.sort((a, b) => {
+          if (a.database === 'admin') {
+            return -1; // try to make all "admin" at the start of the array
+          }
+
+          return a.database === b.database ? 0 : 1; // "0" to sort all databases that are the same after each other, and "1" to for pushing it back
+        });
+
+        for (const user of this.auth.extraUsers) {
+          user.database = isNullOrUndefined(user.database) ? 'admin' : user.database;
+
+          // just to have not to call "con.db" everytime in the loop if its the same
+          if (user.database !== db.databaseName) {
+            db = con.db(user.database);
+          }
+
+          this.debug('createAuth: Creating User: ', user);
+          await db.command({
+            createUser: user.createUser,
+            pwd: user.pwd,
+            customData: {
+              ...user.customData,
+              createdBy: 'mongodb-memory-server',
+              as: 'EXTRAUSER',
+            },
+            roles: user.roles,
+            authenticationRestrictions: user.authenticationRestrictions ?? [],
+            mechanisms: user.mechanisms ?? ['SCRAM-SHA-256'],
+            digestPassword: user.digestPassword ?? true,
+          } as CreateUserMongoDB);
         }
-
-        return a.database === b.database ? 0 : 1; // "0" to sort all databases that are the same after each other, and "1" to for pushing it back
-      });
-
-      for (const user of this.auth.extraUsers) {
-        user.database = isNullOrUndefined(user.database) ? 'admin' : user.database;
-
-        // just to have not to call "con.db" everytime in the loop if its the same
-        if (user.database !== db.databaseName) {
-          db = con.db(user.database);
-        }
-
-        this.debug('createAuth: Creating User: ', user);
-        await db.command({
-          createUser: user.createUser,
-          pwd: user.pwd,
-          customData: {
-            ...user.customData,
-            createdBy: 'mongodb-memory-server',
-            as: 'EXTRAUSER',
-          },
-          roles: user.roles,
-          authenticationRestrictions: user.authenticationRestrictions ?? [],
-          mechanisms: user.mechanisms ?? ['SCRAM-SHA-256'],
-          digestPassword: user.digestPassword ?? true,
-        } as CreateUserMongoDB);
       }
+    } finally {
+      // close connection in any case (even if throwing a error or being successfull)
+      await con.close();
     }
-
-    await con.close();
   }
 }
 
