@@ -1,3 +1,10 @@
+## [8.6.0-beta.5](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.4...v8.6.0-beta.5) (2022-05-19)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** add archive generation for gentoo ([39b0a3d](https://github.com/nodkz/mongodb-memory-server/commit/39b0a3da5253180e5a87dec61cfd33258bd6d68d))
+
 ## [8.6.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.3...v8.6.0-beta.4) (2022-05-04)
 
 
