@@ -197,6 +197,17 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         dist: 'Ubuntu Linux',
         release: '20.04',
       });
+    } else if (regexHelper(/gentoo/i, os)) {
+      // it seems like debian binaries work for gentoo too (at least most), see https://github.com/nodkz/mongodb-memory-server/issues/639
+      console.warn(
+        `There is no official build of MongoDB for Gentoo (${os.dist}). Falling back to Debian.`
+      );
+
+      return this.getDebianVersionString({
+        os: 'linux',
+        dist: 'Debian',
+        release: '11',
+      });
     } else if (regexHelper(/unknown/i, os)) {
       // "unknown" is likely to happen if no release file / command could be found
       console.warn(
