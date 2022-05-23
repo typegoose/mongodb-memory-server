@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`MongodbInstance "_launchMongod" should throw an error if "mongodProcess.pid" is undefined 1`] = `"{\\"binary\\":\\"/tmp/thisShouldNotExist\\"}"`;
-
-exports[`MongodbInstance prepareCommandArgs should throw an error if no dbpath is provided 1`] = `"\\"instanceOpts.dbPath\\" is required to be set!"`;
-
-exports[`MongodbInstance prepareCommandArgs should throw an error if no port is provided 1`] = `"\\"instanceOpts.port\\" is required to be set!"`;
