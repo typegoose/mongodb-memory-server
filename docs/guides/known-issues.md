@@ -5,7 +5,7 @@ title: 'Known Issues'
 
 ## ArchLinux on Docker
 
-It is known that ArchLinux on Docker does not have an `/etc/os-release` or `/etc/lsb-release`, so detection will not work
+It is known that ArchLinux on Docker does not have an `/etc/os-release` or `/etc/lsb-release`, so detection will not work.
 
 Workaround:
 
@@ -15,7 +15,7 @@ Workaround:
 
 ## No Build available for Alpine Linux
 
-It is known that [AlpineLinux](./supported-systems.md#Alpine) does not have an official build (and no build like the ubuntu build works)
+It is known that [AlpineLinux](./supported-systems.md#Alpine) does not have an official build (and no build like the ubuntu build works).
 
 Workaround:
 

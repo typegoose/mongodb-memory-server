@@ -21,16 +21,18 @@ jobs:
       contents: write  # for JamesIves/github-pages-deploy-action to push changes in repo
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js 14
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 14.x
       - name: Install & Build
         run: bash ./ghPagesPre.sh
       - name: Deploy to Github Pages
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: . # the root, because the provided script already moves files
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: . # the root, because the provided script already moves files
+          git-config-email: <> # disable gh-pages commits to have a email assigned to them
+          git-config-name: 'actions-deploy' # set a custom name, so that the original author of the commit that triggered the website build is not associated with this commit, which was not made by them

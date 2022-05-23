@@ -19,17 +19,17 @@ jobs:
       matrix:
         node-version: [12.x, 14.x, 16.x, 18.x]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         if: github.event.inputs.git-ref == ''
         with:
           fetch-depth: 0 # always fetch everything to be sure for codecov
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         if: github.event.inputs.git-ref != ''
         with:
           ref: ${{ github.event.inputs.git-ref }}
           fetch-depth: 5 # because this is an manual trigger, only fetch the latest 5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install node_modules
@@ -44,16 +44,16 @@ jobs:
           CI: true
       - name: Send codecov.io stats
         if: matrix.node-version == '12.x'
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
 
   publish:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || startsWith(github.ref, 'refs/heads/old')
     needs: [tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js 12
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 12.x
       - name: Install node_modules
