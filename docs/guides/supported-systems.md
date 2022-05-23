@@ -12,7 +12,7 @@ Currently Supported platforms:
 Officially Supported Architectures:
 <!--Platfrom taken from "MongoBinaryDownloadUrl.translateArch"-->
 - `x64` / `x86_64`
-- `ia32` / `i686` / `i386`
+- ~~`ia32` / `i686` / `i386`~~ (There are only binaries up to ~3.2 and [will be removed with the next MMS version](https://github.com/nodkz/mongodb-memory-server/issues/638))
 
 :::note
 On systems with native translation, will work when overwriting the architecture with `MONGOMS_ARCH=x64`
