@@ -1,23 +1,23 @@
-import { AnyOS, LinuxOS } from './getos';
+import { getOS, AnyOS, LinuxOS } from './getos';
 import { resolveConfig, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
-import { BaseDryMongoBinaryOptions, DryMongoBinary } from './DryMongoBinary';
 import { URL } from 'url';
 import {
   KnownVersionIncompatibilityError,
   UnknownArchitectureError,
   UnknownPlatformError,
 } from './errors';
+import { deprecate } from 'util';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
 export interface MongoBinaryDownloadUrlOpts {
-  version: NonNullable<BaseDryMongoBinaryOptions['version']>;
+  version: string;
   platform: string;
-  arch: NonNullable<BaseDryMongoBinaryOptions['arch']>;
-  os?: BaseDryMongoBinaryOptions['os'];
+  arch: string;
+  os?: AnyOS;
 }
 
 /**
@@ -150,7 +150,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     // the highest version for "i686" seems to be 3.3
     if (this.arch !== 'i686') {
       if (!this.os) {
-        this.os = (await DryMongoBinary.generateOptions()).os;
+        this.os = await getOS();
       }
 
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
@@ -198,6 +198,17 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         dist: 'Ubuntu Linux',
         release: '20.04',
       });
+    } else if (regexHelper(/gentoo/i, os)) {
+      // it seems like debian binaries work for gentoo too (at least most), see https://github.com/nodkz/mongodb-memory-server/issues/639
+      console.warn(
+        `There is no official build of MongoDB for Gentoo (${os.dist}). Falling back to Debian.`
+      );
+
+      return this.getDebianVersionString({
+        os: 'linux',
+        dist: 'Debian',
+        release: '11',
+      });
     } else if (regexHelper(/unknown/i, os)) {
       // "unknown" is likely to happen if no release file / command could be found
       console.warn(
@@ -223,8 +234,26 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = 'debian';
     const release: number = parseFloat(os.release);
 
-    // Note: Debian 11 is compatible with the binaries for debian 10
-    if (release >= 10 || ['unstable', 'testing'].includes(os.release)) {
+    if (release >= 11 || ['unstable', 'testing'].includes(os.release)) {
+      // Debian 11 is compatible with the binaries for debian 10
+      // but does not have binaries for before 5.0.8
+      if (semver.lt(this.version, '5.0.8')) {
+        log('debian11 detected, but version below 5.0.8 requested, using debian10');
+        name += '10';
+      } else {
+        name += '11';
+      }
+    } else if (release >= 10) {
+      name += '10';
+    } else if (release >= 9) {
+      name += '92';
+    } else if (release >= 8.1) {
+      name += '81';
+    } else if (release >= 7.1) {
+      name += '71';
+    }
+
+    if (release >= 10) {
       if (semver.lt(this.version, '4.2.1')) {
         throw new KnownVersionIncompatibilityError(
           `Debian ${release}`,
@@ -233,14 +262,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           'Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release'
         );
       }
-
-      name += '10';
-    } else if (release >= 9) {
-      name += '92';
-    } else if (release >= 8.1) {
-      name += '81';
-    } else if (release >= 7.1) {
-      name += '71';
     }
 
     return name;
@@ -275,7 +296,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * Get the version string for Red Hat Enterprise Linux
    * @param os LinuxOS Object
    */
-  // TODO: add tests for RHEL
+  // TODO: add tests for getRhelVersionString
   getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const { release } = os;
@@ -291,7 +312,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         name += '55';
       }
     }
-    // fallback
+    // fallback if name has not been modified yet
     if (name === 'rhel') {
       log('getRhelVersionString: falling back to "70"');
       // fallback to "70", because that is what currently is supporting 3.6 to 5.0 and should work with many
@@ -329,6 +350,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * Get the version string for Suse / OpenSuse
    * @param os LinuxOS Object
    */
+  // TODO: add tests for getSuseVersionString
   getSuseVersionString(os: LinuxOS): string {
     const releaseMatch: RegExpMatchArray | null = os.release.match(/(^11|^12|^15)/);
 
@@ -451,6 +473,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu2004';
     }
 
+    // TODO: change or remove "14" default, since it no-longer is supported above 4.0
     // the "04" version always exists for ubuntu, use that as default
     return `ubuntu${ubuntuYear || 14}04`;
   }
@@ -492,6 +515,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   static translateArch(arch: string, mongoPlatform: string): string {
     switch (arch) {
       case 'ia32':
+        deprecate(
+          () => {},
+          'mongodb-memory-server will fully drop support for ia32 in 9.0',
+          'MMS001'
+        )();
+
         if (mongoPlatform === 'linux') {
           return 'i686';
         } else if (mongoPlatform === 'win32') {

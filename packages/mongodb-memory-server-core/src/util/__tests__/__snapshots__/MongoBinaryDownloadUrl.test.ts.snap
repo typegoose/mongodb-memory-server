@@ -5,6 +5,11 @@ exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should thr
 Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release"
 `;
 
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when requesting a version below 4.2.1 for debian 11+ [#554] [KnownVersionIncompatibilityError] 1`] = `
+"Requested Version \\"4.0.25\\" is not available for \\"Debian 11\\"! Available Versions: \\">=4.2.1\\"
+Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release"
+`;
+
 exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platform is unknown (getArchiveName) 1`] = `"Unknown Platform: \\"unknown\\""`;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platform is unknown (translatePlatform) 1`] = `"Unknown Platform: \\"unknown\\""`;

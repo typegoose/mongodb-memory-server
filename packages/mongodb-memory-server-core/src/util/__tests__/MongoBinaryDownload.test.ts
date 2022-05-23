@@ -176,6 +176,7 @@ describe('MongoBinaryDownload', () => {
         dist: 'ubuntu',
         release: '14',
       },
+      platform: 'linux',
     });
 
     const du = new MongoBinaryDownload({ downloadDir });

@@ -364,7 +364,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
         log('ensureAsync chain threw a Error: ', err);
 
-        await this.stop(false); // still try to close the instance that was spawned, without cleanup for investigation
+        await this.stop({ doCleanup: false, force: false }); // still try to close the instance that was spawned, without cleanup for investigation
 
         this.stateChange(MongoMemoryReplSetStates.stopped);
 
@@ -503,7 +503,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       log('stop: state is "stopped", trying to stop / kill anyway');
     }
 
-    const bool = await Promise.all(this.servers.map((s) => s.stop(false)))
+    const successfullyStopped = await Promise.all(
+      this.servers.map((s) => s.stop({ doCleanup: false, force: false }))
+    )
       .then(() => {
         this.stateChange(MongoMemoryReplSetStates.stopped);
 
@@ -517,8 +519,8 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       });
 
     // return early if the instances failed to stop
-    if (!bool) {
-      return bool;
+    if (!successfullyStopped) {
+      return false;
     }
 
     if (cleanup.doCleanup) {
@@ -674,18 +676,20 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
             (server) => server.instanceInfo?.instance.isInstancePrimary
           );
           assertion(!isNullOrUndefined(primary), new Error('No Primary found'));
+          // this should be defined at this point, but is checked anyway (thanks to types)
           assertion(
             !isNullOrUndefined(primary.instanceInfo),
-            new Error('Primary dosnt have "instanceInfo" defined') // TODO: change to "InstanceInfoError"
+            new InstanceInfoError('_initReplSet authIsObject primary')
           );
 
           await primary.createAuth(primary.instanceInfo);
           this._ranCreateAuth = true;
 
+          // TODO: maybe change the static "isInMemory" to be for each server individually, based on "storageEngine", not just the first one
           if (!isInMemory) {
             log('_initReplSet: closing connection for restart');
             await con.close(); // close connection in preparation for "stop"
-            await this.stop(false); // stop all servers for enabling auth
+            await this.stop({ doCleanup: false, force: false }); // stop all servers for enabling auth
             log('_initReplSet: starting all server again with auth');
             await this.initAllServers(); // start all servers again with "auth" enabled
 
@@ -761,8 +765,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           new Promise<void>((res, rej) => {
             const instanceInfo = server.instanceInfo;
 
+            // this should be defined at this point, but is checked anyway (thanks to types)
             if (isNullOrUndefined(instanceInfo)) {
-              return rej(new Error('_waitForPrimary - instanceInfo not present')); // TODO: change to "InstanceInfoError"
+              return rej(new InstanceInfoError('_waitForPrimary Primary race'));
             }
 
             instanceInfo.instance.once(MongoInstanceEvents.instancePrimary, res);

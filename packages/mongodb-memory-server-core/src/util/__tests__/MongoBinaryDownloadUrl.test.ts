@@ -205,6 +205,38 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('for debian 11 for 5.0.7 (using debian 10 binaries)', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.7',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '11',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-5.0.7.tgz'
+          );
+        });
+
+        it('for debian 11 for 5.0.8', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.8',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '11',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-5.0.8.tgz'
+          );
+        });
+
         it('should throw a Error when requesting a version below 4.2.1 for debian 10+ [#554] [KnownVersionIncompatibilityError]', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -214,6 +246,28 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'debian',
               release: '10',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a KnownVersionIncompatibilityError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
+            expect(err.message).toMatchSnapshot();
+          }
+        });
+
+        it('should throw a Error when requesting a version below 4.2.1 for debian 11+ [#554] [KnownVersionIncompatibilityError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.25',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '11',
             },
           });
 
@@ -237,7 +291,7 @@ describe('MongoBinaryDownloadUrl', () => {
           version: '3.6.3',
           os: {
             os: 'linux',
-            dist: 'Gentoo Linux',
+            dist: 'Something Unhandled', // not "unknown", because that is when it failed to parse
             release: '',
           },
         });
@@ -246,6 +300,26 @@ describe('MongoBinaryDownloadUrl', () => {
           'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
         );
         expect(console.warn).toHaveBeenCalledTimes(1);
+      });
+
+      it('fallback unknown', async () => {
+        jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'x64',
+          version: '3.6.3',
+          os: {
+            os: 'linux',
+            dist: 'unknown', // "unknown" to test the case of failing to parse a name
+            release: '',
+          },
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
+        );
+        expect(console.warn).toHaveBeenCalledTimes(2);
       });
 
       it('for manjaro', async () => {
@@ -286,6 +360,46 @@ describe('MongoBinaryDownloadUrl', () => {
           'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
         );
         expect(console.warn).toHaveBeenCalledTimes(1);
+      });
+
+      describe('for gentoo', () => {
+        it('for gentoo 5.0.8', async () => {
+          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.8',
+            os: {
+              os: 'linux',
+              dist: 'gentoo',
+              release: '',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-5.0.8.tgz'
+          );
+          expect(console.warn).toHaveBeenCalledTimes(1);
+        });
+
+        it('for gentoo 4.4', async () => {
+          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.4.0',
+            os: {
+              os: 'linux',
+              dist: 'gentoo',
+              release: '',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-4.4.0.tgz'
+          );
+          expect(console.warn).toHaveBeenCalledTimes(1);
+        });
       });
 
       it('for unpopular arch', async () => {

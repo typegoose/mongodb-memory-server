@@ -34,7 +34,7 @@ describe('Restart single MongoMemoryServer instance', () => {
       await connection.close();
     }
 
-    await instance.stop(false);
+    await instance.stop({ doCleanup: false, force: false });
     expect(MongoMemoryServer.prototype.cleanup).not.toHaveBeenCalled();
 
     // there is no need to wait here, because a single instance does not need to be forced to the same port

@@ -4,33 +4,44 @@ import { assertion, checkBinaryPermissions, isNullOrUndefined, pathExists } from
 import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
-import getOS, { AnyOS, isLinuxOS, OtherOS } from './getos';
+import { getOS, AnyOS, isLinuxOS, OtherOS } from './getos';
 import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from './errors';
+import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 
 const log = debug('MongoMS:DryMongoBinary');
 
+/** Interface for general options required to pass-around (all optional) */
 export interface BaseDryMongoBinaryOptions {
   version?: string;
   downloadDir?: string;
   os?: AnyOS;
   arch?: string;
+  platform?: string;
   systemBinary?: string;
 }
 
+/** Interface for general options required to pass-aroung (version not optional) */
 export interface DryMongoBinaryOptions extends BaseDryMongoBinaryOptions {
   version: NonNullable<BaseDryMongoBinaryOptions['version']>;
 }
 
+/** Interface for the options arguments in function "DryMongoBinary.getBinaryName" */
 export interface DryMongoBinaryNameOptions {
   version: NonNullable<DryMongoBinaryOptions['version']>;
   arch: NonNullable<DryMongoBinaryOptions['arch']>;
+  platform: NonNullable<DryMongoBinaryOptions['version']>;
   os: NonNullable<DryMongoBinaryOptions['os']>;
 }
 
+/** Interface to store all generated Paths that would be possible a binary would be in */
 export interface DryMongoBinaryPaths {
+  /** Path from `DOWNLOAD_DIR` config option */
   resolveConfig: string;
+  /** Path for "~/.config/" (user home) */
   legacyHomeCache: string;
+  /** Path for "PROJECT/node_modules/.cache/" (project local cache) */
   modulesCache: string;
+  /** Path for relative to CWD "CWD/" (relative CWD path) */
   relative: string;
 }
 
@@ -52,10 +63,6 @@ export class DryMongoBinary {
    * Binaries already found, values are: [Version, Path]
    */
   static binaryCache: Map<string, string> = new Map();
-  /**
-   * Cache the "getOS" call, so that not much has to be re-executed over and over
-   */
-  static cachedGetOs: AnyOS;
 
   /**
    * Try to locate an existing binary
@@ -111,15 +118,12 @@ export class DryMongoBinary {
       ? { version: defaultVersion }
       : opts;
 
-    if (isNullOrUndefined(this.cachedGetOs)) {
-      this.cachedGetOs = await getOS();
-    }
-
     const final: Required<DryMongoBinaryOptions> = {
       version: ensuredOpts.version || defaultVersion,
       downloadDir:
         resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) || ensuredOpts.downloadDir || '',
-      os: ensuredOpts.os ?? this.cachedGetOs,
+      os: ensuredOpts.os ?? (await getOS()),
+      platform: ensuredOpts.platform || platform(),
       arch: ensuredOpts.arch || arch(),
       systemBinary:
         resolveConfig(ResolveConfigVariables.SYSTEM_BINARY) || ensuredOpts.systemBinary || '',
@@ -208,12 +212,22 @@ export class DryMongoBinary {
    * Get the full path with filename
    * @returns Absoulte Path with FileName
    */
-  static getBinaryName(opts: DryMongoBinaryNameOptions): string {
+  static async getBinaryName(opts: DryMongoBinaryNameOptions): Promise<string> {
     log('getBinaryName');
-    const addExe = platform() === 'win32' ? '.exe' : '';
-    const dist = isLinuxOS(opts.os) ? opts.os.dist : opts.os.os;
 
-    return `mongod-${opts.arch}-${dist}-${opts.version}${addExe}`;
+    let binaryName: string;
+
+    if (envToBool(resolveConfig(ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME))) {
+      const archiveName = await new MongoBinaryDownloadUrl(opts).getArchiveName();
+      binaryName = path.parse(archiveName).name;
+    } else {
+      const addExe = opts.platform === 'win32' ? '.exe' : '';
+      const dist = isLinuxOS(opts.os) ? opts.os.dist : opts.os.os;
+
+      binaryName = `mongod-${opts.arch}-${dist}-${opts.version}${addExe}`;
+    }
+
+    return binaryName;
   }
 
   /**
@@ -266,7 +280,7 @@ export class DryMongoBinary {
       relative: '',
       resolveConfig: '',
     };
-    const binaryName = this.getBinaryName(opts);
+    const binaryName = await this.getBinaryName(opts);
     // Assign "node_modules/.cache" to modulesCache
 
     // if we're in postinstall script, npm will set the cwd too deep

@@ -39,7 +39,7 @@ Valid Options are `ia32`, `x64`, `arm64`
 
 Option `VERSION` is used to set what mongodb version should be downloaded
 
-Default: `5.0.3`
+Default: `5.0.8`
 
 Common MongoDB Version formats (`X` is a number):
 
@@ -125,6 +125,12 @@ Default: `true`
 ### USE_HTTP
 
 Option `USE_HTTP` is used to use `http` over `https`
+
+Default: `false`
+
+### USE_ARCHIVE_NAME_FOR_BINARY_NAME
+
+Option `USE_ARCHIVE_NAME_FOR_BINARY_NAME` is used to use the archive name as binary name
 
 Default: `false`
 

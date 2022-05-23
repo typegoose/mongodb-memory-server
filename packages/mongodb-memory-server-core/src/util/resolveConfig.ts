@@ -7,6 +7,7 @@ import { isNullOrUndefined } from './utils';
 
 const log = debug('MongoMS:ResolveConfig');
 
+/** Enum of all possible config options */
 export enum ResolveConfigVariables {
   DOWNLOAD_DIR = 'DOWNLOAD_DIR',
   PLATFORM = 'PLATFORM',
@@ -23,11 +24,14 @@ export enum ResolveConfigVariables {
   RUNTIME_DOWNLOAD = 'RUNTIME_DOWNLOAD',
   USE_HTTP = 'USE_HTTP',
   SYSTEM_BINARY_VERSION_CHECK = 'SYSTEM_BINARY_VERSION_CHECK',
+  USE_ARCHIVE_NAME_FOR_BINARY_NAME = 'USE_ARCHIVE_NAME_FOR_BINARY_NAME',
 }
 
+/** The Prefix for Environmental values */
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 /** This Value exists here, because "defaultValues" can be changed with "setDefaultValue", but this property is constant */
-export const DEFAULT_VERSION = '5.0.3';
+export const DEFAULT_VERSION = '5.0.8';
+/** Default values for some config options that require explicit setting, it is constant so that the default values cannot be interfered with */
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
   [ResolveConfigVariables.VERSION, DEFAULT_VERSION],
@@ -35,8 +39,10 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.RUNTIME_DOWNLOAD, 'true'],
   [ResolveConfigVariables.USE_HTTP, 'false'],
   [ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK, 'true'],
+  [ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME, 'false'],
 ]);
 
+/** Interface for storing information about the found package.json from `findPackageJson` */
 interface PackageJSON {
   /** The Path where the package.json was found (directory, not the file) */
   filePath: string;
@@ -54,7 +60,7 @@ export function setDefaultValue(key: ResolveConfigVariables, value: string): voi
   defaultValues.set(key, value);
 }
 
-// let packageJsonConfig: Record<string, string> = {};
+/** Cache the found package.json file */
 let packagejson: PackageJSON | undefined = undefined;
 /**
  * Find the nearest package.json (that has an non-empty config field) for the provided directory
