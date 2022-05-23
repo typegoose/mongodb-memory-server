@@ -12,7 +12,7 @@ Currently Supported platforms:
 Officially Supported Architectures:
 <!--Platfrom taken from "MongoBinaryDownloadUrl.translateArch"-->
 - `x64` / `x86_64`
-- ~~`ia32` / `i686` / `i386`~~ (There are only binaries up to ~3.2 and [will be removed with the next MMS version](https://github.com/nodkz/mongodb-memory-server/issues/638))
+- `ia32` / `i686` / `i386`
 
 :::note
 On systems with native translation, will work when overwriting the architecture with `MONGOMS_ARCH=x64`
@@ -120,7 +120,13 @@ Default version is none
 ### Arch
 
 <span class="badge badge--warning">Untested</span> <span class="badge badge--danger">Unsupported</span>
-siteConfig
+
+There are no official mongodb builds for Arch Distributions, but the `ubuntu` binaries work on most Arch systems, so they are used<br/>
+:::note
+Because Arch* dosnt base on ubuntu, there is no specific ubuntu version associated with an arch version, so it defaults to highest supported `ubuntu` version
+:::
+
+### Alpine
 
 <span class="badge badge--danger">Unsupported</span>
 
