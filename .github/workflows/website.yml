@@ -29,8 +29,8 @@ jobs:
       - name: Install & Build
         run: bash ./ghPagesPre.sh
       - name: Deploy to Github Pages
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@4.3.3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: . # the root, because the provided script already moves files
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: . # the root, because the provided script already moves files
