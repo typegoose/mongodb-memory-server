@@ -30,7 +30,7 @@ jobs:
           ref: ${{ github.event.inputs.git-ref }}
           fetch-depth: 5 # because this is an manual trigger, only fetch the latest 5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install node_modules
@@ -54,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js 12
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 12.x
       - name: Install node_modules
