@@ -1,3 +1,10 @@
+## [8.6.0-beta.8](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.7...v8.6.0-beta.8) (2022-05-23)
+
+
+### Reverts
+
+* Revert "test(MongoMemoryReplSet): enable debug for often open-handle test" ([29e11e1](https://github.com/nodkz/mongodb-memory-server/commit/29e11e1a94ece0f4dcf5d61b629844d9f0ef6278))
+
 ## [8.6.0-beta.7](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0-beta.6...v8.6.0-beta.7) (2022-05-23)
 
 
