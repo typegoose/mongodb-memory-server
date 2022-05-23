@@ -34,3 +34,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
           folder: . # the root, because the provided script already moves files
+          git-config-email: <> # disable gh-pages commits to have a email assigned to them
+          git-config-name: 'actions-deploy' # set a custom name, so that the original author of the commit that triggered the website build is not associated with this commit, which was not made by them
