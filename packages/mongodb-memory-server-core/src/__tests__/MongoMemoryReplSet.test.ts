@@ -9,13 +9,11 @@ import * as utils from '../util/utils';
 import { MongoMemoryInstanceOpts } from '../util/MongoInstance';
 import { ReplsetCountLowError, StateError, WaitForPrimaryTimeoutError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
-import * as debug from 'debug';
 
 jest.setTimeout(100000); // 10s
 
 afterEach(() => {
   jest.restoreAllMocks();
-  debug.disable();
 });
 
 describe('single server replset', () => {
@@ -277,8 +275,6 @@ describe('single server replset', () => {
   });
 
   it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
-    // enable debug logs for this test, because it seems to often have a open handle after error
-    debug.enable('MongoMS:*');
     // @ts-expect-error because "initAllServers" is protected
     jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
     const replSet = await MongoMemoryReplSet.create({
