@@ -20,11 +20,11 @@ jobs:
         # TODO: replace "17.x" with "18.x" when 18 releases
         node-version: [12.x, 14.x, 16.x, 17.x]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         if: github.event.inputs.git-ref == ''
         with:
           fetch-depth: 0 # always fetch everything to be sure for codecov
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         if: github.event.inputs.git-ref != ''
         with:
           ref: ${{ github.event.inputs.git-ref }}
@@ -52,7 +52,7 @@ jobs:
     needs: [tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js 12
         uses: actions/setup-node@v2
         with:
