@@ -82,14 +82,18 @@ and an [`setupFilesAfterEnv`](https://jestjs.io/docs/en/configuration#setupfiles
 `setupFile.ts`:
 
 ```ts
-import { connect, disconnect } from './utils/connect';
-
+let client: MongoClient;
 beforeAll(async () => {
-  await connect();
+  // put your client connection code here, example with mongodb:
+  client = new MongoClient(process.env['MONGO_URI']);
+  await client.connect();
 });
 
 afterAll(async () => {
-  await disconnect();
+  // put your client disconnection code here, example with mongodb:
+  if (!!client) {
+    await client.close();
+  }
 });
 ```
 
