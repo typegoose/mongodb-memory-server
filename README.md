@@ -146,9 +146,10 @@ A ReplicaSet can be easily started with:
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 // This will create an new instance of "MongoMemoryReplSet" and automatically start all Servers
-const replset = await MongoMemoryReplSet.create({ replSet: { count: 4 } }); // This will create an ReplSet with 4 members
+const replset = new MongoMemoryReplSet({ replSet: { count: 4 } });
+await replset.start();
 
-const uri = replset.getUri();
+const uri = await replset.getUri();
 
 // The ReplSet can be stopped again with
 await replset.stop();
