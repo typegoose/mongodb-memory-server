@@ -41,6 +41,8 @@ Option `VERSION` is used to set what mongodb version should be downloaded
 
 Default: `5.0.8`
 
+This Option does not have a effect when [`ARCHIVE_NAME`](#archive_name) or [`DOWNLOAD_URL`](#download_url) is defined.
+
 Common MongoDB Version formats (`X` is a number):
 
 - `X.X.X`
@@ -115,6 +117,8 @@ Default: `false`
 Option `ARCHIVE_NAME` is used to overwrite the complete archive name
 
 Format: `mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
+
+This Option does not have a effect when [`DOWNLOAD_URL`](#download_url) is defined.
 
 ### RUNTIME_DOWNLOAD
 
