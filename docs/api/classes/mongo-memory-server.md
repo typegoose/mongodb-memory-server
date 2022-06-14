@@ -50,7 +50,7 @@ Will Error if instance is already running
 
 Typings: `protected async getNewPort(port?: number): Promise<number>`
 
-Finds an new non-locked port
+Finds an new non-locked port, uses `port` if available or as a starting point.
 
 ### getStartOptions
 
