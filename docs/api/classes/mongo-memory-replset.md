@@ -99,7 +99,18 @@ With `options` can be set how to run a cleanup.
 
 Typings: `async waitUntilRunning(): Promise<void>`
 
-Wait until all instances are running
+Wait until all instances are running.
+
+It is recommended to `await` the promise returned from `start` when available.
+
+Does not start the replset instance if not already starting (unlike [`ensureInstance`](./mongo-memory-server.md#ensureinstance)).
+
+:::caution
+Will Error if state is not `running` or `init`.
+:::
+:::caution
+Will **not** Error if a error is encountered while waiting.
+:::
 
 ### _initReplSet
 
