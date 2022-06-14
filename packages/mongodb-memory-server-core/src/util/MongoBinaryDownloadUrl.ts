@@ -500,6 +500,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       case 'elementary OS':
         return 'linux';
       case 'sunos':
+        deprecate(
+          () => {},
+          'mongodb-memory-server will fully drop support for sunos in 9.0',
+          'MMS002'
+        )();
+
         return 'sunos5';
       default:
         throw new UnknownPlatformError(platform);

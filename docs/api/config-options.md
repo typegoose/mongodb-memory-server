@@ -27,7 +27,7 @@ Format:
 
 Option `PLATFORM` is used to overwrite which platform should be downloaded
 
-Valid Options are `win32`, `darwin`, `linux`, `sunos`
+Valid Options are `win32`, `darwin`, `linux`, ~~`sunos`~~(never actually supported, [will be removed in 9.0](../guides/error-warning-details.md#mms002))
 
 ### ARCH
 
