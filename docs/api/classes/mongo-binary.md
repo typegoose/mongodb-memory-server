@@ -11,29 +11,15 @@ API Documentation of `MongoBinary`-Class
 This class is not actually meant to be constructed, it only consists of static functions & values
 :::
 
-### getSystemPath
+### download
 
-Typings: `static async getSystemPath(systemBinary: string): Promise<string | undefined>`
+Typings: `static async download(options: Required<MongoBinaryOpts>): Promise<string>`
 
-Try to stat the given `systemBinary` path, and return it if successfull, otherwise `undefined`
-
-### getDownloadPath
-
-Typings: `static async getDownloadPath(options: Required<MongoBinaryOpts>): Promise<string>`
-
-Get an binary from cache or download it
+Try to find the binary and if not found download the binary.
 
 ### getPath
 
 Typings: `static async getPath(opts: MongoBinaryOpts = {}): Promise<string>`
 
-Get an working binary and returns the path to it<br/>
-(Calls [`getDownloadPath`](#getdownloadpath))
-
-## Values
-
-### cache
-
-Typings: `static cache: Map<string, string>`
-
-Global Cache for binaries
+Get a working binary and returns the path to it.  
+(Calls [`download`](#download) if [`RUNTIME_DOWNLOAD`](../config-options.md#runtime_download) is `true`)
