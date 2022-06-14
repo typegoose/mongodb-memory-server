@@ -95,8 +95,8 @@ afterAll(async () => {
 ```
 
 :::caution
-It is very important to limit spawned number of Jest workers for avoiding race condition. Cause Jest spawn huge amount of workers for every node environment on same machine. [More details](https://github.com/facebook/jest/issues/3765)
-Use [`--maxWorkers 4`](https://jestjs.io/docs/configuration#maxworkers-number--string) or [`--runInBand`](https://jestjs.io/docs/cli#--runinband) option.
+It is very important to limit the spawned number of Jest workers on machines that have many cores, because otherwise the tests may run slower than with fewer workers, because the database instance(s) may be hit very hard.  
+Use either [`--maxWorkers 4`](https://jestjs.io/docs/configuration#maxworkers-number--string) or [`--runInBand`](https://jestjs.io/docs/cli#--runinband) to limit the workers.
 :::
 
 ## mocha / chai
