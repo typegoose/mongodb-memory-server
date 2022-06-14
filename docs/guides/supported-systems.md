@@ -20,9 +20,13 @@ On systems with native translation, will work when overwriting the architecture 
 
 ---
 
-Legend: <span class="badge badge--success">Supported</span> <span class="badge badge--warning">Untested</span> <span class="badge badge--warning">Outdated</span> <span class="badge badge--danger">Unsupported</span> <span class="badge badge--secondary">Working</span>
+Legend:
 
-Note: `Untested` means that it is not tested on hardware and so not verified to work.
+- <span class="badge badge--success">Supported</span> means that it is supported by mongodb natively or is a distro that is based on a supported distro.
+- <span class="badge badge--warning">Untested</span> means that it is not tested on hardware and so not verified to work.
+- <span class="badge badge--warning">Outdated</span> means that the current mappings for MMS are outdated and may not have proper tests.
+- <span class="badge badge--danger">Unsupported</span> means that it is unsupported by MMS *and* mongodb.
+- <span class="badge badge--secondary">Working</span> means that it is supported by MMS but not by mongodb natively and not based on a supported distro.
 
 ## Windows
 
