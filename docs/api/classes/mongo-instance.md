@@ -41,6 +41,10 @@ Typings: `async start(): Promise<void>`
 
 Start the `mongod` and the watcher processes
 
+:::caution
+Currently does not check if the instance is in a correct state and just resets all values, see [#662](https://github.com/nodkz/mongodb-memory-server/issues/662).
+:::
+
 ### stop
 
 Typings: `async stop(): Promise<boolean>`
