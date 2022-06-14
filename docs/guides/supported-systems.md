@@ -125,9 +125,11 @@ Default version is none
 
 ### Arch
 
-<span class="badge badge--warning">Untested</span> <span class="badge badge--danger">Unsupported</span>
+<span class="badge badge--danger">Unsupported</span>
 
-There are no official mongodb builds for Arch Distributions, but the `ubuntu` binaries work on most Arch systems, so they are used<br/>
+There are no official mongodb builds for Arch Distributions, but the `ubuntu` binaries work on most Arch systems, so they are used.<br/>
+Currently Mapping to: `ubuntu2004`
+
 :::note
 Because Arch* dosnt base on ubuntu, there is no specific ubuntu version associated with an arch version, so it defaults to highest supported `ubuntu` version
 :::
@@ -136,7 +138,9 @@ Because Arch* dosnt base on ubuntu, there is no specific ubuntu version associat
 
 <span class="badge badge--warning">Untested</span> <span class="badge badge--danger">Unsupported</span>
 
-There are no official mongodb builds for Gentoo Distributions, but the `debian` binaries work on most Gentoo systems, so they are used<br/>
+There are no official mongodb builds for Gentoo Distributions, but the `debian` binaries work on most Gentoo systems, so they are used.<br/>
+Currently Mapping to: `debain11`
+
 :::note
 Because Gentoo dosnt base on debian, there is no specific debian version associated with an gentoo version, so it defaults to highest supported `debian` version
 :::
