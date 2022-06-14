@@ -7,7 +7,7 @@ This Guide will show how `mongodb-memory-server` can be used with different fram
 
 ## jest
 
-<span class="badge badge--secondary">jest version 27</span>
+<span class="badge badge--secondary">jest version 28</span>
 
 For usage with `jest` it is recommended to use the [`globalSetup`](https://jestjs.io/docs/en/configuration#globalsetup-string) and [`globalTeardown`](https://jestjs.io/docs/en/configuration#globalteardown-string) options
 
