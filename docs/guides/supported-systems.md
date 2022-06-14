@@ -20,7 +20,7 @@ On systems with native translation, will work when overwriting the architecture 
 
 ---
 
-Legend: <span class="badge badge--success">Supported</span> <span class="badge badge--warning">Untested</span> <span class="badge badge--warning">Outdated</span> <span class="badge badge--danger">Unsupported</span>
+Legend: <span class="badge badge--success">Supported</span> <span class="badge badge--warning">Untested</span> <span class="badge badge--warning">Outdated</span> <span class="badge badge--danger">Unsupported</span> <span class="badge badge--secondary">Working</span>
 
 Note: `Untested` means that it is not tested on hardware and so not verified to work.
 
@@ -125,7 +125,7 @@ Default version is none
 
 ### Arch
 
-<span class="badge badge--danger">Unsupported</span>
+<span class="badge badge--danger">Unsupported</span> <span class="badge badge--secondary">Working</span>
 
 There are no official mongodb builds for Arch Distributions, but the `ubuntu` binaries work on most Arch systems, so they are used.<br/>
 Currently Mapping to: `ubuntu2004`
@@ -136,7 +136,7 @@ Because Arch* dosnt base on ubuntu, there is no specific ubuntu version associat
 
 ### Gentoo
 
-<span class="badge badge--warning">Untested</span> <span class="badge badge--danger">Unsupported</span>
+<span class="badge badge--danger">Unsupported</span> <span class="badge badge--secondary">Working</span>
 
 There are no official mongodb builds for Gentoo Distributions, but the `debian` binaries work on most Gentoo systems, so they are used.<br/>
 Currently Mapping to: `debain11`
