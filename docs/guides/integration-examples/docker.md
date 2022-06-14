@@ -59,7 +59,7 @@ RUN npm install
 
 ### `dockerfile`
 
-The following is the recommended way to make a image with mongodb-memory-server
+The following `dockerfile` contains the recommended steps to build a good MMS image:
 
 :::note
 The following `dockerfile` has examples for 2 package managers: `npm` and `yarn`, be sure to remove the one that will not be used.
