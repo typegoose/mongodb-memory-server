@@ -53,6 +53,10 @@ Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an 
 :::note
 For Arm64 MongoDB only provides binaries for `ubuntu1604`
 :::
+:::note
+There are currently no native binaries for `2204`, so it is mapped to `2004` and will require `libssl1.1` to be installed.  
+See [this mongodb issue](https://jira.mongodb.org/browse/SERVER-62300).
+:::
 
 ### Debian
 
