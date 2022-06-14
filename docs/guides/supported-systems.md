@@ -22,6 +22,8 @@ On systems with native translation, will work when overwriting the architecture 
 
 Legend: <span class="badge badge--success">Supported</span> <span class="badge badge--warning">Untested</span> <span class="badge badge--warning">Outdated</span> <span class="badge badge--danger">Unsupported</span>
 
+Note: `Untested` means that it is not tested on hardware and so not verified to work.
+
 ## Windows
 
 <span class="badge badge--success">Supported</span>
