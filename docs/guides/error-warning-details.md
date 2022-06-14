@@ -175,7 +175,7 @@ ReplSet count (like `new MongoMemoryReplSet({ replSet: { count: 0 } })`) needs t
 Code: `MMS001`  
 Message: `mongodb-memory-server will fully drop support for ia32 in 9.0`
 
-In the major version `9.0` MMS will fully drop support for the architecture `ia32` (`i386` / `i686`), because MongoDB stopped supporting the architecture past 3.x, and MMS never full supported 3.6 or lower anyway, see [this issue #638 for tracking](https://github.com/nodkz/mongodb-memory-server/issues/638).
+In the major version `9.0` MMS will fully drop support for the architecture `ia32` (`i386` / `i686`), because MongoDB stopped supporting the architecture past 3.x, and MMS never full supported 3.6 or lower anyway, see [#638 for tracking](https://github.com/nodkz/mongodb-memory-server/issues/638).
 
 ### MMS002
 
