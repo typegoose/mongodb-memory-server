@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>mongodb-memory-server</ShortName>
+  <Description>Search mongodb-memory-server</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="16" height="16" type="image/x-icon">https://nodkz.github.io/mongodb-memory-server/img/favicon.ico</Image>
+  <Url type="text/html" method="get" template="https://nodkz.github.io/mongodb-memory-server/search?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://nodkz.github.io/mongodb-memory-server/opensearch.xml" />
+  <moz:SearchForm>https://nodkz.github.io/mongodb-memory-server/</moz:SearchForm>
+</OpenSearchDescription>
