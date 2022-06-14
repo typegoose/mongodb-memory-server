@@ -6,6 +6,7 @@ module.exports = {
       'api/classes/mongo-memory-replset',
       'api/classes/mongo-instance',
       'api/classes/mongo-binary',
+      'api/classes/dry-mongo-binary',
     ],
   },
   guides: {
