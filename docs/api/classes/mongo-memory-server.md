@@ -95,7 +95,9 @@ With `options` can be set how to run a cleanup.
 
 Typings: `async ensureInstance(): Promise<MongoInstanceData>`
 
-Ensure that the instance is running, will run [`start`](#start) if stopped, will wait if state is `starting`
+Ensure that the instance is running, will run [`start`](#start) if stopped, will wait if state is `starting`.
+
+It is recommended to `await` the promise returned from `start` when available.
 
 :::caution
 Will Error if instance cannot be started
