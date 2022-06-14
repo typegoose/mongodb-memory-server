@@ -102,7 +102,7 @@ Default version is `1`
 
 ### ElementaryOS
 
-<span class="badge badge--warning">Outdated</span>
+<span class="badge badge--warning">Untested</span> <span class="badge badge--warning">Outdated</span>
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `3` (or `0.3`)<br/>
