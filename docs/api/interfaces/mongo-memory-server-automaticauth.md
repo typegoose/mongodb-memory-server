@@ -20,7 +20,7 @@ Normally authentication is enabled when the `auth` field a object, but with this
 Typings: `extraUsers?: CreateUser[]`  
 Default: `[]`
 
-Add extra users after the root user has been created, uses [`CreateUser`](TODO).
+Add extra users after the root user has been created, uses [`CreateUser`](./mongo-memory-server-createuser.md).
 
 ### customRootName
 
