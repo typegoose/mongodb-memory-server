@@ -15,6 +15,7 @@ module.exports = {
       'api/interfaces/mongo-memory-server-createuser',
       'api/interfaces/mongo-memory-instance-opts',
       'api/interfaces/mongo-memory-instance-replicamemberconfig',
+      'api/interfaces/mongo-memory-binary-opts',
     ],
   },
   guides: {

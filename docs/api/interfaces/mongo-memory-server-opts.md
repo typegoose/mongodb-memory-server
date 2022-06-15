@@ -17,7 +17,7 @@ Set custom options for the instance, uses [`MongoMemoryInstanceOpts`](./mongo-me
 
 Typings: `binary?: MongoBinaryOpts`
 
-Set custom options for finding the binary, uses [`MongoBinaryOpts`](TODO).
+Set custom options for finding the binary, uses [`MongoBinaryOpts`](./mongo-binary-opts.md).
 
 ### spawn
 
