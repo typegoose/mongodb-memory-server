@@ -111,7 +111,7 @@ export interface MongoMemoryInstanceOptsBase {
   port?: number;
   /**
    * Set which storage path to use
-   * Adds "--"
+   * Adds "--dbpath"
    * @default TmpDir
    */
   dbPath?: string;
