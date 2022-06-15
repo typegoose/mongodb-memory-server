@@ -29,4 +29,4 @@ Set custom spawn options for spawning processes, uses [`SpawnOptions`](https://n
 
 Typings: `auth?: AutomaticAuth`
 
-Set custom Authentication options for the instance, uses [`AutomaticAuth`](TODO).
+Set custom Authentication options for the instance, uses [`AutomaticAuth`](./mongo-memory-server-automaticauth.md).

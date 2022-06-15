@@ -166,4 +166,4 @@ Stores the current State, uses [`MongoMemoryServerStates` enum](../enums/mongo-m
 
 Typings: `readonly auth?: Required<AutomaticAuth>`
 
-Stores automatic auth creation options
+Stores automatic auth creation options, uses [`AutomaticAuth`](../interfaces/mongo-memory-server-automaticauth.md) with all values defined.
