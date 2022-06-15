@@ -11,7 +11,7 @@ API Documentation of `MongoMemoryServerOpts`-Interface
 
 Typings: `instance?: MongoMemoryInstanceOpts`
 
-Set custom options for the instance, uses [`MongoMemoryInstanceOpts`](TODO).
+Set custom options for the instance, uses [`MongoMemoryInstanceOpts`](./mongo-memory-instance-opts.md).
 
 ### binary
 

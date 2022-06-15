@@ -13,6 +13,7 @@ module.exports = {
       'api/interfaces/mongo-memory-server-opts',
       'api/interfaces/mongo-memory-server-automaticauth',
       'api/interfaces/mongo-memory-server-createuser',
+      'api/interfaces/mongo-memory-instance-opts',
     ],
   },
   guides: {
