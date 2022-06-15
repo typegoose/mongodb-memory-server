@@ -1,3 +1,20 @@
+### [8.6.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.0...v8.6.1) (2022-06-15)
+
+
+### Style
+
+* **MongoBinary::MongoBinaryOpts:** remove double parameter definition ([880c445](https://github.com/nodkz/mongodb-memory-server/commit/880c445b062a68dcef88e4cf0587c9fdda917d43))
+* **MongoBinaryDownloadUrl:** deprecate "sunos" ([5ba9835](https://github.com/nodkz/mongodb-memory-server/commit/5ba9835f2b55141f5de426fe24e0459570c28ebd))
+* **MongoInstance::MongoMemoryInstanceOptsBase:** fix missing argument in tsdoc ([b937ce4](https://github.com/nodkz/mongodb-memory-server/commit/b937ce4e0966b52d1f5077ff41287a827548bb52))
+* **MongoInstance::ReplicaMemberConfig:** change "defaultValue" to "default" in tsdoc ([7b0c98e](https://github.com/nodkz/mongodb-memory-server/commit/7b0c98ed69f7ecb8575248464c85b564c74cb04e))
+
+
+### Fixes
+
+* **MongoInstance::checkErrorInLine:** optimize "exception in initAndListen" regex ([473c278](https://github.com/nodkz/mongodb-memory-server/commit/473c278d9eb790c48e8fa32d9fe6b2c95173e6f9)), closes [#560](https://github.com/nodkz/mongodb-memory-server/issues/560)
+* **MongoInstance::checkErrorInLine:** optimize "libsomething: cannot open shared object" regex ([2b733b4](https://github.com/nodkz/mongodb-memory-server/commit/2b733b42dd50ad6cb060c7bf81a8bf8f30a06141)), closes [#560](https://github.com/nodkz/mongodb-memory-server/issues/560)
+* **MongoInstance::checkErrorInLine:** replace "replaceAll" with "replace" ([9546cf9](https://github.com/nodkz/mongodb-memory-server/commit/9546cf9db5ed4ad0c37f5979d832b242ad1d390e))
+
 ## [8.6.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.5.2...v8.6.0) (2022-05-23)
 
 
