@@ -8,7 +8,7 @@ module.exports = {
       'api/classes/mongo-binary',
       'api/classes/dry-mongo-binary',
     ],
-    Enums: ['api/enums/mongo-memory-server-states'],
+    Enums: ['api/enums/mongo-memory-server-states', 'api/enums/mongo-memory-replset-states'],
   },
   guides: {
     'Getting Started': [

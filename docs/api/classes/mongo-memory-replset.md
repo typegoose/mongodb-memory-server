@@ -29,7 +29,7 @@ Create an new ReplSet and start it (while being an Promise)
 
 Typings: `protected stateChange(newState: MongoMemoryReplSetStates, ...args: any[]): void`
 
-Used to change the state of the class, it is `protected` to not accidentally use it
+Used to change the state of the class, uses [`MongoMemoryReplSetStates` enum](../enums/mongo-memory-replset-states.md), it is `protected` to not accidentally use it
 
 ### getInstanceOpts
 
@@ -232,7 +232,7 @@ Will Throw an Error if `state` is not `stopped`
 
 Typings: `protected _state: MongoMemoryReplSetStates`
 
-Stores the current State
+Stores the current State, uses [`MongoMemoryReplSetStates` enum](../enums/mongo-memory-replset-states.md).
 
 ### _ranCreateAuth
 
