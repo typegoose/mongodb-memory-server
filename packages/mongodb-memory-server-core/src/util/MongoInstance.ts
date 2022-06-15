@@ -607,17 +607,25 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         )
       );
     }
-    if (/lib[^:]+(?=: cannot open shared object)/i.test(line)) {
-      const lib =
-        line.match(/(lib[^:]+)(?=: cannot open shared object)/i)?.[1].toLocaleLowerCase() ??
-        'unknown';
-      this.emit(
-        MongoInstanceEvents.instanceError,
-        new StdoutInstanceError(
-          `Instance failed to start because a library is missing or cannot be opened: "${lib}"`
-        )
-      );
+
+    {
+      /*
+      The following regex matches something like "libsomething.so.1: cannot open shared object"
+      and is optimized to only start matching at a word boundary ("\b") and using atomic-group replacement "(?=inner)\1"
+      */
+      const liberrormatch = line.match(/\b(?=(lib[^:]+))\1: cannot open shared object/i);
+
+      if (!isNullOrUndefined(liberrormatch)) {
+        const lib = liberrormatch[1].toLocaleLowerCase() ?? 'unknown';
+        this.emit(
+          MongoInstanceEvents.instanceError,
+          new StdoutInstanceError(
+            `Instance failed to start because a library is missing or cannot be opened: "${lib}"`
+          )
+        );
+      }
     }
+
     if (/\*\*\*aborting after/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
