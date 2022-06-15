@@ -11,7 +11,7 @@ API Documentation of `MongoMemoryServer`-Class
 
 Typings: `constructor(opts?: MongoMemoryServerOpts)`
 
-Create an new Instance without starting it
+Create an new Instance without starting it, uses [`MongoMemoryServerOpts`](../interfaces/mongo-memory-server-opts.md).
 
 :::tip
 When directly starting the instance, [`create`](#create) should be used
@@ -21,7 +21,7 @@ When directly starting the instance, [`create`](#create) should be used
 
 Typings: `static async create(opts?: MongoMemoryServerOpts): Promise<MongoMemoryServer>`
 
-Create an new Instance and start it (while being an Promise)
+Create an new Instance and start it (while being an Promise), uses [`MongoMemoryServerOpts`](../interfaces/mongo-memory-server-opts.md).
 
 ### stateChange
 
@@ -146,7 +146,7 @@ Stores the instance information
 
 Typings: `opts: MongoMemoryServerOpts`
 
-Store the instance options
+Store the instance options, uses [`MongoMemoryServerOpts`](../interfaces/mongo-memory-server-opts.md).
 
 ### state
 
