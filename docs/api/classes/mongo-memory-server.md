@@ -29,7 +29,7 @@ Create an new Instance and start it (while being an Promise)
 
 Typings: `protected stateChange(newState: MongoMemoryServerStates): void`
 
-Used to change the state of the class, it is `protected` to not accidentally use it
+Used to change the state of the class, uses [`MongoMemoryServerStates` enum](../enums/mongo-memory-server-states.md), it is `protected` to not accidentally use it.
 
 ### start
 
@@ -160,7 +160,7 @@ Getter for [`_state_`](#_state)
 
 Typings: `protected _state: MongoMemoryServerStates`
 
-Stores the current State
+Stores the current State, uses [`MongoMemoryServerStates` enum](../enums/mongo-memory-server-states.md).
 
 ### auth
 
