@@ -574,21 +574,25 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         new StdoutInstanceError(`Port "${this.instanceOpts.port}" already in use`)
       );
     }
-    if (/exception in initAndListen: \w+[^:]: .+[^,], terminating/i.test(line)) {
-      // in pre-4.0 mongodb this exception may have been "permission denied" and "Data directory /path not found"
 
-      // this variable cannot actually be "null", because of the previous test
-      const matches = /exception in initAndListen: (\w+[^:]): (.+[^,]), terminating/i.exec(line);
+    {
+      const execptionMatch = /\bexception in initAndListen: (\w+): /i.exec(line);
 
-      const { 1: errorName, 2: origError } = matches || [];
+      if (!isNullOrUndefined(execptionMatch)) {
+        // in pre-4.0 mongodb this exception may have been "permission denied" and "Data directory /path not found"
 
-      this.emit(
-        MongoInstanceEvents.instanceError,
-        new StdoutInstanceError(
-          `Instance Failed to start with "${errorName}". Original Error:\n` + origError
-        )
-      );
+        this.emit(
+          MongoInstanceEvents.instanceError,
+          new StdoutInstanceError(
+            `Instance Failed to start with "${execptionMatch[1] ?? 'unknown'}". Original Error:\n` +
+              line
+                .substring(execptionMatch.index + execptionMatch[0].length)
+                .replaceAll(/, terminating$/gi, '')
+          )
+        );
+      }
     }
+
     if (/CURL_OPENSSL_3['\s]+not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
