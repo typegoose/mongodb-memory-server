@@ -80,7 +80,7 @@ Set which storage engine to use, uses [`StorageEngine`](#helper-type-storageengi
 
 Typings: `replicaMemberConfig?: ReplicaMemberConfig`
 
-Set custom a custom Replica Member Config, uses [`ReplicaMemberConfig`](TODO).  
+Set custom a custom Replica Member Config, uses [`ReplicaMemberConfig`](./mongo-memory-instance-replicamemberconfig.md).  
 Only has a effect when started with [`MongoMemoryReplSet`](../classes/mongo-memory-replset.md).
 
 ## Helper Type `StorageEngine`
