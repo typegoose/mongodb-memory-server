@@ -33,7 +33,7 @@ Set the directory where binaries will be downloaded to, when a download needs to
 
 Typings: `os?: AnyOS`
 
-Set OS information that is necessary for generating the archive name, uses [`AnyOS`](TODO).
+Set OS information that is necessary for generating the archive name, uses [`AnyOS`](#helper-type-anyos).
 
 ### arch
 
