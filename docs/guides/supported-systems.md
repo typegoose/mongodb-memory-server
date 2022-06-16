@@ -15,7 +15,7 @@ Officially Supported Architectures:
 - ~~`ia32` / `i686` / `i386`~~ (There are only binaries up to ~3.2 and [will be removed with the next MMS version](https://github.com/nodkz/mongodb-memory-server/issues/638))
 
 :::note
-On systems with native translation, will work when overwriting the architecture with `MONGOMS_ARCH=x64`
+On systems that have native arch translation (like ARM MacOS), the architecture will need to be overwritten with `MONGOMS_ARCH=x64`.
 :::
 
 ---
