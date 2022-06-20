@@ -48,7 +48,7 @@
     "get-port": "^5.1.1",
     "https-proxy-agent": "^5.0.1",
     "md5-file": "^5.0.0",
-    "mongodb": "^4.5.0",
+    "mongodb": "^4.7.0",
     "new-find-package-json": "^2.0.0",
     "semver": "^7.3.7",
     "tar-stream": "^2.1.4",
