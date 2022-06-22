@@ -1,3 +1,10 @@
+## [8.7.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.7.0...v8.7.1) (2022-06-22)
+
+
+### Fixes
+
+* **utils::killProcess:** handle case where input could be undefined at runtime ([209520f](https://github.com/nodkz/mongodb-memory-server/commit/209520f124307ab6e8518d78e64a612d6393ac36)), closes [#666](https://github.com/nodkz/mongodb-memory-server/issues/666)
+
 ## [8.7.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.6.1...v8.7.0) (2022-06-20)
 
 
