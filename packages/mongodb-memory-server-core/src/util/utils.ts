@@ -99,6 +99,13 @@ export async function killProcess(
     log(`Mongo[${mongodPort || 'unknown'}] killProcess: ${msg}`);
   }
 
+  // this case can somehow happen, see https://github.com/nodkz/mongodb-memory-server/issues/666
+  if (isNullOrUndefined(childprocess)) {
+    ilog('childprocess was somehow undefined');
+
+    return;
+  }
+
   // check if the childProcess (via PID) is still alive (found thanks to https://github.com/nodkz/mongodb-memory-server/issues/411)
   if (!isAlive(childprocess.pid)) {
     ilog("given childProcess's PID was not alive anymore");
