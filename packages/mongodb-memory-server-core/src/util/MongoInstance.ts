@@ -509,7 +509,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       this.debug('closeHandler: Mongod instance closed with an non-0 (or non 12 on windows) code!');
     }
 
-    this.debug(`closeHandler: "${code}" "${signal}"`);
+    this.debug(`closeHandler: code: "${code}", signal: "${signal}"`);
     this.emit(MongoInstanceEvents.instanceClosed, code, signal);
   }
 
