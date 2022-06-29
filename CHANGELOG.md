@@ -1,3 +1,16 @@
+## [8.7.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.7.1...v8.7.2) (2022-06-29)
+
+
+### Style
+
+* **MongoInstance::closeHandler:** add explanation in log what value is what ([69f7261](https://github.com/nodkz/mongodb-memory-server/commit/69f726163b92bc1ec2e0df436e37660bb409d41a))
+* **utils::killProcess:** remove duplicated function identifier from log ([6d49741](https://github.com/nodkz/mongodb-memory-server/commit/6d497416f7d4965467ba9df41b90f835d4a45be3))
+
+
+### Fixes
+
+* **MongoMemoryReplSet::_initReplSet:** attempt to fix "server selection timed out" when using auth ([17522dc](https://github.com/nodkz/mongodb-memory-server/commit/17522dc069b5954473fb66221a0f6789482e8226))
+
 ## [8.7.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.7.0...v8.7.1) (2022-06-22)
 
 
