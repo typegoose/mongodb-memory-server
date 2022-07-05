@@ -60,7 +60,7 @@ export interface AutomaticAuth {
   customRootPwd?: string;
   /**
    * Force to run "createAuth"
-   * @default false "creatAuth" is normally only run when the given "dbPath" is empty (no files)
+   * @default false "createAuth" is normally only run when the given "dbPath" is empty (no files)
    */
   force?: boolean;
   /**
