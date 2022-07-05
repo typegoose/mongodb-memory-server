@@ -67,7 +67,7 @@ describe('DryBinary', () => {
           // @ts-expect-error expected, because function "homedir" is private
           'homedir'
         )
-        .mockReturnValue(path.resolve(tmpDir.name, 'homedir'));
+        .mockReturnValue(path.resolve(tmpDir.name, 'homedir') as any); // casting is needed, since around "@types/jest@28.1.3~4" private values do not seem to be exposed anymore
 
       // Create all directories
       {
