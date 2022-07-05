@@ -1,3 +1,24 @@
+## [8.8.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.7.2...v8.8.0-beta.1) (2022-07-05)
+
+
+### Features
+
+* make use of the "localhost exception" for creating users ([b1f4dc0](https://github.com/nodkz/mongodb-memory-server/commit/b1f4dc01e007454aea5fe3c83df1f71fbaed892d)), closes [#670](https://github.com/nodkz/mongodb-memory-server/issues/670) [#671](https://github.com/nodkz/mongodb-memory-server/issues/671)
+
+
+### Style
+
+* **MongoMemoryServer::AutomaticAuth:** fix typo in tsdoc ([770791b](https://github.com/nodkz/mongodb-memory-server/commit/770791b0e98b25573e0a626b1ebdab279b887d81))
+
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 28.1.4 ([627a3b5](https://github.com/nodkz/mongodb-memory-server/commit/627a3b5ba90cf87b5249f40e9627f2b08a637f72))
+* **@typescript-eslint/*:** upgrade to version 5.30.5 ([58cfeaf](https://github.com/nodkz/mongodb-memory-server/commit/58cfeafcc36e1c853e0a5dc2b87c124a56d25e27))
+* **eslint:** upgrade to version 8.19.0 ([574c252](https://github.com/nodkz/mongodb-memory-server/commit/574c252f804b20776337260fa5bc770c61722c7f))
+* **eslint-plugin-prettier:** upgrade to version 4.2.1 ([97145a8](https://github.com/nodkz/mongodb-memory-server/commit/97145a8a71c134ded6677cea5061abc534c61ae1))
+* **jest:** upgrade to version 28.1.2 ([c7c7303](https://github.com/nodkz/mongodb-memory-server/commit/c7c73037ddaaf619a8395de6764d2e92c73b9b02))
+
 ## [8.7.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.7.1...v8.7.2) (2022-06-29)
 
 
