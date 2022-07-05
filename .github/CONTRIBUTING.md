@@ -81,13 +81,16 @@ The `master` branch is the release branch.
 
 It has the following protection rules:
 
-* `linear-history`: Requires linear-history, meaning no merge-commits
-* `status-checks`: All required status checks must pass before being able to merge (Currently required: `tests (12.x)`)
+* `status-checks`: All required status checks must pass before being able to merge (Currently required: `tests (xx.x)`)
 * `branches-up-to-date`: The Branches must be up-to-date before being able to merge into `master`
 
-### next branch
+### beta branch
 
-The `next` branch is the development branch, to accumulate changes before releasing an version
+The `beta` branch is the development branch, to accumulate changes before releasing an version, unless it is one of the following:
+
+* a hot-fix
+* a chore (like updating workflows, readme, misc config)
+* documentation changes
 
 ## Code Styles
 

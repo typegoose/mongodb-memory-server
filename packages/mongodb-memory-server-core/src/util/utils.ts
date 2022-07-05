@@ -99,6 +99,13 @@ export async function killProcess(
     log(`Mongo[${mongodPort || 'unknown'}] killProcess: ${msg}`);
   }
 
+  // this case can somehow happen, see https://github.com/nodkz/mongodb-memory-server/issues/666
+  if (isNullOrUndefined(childprocess)) {
+    ilog('childprocess was somehow undefined');
+
+    return;
+  }
+
   // check if the childProcess (via PID) is still alive (found thanks to https://github.com/nodkz/mongodb-memory-server/issues/411)
   if (!isAlive(childprocess.pid)) {
     ilog("given childProcess's PID was not alive anymore");
@@ -112,7 +119,7 @@ export async function killProcess(
   const timeoutTime = 1000 * 10;
   await new Promise<void>((res, rej) => {
     let timeout = setTimeout(() => {
-      ilog('killProcess: timeout triggered, trying SIGKILL');
+      ilog('timeout triggered, trying SIGKILL');
 
       if (!debug.enabled('MongoMS:utils')) {
         console.warn(
@@ -123,16 +130,16 @@ export async function killProcess(
 
       childprocess.kill('SIGKILL');
       timeout = setTimeout(() => {
-        ilog('killProcess: timeout triggered again, rejecting');
+        ilog('timeout triggered again, rejecting');
         rej(new Error(`Process "${name}" didnt exit, enable debug for more information.`));
       }, timeoutTime);
     }, timeoutTime);
     childprocess.once(`exit`, (code, signal) => {
-      ilog(`killProcess: ${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
+      ilog(`${name}: got exit signal, Code: ${code}, Signal: ${signal}`);
       clearTimeout(timeout);
       res();
     });
-    ilog(`killProcess: ${name}: sending "SIGINT"`);
+    ilog(`${name}: sending "SIGINT"`);
     childprocess.kill('SIGINT');
   });
 }

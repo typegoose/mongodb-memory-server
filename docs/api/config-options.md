@@ -27,19 +27,21 @@ Format:
 
 Option `PLATFORM` is used to overwrite which platform should be downloaded
 
-Valid Options are `win32`, `darwin`, `linux`, `sunos`
+Valid Options are `win32`, `darwin`, `linux`, ~~`sunos`~~(never actually supported, [will be removed in 9.0](../guides/error-warning-details.md#mms002))
 
 ### ARCH
 
 Option `ARCH` is used to overwrite the Architecture to download for
 
-Valid Options are `ia32`, `x64`, `arm64`
+Valid Options are `x64`, `arm64`, ~~`ia32`~~([will be removed in 9.0](../guides/error-warning-details.md#mms001))
 
 ### VERSION
 
 Option `VERSION` is used to set what mongodb version should be downloaded
 
 Default: `5.0.8`
+
+This Option does not have a effect when [`ARCHIVE_NAME`](#archive_name) or [`DOWNLOAD_URL`](#download_url) is defined.
 
 Common MongoDB Version formats (`X` is a number):
 
@@ -115,6 +117,8 @@ Default: `false`
 Option `ARCHIVE_NAME` is used to overwrite the complete archive name
 
 Format: `mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
+
+This Option does not have a effect when [`DOWNLOAD_URL`](#download_url) is defined.
 
 ### RUNTIME_DOWNLOAD
 

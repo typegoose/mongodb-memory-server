@@ -1,0 +1,116 @@
+---
+id: test
+title: 'Docusaurus Testing'
+---
+
+This file is meant to show what Docusaurus is capable of and how it looks in this projects styles
+
+Sources:
+
+- [Docusaurus Documentation](https://docusaurus.io/docs/)
+- [infima Documentation](https://infima.dev/docs/getting-started/introduction)
+
+## Callouts / Admonitions
+
+:::note
+The content and title *can* include markdown.
+:::
+
+:::tip You can specify an optional title
+Heads up! Here's a pro-tip.
+:::
+
+:::info
+Useful information.
+:::
+
+:::caution
+Warning! You better pay attention!
+:::
+
+:::danger
+Danger danger, mayday!
+:::
+
+### Specify type and title
+
+:::note Your Title
+The content and title *can* include markdown.
+:::
+
+## Badges
+
+<span class="badge badge--primary">Primary</span>
+<span class="badge badge--secondary">Secondary</span>
+<span class="badge badge--success">Success</span>
+<span class="badge badge--info">Info</span>
+<span class="badge badge--warning">Warning</span>
+<span class="badge badge--danger">Danger</span>
+
+## Tabs
+
+[Tabs](https://docusaurus.io/docs/markdown-features/tabs)
+
+<!--MDX Import section-->
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<!--END MDX Import section-->
+
+<Tabs groupId="test-tabs">
+  <TabItem value="tab1" label="Tab 1" default>
+
+Hello Tab 1, text first
+
+```txt
+Code in Tab 1
+```
+
+  </TabItem>
+  <TabItem value="tab2" label="Tab 2">
+
+```txt
+Code in Tab 2
+```
+
+Hello Tab 2, text last
+
+  </TabItem>
+</Tabs>
+
+## Extra Code Block Styling
+
+[Extra Code Block Styling](https://docusaurus.io/docs/markdown-features/code-blocks)
+
+[Highlighting lines](https://docusaurus.io/docs/markdown-features/code-blocks#line-highlighting):
+
+```ts
+import something from "some";
+
+// highlight-start
+class SomeClass {
+  public hello?: string
+}
+// highlight-end
+
+export SomeClass;
+```
+
+[Line Numbering](https://docusaurus.io/docs/markdown-features/code-blocks#line-numbering):
+
+```ts showLineNumbers
+import something from "some";
+
+class SomeClass {
+  public hello?: string
+}
+
+export SomeClass;
+```
+
+[Yarn & NPM](https://docusaurus.io/docs/markdown-features/code-blocks#npm2yarn-remark-plugin):
+
+```bash npm2yarn
+npm install somepackage
+```

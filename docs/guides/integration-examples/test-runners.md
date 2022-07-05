@@ -7,7 +7,7 @@ This Guide will show how `mongodb-memory-server` can be used with different fram
 
 ## jest
 
-<span class="badge badge--secondary">jest version 27</span>
+<span class="badge badge--secondary">jest version 28</span>
 
 For usage with `jest` it is recommended to use the [`globalSetup`](https://jestjs.io/docs/en/configuration#globalsetup-string) and [`globalTeardown`](https://jestjs.io/docs/en/configuration#globalteardown-string) options
 
@@ -20,6 +20,7 @@ export = {
   Memory: true,
   IP: '127.0.0.1',
   Port: '27017',
+  Database: 'somedb'
 }
 ```
 
@@ -56,7 +57,7 @@ export = async function globalSetup() {
   }
 
   // The following is to make sure the database is clean before an test starts
-  await mongoose.connect(`${process.env.MONGO_URI}/${config.DataBase}`, { });
+  await mongoose.connect(`${process.env.MONGO_URI}/${config.Database}`);
   await mongoose.connection.db.dropDatabase();
   await mongoose.disconnect();
 };
@@ -82,20 +83,20 @@ and an [`setupFilesAfterEnv`](https://jestjs.io/docs/en/configuration#setupfiles
 `setupFile.ts`:
 
 ```ts
-import { connect, disconnect } from './utils/connect';
-
 beforeAll(async () => {
-  await connect();
+  // put your client connection code here, example with mongoose:
+  await mongoose.connect(process.env['MONGO_URI']);
 });
 
 afterAll(async () => {
-  await disconnect();
+  // put your client disconnection code here, example with mongodb:
+  await mongoose.disconnect();
 });
 ```
 
 :::caution
-It is very important to limit spawned number of Jest workers for avoiding race condition. Cause Jest spawn huge amount of workers for every node environment on same machine. [More details](https://github.com/facebook/jest/issues/3765)
-Use [`--maxWorkers 4`](https://jestjs.io/docs/configuration#maxworkers-number--string) or [`--runInBand`](https://jestjs.io/docs/cli#--runinband) option.
+It is very important to limit the spawned number of Jest workers on machines that have many cores, because otherwise the tests may run slower than with fewer workers, because the database instance(s) may be hit very hard.  
+Use either [`--maxWorkers 4`](https://jestjs.io/docs/configuration#maxworkers-number--string) or [`--runInBand`](https://jestjs.io/docs/cli#--runinband) to limit the workers.
 :::
 
 ## mocha / chai

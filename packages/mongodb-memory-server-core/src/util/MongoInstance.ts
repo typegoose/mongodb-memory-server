@@ -42,33 +42,33 @@ export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTi
 export interface ReplicaMemberConfig {
   /**
    * A boolean that identifies an arbiter.
-   * @defaultValue `false` - A value of `true` indicates that the member is an arbiter.
+   * @default false - A value of `true` indicates that the member is an arbiter.
    */
   arbiterOnly?: boolean;
 
   /**
    * A boolean that indicates whether the mongod builds indexes on this member.
    * You can only set this value when adding a member to a replica set.
-   * @defaultValue `true`
+   * @default true
    */
   buildIndexes?: boolean;
 
   /**
    * The replica set hides this instance and does not include the member in the output of `db.hello()` or `hello`.
-   * @defaultValue `true`
+   * @default true
    */
   hidden?: boolean;
 
   /**
    * A number that indicates the relative eligibility of a member to become a primary.
    * Specify higher values to make a member more eligible to become primary, and lower values to make the member less eligible.
-   * @defaultValue 1.0 for primary/secondary; 0 for arbiters.
+   * @default 1 for primary/secondary; 0 for arbiters.
    */
   priority?: number;
 
   /**
    * A tags document contains user-defined tag field and value pairs for the replica set member.
-   * @defaultValue `null`
+   * @default null
    * @example
    * ```ts
    * { "<tag1>": "<string1>", "<tag2>": "<string2>",... }
@@ -80,20 +80,20 @@ export interface ReplicaMemberConfig {
    * Mongodb 4.x only - The number of seconds "behind" the primary that this replica set member should "lag".
    * For mongodb 5.x, use `secondaryDelaySecs` instead.
    * @see {@link https://docs.mongodb.com/v4.4/tutorial/configure-a-delayed-replica-set-member/}
-   * @defaultValue 0
+   * @default 0
    */
   slaveDelay?: number;
 
   /**
    * Mongodb 5.x only - The number of seconds "behind" the primary that this replica set member should "lag".
-   * @defaultValue 0
+   * @default 0
    */
   secondaryDelaySecs?: number;
 
   /**
    * The number of votes a server will cast in a replica set election.
    * The number of votes each member has is either 1 or 0, and arbiters always have exactly 1 vote.
-   * @defaultValue 1
+   * @default 1
    */
   votes?: number;
 }
@@ -111,7 +111,7 @@ export interface MongoMemoryInstanceOptsBase {
   port?: number;
   /**
    * Set which storage path to use
-   * Adds "--"
+   * Adds "--dbpath"
    * @default TmpDir
    */
   dbPath?: string;
@@ -509,7 +509,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       this.debug('closeHandler: Mongod instance closed with an non-0 (or non 12 on windows) code!');
     }
 
-    this.debug(`closeHandler: "${code}" "${signal}"`);
+    this.debug(`closeHandler: code: "${code}", signal: "${signal}"`);
     this.emit(MongoInstanceEvents.instanceClosed, code, signal);
   }
 
@@ -574,21 +574,25 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         new StdoutInstanceError(`Port "${this.instanceOpts.port}" already in use`)
       );
     }
-    if (/exception in initAndListen: \w+[^:]: .+[^,], terminating/i.test(line)) {
-      // in pre-4.0 mongodb this exception may have been "permission denied" and "Data directory /path not found"
 
-      // this variable cannot actually be "null", because of the previous test
-      const matches = /exception in initAndListen: (\w+[^:]): (.+[^,]), terminating/i.exec(line);
+    {
+      const execptionMatch = /\bexception in initAndListen: (\w+): /i.exec(line);
 
-      const { 1: errorName, 2: origError } = matches || [];
+      if (!isNullOrUndefined(execptionMatch)) {
+        // in pre-4.0 mongodb this exception may have been "permission denied" and "Data directory /path not found"
 
-      this.emit(
-        MongoInstanceEvents.instanceError,
-        new StdoutInstanceError(
-          `Instance Failed to start with "${errorName}". Original Error:\n` + origError
-        )
-      );
+        this.emit(
+          MongoInstanceEvents.instanceError,
+          new StdoutInstanceError(
+            `Instance Failed to start with "${execptionMatch[1] ?? 'unknown'}". Original Error:\n` +
+              line
+                .substring(execptionMatch.index + execptionMatch[0].length)
+                .replace(/, terminating$/gi, '')
+          )
+        );
+      }
     }
+
     if (/CURL_OPENSSL_3['\s]+not found/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,
@@ -607,17 +611,25 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         )
       );
     }
-    if (/lib[^:]+(?=: cannot open shared object)/i.test(line)) {
-      const lib =
-        line.match(/(lib[^:]+)(?=: cannot open shared object)/i)?.[1].toLocaleLowerCase() ??
-        'unknown';
-      this.emit(
-        MongoInstanceEvents.instanceError,
-        new StdoutInstanceError(
-          `Instance failed to start because a library is missing or cannot be opened: "${lib}"`
-        )
-      );
+
+    {
+      /*
+      The following regex matches something like "libsomething.so.1: cannot open shared object"
+      and is optimized to only start matching at a word boundary ("\b") and using atomic-group replacement "(?=inner)\1"
+      */
+      const liberrormatch = line.match(/\b(?=(lib[^:]+))\1: cannot open shared object/i);
+
+      if (!isNullOrUndefined(liberrormatch)) {
+        const lib = liberrormatch[1].toLocaleLowerCase() ?? 'unknown';
+        this.emit(
+          MongoInstanceEvents.instanceError,
+          new StdoutInstanceError(
+            `Instance failed to start because a library is missing or cannot be opened: "${lib}"`
+          )
+        );
+      }
     }
+
     if (/\*\*\*aborting after/i.test(line)) {
       this.emit(
         MongoInstanceEvents.instanceError,

@@ -3,6 +3,8 @@
 
 shopt -s dotglob nullglob
 
+set -e # exit when a error occurs
+
 cd website
 yarn
 yarn build

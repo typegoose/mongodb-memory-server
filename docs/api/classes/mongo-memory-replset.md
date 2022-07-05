@@ -29,7 +29,7 @@ Create an new ReplSet and start it (while being an Promise)
 
 Typings: `protected stateChange(newState: MongoMemoryReplSetStates, ...args: any[]): void`
 
-Used to change the state of the class, it is `protected` to not accidentally use it
+Used to change the state of the class, uses [`MongoMemoryReplSetStates` enum](../enums/mongo-memory-replset-states.md), it is `protected` to not accidentally use it
 
 ### getInstanceOpts
 
@@ -99,7 +99,18 @@ With `options` can be set how to run a cleanup.
 
 Typings: `async waitUntilRunning(): Promise<void>`
 
-Wait until all instances are running
+Wait until all instances are running.
+
+It is recommended to `await` the promise returned from `start` when available.
+
+Does not start the replset instance if not already starting (unlike [`ensureInstance`](./mongo-memory-server.md#ensureinstance)).
+
+:::caution
+Will Error if state is not `running` or `init`.
+:::
+:::caution
+Will **not** Error if a error is encountered while waiting.
+:::
 
 ### _initReplSet
 
@@ -221,7 +232,7 @@ Will Throw an Error if `state` is not `stopped`
 
 Typings: `protected _state: MongoMemoryReplSetStates`
 
-Stores the current State
+Stores the current State, uses [`MongoMemoryReplSetStates` enum](../enums/mongo-memory-replset-states.md).
 
 ### _ranCreateAuth
 

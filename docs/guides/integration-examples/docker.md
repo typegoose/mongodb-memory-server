@@ -31,26 +31,26 @@ Sometimes you want to have the tests isolated from the host system and also have
 
 ### `.dockerignore`
 
-If no `.dockerignore` is specified or the following instructions added to the `dockerfile`, some cases may happen:
-
-- Best case is just added bloat if the host system is not debian (like having the host's mongodb binary copied into the image)
-- If the host system is Debian (and to that not matching version), then the host's mongodb binary is copied in and will be used instead of downloading the actual required mongodb binary
-
-It is not required to have, but preferred over having a additional step in the dockerfile:
+It is recommended to have the following added to the `.dockerignore` file to make sure that no host-specific things are copied into the image:
 
 ```dockerignore
 # ignore all node_modules, no matter where, like when having a monorepo
 **/node_modules
 ```
 
-If a dockerignore is not specified, a additional instruction can be used instead:
+If the above is not added to the `.dockeringore` then the following may happen:
+
+- Best case is just added bloat if the host system is not debian (like having the host's mongodb binary copied into the image)
+- If the host system is Debian (and to that not matching version), then the host's mongodb binary is copied in and will be used instead of downloading the actual required mongodb binary
+
+Alternatively, if no `.dockeringore` is used, the following could also be added to the `dockerfile`:
 
 ```dockerfile
 # ...
 COPY node:node . /project
 
-# Put this Instruction between the 2 other instructions mentioned in this example
-# The following deleted all directories it finds that are a directory AND have a name matching "node_modules" (also removes nested directories)
+# Put this Instruction between the COPY and the RUN "npm install" steps
+# The following recursively deletes all directories it finds that are a directory AND have a name matching "node_modules"
 RUN find . -type d -iname "node_modules" -exec rm -rf {} \;
 
 RUN npm install
@@ -59,7 +59,7 @@ RUN npm install
 
 ### `dockerfile`
 
-The following is the recommended way to make a image with mongodb-memory-server
+The following `dockerfile` contains the recommended steps to build a good MMS image:
 
 :::note
 The following `dockerfile` has examples for 2 package managers: `npm` and `yarn`, be sure to remove the one that will not be used.

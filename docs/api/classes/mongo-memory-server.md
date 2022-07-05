@@ -11,7 +11,7 @@ API Documentation of `MongoMemoryServer`-Class
 
 Typings: `constructor(opts?: MongoMemoryServerOpts)`
 
-Create an new Instance without starting it
+Create an new Instance without starting it, uses [`MongoMemoryServerOpts`](../interfaces/mongo-memory-server-opts.md).
 
 :::tip
 When directly starting the instance, [`create`](#create) should be used
@@ -21,7 +21,7 @@ When directly starting the instance, [`create`](#create) should be used
 
 Typings: `static async create(opts?: MongoMemoryServerOpts): Promise<MongoMemoryServer>`
 
-Create an new Instance and start it (while being an Promise)
+Create an new Instance and start it (while being an Promise), uses [`MongoMemoryServerOpts`](../interfaces/mongo-memory-server-opts.md).
 
 ### stateChange
 
@@ -29,7 +29,7 @@ Create an new Instance and start it (while being an Promise)
 
 Typings: `protected stateChange(newState: MongoMemoryServerStates): void`
 
-Used to change the state of the class, it is `protected` to not accidentally use it
+Used to change the state of the class, uses [`MongoMemoryServerStates` enum](../enums/mongo-memory-server-states.md), it is `protected` to not accidentally use it.
 
 ### start
 
@@ -50,7 +50,7 @@ Will Error if instance is already running
 
 Typings: `protected async getNewPort(port?: number): Promise<number>`
 
-Finds an new non-locked port
+Finds an new non-locked port, uses `port` if available or as a starting point.
 
 ### getStartOptions
 
@@ -95,7 +95,9 @@ With `options` can be set how to run a cleanup.
 
 Typings: `async ensureInstance(): Promise<MongoInstanceData>`
 
-Ensure that the instance is running, will run [`start`](#start) if stopped, will wait if state is `starting`
+Ensure that the instance is running, will run [`start`](#start) if stopped, will wait if state is `starting`.
+
+It is recommended to `await` the promise returned from `start` when available.
 
 :::caution
 Will Error if instance cannot be started
@@ -144,7 +146,7 @@ Stores the instance information
 
 Typings: `opts: MongoMemoryServerOpts`
 
-Store the instance options
+Store the instance options, uses [`MongoMemoryServerOpts`](../interfaces/mongo-memory-server-opts.md).
 
 ### state
 
@@ -158,10 +160,10 @@ Getter for [`_state_`](#_state)
 
 Typings: `protected _state: MongoMemoryServerStates`
 
-Stores the current State
+Stores the current State, uses [`MongoMemoryServerStates` enum](../enums/mongo-memory-server-states.md).
 
 ### auth
 
 Typings: `readonly auth?: Required<AutomaticAuth>`
 
-Stores automatic auth creation options
+Stores automatic auth creation options, uses [`AutomaticAuth`](../interfaces/mongo-memory-server-automaticauth.md) with all values defined.

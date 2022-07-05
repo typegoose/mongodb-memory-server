@@ -692,8 +692,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
             await this.stop({ doCleanup: false, force: false }); // stop all servers for enabling auth
             log('_initReplSet: starting all server again with auth');
             await this.initAllServers(); // start all servers again with "auth" enabled
+            await this._waitForPrimary(); // wait for a primary to come around, because otherwise server selection may time out, this may take more than 30s
 
-            con = await MongoClient.connect(this.getUri('admin'), {
+            con = await MongoClient.connect(this.getUri(), {
               authSource: 'admin',
               authMechanism: 'SCRAM-SHA-256',
               auth: {
@@ -728,6 +729,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       this.stateChange(MongoMemoryReplSetStates.running);
       log('_initReplSet: running');
     } finally {
+      log('_initReplSet: finally closing connection');
       await con.close();
     }
   }

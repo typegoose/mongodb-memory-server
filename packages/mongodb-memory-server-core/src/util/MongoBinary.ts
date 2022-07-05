@@ -12,7 +12,6 @@ import { DryMongoBinary, BaseDryMongoBinaryOptions } from './DryMongoBinary';
 const log = debug('MongoMS:MongoBinary');
 
 export interface MongoBinaryOpts extends BaseDryMongoBinaryOptions {
-  platform?: string;
   checkMD5?: boolean;
 }
 

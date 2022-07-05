@@ -6,6 +6,16 @@ module.exports = {
       'api/classes/mongo-memory-replset',
       'api/classes/mongo-instance',
       'api/classes/mongo-binary',
+      'api/classes/dry-mongo-binary',
+    ],
+    Enums: ['api/enums/mongo-memory-server-states', 'api/enums/mongo-memory-replset-states'],
+    Interfaces: [
+      'api/interfaces/mongo-memory-server-opts',
+      'api/interfaces/mongo-memory-server-automaticauth',
+      'api/interfaces/mongo-memory-server-createuser',
+      'api/interfaces/mongo-memory-instance-opts',
+      'api/interfaces/mongo-memory-instance-replicamemberconfig',
+      'api/interfaces/mongo-memory-binary-opts',
     ],
   },
   guides: {
