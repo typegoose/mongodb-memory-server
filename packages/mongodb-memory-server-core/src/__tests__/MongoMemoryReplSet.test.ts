@@ -3,8 +3,8 @@ import MongoMemoryReplSet, {
   MongoMemoryReplSetEvents,
   MongoMemoryReplSetStates,
 } from '../MongoMemoryReplSet';
-import { MongoClient } from 'mongodb';
-import MongoMemoryServer from '../MongoMemoryServer';
+import { MongoClient, MongoServerError } from 'mongodb';
+import MongoMemoryServer, { AutomaticAuth } from '../MongoMemoryServer';
 import * as utils from '../util/utils';
 import { MongoMemoryInstanceOpts } from '../util/MongoInstance';
 import { ReplsetCountLowError, StateError, WaitForPrimaryTimeoutError } from '../util/errors';
@@ -247,40 +247,67 @@ describe('single server replset', () => {
     utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootName));
     utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootPwd));
 
-    const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
-      authSource: 'admin',
-      authMechanism: 'SCRAM-SHA-256',
-      auth: {
-        username: replSet.replSetOpts.auth.customRootName,
-        password: replSet.replSetOpts.auth.customRootPwd,
-      },
-    });
-
-    const db = con.db('admin');
-    const users: { users?: { user: string }[] } = await db.command({
-      usersInfo: replSet.replSetOpts.auth.customRootName,
-    });
-    expect(users.users).toHaveLength(1);
-    expect(users.users?.[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
-    // @ts-expect-error because "initAllServers" is protected
-    expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledTimes(1);
-
+    // test unpriviliged connection
     {
-      expect(replSet.servers[0].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(false);
-      expect(replSet.servers[1].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(false);
-      expect(replSet.servers[2].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(false);
+      const con = await MongoClient.connect(replSet.getUri());
+
+      const db = con.db('somedb');
+      const col = db.collection('somecol');
+
+      try {
+        await col.insertOne({ test: 1 });
+        fail('Expected insertion to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(MongoServerError);
+        expect((err as MongoServerError).codeName).toEqual('Unauthorized');
+      } finally {
+        await con.close();
+      }
     }
 
-    await con.close();
+    // test priviliged connection
+    {
+      const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
+        authSource: 'admin',
+        authMechanism: 'SCRAM-SHA-256',
+        auth: {
+          username: replSet.replSetOpts.auth.customRootName,
+          password: replSet.replSetOpts.auth.customRootPwd,
+        },
+      });
+
+      const admindb = con.db('admin');
+      const users: { users?: { user: string }[] } = await admindb.command({
+        usersInfo: replSet.replSetOpts.auth.customRootName,
+      });
+      expect(users.users).toHaveLength(1);
+      expect(users.users?.[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
+
+      const db = con.db('somedb');
+      const col = db.collection('somecol');
+
+      expect(await col.insertOne({ test: 1 })).toHaveProperty('acknowledged', true);
+
+      await con.close();
+    }
+
+    // @ts-expect-error because "initAllServers" is protected
+    expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledTimes(0);
+
+    {
+      expect(replSet.servers[0].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
+      expect(replSet.servers[1].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
+      expect(replSet.servers[2].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
+    }
+
     await replSet.stop();
   });
 
   it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
-    // DEBUG: the following is set because recently the CI often fails with "MongoServerSelectionError: Server selection timed out after 30000 ms" or "Operation interrupted"
-    debug.enable('MongoMS:*');
     // @ts-expect-error because "initAllServers" is protected
     jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
     const replSet = await MongoMemoryReplSet.create({
       replSet: { auth: {}, count: 3, storageEngine: 'wiredTiger' },
     });
@@ -291,23 +318,53 @@ describe('single server replset', () => {
     utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootName));
     utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth.customRootPwd));
 
-    const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
-      authSource: 'admin',
-      authMechanism: 'SCRAM-SHA-256',
-      auth: {
-        username: replSet.replSetOpts.auth.customRootName,
-        password: replSet.replSetOpts.auth.customRootPwd,
-      },
-    });
+    // test unpriviliged connection
+    {
+      const con = await MongoClient.connect(replSet.getUri());
 
-    const db = con.db('admin');
-    const users: { users?: { user: string }[] } = await db.command({
-      usersInfo: replSet.replSetOpts.auth.customRootName,
-    });
-    expect(users.users).toHaveLength(1);
-    expect(users.users?.[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
+      const db = con.db('somedb');
+      const col = db.collection('somecol');
+
+      try {
+        await col.insertOne({ test: 1 });
+        fail('Expected insertion to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(MongoServerError);
+        expect((err as MongoServerError).codeName).toEqual('Unauthorized');
+      } finally {
+        await con.close();
+      }
+    }
+
+    // test priviliged connection
+    {
+      const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
+        authSource: 'admin',
+        authMechanism: 'SCRAM-SHA-256',
+        auth: {
+          username: replSet.replSetOpts.auth.customRootName,
+          password: replSet.replSetOpts.auth.customRootPwd,
+        },
+      });
+
+      const admindb = con.db('admin');
+      const users: { users?: { user: string }[] } = await admindb.command({
+        usersInfo: replSet.replSetOpts.auth.customRootName,
+      });
+      expect(users.users).toHaveLength(1);
+      expect(users.users?.[0].user).toEqual(replSet.replSetOpts.auth.customRootName);
+
+      const db = con.db('somedb');
+      const col = db.collection('somecol');
+
+      expect(await col.insertOne({ test: 1 })).toHaveProperty('acknowledged', true);
+
+      await con.close();
+    }
+
     // @ts-expect-error because "initAllServers" is protected
-    expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(2);
+    expect(MongoMemoryReplSet.prototype.initAllServers).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledTimes(0);
 
     {
       expect(replSet.servers[0].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
@@ -315,7 +372,6 @@ describe('single server replset', () => {
       expect(replSet.servers[2].instanceInfo?.instance.instanceOpts.auth).toStrictEqual(true);
     }
 
-    await con.close();
     await replSet.stop();
   });
 });
@@ -362,7 +418,7 @@ describe('MongoMemoryReplSet', () => {
       // @ts-expect-error because "_replSetOpts" is protected
       expect(replSet.replSetOpts).toEqual(replSet._replSetOpts);
       expect(replSet.replSetOpts).toEqual({
-        auth: false,
+        auth: { disable: true },
         args: [],
         name: 'testset',
         count: 1,
@@ -375,8 +431,9 @@ describe('MongoMemoryReplSet', () => {
       replSet.replSetOpts = { auth: true };
       // @ts-expect-error because "_replSetOpts" is protected
       expect(replSet.replSetOpts).toEqual(replSet._replSetOpts);
+      const authDefault = utils.authDefault(replSet.replSetOpts.auth as AutomaticAuth);
       expect(replSet.replSetOpts).toEqual({
-        auth: true,
+        auth: { ...authDefault, disable: false },
         args: [],
         name: 'testset',
         count: 1,
