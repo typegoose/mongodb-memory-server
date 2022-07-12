@@ -682,6 +682,11 @@ describe('MongoBinaryDownloadUrl', () => {
           platform: 'linux',
           arch: 'x64',
           version: '4.0.0',
+          os: {
+            os: 'linux',
+            dist: 'Ubuntu Linux',
+            release: '18.04',
+          },
         });
 
         jest.spyOn(mbdu, 'getArchiveName').mockImplementation(() => Promise.resolve(archiveName));
