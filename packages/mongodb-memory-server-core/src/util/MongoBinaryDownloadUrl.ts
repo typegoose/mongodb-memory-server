@@ -341,7 +341,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
   /**
    * Linux Fallback
-   * @param os LinuxOS Object
    */
   getLegacyVersionString(): string {
     return '';
