@@ -275,6 +275,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = 'rhel';
     const fedoraVer: number = parseInt(os.release, 10);
 
+    // 36 and onwards dont ship with libcrypto.so.1.1 anymore and need to be manually installed ("openssl1.1")
     // 34 onward dosnt have "compat-openssl10" anymore, and only build from 4.0.24 are available for "rhel80"
     if (fedoraVer >= 34) {
       name += '80';
