@@ -79,8 +79,13 @@ Default version is `10` (when in `unstable` or `testing`, otherwise none)
 
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `6`<br/>
-Highest version is `18`<br/>
+Highest version is `36` (see note)<br/>
 Default version is `34` (when above or equal to `34`, otherwise none)
+
+:::note
+Fedora 36 and onwards dont ship openssl1.1 anymore by default and currently needs to be manually installed.  
+There are currently no newer mongodb builds that support the newer provided openssl.
+:::
 
 ### Rhel
 
