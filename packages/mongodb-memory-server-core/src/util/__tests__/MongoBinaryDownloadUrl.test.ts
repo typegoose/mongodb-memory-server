@@ -546,6 +546,40 @@ describe('MongoBinaryDownloadUrl', () => {
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.0.24.tgz'
           );
         });
+
+        it('should return a archive name for Fedora 35', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.8',
+            os: {
+              os: 'linux',
+              dist: 'fedora',
+              release: '35',
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-5.0.8.tgz'
+          );
+        });
+
+        it('should return a archive name for Fedora 36', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.8',
+            os: {
+              os: 'linux',
+              dist: 'fedora',
+              release: '36',
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-5.0.8.tgz'
+          );
+        });
       });
 
       // see https://github.com/nodkz/mongodb-memory-server/issues/527
