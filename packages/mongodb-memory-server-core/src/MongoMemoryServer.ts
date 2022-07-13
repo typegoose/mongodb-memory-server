@@ -19,6 +19,7 @@ import { promises as fspromises } from 'fs';
 import { MongoClient } from 'mongodb';
 import { lt } from 'semver';
 import { EnsureInstanceError, StateError } from './util/errors';
+import * as os from 'os';
 
 const log = debug('MongoMS:MongoMemoryServer');
 
@@ -280,6 +281,13 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.stateChange(MongoMemoryServerStates.starting);
 
     await this._startUpInstance(forceSamePort).catch(async (err) => {
+      // add error information on macos-arm because "spawn Unknown system error -86" does not say much
+      if (err instanceof Error && err.message?.includes('spawn Unknown system error -86')) {
+        if (os.platform() === 'darwin' && os.arch() === 'arm64') {
+          err.message += err.message += ', Is Rosetta Installed and Setup correctly?';
+        }
+      }
+
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
         console.warn(
           'Starting the MongoMemoryServer Instance failed, enable debug log for more information. Error:\n',
