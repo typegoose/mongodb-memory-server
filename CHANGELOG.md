@@ -1,3 +1,16 @@
+## [8.8.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.8.0-beta.1...v8.8.0-beta.2) (2022-07-13)
+
+
+### Style
+
+* **MongoBinaryDownloadUrl::getFedoraVersionString:** add comment about 36 ([c168c62](https://github.com/nodkz/mongodb-memory-server/commit/c168c62b0457eee48ce671a1e823dc48572e8b1c)), closes [#673](https://github.com/nodkz/mongodb-memory-server/issues/673)
+* **MongoBinaryDownloadUrl::getLegacyVersionString:** remove nonexistent parameter from tsdoc ([417d946](https://github.com/nodkz/mongodb-memory-server/commit/417d946bb79a9b7ecd0980e88253534b225a65db))
+
+
+### Fixes
+
+* **MongoMemoryServer:** add some extra context to -86 error on macos-arm ([1f0f045](https://github.com/nodkz/mongodb-memory-server/commit/1f0f045ef89b2a94687fe10e4e7ca500f4df7426)), closes [#674](https://github.com/nodkz/mongodb-memory-server/issues/674)
+
 ## [8.8.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.7.2...v8.8.0-beta.1) (2022-07-05)
 
 
