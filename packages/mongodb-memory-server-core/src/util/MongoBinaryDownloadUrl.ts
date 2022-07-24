@@ -297,7 +297,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * Get the version string for Red Hat Enterprise Linux
    * @param os LinuxOS Object
    */
-  // TODO: add tests for getRhelVersionString
   getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const { release } = os;
