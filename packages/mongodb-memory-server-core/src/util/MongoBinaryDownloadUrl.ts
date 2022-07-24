@@ -130,8 +130,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
 
-    if (this.arch === 'arm64') {
-      log('getArchiveNameOsx: Arch is "arm64", using x64 binary');
+    if (this.arch === 'aarch64') {
+      log('getArchiveNameOsx: Arch is "aarch64", using x64 binary');
       this.arch = 'x86_64';
     }
 
@@ -422,24 +422,16 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     const ubuntuYear: number = parseInt(ubuntuOS.release.split('.')[0], 10);
 
-    // this is, because currently mongodb only really provides arm64 binaries for "ubuntu1604"
-    if (this.arch === 'arm64') {
+    if (this.arch === 'aarch64') {
       // this is because, before version 4.1.10, everything for "arm64" / "aarch64" were just "arm64" and for "ubuntu1604"
       if (semver.satisfies(this.version, '<4.1.10')) {
         this.arch = 'arm64';
 
         return 'ubuntu1604';
       }
-      if (semver.satisfies(this.version, '>=4.1.10')) {
-        // this is because mongodb changed since 4.1.0 to use "aarch64" instead of "arm64"
-        this.arch = 'aarch64';
-
-        // this is because since versions below "4.4.0" did not provide an binary for something like "20.04"
-        if (semver.satisfies(this.version, '<4.4.0')) {
-          return 'ubuntu1804';
-        }
-
-        return `ubuntu${ubuntuYear || 18}04`;
+      // this is because versions below "4.4.0" did not provide an binary for anything above 1804
+      if (semver.satisfies(this.version, '>=4.1.10 <4.4.0')) {
+        return 'ubuntu1804';
       }
     }
 
@@ -538,7 +530,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       case 'x64':
         return 'x86_64';
       case 'arm64':
-        return 'arm64';
+        return 'aarch64';
       case 'aarch64':
         return 'aarch64';
       default:

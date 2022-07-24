@@ -153,6 +153,38 @@ describe('MongoBinaryDownloadUrl', () => {
               'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2004-4.4.6.tgz'
             );
           });
+
+          it('for ubuntu arm64 5.0.0 & ubuntu2004 (above 4.4.0)', async () => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch: 'arm64',
+              version: '5.0.0',
+              os: {
+                os: 'linux',
+                dist: 'Ubuntu Linux',
+                release: '20.04',
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2004-5.0.0.tgz'
+            );
+          });
+
+          it('for ubuntu arm64 5.0.0 & ubuntu2204 (above 4.4.0)', async () => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch: 'arm64',
+              version: '5.0.0',
+              os: {
+                os: 'linux',
+                dist: 'Ubuntu Linux',
+                release: '22.04',
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2004-5.0.0.tgz'
+            );
+          });
         });
       });
 
