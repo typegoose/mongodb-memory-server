@@ -14,7 +14,6 @@ import { EnsureInstanceError, StateError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
 import { promises as fspromises } from 'fs';
 import * as path from 'path';
-import * as debug from 'debug';
 
 tmp.setGracefulCleanup();
 jest.setTimeout(100000); // 10s
