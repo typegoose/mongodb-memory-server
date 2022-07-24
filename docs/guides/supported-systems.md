@@ -12,6 +12,7 @@ Currently Supported platforms:
 Officially Supported Architectures:
 <!--Platfrom taken from "MongoBinaryDownloadUrl.translateArch"-->
 - `x64` / `x86_64`
+- `arm64` / `aarch64` (only some linux distros have binaries)
 - ~~`ia32` / `i686` / `i386`~~ (There are only binaries up to ~3.2 and [will be removed with the next MMS version](https://github.com/nodkz/mongodb-memory-server/issues/638))
 
 :::note
@@ -52,12 +53,11 @@ Depends on the distribution, many common ones should just work right out of the 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `1404`<br/>
 Highest version is `2204`<br/>
-Default version is `1404`
+Default version is `1404`<br/>
+Architectures Supported: `x86_64`, `arm64`(`aarch64`)
+
 :::note
 Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an lower version of mongodb for an higher version of ubuntu
-:::
-:::note
-For Arm64 MongoDB only provides binaries for `ubuntu1604`
 :::
 :::note
 There are currently no native binaries for `2204`, so it is mapped to `2004` and will require `libssl1.1` to be installed.  
