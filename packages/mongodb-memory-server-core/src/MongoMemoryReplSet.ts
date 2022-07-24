@@ -48,7 +48,7 @@ export interface ReplSetOpts {
    * enable auth ("--auth" / "--noauth")
    * @default false
    */
-  auth?: boolean | AutomaticAuth;
+  auth?: boolean | AutomaticAuth; // TODO: remove "boolean" option next major version
   /**
    * additional command line arguments passed to `mongod`
    * @default []
@@ -255,28 +255,57 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     assertion(this._replSetOpts.count > 0, new ReplsetCountLowError(this._replSetOpts.count));
 
-    if (typeof this._replSetOpts.auth === 'object') {
+    // setting this for sanity
+    if (typeof this._replSetOpts.auth === 'boolean') {
+      this._replSetOpts.auth = { disable: !this._replSetOpts.auth };
+    }
+
+    // do not set default when "disable" is "true" to save execution and memory
+    if (!this._replSetOpts.auth.disable) {
       this._replSetOpts.auth = authDefault(this._replSetOpts.auth);
     }
   }
 
   /**
+   * Helper function to determine if "auth" should be enabled
+   * This function expectes to be run after the auth object has been transformed to a object
+   * @returns "true" when "auth" should be enabled
+   */
+  protected enableAuth(): boolean {
+    if (isNullOrUndefined(this._replSetOpts.auth)) {
+      return false;
+    }
+
+    assertion(typeof this._replSetOpts.auth === 'object', new AuthNotObjectError());
+
+    return typeof this._replSetOpts.auth.disable === 'boolean' // if "this._replSetOpts.auth.disable" is defined, use that
+      ? !this._replSetOpts.auth.disable // invert the disable boolean, because "auth" should only be disabled if "disabled = true"
+      : true; // if "this._replSetOpts.auth.disable" is not defined, default to true because "this._replSetOpts.auth" is defined
+  }
+
+  /**
    * Returns instance options suitable for a MongoMemoryServer.
    * @param baseOpts Options to merge with
+   * @param keyfileLocation The Keyfile location if "auth" is used
    */
-  protected getInstanceOpts(baseOpts: MongoMemoryInstanceOptsBase = {}): MongoMemoryInstanceOpts {
+  protected getInstanceOpts(
+    baseOpts: MongoMemoryInstanceOptsBase = {},
+    keyfileLocation?: string
+  ): MongoMemoryInstanceOpts {
+    const enableAuth: boolean = this.enableAuth();
+
     const opts: MongoMemoryInstanceOpts = {
-      // disable "auth" if replsetopts has an object-auth
-      auth:
-        typeof this._replSetOpts.auth === 'object' && !this._ranCreateAuth
-          ? false
-          : !!this._replSetOpts.auth,
+      auth: enableAuth,
       args: this._replSetOpts.args,
       dbName: this._replSetOpts.dbName,
       ip: this._replSetOpts.ip,
       replSet: this._replSetOpts.name,
       storageEngine: this._replSetOpts.storageEngine,
     };
+
+    if (!isNullOrUndefined(keyfileLocation)) {
+      opts.keyfileLocation = keyfileLocation;
+    }
 
     if (baseOpts.args) {
       opts.args = this._replSetOpts.args.concat(baseOpts.args);
@@ -410,6 +439,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       return;
     }
 
+    let keyfilePath: string | undefined = undefined;
+
+    if (this.enableAuth()) {
+      keyfilePath = resolve((await this.ensureKeyFile()).name, 'keyfile');
+    }
+
     // Any servers defined within `_instanceOpts` should be started first as
     // the user could have specified a `dbPath` in which case we would want to perform
     // the `replSetInitiate` command against that server.
@@ -420,7 +455,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         }" from instanceOpts (count: ${this.servers.length + 1}):`,
         opts
       );
-      this.servers.push(this._initServer(this.getInstanceOpts(opts)));
+      this.servers.push(this._initServer(this.getInstanceOpts(opts, keyfilePath)));
     });
     while (this.servers.length < this._replSetOpts.count) {
       log(
@@ -428,7 +463,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           this._replSetOpts.count
         }" (count: ${this.servers.length + 1})`
       );
-      this.servers.push(this._initServer(this.getInstanceOpts()));
+      this.servers.push(this._initServer(this.getInstanceOpts(undefined, keyfilePath)));
     }
 
     log('initAllServers: waiting for all servers to finish starting');
@@ -638,7 +673,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     const uris = this.servers.map((server) => server.getUri());
     const isInMemory = this.servers[0].instanceInfo?.storageEngine === 'ephemeralForTest';
 
-    let con: MongoClient = await MongoClient.connect(uris[0], {
+    const con: MongoClient = await MongoClient.connect(uris[0], {
       // somehow since mongodb-nodejs 4.0, this option is needed when the server is set to be in a replset
       directConnection: true,
     });
@@ -646,7 +681,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     // try-finally to close connection in any case
     try {
-      let adminDb = con.db('admin');
+      const adminDb = con.db('admin');
 
       const members = uris.map((uri, index) => ({
         _id: index,
@@ -682,34 +717,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
             new InstanceInfoError('_initReplSet authIsObject primary')
           );
 
+          await con.close(); // just ensuring that no timeouts happen or conflicts happen
           await primary.createAuth(primary.instanceInfo);
           this._ranCreateAuth = true;
-
-          // TODO: maybe change the static "isInMemory" to be for each server individually, based on "storageEngine", not just the first one
-          if (!isInMemory) {
-            log('_initReplSet: closing connection for restart');
-            await con.close(); // close connection in preparation for "stop"
-            await this.stop({ doCleanup: false, force: false }); // stop all servers for enabling auth
-            log('_initReplSet: starting all server again with auth');
-            await this.initAllServers(); // start all servers again with "auth" enabled
-            await this._waitForPrimary(); // wait for a primary to come around, because otherwise server selection may time out, this may take more than 30s
-
-            con = await MongoClient.connect(this.getUri(), {
-              authSource: 'admin',
-              authMechanism: 'SCRAM-SHA-256',
-              auth: {
-                username: this._replSetOpts.auth.customRootName as string, // cast because these are existing
-                password: this._replSetOpts.auth.customRootPwd as string,
-              },
-            });
-            adminDb = con.db('admin');
-            log('_initReplSet: auth restart finished');
-          } else {
-            console.warn(
-              'Not Restarting ReplSet for Auth\n' +
-                'Storage engine of current PRIMARY is ephemeralForTest, which does not write data on shutdown, and mongodb does not allow changing "auth" runtime'
-            );
-          }
         }
       } catch (e) {
         if (e instanceof MongoError && e.errmsg == 'already initialized') {

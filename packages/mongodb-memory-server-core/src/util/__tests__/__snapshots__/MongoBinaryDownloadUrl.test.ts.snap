@@ -10,6 +10,13 @@ exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should thr
 Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release"
 `;
 
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should Error when ARM64 and rhel below 8 [KnownVersionIncompatibilityError] 1`] = `
+"Requested Version \\"4.4.2\\" is not available for \\"Rhel 7\\"! Available Versions: \\">=4.4.2\\"
+ARM64(aarch64) support for rhel is only for rhel82 or higher"
+`;
+
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should Error when ARM64 and version below 4.4.2 is requested [KnownVersionIncompatibilityError] 1`] = `"Requested Version \\"4.4.0\\" is not available for \\"Rhel 8\\"! Available Versions: \\">=4.4.2\\""`;
+
 exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platform is unknown (getArchiveName) 1`] = `"Unknown Platform: \\"unknown\\""`;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platform is unknown (translatePlatform) 1`] = `"Unknown Platform: \\"unknown\\""`;

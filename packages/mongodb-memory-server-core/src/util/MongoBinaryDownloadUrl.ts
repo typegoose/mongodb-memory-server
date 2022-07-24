@@ -130,8 +130,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
 
-    if (this.arch === 'arm64') {
-      log('getArchiveNameOsx: Arch is "arm64", using x64 binary');
+    if (this.arch === 'aarch64') {
+      log('getArchiveNameOsx: Arch is "aarch64", using x64 binary');
       this.arch = 'x86_64';
     }
 
@@ -275,6 +275,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = 'rhel';
     const fedoraVer: number = parseInt(os.release, 10);
 
+    // 36 and onwards dont ship with libcrypto.so.1.1 anymore and need to be manually installed ("openssl1.1")
     // 34 onward dosnt have "compat-openssl10" anymore, and only build from 4.0.24 are available for "rhel80"
     if (fedoraVer >= 34) {
       name += '80';
@@ -296,13 +297,27 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * Get the version string for Red Hat Enterprise Linux
    * @param os LinuxOS Object
    */
-  // TODO: add tests for getRhelVersionString
   getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const { release } = os;
 
     if (release) {
-      if (/^8/.test(release)) {
+      if (this.arch === 'aarch64') {
+        if (!/^8/.test(release)) {
+          throw new KnownVersionIncompatibilityError(
+            `Rhel ${release}`,
+            this.version,
+            '>=4.4.2',
+            'ARM64(aarch64) support for rhel is only for rhel82 or higher'
+          );
+        }
+        if (semver.satisfies(this.version, '<4.4.2')) {
+          throw new KnownVersionIncompatibilityError(`Rhel ${release}`, this.version, '>=4.4.2');
+        }
+
+        // rhel aarch64 support is only for rhel 8 and only for 82
+        name += '82';
+      } else if (/^8/.test(release)) {
         name += '80';
       } else if (/^7/.test(release)) {
         name += '70';
@@ -340,7 +355,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
   /**
    * Linux Fallback
-   * @param os LinuxOS Object
    */
   getLegacyVersionString(): string {
     return '';
@@ -422,24 +436,16 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     const ubuntuYear: number = parseInt(ubuntuOS.release.split('.')[0], 10);
 
-    // this is, because currently mongodb only really provides arm64 binaries for "ubuntu1604"
-    if (this.arch === 'arm64') {
+    if (this.arch === 'aarch64') {
       // this is because, before version 4.1.10, everything for "arm64" / "aarch64" were just "arm64" and for "ubuntu1604"
       if (semver.satisfies(this.version, '<4.1.10')) {
         this.arch = 'arm64';
 
         return 'ubuntu1604';
       }
-      if (semver.satisfies(this.version, '>=4.1.10')) {
-        // this is because mongodb changed since 4.1.0 to use "aarch64" instead of "arm64"
-        this.arch = 'aarch64';
-
-        // this is because since versions below "4.4.0" did not provide an binary for something like "20.04"
-        if (semver.satisfies(this.version, '<4.4.0')) {
-          return 'ubuntu1804';
-        }
-
-        return `ubuntu${ubuntuYear || 18}04`;
+      // this is because versions below "4.4.0" did not provide an binary for anything above 1804
+      if (semver.satisfies(this.version, '>=4.1.10 <4.4.0')) {
+        return 'ubuntu1804';
       }
     }
 
@@ -538,7 +544,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       case 'x64':
         return 'x86_64';
       case 'arm64':
-        return 'arm64';
+        return 'aarch64';
       case 'aarch64':
         return 'aarch64';
       default:

@@ -19,6 +19,7 @@ import { promises as fspromises } from 'fs';
 import { MongoClient } from 'mongodb';
 import { lt } from 'semver';
 import { EnsureInstanceError, StateError } from './util/errors';
+import * as os from 'os';
 
 const log = debug('MongoMS:MongoMemoryServer');
 
@@ -60,7 +61,7 @@ export interface AutomaticAuth {
   customRootPwd?: string;
   /**
    * Force to run "createAuth"
-   * @default false "creatAuth" is normally only run when the given "dbPath" is empty (no files)
+   * @default false "createAuth" is normally only run when the given "dbPath" is empty (no files)
    */
   force?: boolean;
   /**
@@ -82,6 +83,7 @@ export interface StartupInstanceData {
   storageEngine: NonNullable<MongoMemoryInstanceOpts['storageEngine']>;
   replSet?: NonNullable<MongoMemoryInstanceOpts['replSet']>;
   tmpDir?: tmp.DirResult;
+  keyfileLocation?: NonNullable<MongoMemoryInstanceOpts['keyfileLocation']>;
 }
 
 /**
@@ -193,6 +195,7 @@ export interface CreateUser extends CreateUserMongoDB {
 }
 
 export interface MongoMemoryServerGetStartOptions {
+  /** Defines wheter should {@link MongoMemoryServer.createAuth} be run */
   createAuth: boolean;
   data: StartupInstanceData;
   mongodOptions: Partial<MongodOpts>;
@@ -278,6 +281,13 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.stateChange(MongoMemoryServerStates.starting);
 
     await this._startUpInstance(forceSamePort).catch(async (err) => {
+      // add error information on macos-arm because "spawn Unknown system error -86" does not say much
+      if (err instanceof Error && err.message?.includes('spawn Unknown system error -86')) {
+        if (os.platform() === 'darwin' && os.arch() === 'arm64') {
+          err.message += err.message += ', Is Rosetta Installed and Setup correctly?';
+        }
+      }
+
       if (!debug.enabled('MongoMS:MongoMemoryServer')) {
         console.warn(
           'Starting the MongoMemoryServer Instance failed, enable debug log for more information. Error:\n',
@@ -361,6 +371,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       replSet: instOpts.replSet,
       dbPath: instOpts.dbPath,
       tmpDir: undefined,
+      keyfileLocation: instOpts.keyfileLocation,
     };
 
     if (isNullOrUndefined(this._instanceInfo)) {
@@ -386,12 +397,16 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       isNew = false;
     }
 
-    const createAuth: boolean =
+    const enableAuth: boolean =
       (typeof instOpts.auth === 'boolean' ? instOpts.auth : true) && // check if auth is even meant to be enabled
       !isNullOrUndefined(this.auth) && // check if "this.auth" is defined
-      !this.auth.disable && // check that "this.auth.disable" is falsey
+      !this.auth.disable; // check that "this.auth.disable" is falsey
+
+    const createAuth: boolean =
+      enableAuth && // re-use all the checks from "enableAuth"
+      !isNullOrUndefined(this.auth) && // needs to be re-checked because typescript complains
       (this.auth.force || isNew) && // check that either "isNew" or "this.auth.force" is "true"
-      !instOpts.replSet; // dont run "createAuth" when its an replset
+      !instOpts.replSet; // dont run "createAuth" when its an replset, it will be run by the replset controller
 
     return {
       data: data,
@@ -400,7 +415,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
         instance: {
           ...data,
           args: instOpts.args,
-          auth: createAuth ? false : instOpts.auth, // disable "auth" for "createAuth"
+          auth: enableAuth,
         },
         binary: this.opts.binary,
         spawn: this.opts.spawn,
@@ -436,24 +451,28 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     const instance = await MongoInstance.create(mongodOptions);
     this.debug(`_startUpInstance: Instance Started, createAuth: "${createAuth}"`);
 
+    this._instanceInfo = {
+      ...data,
+      dbPath: data.dbPath as string, // because otherwise the types would be incompatible
+      instance,
+    };
+
+    // always set the "extraConnectionOptions" when "auth" is enabled, regardless of if "createAuth" gets run
+    if (!isNullOrUndefined(this.auth) && !isNullOrUndefined(mongodOptions.instance?.auth)) {
+      instance.extraConnectionOptions = {
+        authSource: 'admin',
+        authMechanism: 'SCRAM-SHA-256',
+        auth: {
+          username: this.auth.customRootName,
+          password: this.auth.customRootPwd,
+        },
+      };
+    }
+
     // "isNullOrUndefined" because otherwise typescript complains about "this.auth" possibly being not defined
     if (!isNullOrUndefined(this.auth) && createAuth) {
       this.debug(`_startUpInstance: Running "createAuth" (force: "${this.auth.force}")`);
       await this.createAuth(data);
-
-      if (data.storageEngine !== 'ephemeralForTest') {
-        this.debug('_startUpInstance: Killing No-Auth instance');
-        await instance.stop();
-
-        this.debug('_startUpInstance: Starting Auth Instance');
-        instance.instanceOpts.auth = true;
-        await instance.start();
-      } else {
-        console.warn(
-          'Not Restarting MongoInstance for Auth\n' +
-            'Storage engine is "ephemeralForTest", which does not write data on shutdown, and mongodb does not allow changing "auth" runtime'
-        );
-      }
     } else {
       // extra "if" to log when "disable" is set to "true"
       if (this.opts.auth?.disable) {
@@ -462,12 +481,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
         );
       }
     }
-
-    this._instanceInfo = {
-      ...data,
-      dbPath: data.dbPath as string, // because otherwise the types would be incompatible
-      instance,
-    };
   }
 
   /**
@@ -715,7 +728,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   }
 
   /**
-   * Create Users and restart instance to enable auth
+   * Create the Root user and additional users using the [localhost exception](https://www.mongodb.com/docs/manual/core/localhost-exception/#std-label-localhost-exception)
    * This Function assumes "this.opts.auth" is already processed into "this.auth"
    * @param data Used to get "ip" and "port"
    * @internal
@@ -725,11 +738,9 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       !isNullOrUndefined(this.auth),
       new Error('"createAuth" got called, but "this.auth" is undefined!')
     );
+    assertionInstanceInfo(this._instanceInfo);
     this.debug('createAuth: options:', this.auth);
-    const con: MongoClient = await MongoClient.connect(
-      uriTemplate(data.ip, data.port, 'admin'),
-      {}
-    );
+    let con: MongoClient = await MongoClient.connect(uriTemplate(data.ip, data.port, 'admin'));
 
     try {
       let db = con.db('admin'); // just to ensure it is actually the "admin" database AND to have the "Db" data
@@ -761,6 +772,14 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
           return a.database === b.database ? 0 : 1; // "0" to sort all databases that are the same after each other, and "1" to for pushing it back
         });
 
+        // reconnecting the database because the root user now exists and the "localhost exception" only allows the first user
+        await con.close();
+        con = await MongoClient.connect(
+          this.getUri('admin'),
+          this._instanceInfo.instance.extraConnectionOptions ?? {}
+        );
+        db = con.db('admin');
+
         for (const user of this.auth.extraUsers) {
           user.database = isNullOrUndefined(user.database) ? 'admin' : user.database;
 
@@ -782,6 +801,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
             authenticationRestrictions: user.authenticationRestrictions ?? [],
             mechanisms: user.mechanisms ?? ['SCRAM-SHA-256'],
             digestPassword: user.digestPassword ?? true,
+            // "writeConcern" is needced, otherwise replset servers might fail with "auth failed: such user does not exist"
+            writeConcern: {
+              w: 'majority',
+            },
           } as CreateUserMongoDB);
         }
       }

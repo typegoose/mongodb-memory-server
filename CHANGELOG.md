@@ -1,3 +1,55 @@
+## [8.8.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.8.0-beta.2...v8.8.0-beta.3) (2022-07-24)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** change to use "aarch64" by  default and map to "arm64" where needed ([ddf1991](https://github.com/nodkz/mongodb-memory-server/commit/ddf19917aa07b1872db4e34fd1165d17f472905c)), closes [#678](https://github.com/nodkz/mongodb-memory-server/issues/678)
+* **MongoBinaryDownloadUrl::getRhelVersionString:** add support for aarch64 ([62d96e6](https://github.com/nodkz/mongodb-memory-server/commit/62d96e635bec8ced1dedde3bd65d4926c07f9a1f))
+
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 28.1.6 ([dff909f](https://github.com/nodkz/mongodb-memory-server/commit/dff909facf013e069861c35a105b0666c39832ac))
+* **@typescript-eslint/*:** upgrade to version 5.30.7 ([f73a26e](https://github.com/nodkz/mongodb-memory-server/commit/f73a26ec7adb75168a2fcf18479a97720e9eab03))
+* **eslint:** upgrade to version 8.20.0 ([76a4a48](https://github.com/nodkz/mongodb-memory-server/commit/76a4a48ba36c3f54302438f8043fd45a4c32919d))
+* **jest:** upgrade to version 28.1.3 ([2ade5c3](https://github.com/nodkz/mongodb-memory-server/commit/2ade5c31a6e323aa438b0596a7481d12f4a95d36))
+* **mongodb:** set version to be "~" ([8a5552a](https://github.com/nodkz/mongodb-memory-server/commit/8a5552a8db0ac33524f573176240a4b53412546e))
+* **ts-jest:** upgrade to version 28.0.7 ([fa9975d](https://github.com/nodkz/mongodb-memory-server/commit/fa9975d20566a704cdebc634d222de61bc475ec4))
+
+## [8.8.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.8.0-beta.1...v8.8.0-beta.2) (2022-07-13)
+
+
+### Style
+
+* **MongoBinaryDownloadUrl::getFedoraVersionString:** add comment about 36 ([c168c62](https://github.com/nodkz/mongodb-memory-server/commit/c168c62b0457eee48ce671a1e823dc48572e8b1c)), closes [#673](https://github.com/nodkz/mongodb-memory-server/issues/673)
+* **MongoBinaryDownloadUrl::getLegacyVersionString:** remove nonexistent parameter from tsdoc ([417d946](https://github.com/nodkz/mongodb-memory-server/commit/417d946bb79a9b7ecd0980e88253534b225a65db))
+
+
+### Fixes
+
+* **MongoMemoryServer:** add some extra context to -86 error on macos-arm ([1f0f045](https://github.com/nodkz/mongodb-memory-server/commit/1f0f045ef89b2a94687fe10e4e7ca500f4df7426)), closes [#674](https://github.com/nodkz/mongodb-memory-server/issues/674)
+
+## [8.8.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.7.2...v8.8.0-beta.1) (2022-07-05)
+
+
+### Features
+
+* make use of the "localhost exception" for creating users ([b1f4dc0](https://github.com/nodkz/mongodb-memory-server/commit/b1f4dc01e007454aea5fe3c83df1f71fbaed892d)), closes [#670](https://github.com/nodkz/mongodb-memory-server/issues/670) [#671](https://github.com/nodkz/mongodb-memory-server/issues/671)
+
+
+### Style
+
+* **MongoMemoryServer::AutomaticAuth:** fix typo in tsdoc ([770791b](https://github.com/nodkz/mongodb-memory-server/commit/770791b0e98b25573e0a626b1ebdab279b887d81))
+
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 28.1.4 ([627a3b5](https://github.com/nodkz/mongodb-memory-server/commit/627a3b5ba90cf87b5249f40e9627f2b08a637f72))
+* **@typescript-eslint/*:** upgrade to version 5.30.5 ([58cfeaf](https://github.com/nodkz/mongodb-memory-server/commit/58cfeafcc36e1c853e0a5dc2b87c124a56d25e27))
+* **eslint:** upgrade to version 8.19.0 ([574c252](https://github.com/nodkz/mongodb-memory-server/commit/574c252f804b20776337260fa5bc770c61722c7f))
+* **eslint-plugin-prettier:** upgrade to version 4.2.1 ([97145a8](https://github.com/nodkz/mongodb-memory-server/commit/97145a8a71c134ded6677cea5061abc534c61ae1))
+* **jest:** upgrade to version 28.1.2 ([c7c7303](https://github.com/nodkz/mongodb-memory-server/commit/c7c73037ddaaf619a8395de6764d2e92c73b9b02))
+
 ## [8.7.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.7.1...v8.7.2) (2022-06-29)
 
 

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { MongoClient } from 'mongodb';
+import { MongoClient, MongoServerError } from 'mongodb';
 import * as tmp from 'tmp';
 import MongoMemoryServer, {
+  CreateUser,
   MongoInstanceData,
   MongoMemoryServerEvents,
   MongoMemoryServerStates,
@@ -86,32 +87,62 @@ describe('MongoMemoryServer', () => {
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
       utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
 
-      const con: MongoClient = await MongoClient.connect(
-        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
-        {
-          authSource: 'admin',
-          authMechanism: 'SCRAM-SHA-256',
-          auth: {
-            username: mongoServer.auth.customRootName,
-            password: mongoServer.auth.customRootPwd,
-          },
-        }
-      );
-      const db = con.db('admin');
-      const users: { users?: { user: string }[] } = await db.command({
-        usersInfo: mongoServer.auth.customRootName,
-      });
-      expect(users.users).toHaveLength(1);
-      expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
-      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
-      expect(console.warn).toHaveBeenCalledTimes(1);
+      // test unpriviliged connection
+      {
+        const con = await MongoClient.connect(mongoServer.getUri());
 
-      await con.close();
+        const db = con.db('somedb');
+        const col = db.collection('somecol');
+
+        try {
+          await col.insertOne({ test: 1 });
+          fail('Expected insertion to fail');
+        } catch (err) {
+          expect(err).toBeInstanceOf(MongoServerError);
+          expect((err as MongoServerError).codeName).toEqual('Unauthorized');
+        } finally {
+          await con.close();
+        }
+      }
+
+      // test priviliged connection
+      {
+        const con: MongoClient = await MongoClient.connect(
+          utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
+          {
+            authSource: 'admin',
+            authMechanism: 'SCRAM-SHA-256',
+            auth: {
+              username: mongoServer.auth.customRootName,
+              password: mongoServer.auth.customRootPwd,
+            },
+          }
+        );
+
+        const admindb = con.db('admin');
+        const users: { users?: { user: string }[] } = await admindb.command({
+          usersInfo: mongoServer.auth.customRootName,
+        });
+        expect(users.users).toHaveLength(1);
+        expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
+
+        const db = con.db('somedb');
+        const col = db.collection('somecol');
+
+        expect(await col.insertOne({ test: 1 })).toHaveProperty('acknowledged', true);
+
+        await con.close();
+      }
+
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledTimes(0);
+
       await mongoServer.stop();
     });
 
     it('should make use of "AutomaticAuth" even when "instance.auth" is not set (wiredTiger)', async () => {
       jest.spyOn(MongoInstance.prototype, 'start');
+      jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
         auth: {},
         instance: {
@@ -122,31 +153,62 @@ describe('MongoMemoryServer', () => {
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
       utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
 
-      const con: MongoClient = await MongoClient.connect(
-        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
-        {
-          authSource: 'admin',
-          authMechanism: 'SCRAM-SHA-256',
-          auth: {
-            username: mongoServer.auth.customRootName,
-            password: mongoServer.auth.customRootPwd,
-          },
-        }
-      );
-      const db = con.db('admin');
-      const users: { users?: { user: string }[] } = await db.command({
-        usersInfo: mongoServer.auth.customRootName,
-      });
-      expect(users.users).toHaveLength(1);
-      expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
-      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(2);
+      // test unpriviliged connection
+      {
+        const con = await MongoClient.connect(mongoServer.getUri());
 
-      await con.close();
+        const db = con.db('somedb');
+        const col = db.collection('somecol');
+
+        try {
+          await col.insertOne({ test: 1 });
+          fail('Expected insertion to fail');
+        } catch (err) {
+          expect(err).toBeInstanceOf(MongoServerError);
+          expect((err as MongoServerError).codeName).toEqual('Unauthorized');
+        } finally {
+          await con.close();
+        }
+      }
+
+      // test priviliged connection
+      {
+        const con: MongoClient = await MongoClient.connect(
+          utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
+          {
+            authSource: 'admin',
+            authMechanism: 'SCRAM-SHA-256',
+            auth: {
+              username: mongoServer.auth.customRootName,
+              password: mongoServer.auth.customRootPwd,
+            },
+          }
+        );
+
+        const admindb = con.db('admin');
+        const users: { users?: { user: string }[] } = await admindb.command({
+          usersInfo: mongoServer.auth.customRootName,
+        });
+        expect(users.users).toHaveLength(1);
+        expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
+
+        const db = con.db('somedb');
+        const col = db.collection('somecol');
+
+        expect(await col.insertOne({ test: 1 })).toHaveProperty('acknowledged', true);
+
+        await con.close();
+      }
+
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledTimes(0);
+
       await mongoServer.stop();
     });
 
     it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
       jest.spyOn(MongoInstance.prototype, 'start');
+      jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
         auth: {},
         instance: {
@@ -158,40 +220,72 @@ describe('MongoMemoryServer', () => {
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
       utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
 
-      const con: MongoClient = await MongoClient.connect(
-        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
-        {
-          authSource: 'admin',
-          authMechanism: 'SCRAM-SHA-256',
-          auth: {
-            username: mongoServer.auth.customRootName,
-            password: mongoServer.auth.customRootPwd,
-          },
-        }
-      );
-      const db = con.db('admin');
-      const users: { users?: { user: string }[] } = await db.command({
-        usersInfo: mongoServer.auth.customRootName,
-      });
-      expect(users.users).toHaveLength(1);
-      expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
-      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(2);
+      // test unpriviliged connection
+      {
+        const con = await MongoClient.connect(mongoServer.getUri());
 
-      await con.close();
+        const db = con.db('somedb');
+        const col = db.collection('somecol');
+
+        try {
+          await col.insertOne({ test: 1 });
+          fail('Expected insertion to fail');
+        } catch (err) {
+          expect(err).toBeInstanceOf(MongoServerError);
+          expect((err as MongoServerError).codeName).toEqual('Unauthorized');
+        } finally {
+          await con.close();
+        }
+      }
+
+      // test priviliged connection
+      {
+        const con: MongoClient = await MongoClient.connect(
+          utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
+          {
+            authSource: 'admin',
+            authMechanism: 'SCRAM-SHA-256',
+            auth: {
+              username: mongoServer.auth.customRootName,
+              password: mongoServer.auth.customRootPwd,
+            },
+          }
+        );
+
+        const admindb = con.db('admin');
+        const users: { users?: { user: string }[] } = await admindb.command({
+          usersInfo: mongoServer.auth.customRootName,
+        });
+        expect(users.users).toHaveLength(1);
+        expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
+
+        const db = con.db('somedb');
+        const col = db.collection('somecol');
+
+        expect(await col.insertOne({ test: 1 })).toHaveProperty('acknowledged', true);
+
+        await con.close();
+      }
+
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledTimes(0);
+
       await mongoServer.stop();
     });
 
     it('should make use of "AutomaticAuth" with extra users (ephemeralForTest)', async () => {
+      const readOnlyUser: CreateUser = {
+        createUser: 'SomeUser',
+        pwd: 'hello',
+        roles: ['readAnyDatabase'],
+      };
+
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
         auth: {
           extraUsers: [
-            {
-              createUser: 'SomeUser',
-              pwd: 'hello',
-              roles: ['read'],
-            },
+            readOnlyUser,
             {
               createUser: 'SomeOtherUser',
               pwd: 'hello',
@@ -220,41 +314,100 @@ describe('MongoMemoryServer', () => {
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
       utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
 
-      const con: MongoClient = await MongoClient.connect(
-        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
-        {
-          authSource: 'admin',
+      // test unpriviliged connection
+      {
+        const con = await MongoClient.connect(mongoServer.getUri());
+
+        const db = con.db('somedb');
+        const col = db.collection('somecol');
+
+        try {
+          await col.insertOne({ test: 1 });
+          fail('Expected insertion to fail');
+        } catch (err) {
+          expect(err).toBeInstanceOf(MongoServerError);
+          expect((err as MongoServerError).codeName).toEqual('Unauthorized');
+        } finally {
+          await con.close();
+        }
+      }
+
+      // test admin priviliged connection
+      {
+        const con: MongoClient = await MongoClient.connect(
+          utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
+          {
+            authSource: 'admin',
+            authMechanism: 'SCRAM-SHA-256',
+            auth: {
+              username: mongoServer.auth.customRootName,
+              password: mongoServer.auth.customRootPwd,
+            },
+          }
+        );
+
+        const admindb = con.db('admin');
+        const users: { users?: { user: string }[] } = await admindb.command({
+          usersInfo: 1,
+        });
+        utils.assertion(!utils.isNullOrUndefined(users.users));
+        expect(users.users).toHaveLength(4); // 1 root user, 3 extra users in database "admin"
+
+        expect(
+          users.users.filter((v) => v.user === mongoServer.auth!.customRootName).length > 0
+        ).toEqual(true);
+        expect(users.users.filter((v) => v.user === 'SomeUser').length > 0).toEqual(true);
+        expect(users.users.filter((v) => v.user === 'SomeOtherUser').length > 0).toEqual(true);
+        expect(users.users.filter((v) => v.user === 'AdminUser').length > 0).toEqual(true);
+        expect(users.users.filter((v) => v.user === 'OtherDBUser').length > 0).toEqual(false);
+
+        const otherdb = con.db('otherdb');
+        const otherdbUsers: { users?: { user: string }[] } = await otherdb.command({
+          usersInfo: 1,
+        });
+        utils.assertion(!utils.isNullOrUndefined(otherdbUsers.users));
+        expect(otherdbUsers.users).toHaveLength(1); // 1 extra user in database "otherdb"
+        expect(otherdbUsers.users.filter((v) => v.user === 'OtherDBUser').length > 0).toEqual(true);
+
+        const db = con.db('somedb');
+        const col = db.collection('somecol');
+
+        expect(await col.insertOne({ test: 1 })).toHaveProperty('acknowledged', true);
+
+        await con.close();
+      }
+
+      // test read-only user connection
+      {
+        const con = await MongoClient.connect(mongoServer.getUri(), {
+          authSource: readOnlyUser.database,
           authMechanism: 'SCRAM-SHA-256',
           auth: {
-            username: mongoServer.auth.customRootName,
-            password: mongoServer.auth.customRootPwd,
+            username: readOnlyUser.createUser,
+            password: readOnlyUser.pwd,
           },
-        }
-      );
-      let db = con.db('admin');
-      const users: { users?: { user: string }[] } = await db.command({
-        usersInfo: 1,
-      });
-      utils.assertion(!utils.isNullOrUndefined(users.users));
-      expect(users.users).toHaveLength(4);
-      expect(
-        users.users.filter((v) => v.user === mongoServer.auth!.customRootName).length > 0
-      ).toEqual(true);
-      expect(users.users.filter((v) => v.user === 'SomeUser').length > 0).toEqual(true);
-      expect(users.users.filter((v) => v.user === 'SomeOtherUser').length > 0).toEqual(true);
-      expect(users.users.filter((v) => v.user === 'AdminUser').length > 0).toEqual(true);
-      expect(users.users.filter((v) => v.user === 'OtherDBUser').length > 0).toEqual(false);
-      db = con.db('otherdb');
-      const usersOtherDb: { users?: { user: string }[] } = await db.command({
-        usersInfo: 1,
-      });
-      utils.assertion(!utils.isNullOrUndefined(usersOtherDb.users));
-      expect(usersOtherDb.users).toHaveLength(1);
-      expect(usersOtherDb.users.filter((v) => v.user === 'OtherDBUser').length > 0).toEqual(true);
-      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
-      expect(console.warn).toHaveBeenCalledTimes(1);
+        });
 
-      await con.close();
+        const db = con.db('somedb');
+        const col = db.collection('somecol');
+
+        // write test
+        try {
+          await col.insertOne({ test: 1 });
+          fail('Expected insertion to fail');
+        } catch (err) {
+          expect(err).toBeInstanceOf(MongoServerError);
+          expect((err as MongoServerError).codeName).toEqual('Unauthorized');
+        }
+
+        expect(await col.findOne()).toHaveProperty('test', 1);
+
+        await con.close();
+      }
+
+      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledTimes(0);
+
       await mongoServer.stop();
     });
 
@@ -273,24 +426,20 @@ describe('MongoMemoryServer', () => {
 
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
       utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
+      expect(mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth'));
 
       const con: MongoClient = await MongoClient.connect(
         utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
         {}
       );
       const db = con.db('admin');
-      try {
+      expect(
         await db.command({
           usersInfo: 1,
-        });
-        fail('Expected "db.command" to fail');
-      } catch (err: any) {
-        // TODO: re-investigate if "codeName" is actually the right property
-        expect(err.codeName).toMatchSnapshot();
-      }
+        })
+      ).toHaveProperty('ok', 1); // noauth instance has root permissions without user
       expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
       expect(MongoMemoryServer.prototype.createAuth).not.toHaveBeenCalled();
-      expect(mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth'));
 
       await con.close();
       await mongoServer.stop();
@@ -319,7 +468,9 @@ describe('MongoMemoryServer', () => {
       });
       expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
       expect(MongoMemoryServer.prototype.createAuth).not.toHaveBeenCalled();
-      expect(mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth'));
+      expect(
+        mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth')
+      ).toStrictEqual(true);
 
       await con.close();
       await mongoServer.stop();
