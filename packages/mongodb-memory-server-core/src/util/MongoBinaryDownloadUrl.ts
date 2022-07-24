@@ -303,7 +303,22 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     const { release } = os;
 
     if (release) {
-      if (/^8/.test(release)) {
+      if (this.arch === 'aarch64') {
+        if (!/^8/.test(release)) {
+          throw new KnownVersionIncompatibilityError(
+            `Rhel ${release}`,
+            this.version,
+            '>=4.4.2',
+            'ARM64(aarch64) support for rhel is only for rhel82 or higher'
+          );
+        }
+        if (semver.satisfies(this.version, '<4.4.2')) {
+          throw new KnownVersionIncompatibilityError(`Rhel ${release}`, this.version, '>=4.4.2');
+        }
+
+        // rhel aarch64 support is only for rhel 8 and only for 82
+        name += '82';
+      } else if (/^8/.test(release)) {
         name += '80';
       } else if (/^7/.test(release)) {
         name += '70';

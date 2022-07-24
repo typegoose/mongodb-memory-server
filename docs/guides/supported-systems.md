@@ -94,7 +94,12 @@ There are currently no newer mongodb builds that support the newer provided open
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `5`<br/>
 Highest version is `8`<br/>
-Default version is `70`
+Default version is `70`<br/>
+Architectures Supported: `x86_64`, `arm64`(`aarch64`)
+
+:::note
+`arm64`/`aarch64` support is only for Rhel 8(.2)
+:::
 
 ### Amazon
 
