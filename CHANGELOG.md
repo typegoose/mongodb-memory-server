@@ -1,3 +1,21 @@
+## [8.8.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.8.0-beta.2...v8.8.0-beta.3) (2022-07-24)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** change to use "aarch64" by  default and map to "arm64" where needed ([ddf1991](https://github.com/nodkz/mongodb-memory-server/commit/ddf19917aa07b1872db4e34fd1165d17f472905c)), closes [#678](https://github.com/nodkz/mongodb-memory-server/issues/678)
+* **MongoBinaryDownloadUrl::getRhelVersionString:** add support for aarch64 ([62d96e6](https://github.com/nodkz/mongodb-memory-server/commit/62d96e635bec8ced1dedde3bd65d4926c07f9a1f))
+
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 28.1.6 ([dff909f](https://github.com/nodkz/mongodb-memory-server/commit/dff909facf013e069861c35a105b0666c39832ac))
+* **@typescript-eslint/*:** upgrade to version 5.30.7 ([f73a26e](https://github.com/nodkz/mongodb-memory-server/commit/f73a26ec7adb75168a2fcf18479a97720e9eab03))
+* **eslint:** upgrade to version 8.20.0 ([76a4a48](https://github.com/nodkz/mongodb-memory-server/commit/76a4a48ba36c3f54302438f8043fd45a4c32919d))
+* **jest:** upgrade to version 28.1.3 ([2ade5c3](https://github.com/nodkz/mongodb-memory-server/commit/2ade5c31a6e323aa438b0596a7481d12f4a95d36))
+* **mongodb:** set version to be "~" ([8a5552a](https://github.com/nodkz/mongodb-memory-server/commit/8a5552a8db0ac33524f573176240a4b53412546e))
+* **ts-jest:** upgrade to version 28.0.7 ([fa9975d](https://github.com/nodkz/mongodb-memory-server/commit/fa9975d20566a704cdebc634d222de61bc475ec4))
+
 ## [8.8.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.8.0-beta.1...v8.8.0-beta.2) (2022-07-13)
 
 
