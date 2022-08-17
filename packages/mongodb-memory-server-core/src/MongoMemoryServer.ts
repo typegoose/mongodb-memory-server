@@ -16,7 +16,7 @@ import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
-import { MongoClient } from 'mongodb';
+import { AddUserOptions, MongoClient } from 'mongodb';
 import { lt } from 'semver';
 import { EnsureInstanceError, StateError } from './util/errors';
 import * as os from 'os';
@@ -160,7 +160,7 @@ export interface CreateUserMongoDB {
   /**
    * The Roles for the user, can be an empty array
    */
-  roles: ({ role: UserRoles; db: string } | UserRoles)[];
+  roles: AddUserOptions['roles'];
   /**
    * Specify the specific SCRAM mechanism or mechanisms for creating SCRAM user credentials.
    */
