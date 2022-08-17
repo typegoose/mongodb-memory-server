@@ -335,15 +335,15 @@ export class MongoBinaryDownload {
     return new Promise((res, rej) => {
       createReadStream(mongoDBArchive)
         .on('error', (err) => {
-          rej('Unable to open tarball ' + mongoDBArchive + ': ' + err);
+          rej(new GenericMMSError('Unable to open tarball ' + mongoDBArchive + ': ' + err));
         })
         .pipe(createUnzip())
         .on('error', (err) => {
-          rej('Error during unzip for ' + mongoDBArchive + ': ' + err);
+          rej(new GenericMMSError('Error during unzip for ' + mongoDBArchive + ': ' + err));
         })
         .pipe(extract)
         .on('error', (err) => {
-          rej('Error during untar for ' + mongoDBArchive + ': ' + err);
+          rej(new GenericMMSError('Error during untar for ' + mongoDBArchive + ': ' + err));
         })
         .on('finish', res);
     });
