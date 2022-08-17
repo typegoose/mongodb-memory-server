@@ -1,3 +1,10 @@
+## [8.9.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.0-beta.1...v8.9.0-beta.2) (2022-08-17)
+
+
+### Refactor
+
+* **MongoBinaryDownloadUrl::translateArch:** combine case "arm64" & "aarch64" ([4eb48da](https://github.com/nodkz/mongodb-memory-server/commit/4eb48dae1fd94934d1c891eecdae745b0d7dd28f))
+
 ## [8.9.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.8.0...v8.9.0-beta.1) (2022-08-17)
 
 
