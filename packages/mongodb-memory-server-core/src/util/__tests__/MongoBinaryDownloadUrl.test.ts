@@ -1386,5 +1386,17 @@ describe('MongoBinaryDownloadUrl', () => {
       });
       expect(du.translatePlatform('win32')).toBe('windows');
     });
+
+    it('should throw when using "sunos"', () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'win32', // mock to use later call for actual testing
+        arch: 'x64',
+        version: '0.0.0',
+        os: {
+          os: 'win32',
+        },
+      });
+      expect(() => du.translatePlatform('sunos')).toThrowError(UnknownPlatformError);
+    });
   });
 });
