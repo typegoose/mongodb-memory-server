@@ -1335,4 +1335,56 @@ describe('MongoBinaryDownloadUrl', () => {
       }
     });
   });
+
+  describe('translatePlatform()', () => {
+    it('should translate "darwin" to "osx"', () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'darwin',
+        arch: 'x64',
+        version: '5.0.8',
+        os: {
+          os: 'darwin',
+        },
+      });
+      expect(du.translatePlatform('darwin')).toBe('osx');
+    });
+
+    it('should translate "linux" to "linux"', () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '5.0.8',
+        os: {
+          os: 'linux',
+          dist: 'ubuntu',
+          release: '20.04',
+        },
+      });
+      expect(du.translatePlatform('linux')).toBe('linux');
+    });
+
+    it('should translate "win32" to "win32" for below 4.3.0', () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'win32',
+        arch: 'x64',
+        version: '4.2.0',
+        os: {
+          os: 'win32',
+        },
+      });
+      expect(du.translatePlatform('win32')).toBe('win32');
+    });
+
+    it('should translate "win32" to "windows" for above & equal to 4.3.0', () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'win32',
+        arch: 'x64',
+        version: '4.3.0',
+        os: {
+          os: 'win32',
+        },
+      });
+      expect(du.translatePlatform('win32')).toBe('windows');
+    });
+  });
 });
