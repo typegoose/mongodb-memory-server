@@ -169,3 +169,6 @@ export class StdoutInstanceError extends Error {
     super(msg);
   }
 }
+
+/* Custom Generic Error class for MMS */
+export class GenericMMSError extends Error {}
