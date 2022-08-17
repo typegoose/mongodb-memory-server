@@ -619,6 +619,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     }
 
     this.servers = [];
+    this._ranCreateAuth = false;
 
     return;
   }
