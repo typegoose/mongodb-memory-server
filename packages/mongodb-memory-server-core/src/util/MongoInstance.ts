@@ -13,7 +13,12 @@ import {
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
-import { KeyFileMissingError, StartBinaryFailedError, StdoutInstanceError } from './errors';
+import {
+  GenericMMSError,
+  KeyFileMissingError,
+  StartBinaryFailedError,
+  StdoutInstanceError,
+} from './errors';
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */
@@ -327,6 +332,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    */
   async start(): Promise<void> {
     this.debug('start');
+
+    if (!isNullOrUndefined(this.mongodProcess?.pid)) {
+      throw new GenericMMSError(
+        `Cannot run "MongoInstance.start" because "mongodProcess.pid" is still defined (pid: ${this.mongodProcess?.pid})`
+      );
+    }
+
     this.isInstancePrimary = false;
     this.isInstanceReady = false;
     this.isReplSet = false;

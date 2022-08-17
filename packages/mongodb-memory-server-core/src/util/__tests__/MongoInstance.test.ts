@@ -4,7 +4,7 @@ import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
 import getPort from 'get-port';
-import { StartBinaryFailedError, StdoutInstanceError } from '../errors';
+import { GenericMMSError, StartBinaryFailedError, StdoutInstanceError } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 jest.setTimeout(100000); // 10s
@@ -505,5 +505,29 @@ describe('MongodbInstance', () => {
         expect(event.message).toMatchSnapshot();
       });
     });
+  });
+
+  it('should throw error if instance is already started (#662)', async () => {
+    const gotPort = await getPort();
+    const mongod = await MongodbInstance.create({
+      instance: { port: gotPort, dbPath: tmpDir.name },
+      binary: { version },
+    });
+
+    try {
+      await mongod.start();
+
+      fail('Expected to Fail');
+    } catch (err) {
+      expect(err).toBeInstanceOf(GenericMMSError);
+      assertIsError(err); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+      expect(
+        err.message.includes(
+          'Cannot run "MongoInstance.start" because "mongodProcess.pid" is still defined'
+        )
+      ).toBeTruthy();
+    } finally {
+      await mongod.stop();
+    }
   });
 });
