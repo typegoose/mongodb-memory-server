@@ -110,7 +110,7 @@ Default: `true`
 
 Option `MD5_CHECK` is used to enable an md5 check after download
 
-Default: `false`
+Default: `true`
 
 ### ARCHIVE_NAME
 

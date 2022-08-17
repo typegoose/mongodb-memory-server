@@ -40,6 +40,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.USE_HTTP, 'false'],
   [ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK, 'true'],
   [ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME, 'false'],
+  [ResolveConfigVariables.MD5_CHECK, 'true'],
 ]);
 
 /** Interface for storing information about the found package.json from `findPackageJson` */

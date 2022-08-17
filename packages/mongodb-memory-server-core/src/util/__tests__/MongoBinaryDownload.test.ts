@@ -28,7 +28,8 @@ describe('MongoBinaryDownload', () => {
     expect(new MongoBinaryDownload({ checkMD5: false, downloadDir: '/' }).checkMD5).toBe(false);
   });
 
-  it('if checkMD5 input parameter is missing, then it checks "MONGOMS_MD5_CHECK" environment variable', () => {
+  it('"checkMD5" should be disabled when config option is "false" and if config options is "true" it should be enabled', () => {
+    process.env[envName(ResolveConfigVariables.MD5_CHECK)] = '0';
     expect(new MongoBinaryDownload({ downloadDir: '/' }).checkMD5).toBe(false);
     process.env[envName(ResolveConfigVariables.MD5_CHECK)] = '1';
     expect(new MongoBinaryDownload({ downloadDir: '/' }).checkMD5).toBe(true);
@@ -258,8 +259,8 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(MongoBinaryDownloadUrl.prototype, 'getDownloadUrl').mockResolvedValue(downloadUrl);
 
     const du = new MongoBinaryDownload({ downloadDir: '/' });
-    jest.spyOn(du, 'download').mockResolvedValue(archivePath);
-    jest.spyOn(du, 'makeMD5check');
+    jest.spyOn(du, 'download').mockResolvedValue(archivePath); // mocking to not actually download a binary
+    jest.spyOn(du, 'makeMD5check').mockResolvedValue(true); // mocking because archive path does not exist to be tested
 
     const returnValue = await du.startDownload();
     expect(returnValue).toEqual(archivePath);
