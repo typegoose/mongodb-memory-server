@@ -23,6 +23,6 @@ jobs:
           close-issue-message: 'Closing Issue because it is marked as stale'
           stale-issue-label: stale
           exempt-issue-labels: help wanted,docs,enhancement,feature,dependencies,Distribution support,discussion,released on @beta,released on @master,keep,breaking
-          days-before-stale: 60
+          days-before-stale: 30
           days-before-close: 7
           remove-stale-when-updated: true
