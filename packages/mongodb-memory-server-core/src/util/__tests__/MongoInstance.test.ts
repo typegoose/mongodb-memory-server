@@ -249,6 +249,16 @@ describe('MongodbInstance', () => {
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
     });
+
+    it('should work with mongodb 6.0', async () => {
+      const gotPort = await getPort({ port: 27445 });
+      const mongod = await MongodbInstance.create({
+        instance: { port: gotPort, dbPath: tmpDir.name },
+        binary: { version: '6.0.0' },
+      });
+      expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
+      await mongod.stop();
+    });
   });
 
   it('"kill" should not call "killProcess" if no childProcesses are not running', async () => {

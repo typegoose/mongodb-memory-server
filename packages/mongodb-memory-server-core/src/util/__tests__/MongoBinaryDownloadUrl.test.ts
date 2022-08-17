@@ -59,6 +59,18 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
+      it('should work with mongodb 6.0', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'x64',
+          version: '6.0.0',
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-6.0.0.tgz'
+        );
+      });
+
       it('arm64 should use the x64 binary', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
@@ -86,6 +98,70 @@ describe('MongoBinaryDownloadUrl', () => {
           });
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz'
+          );
+        });
+
+        it('for ubuntu 20.04 for 5.0', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.8',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '2004',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.8.tgz'
+          );
+        });
+
+        it('for ubuntu 22.04 for 5.0', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.8',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '2204',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.8.tgz'
+          );
+        });
+
+        it('for ubuntu 20.04 for 6.0', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.0',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '2004',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.0.tgz'
+          );
+        });
+
+        it('for ubuntu 22.04 for 6.0', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.0',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '2204',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.0.tgz'
           );
         });
 
@@ -266,6 +342,22 @@ describe('MongoBinaryDownloadUrl', () => {
           });
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-5.0.8.tgz'
+          );
+        });
+
+        it('for debian 11 for 6.0.0', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.0',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '11',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-6.0.0.tgz'
           );
         });
 
@@ -610,6 +702,23 @@ describe('MongoBinaryDownloadUrl', () => {
 
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-5.0.8.tgz'
+          );
+        });
+
+        it('should return a archive name for Fedora 36', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.0',
+            os: {
+              os: 'linux',
+              dist: 'fedora',
+              release: '36',
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-6.0.0.tgz'
           );
         });
       });
@@ -1224,6 +1333,58 @@ describe('MongoBinaryDownloadUrl', () => {
         expect(err).toBeInstanceOf(UnknownArchitectureError);
         expect(err.message).toMatchSnapshot();
       }
+    });
+  });
+
+  describe('translatePlatform()', () => {
+    it('should translate "darwin" to "osx"', () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'darwin',
+        arch: 'x64',
+        version: '5.0.8',
+        os: {
+          os: 'darwin',
+        },
+      });
+      expect(du.translatePlatform('darwin')).toBe('osx');
+    });
+
+    it('should translate "linux" to "linux"', () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '5.0.8',
+        os: {
+          os: 'linux',
+          dist: 'ubuntu',
+          release: '20.04',
+        },
+      });
+      expect(du.translatePlatform('linux')).toBe('linux');
+    });
+
+    it('should translate "win32" to "win32" for below 4.3.0', () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'win32',
+        arch: 'x64',
+        version: '4.2.0',
+        os: {
+          os: 'win32',
+        },
+      });
+      expect(du.translatePlatform('win32')).toBe('win32');
+    });
+
+    it('should translate "win32" to "windows" for above & equal to 4.3.0', () => {
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'win32',
+        arch: 'x64',
+        version: '4.3.0',
+        os: {
+          os: 'win32',
+        },
+      });
+      expect(du.translatePlatform('win32')).toBe('windows');
     });
   });
 });
