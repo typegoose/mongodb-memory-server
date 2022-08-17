@@ -503,7 +503,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
         return semver.gte(version, '4.3.0') ? 'windows' : 'win32';
       case 'linux':
-      case 'elementary OS':
         return 'linux';
       default:
         throw new UnknownPlatformError(platform);
