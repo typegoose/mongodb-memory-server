@@ -585,9 +585,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           MongoInstanceEvents.instanceError,
           new StdoutInstanceError(
             `Instance Failed to start with "${execptionMatch[1] ?? 'unknown'}". Original Error:\n` +
-              line
-                .substring(execptionMatch.index + execptionMatch[0].length)
-                .replace(/, terminating$/gi, '')
+              line.substring(execptionMatch.index + execptionMatch[0].length)
           )
         );
       }
