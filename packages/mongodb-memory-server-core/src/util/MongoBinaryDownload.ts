@@ -281,7 +281,7 @@ export class MongoBinaryDownload {
 
     await mkdir(path.dirname(mongodbFullPath));
 
-    const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?)|(?:.*\.dll))$/i.test(file);
+    const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?))$/i.test(file);
 
     if (/(.tar.gz|.tgz)$/.test(mongoDBArchive)) {
       await this.extractTarGz(mongoDBArchive, mongodbFullPath, filter);
