@@ -304,7 +304,7 @@ describe('single server replset', () => {
     await replSet.stop();
   });
 
-  it.only('should make use of "AutomaticAuth" (wiredTiger)', async () => {
+  it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
     // @ts-expect-error because "initAllServers" is protected
     jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
     jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
