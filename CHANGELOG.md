@@ -1,3 +1,10 @@
+## [8.9.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.0-beta.2...v8.9.0-beta.3) (2022-08-21)
+
+
+### Dependencies
+
+* **mongodb:** upgrade to version 4.9.0 ([a0b5599](https://github.com/nodkz/mongodb-memory-server/commit/a0b5599bad49f0b1f1d554c22f2d46b4c29b1712)), closes [#676](https://github.com/nodkz/mongodb-memory-server/issues/676)
+
 ## [8.9.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.0-beta.1...v8.9.0-beta.2) (2022-08-17)
 
 
