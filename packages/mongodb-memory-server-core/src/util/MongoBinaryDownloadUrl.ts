@@ -507,10 +507,10 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   }
 
   /**
-   * Translate input platform to mongodb useable platform
+   * Translate input platform to mongodb-archive useable platform
+   * @param platform The Platform to translate to a mongodb archive platform
    * @example
    * darwin -> osx
-   * @param platform The Platform to translate
    */
   translatePlatform(platform: string): string {
     switch (platform) {
@@ -541,10 +541,10 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   }
 
   /**
-   * Translate input arch to mongodb useable arch
+   * Translate input arch to mongodb-archive useable arch
+   * @param arch The Architecture to translate to a mongodb archive architecture
    * @example
    * x64 -> x86_64
-   * @param platform The Platform to translate
    */
   static translateArch(arch: string, mongoPlatform: string): string {
     switch (arch) {
