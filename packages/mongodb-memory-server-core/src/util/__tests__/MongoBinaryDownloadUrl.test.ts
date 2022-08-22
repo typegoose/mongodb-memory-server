@@ -1473,6 +1473,16 @@ describe('MongoBinaryDownloadUrl', () => {
         expect(err.message).toMatchSnapshot();
       }
     });
+
+    it('should translate "x64" and "x86_64" to "x86_64"', () => {
+      expect(MongoBinaryDownloadUrl.translateArch('x64', 'linux')).toStrictEqual('x86_64');
+      expect(MongoBinaryDownloadUrl.translateArch('x86_64', 'linux')).toStrictEqual('x86_64');
+    });
+
+    it('should translate "arm64" and "aarch64" to "aarch64"', () => {
+      expect(MongoBinaryDownloadUrl.translateArch('arm64', 'linux')).toStrictEqual('aarch64');
+      expect(MongoBinaryDownloadUrl.translateArch('aarch64', 'linux')).toStrictEqual('aarch64');
+    });
   });
 
   describe('translatePlatform()', () => {
