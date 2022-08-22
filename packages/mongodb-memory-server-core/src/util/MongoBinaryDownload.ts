@@ -363,9 +363,9 @@ export class MongoBinaryDownload {
     log('extractZip');
 
     return new Promise((resolve, reject) => {
-      yauzl.open(mongoDBArchive, { lazyEntries: true }, (e, zipfile) => {
-        if (e || !zipfile) {
-          return reject(e);
+      yauzl.open(mongoDBArchive, { lazyEntries: true }, (err, zipfile) => {
+        if (err || !zipfile) {
+          return reject(err);
         }
 
         zipfile.readEntry();
@@ -377,9 +377,9 @@ export class MongoBinaryDownload {
             return zipfile.readEntry();
           }
 
-          zipfile.openReadStream(entry, (e, r) => {
-            if (e || !r) {
-              return reject(e);
+          zipfile.openReadStream(entry, (err2, r) => {
+            if (err2 || !r) {
+              return reject(err2);
             }
 
             r.on('end', () => zipfile.readEntry());
@@ -476,10 +476,10 @@ export class MongoBinaryDownload {
             this.printDownloadProgress(chunk);
           });
         })
-        .on('error', (e: Error) => {
+        .on('error', (err: Error) => {
           // log it without having debug enabled
-          console.error(`Couldnt download "${downloadUrl}"!`, e.message);
-          reject(e);
+          console.error(`Couldnt download "${downloadUrl}"!`, err.message);
+          reject(err);
         });
     });
   }
