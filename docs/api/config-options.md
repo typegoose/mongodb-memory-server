@@ -33,7 +33,7 @@ Valid Options are `win32`, `darwin`, `linux`, ~~`sunos`~~(never actually support
 
 Option `ARCH` is used to overwrite the Architecture to download for
 
-Valid Options are `x64`, `arm64`, ~~`ia32`~~([will be removed in 9.0](../guides/error-warning-details.md#mms001))
+Valid Options are `x64`, `arm64`
 
 ### VERSION
 

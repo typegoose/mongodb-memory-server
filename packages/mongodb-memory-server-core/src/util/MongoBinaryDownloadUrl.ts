@@ -9,7 +9,6 @@ import {
   UnknownArchitectureError,
   UnknownPlatformError,
 } from './errors';
-import { deprecate } from 'util';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -32,7 +31,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   constructor(opts: MongoBinaryDownloadUrlOpts) {
     this.version = opts.version;
     this.platform = this.translatePlatform(opts.platform);
-    this.arch = MongoBinaryDownloadUrl.translateArch(opts.arch, this.platform);
+    this.arch = MongoBinaryDownloadUrl.translateArch(opts.arch);
     this.os = opts.os;
   }
 
@@ -145,20 +144,16 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * (from: https://www.mongodb.org/dl/linux)
    */
   async getArchiveNameLinux(): Promise<string> {
-    let osString: string | undefined;
-
-    // the highest version for "i686" seems to be 3.3
-    if (this.arch !== 'i686') {
-      if (!this.os) {
-        this.os = await getOS();
-      }
-
-      osString = this.getLinuxOSVersionString(this.os as LinuxOS);
+    if (!this.os) {
+      this.os = await getOS();
     }
+
+    const osString: string = this.getLinuxOSVersionString(this.os as LinuxOS);
 
     // this is below, to allow overwriting the arch (like arm64 to aarch64)
     let name = `mongodb-linux-${this.arch}`;
 
+    // guard against any falsy values
     if (!!osString) {
       name += `-${osString}`;
     }
@@ -515,22 +510,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * x64 -> x86_64
    * @param platform The Platform to translate
    */
-  static translateArch(arch: string, mongoPlatform: string): string {
+  static translateArch(arch: string): string {
     switch (arch) {
-      case 'ia32':
-        deprecate(
-          () => {},
-          'mongodb-memory-server will fully drop support for ia32 in 9.0',
-          'MMS001'
-        )();
-
-        if (mongoPlatform === 'linux') {
-          return 'i686';
-        } else if (mongoPlatform === 'win32') {
-          return 'i386';
-        }
-
-        throw new UnknownArchitectureError(arch, mongoPlatform);
       case 'x86_64':
       case 'x64':
         return 'x86_64';
