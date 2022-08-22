@@ -728,9 +728,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           await primary.createAuth(primary.instanceInfo);
           this._ranCreateAuth = true;
         }
-      } catch (e) {
-        if (e instanceof MongoError && e.errmsg == 'already initialized') {
-          log(`_initReplSet: "${e.errmsg}": trying to set old config`);
+      } catch (err) {
+        if (err instanceof MongoError && err.errmsg == 'already initialized') {
+          log(`_initReplSet: "${err.errmsg}": trying to set old config`);
           const { config: oldConfig } = await adminDb.command({ replSetGetConfig: 1 });
           log('_initReplSet: got old config:\n', oldConfig);
           await adminDb.command({
@@ -738,7 +738,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
             force: true,
           });
         } else {
-          throw e;
+          throw err;
         }
       }
       log('_initReplSet: ReplSet-reconfig finished');
