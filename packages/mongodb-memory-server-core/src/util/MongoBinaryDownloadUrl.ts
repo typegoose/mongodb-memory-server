@@ -544,7 +544,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       case 'x64':
         return 'x86_64';
       case 'arm64':
-        return 'aarch64';
       case 'aarch64':
         return 'aarch64';
       default:

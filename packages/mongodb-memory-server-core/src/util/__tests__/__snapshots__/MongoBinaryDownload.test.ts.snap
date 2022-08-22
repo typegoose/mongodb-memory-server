@@ -1,5 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`MongoBinaryDownload extract() should extract tar.gz archives 1`] = `"main exec"`;
+
+exports[`MongoBinaryDownload extract() should extract zip archives 1`] = `"main exec"`;
+
 exports[`MongoBinaryDownload makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result 1`] = `"{\\"binarymd5\\":\\"anotherMD5\\",\\"checkfilemd5\\":\\"someMD5\\"}"`;
 
 exports[`MongoBinaryDownload should passthrough options to MongoBinaryDownloadUrl 1`] = `"/path/to/somewhere/mongod-x64-custom-4.0.0"`;

@@ -1,3 +1,46 @@
+## [8.9.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.0-beta.2...v8.9.0-beta.3) (2022-08-21)
+
+
+### Dependencies
+
+* **mongodb:** upgrade to version 4.9.0 ([a0b5599](https://github.com/nodkz/mongodb-memory-server/commit/a0b5599bad49f0b1f1d554c22f2d46b4c29b1712)), closes [#676](https://github.com/nodkz/mongodb-memory-server/issues/676)
+
+## [8.9.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.0-beta.1...v8.9.0-beta.2) (2022-08-17)
+
+
+### Refactor
+
+* **MongoBinaryDownloadUrl::translateArch:** combine case "arm64" & "aarch64" ([4eb48da](https://github.com/nodkz/mongodb-memory-server/commit/4eb48dae1fd94934d1c891eecdae745b0d7dd28f))
+
+## [8.9.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.8.0...v8.9.0-beta.1) (2022-08-17)
+
+
+### Features
+
+* **errors:** add generic MMS Error ([7fc4acc](https://github.com/nodkz/mongodb-memory-server/commit/7fc4accd8bdd18f82d67a2cb321259a1bc5793c7))
+* **MongoBinaryDownload::extract:** dont include ".dll" files in the filter anymore ([a7c685b](https://github.com/nodkz/mongodb-memory-server/commit/a7c685b8a91e898917386f38217f07c346b132ea))
+
+
+### Style
+
+* **MongoBinaryDownload::extractTarGz:** rename some variables to current convention ([bcb4dab](https://github.com/nodkz/mongodb-memory-server/commit/bcb4dab07b49505c63ec23c3d1f2a65ef2384ece))
+
+
+### Fixes
+
+* **MongoBinaryDownload::extractTarGz:** wrap error messages in "GenericMMSError" ([a8733dc](https://github.com/nodkz/mongodb-memory-server/commit/a8733dc4d5f14b5f71e086b2c93bf1423e548be2))
+* **MongoMemoryReplSet::_initReplSet:** use "extraConnectionOptions" when "_ranCreateAuth" is "true" ([e116128](https://github.com/nodkz/mongodb-memory-server/commit/e1161284addab03b41b51be8c2dfb7617b5bae19))
+* **MongoMemoryReplSet::cleanup:** reset "_ranCreateAuth" on cleanup ([2fc87e7](https://github.com/nodkz/mongodb-memory-server/commit/2fc87e77183418b6ed21902afdb35d5b806a9215))
+
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 28.1.7 ([db3e729](https://github.com/nodkz/mongodb-memory-server/commit/db3e72936e5696570a12dc706cebaa5bf307e3ac))
+* **@types/semver:** upgrade to version 7.3.12 ([8c61c71](https://github.com/nodkz/mongodb-memory-server/commit/8c61c714806cceeefe22fe51b834705eb2e69cba))
+* **@typescript-eslint/*:** upgrade to version 5.33.1 ([cb0e223](https://github.com/nodkz/mongodb-memory-server/commit/cb0e223073b41cdb9c0dd6578c14b953cb643cbf))
+* **eslint:** upgrade to version 8.22.0 ([01591eb](https://github.com/nodkz/mongodb-memory-server/commit/01591eb3adb7eb75dcb1f5cdf85905857725dab4))
+* **ts-jest:** upgrade to version 28.0.8 ([10bb530](https://github.com/nodkz/mongodb-memory-server/commit/10bb53001ad4957f885cd7d525aa5660683c2a25))
+
 ## [8.8.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.7.2...v8.8.0) (2022-07-24)
 
 

@@ -619,6 +619,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     }
 
     this.servers = [];
+    this._ranCreateAuth = false;
 
     return;
   }
@@ -673,9 +674,14 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     const uris = this.servers.map((server) => server.getUri());
     const isInMemory = this.servers[0].instanceInfo?.storageEngine === 'ephemeralForTest';
 
+    const extraOptions = this._ranCreateAuth
+      ? this.servers[0].instanceInfo?.instance.extraConnectionOptions ?? {}
+      : {};
+
     const con: MongoClient = await MongoClient.connect(uris[0], {
       // somehow since mongodb-nodejs 4.0, this option is needed when the server is set to be in a replset
       directConnection: true,
+      ...extraOptions,
     });
     log('_initReplSet: connected');
 

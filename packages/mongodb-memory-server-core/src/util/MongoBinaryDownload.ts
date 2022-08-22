@@ -15,7 +15,7 @@ import { assertion, mkdir, pathExists } from './utils';
 import { DryMongoBinary } from './DryMongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
-import { Md5CheckFailedError } from './errors';
+import { GenericMMSError, Md5CheckFailedError } from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -281,7 +281,7 @@ export class MongoBinaryDownload {
 
     await mkdir(path.dirname(mongodbFullPath));
 
-    const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?)|(?:.*\.dll))$/i.test(file);
+    const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?))$/i.test(file);
 
     if (/(.tar.gz|.tgz)$/.test(mongoDBArchive)) {
       await this.extractTarGz(mongoDBArchive, mongodbFullPath, filter);
@@ -332,22 +332,20 @@ export class MongoBinaryDownload {
       stream.resume();
     });
 
-    return new Promise((resolve, reject) => {
+    return new Promise((res, rej) => {
       createReadStream(mongoDBArchive)
         .on('error', (err) => {
-          reject('Unable to open tarball ' + mongoDBArchive + ': ' + err);
+          rej(new GenericMMSError('Unable to open tarball ' + mongoDBArchive + ': ' + err));
         })
         .pipe(createUnzip())
         .on('error', (err) => {
-          reject('Error during unzip for ' + mongoDBArchive + ': ' + err);
+          rej(new GenericMMSError('Error during unzip for ' + mongoDBArchive + ': ' + err));
         })
         .pipe(extract)
         .on('error', (err) => {
-          reject('Error during untar for ' + mongoDBArchive + ': ' + err);
+          rej(new GenericMMSError('Error during untar for ' + mongoDBArchive + ': ' + err));
         })
-        .on('finish', (result) => {
-          resolve(result);
-        });
+        .on('finish', res);
     });
   }
 

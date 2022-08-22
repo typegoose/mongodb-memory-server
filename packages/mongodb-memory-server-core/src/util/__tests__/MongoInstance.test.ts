@@ -339,7 +339,7 @@ describe('MongodbInstance', () => {
         const event = events.get(MongoInstanceEvents.instanceError);
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-        expect(event.message).toEqual('Port "1001" already in use');
+        expect(event.message).toMatchSnapshot();
       });
 
       it('should emit "instanceError" when curl-open-ssl-3 is not found', () => {
@@ -355,10 +355,7 @@ describe('MongodbInstance', () => {
         const event = events.get(MongoInstanceEvents.instanceError);
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-        expect(event.message).toEqual(
-          'libcurl3 is not available on your system. Mongod requires it and cannot be started without it.\n' +
-            'You should manually install libcurl3 or try to use an newer version of MongoDB'
-        );
+        expect(event.message).toMatchSnapshot();
       });
 
       it('should emit "instanceError" when curl-open-ssl-4 is not found', () => {
@@ -374,10 +371,7 @@ describe('MongodbInstance', () => {
         const event = events.get(MongoInstanceEvents.instanceError);
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-        expect(event.message).toEqual(
-          'libcurl4 is not available on your system. Mongod requires it and cannot be started without it.\n' +
-            'You need to manually install libcurl4'
-        );
+        expect(event.message).toMatchSnapshot();
       });
 
       it('should emit "instancePrimary" when "transition to primary complete" is found', () => {
@@ -420,9 +414,7 @@ describe('MongodbInstance', () => {
         const event = events.get(MongoInstanceEvents.instanceError);
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-        expect(event.message).toEqual(
-          'Instance failed to start because a library is missing or cannot be opened: "libcrypto.so.10"'
-        );
+        expect(event.message).toMatchSnapshot();
       });
 
       describe('should emit "instanceError" when "excepetion in initAndListen" is thrown', () => {
@@ -440,10 +432,7 @@ describe('MongodbInstance', () => {
           const event = events.get(MongoInstanceEvents.instanceError);
           expect(event).toBeInstanceOf(StdoutInstanceError);
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-          expect(event.message).toEqual(
-            'Instance Failed to start with "DBPathInUse". Original Error:\n' +
-              'Unable to create/open the lock file: /dev/null/mongod.lock (Not a directory). Ensure the user executing mongod is the owner of the lock file and has the appropriate permissions. Also make sure that another mongod instance is not already running on the /dev/null directory'
-          );
+          expect(event.message).toMatchSnapshot();
         });
 
         it('DbPathInUse (already running)', () => {
@@ -460,10 +449,7 @@ describe('MongodbInstance', () => {
           const event = events.get(MongoInstanceEvents.instanceError);
           expect(event).toBeInstanceOf(StdoutInstanceError);
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-          expect(event.message).toEqual(
-            'Instance Failed to start with "DBPathInUse". Original Error:\n' +
-              'Unable to lock the lock file: /tmp/hellodb/mongod.lock (Resource temporarily unavailable). Another mongod instance is already running on the /tmp/hellodb directory'
-          );
+          expect(event.message).toMatchSnapshot();
         });
 
         it('Location28596', () => {
@@ -480,10 +466,7 @@ describe('MongodbInstance', () => {
           const event = events.get(MongoInstanceEvents.instanceError);
           expect(event).toBeInstanceOf(StdoutInstanceError);
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-          expect(event.message).toEqual(
-            'Instance Failed to start with "Location28596". Original Error:\n' +
-              'Unable to determine status of lock file in the data directory /root: boost::filesystem::status: Permission denied: "/root/mongod.lock"'
-          );
+          expect(event.message).toMatchSnapshot();
         });
 
         it('NonExistentPath', () => {
@@ -500,10 +483,7 @@ describe('MongodbInstance', () => {
           const event = events.get(MongoInstanceEvents.instanceError);
           expect(event).toBeInstanceOf(StdoutInstanceError);
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-          expect(event.message).toEqual(
-            'Instance Failed to start with "NonExistentPath". Original Error:\n' +
-              "Data directory /tmp/hello not found. Create the missing directory or specify another path using (1) the --dbpath command line option, or (2) by adding the 'storage.dbPath' option in the configuration file."
-          );
+          expect(event.message).toMatchSnapshot();
         });
       });
     });
@@ -522,9 +502,7 @@ describe('MongodbInstance', () => {
         const event = events.get(MongoInstanceEvents.instanceError);
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-        expect(event.message).toEqual(
-          'Instance failed to start because a library is missing or cannot be opened: "libcrypto.so.1.1"'
-        );
+        expect(event.message).toMatchSnapshot();
       });
     });
   });

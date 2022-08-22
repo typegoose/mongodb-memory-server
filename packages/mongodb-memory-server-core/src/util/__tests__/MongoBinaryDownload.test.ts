@@ -1,4 +1,4 @@
-import { promises as fspromises } from 'fs';
+import { createWriteStream, promises as fspromises } from 'fs';
 import md5file from 'md5-file';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 import { DryMongoBinary } from '../DryMongoBinary';
@@ -8,7 +8,13 @@ import MongoBinaryDownload from '../MongoBinaryDownload';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
+import * as tmp from 'tmp';
+import * as path from 'path';
+import * as yazl from 'yazl';
+import { pack } from 'tar-stream';
+import { createGzip } from 'zlib';
 
+tmp.setGracefulCleanup();
 jest.mock('md5-file');
 
 describe('MongoBinaryDownload', () => {
@@ -296,5 +302,121 @@ describe('MongoBinaryDownload', () => {
     const path = await mbd.getPath();
     expect(DryMongoBinary.generateOptions).toBeCalledWith(expect.objectContaining(options));
     expect(path).toMatchSnapshot();
+  });
+
+  describe('extract()', () => {
+    let tmpdir: tmp.DirResult;
+
+    beforeEach(() => {
+      tmpdir = tmp.dirSync({
+        prefix: 'mongo-mem-test-extract',
+        unsafeCleanup: true,
+      });
+    });
+    afterEach(() => {
+      // tmpdir.removeCallback(); // DEBUG
+    });
+
+    it('should extract zip archives', async () => {
+      const zipPath = path.join(tmpdir.name, 'archive.zip');
+      const outPath = path.join(tmpdir.name, 'binary.exe');
+      const options: MongoBinaryOpts = {
+        arch: 'x64',
+        downloadDir: path.join(outPath, 'downloadDir'),
+        os: {
+          os: 'linux',
+          dist: 'custom',
+          release: '100.0',
+        },
+        version: '4.0.0',
+      };
+      const mbd = new MongoBinaryDownload(options);
+      // @ts-expect-error "getPath" is "protected"
+      jest.spyOn(mbd, 'getPath').mockResolvedValue(outPath);
+
+      // prepare the archive
+      await new Promise((res, rej) => {
+        const zipfile = new yazl.ZipFile();
+        const writeStream = createWriteStream(zipPath);
+        writeStream.once('close', res);
+        writeStream.once('error', rej);
+        zipfile.outputStream.once('error', rej);
+        zipfile.outputStream.pipe(writeStream);
+
+        const rootdir = 'mongodb-platform-arch-platform-version/';
+
+        zipfile.addBuffer(Buffer.from('main exec'), rootdir + 'bin/mongod.exe'); // add the mongod exectueable that will only be extracted
+        zipfile.addBuffer(Buffer.from('some dll'), rootdir + 'bin/some.dll'); // add the a random dll, should not be extracted
+        zipfile.addBuffer(Buffer.from('random1'), rootdir + 'bin/random1'); // add the a random random file in "bin/" to be sure it is not extracted
+        zipfile.addBuffer(Buffer.from('random2'), rootdir + 'random2'); // add the a random random file in "/" to be sure it is not extracted
+
+        zipfile.end();
+      });
+
+      // actually test the extraction of the archive
+      const binaryFile = await mbd.extract(zipPath);
+
+      expect(binaryFile).toBeTruthy();
+      expect(binaryFile.includes('binary.exe')).toBeTruthy();
+
+      const outPathStat = await utils.statPath(outPath);
+      expect(outPathStat).toBeTruthy();
+      utils.assertion(!utils.isNullOrUndefined(outPathStat)); // checked above, for typescript
+      expect(outPathStat.isFile()).toBeTruthy();
+
+      expect((await fspromises.readFile(outPath)).toString()).toMatchSnapshot();
+    });
+
+    it('should extract tar.gz archives', async () => {
+      const tarPath = path.join(tmpdir.name, 'archive.tgz');
+      const outPath = path.join(tmpdir.name, 'binary');
+      const options: MongoBinaryOpts = {
+        arch: 'x64',
+        downloadDir: path.join(outPath, 'downloadDir'),
+        os: {
+          os: 'linux',
+          dist: 'custom',
+          release: '100.0',
+        },
+        version: '4.0.0',
+      };
+      const mbd = new MongoBinaryDownload(options);
+      // @ts-expect-error "getPath" is "protected"
+      jest.spyOn(mbd, 'getPath').mockResolvedValue(outPath);
+
+      // prepare the archive
+      await new Promise((res, rej) => {
+        const tarPack = pack();
+        const gzipStream = createGzip();
+        const writeStream = createWriteStream(tarPath);
+        writeStream.once('close', res);
+        writeStream.once('error', rej);
+        gzipStream.once('error', rej);
+        tarPack.once('error', rej);
+        tarPack.pipe(gzipStream);
+        gzipStream.pipe(writeStream);
+
+        const rootdir = 'mongodb-platform-arch-platform-version/';
+
+        tarPack.entry({ name: rootdir + 'bin/mongod' }, 'main exec'); // add the mongod exectueable that will only be extracted
+        tarPack.entry({ name: rootdir + 'bin/random1' }, 'random1'); // add the a random random file in "bin/" to be sure it is not extracted
+        tarPack.entry({ name: rootdir + 'random2' }, 'random2'); // add the a random random file in "/" to be sure it is not extracted
+
+        tarPack.finalize();
+      });
+
+      // actually test the extraction of the archive
+      const binaryFile = await mbd.extract(tarPath);
+
+      expect(binaryFile).toBeTruthy();
+      expect(binaryFile.includes('binary')).toBeTruthy();
+
+      const outPathStat = await utils.statPath(outPath);
+      expect(outPathStat).toBeTruthy();
+      utils.assertion(!utils.isNullOrUndefined(outPathStat)); // checked above, for typescript
+      expect(outPathStat.isFile()).toBeTruthy();
+
+      expect((await fspromises.readFile(outPath)).toString()).toMatchSnapshot();
+    });
   });
 });
