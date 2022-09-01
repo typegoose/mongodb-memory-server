@@ -485,6 +485,24 @@ describe('MongodbInstance', () => {
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
           expect(event.message).toMatchSnapshot();
         });
+
+        it('DBException in initAndListen', () => {
+          // actual line copied from mongod 6.1.0
+          // can be reproduced with "mongodb --storageEngine ephemeralForTest"
+          const line =
+            '{"t":{"$date":"2022-09-01T08:54:54.598+00:00"},"s":"E",  "c":"CONTROL",  "id":20557,   "ctx":"initandlisten","msg":"DBException in initAndListen, terminating","attr":{"error":"Location18656: Cannot start server with an unknown storage engine: ephemeralForTest"}}';
+
+          mongod.stdoutHandler(line);
+
+          console.log(events);
+          expect(events.size).toEqual(2);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+
+          const event = events.get(MongoInstanceEvents.instanceError);
+          expect(event).toBeInstanceOf(StdoutInstanceError);
+          assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+          expect(event.message).toMatchSnapshot();
+        });
       });
     });
 
