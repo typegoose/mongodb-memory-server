@@ -1,3 +1,10 @@
+## [8.9.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.0...v8.9.1) (2022-09-01)
+
+
+### Fixes
+
+* **MongoInstance::checkErrorInLine:** hange json output of error "DBException in initAndListen" ([2131df2](https://github.com/nodkz/mongodb-memory-server/commit/2131df2d9f6d8a20f0e6d92d92727287ea19ab44))
+
 ## [8.9.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.8.0...v8.9.0) (2022-08-22)
 
 
