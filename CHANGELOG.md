@@ -1,3 +1,19 @@
+## [8.9.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.1...v8.9.2) (2022-09-15)
+
+
+### Fixes
+
+* **errors::UnexpectedCloseError:** add Error ([ce6462e](https://github.com/nodkz/mongodb-memory-server/commit/ce6462eab69319428c43bea280ef6d3da5ec509d))
+* **errors::UnexpectedCloseError:** add extra message on SIGILL ([2c54e1f](https://github.com/nodkz/mongodb-memory-server/commit/2c54e1f5b3a53014f5aacd1522cc7069cdbf9f0f)), closes [#693](https://github.com/nodkz/mongodb-memory-server/issues/693) [#692](https://github.com/nodkz/mongodb-memory-server/issues/692) [#687](https://github.com/nodkz/mongodb-memory-server/issues/687)
+* **MongoInstance::closeHandler:** emit "instanceError" on non-0 (or non-12) code ([fbd0747](https://github.com/nodkz/mongodb-memory-server/commit/fbd07478c124920d8efc41c7ddd68973fb4dab1a)), closes [#693](https://github.com/nodkz/mongodb-memory-server/issues/693)
+
+
+### Style
+
+* **MongoInstance:** change a arrow function to a named function for debugging ([704bc64](https://github.com/nodkz/mongodb-memory-server/commit/704bc64d1f77cc621e51bbd80be07eceb1d610d0))
+* **MongoInstance::closeHandler:** add note that "instanceError" gets emitted on signal ([c01fec7](https://github.com/nodkz/mongodb-memory-server/commit/c01fec709a947ff3e3fa8ebd8b5b970c099e7a07))
+* **MongoInstance::closeHandler:** correct parameter types to include "null" ([e052aa1](https://github.com/nodkz/mongodb-memory-server/commit/e052aa13ac8c7dd5f49113a277e487c3f54c5090))
+
 ## [8.9.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.0...v8.9.1) (2022-09-01)
 
 
