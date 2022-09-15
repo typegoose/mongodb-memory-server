@@ -341,6 +341,19 @@ describe('MongodbInstance', () => {
       }
     });
 
+    it('"closeHandler" should emit "instanceError" with extra information on "SIGILL"', () => {
+      // test SIGILL
+      mongod.closeHandler(null, 'SIGILL');
+
+      expect(events.size).toEqual(2);
+      expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIGILL']);
+
+      const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+      expect(event).toBeInstanceOf(UnexpectedCloseError);
+      assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+      expect(event.message).toMatchSnapshot();
+    });
+
     it('"closeHandler" should emit "instanceError" with non-0 or non-12 code', () => {
       // test code non-0
       {

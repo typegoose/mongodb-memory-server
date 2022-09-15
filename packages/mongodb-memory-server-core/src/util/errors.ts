@@ -178,6 +178,11 @@ export class UnexpectedCloseError extends Error {
     super();
 
     this.message = `Instance closed unexpectedly with code "${code}" and signal "${signal}"`;
+
+    if (signal == 'SIGILL') {
+      this.message +=
+        '\nThe Process Exited with SIGILL, which mean illegal instruction, which is commonly thrown in mongodb 5.0+ when not having AVX available on the CPU';
+    }
   }
 }
 
