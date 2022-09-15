@@ -513,6 +513,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     // https://docs.mongodb.com/manual/reference/exit-codes/#12
     if ((process.platform === 'win32' && code != 12 && code != 0) || code != 0) {
       this.debug('closeHandler: Mongod instance closed with an non-0 (or non 12 on windows) code!');
+      // Note: this also emits when a signal is present, which is expected because signals are not expected here
       this.emit(MongoInstanceEvents.instanceError, new UnexpectedCloseError(code, signal));
     }
 
