@@ -4,7 +4,7 @@ import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
 import getPort from 'get-port';
-import { StartBinaryFailedError, StdoutInstanceError } from '../errors';
+import { StartBinaryFailedError, StdoutInstanceError, UnexpectedCloseError } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 jest.setTimeout(100000); // 10s
@@ -331,8 +331,43 @@ describe('MongodbInstance', () => {
         events.clear();
         mongod.closeHandler(null, 'SIG');
 
-        expect(events.size).toEqual(1);
+        expect(events.size).toEqual(2);
         expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIG']);
+
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+        expect(event).toBeInstanceOf(UnexpectedCloseError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toMatchSnapshot();
+      }
+    });
+
+    it('"closeHandler" should emit "instanceError" with non-0 or non-12 code', () => {
+      // test code non-0
+      {
+        events.clear();
+        mongod.closeHandler(1, null);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([1, null]);
+
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+        expect(event).toBeInstanceOf(UnexpectedCloseError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toMatchSnapshot();
+      }
+
+      // test signal
+      {
+        events.clear();
+        mongod.closeHandler(null, 'SIG');
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIG']);
+
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+        expect(event).toBeInstanceOf(UnexpectedCloseError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toMatchSnapshot();
       }
     });
 

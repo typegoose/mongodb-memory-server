@@ -6,6 +6,12 @@ exports[`MongodbInstance prepareCommandArgs should throw an error if no dbpath i
 
 exports[`MongodbInstance prepareCommandArgs should throw an error if no port is provided 1`] = `"\\"instanceOpts.port\\" is required to be set!"`;
 
+exports[`MongodbInstance test events "closeHandler" should emit "instanceClosed" 1`] = `"Instance closed unexpectedly with code \\"null\\" and signal \\"SIG\\""`;
+
+exports[`MongodbInstance test events "closeHandler" should emit "instanceError" with non-0 or non-12 code 1`] = `"Instance closed unexpectedly with code \\"1\\" and signal \\"null\\""`;
+
+exports[`MongodbInstance test events "closeHandler" should emit "instanceError" with non-0 or non-12 code 2`] = `"Instance closed unexpectedly with code \\"null\\" and signal \\"SIG\\""`;
+
 exports[`MongodbInstance test events checkErrorInLine() should emit "instanceError" when shared libraries fail to load 1`] = `"Instance failed to start because a library is missing or cannot be opened: \\"libcrypto.so.1.1\\""`;
 
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "excepetion in initAndListen" is thrown DBException in initAndListen 1`] = `

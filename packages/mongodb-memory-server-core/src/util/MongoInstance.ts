@@ -13,7 +13,12 @@ import {
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
-import { KeyFileMissingError, StartBinaryFailedError, StdoutInstanceError } from './errors';
+import {
+  KeyFileMissingError,
+  StartBinaryFailedError,
+  StdoutInstanceError,
+  UnexpectedCloseError,
+} from './errors';
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */
@@ -508,6 +513,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     // https://docs.mongodb.com/manual/reference/exit-codes/#12
     if ((process.platform === 'win32' && code != 12 && code != 0) || code != 0) {
       this.debug('closeHandler: Mongod instance closed with an non-0 (or non 12 on windows) code!');
+      this.emit(MongoInstanceEvents.instanceError, new UnexpectedCloseError(code, signal));
     }
 
     this.debug(`closeHandler: code: "${code}", signal: "${signal}"`);
