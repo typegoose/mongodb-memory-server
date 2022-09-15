@@ -309,6 +309,33 @@ describe('MongodbInstance', () => {
       expect(events.get(MongoInstanceEvents.instanceSTDERR)).toEqual(['hello']);
     });
 
+    it('"closeHandler" should emit "instanceClosed"', () => {
+      // test both code and signal
+      {
+        events.clear();
+        mongod.closeHandler(0, 'SIG');
+
+        expect(events.size).toEqual(1);
+        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([0, 'SIG']);
+      }
+      // test only code
+      {
+        events.clear();
+        mongod.closeHandler(0, null);
+
+        expect(events.size).toEqual(1);
+        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([0, null]);
+      }
+      // test only Signal
+      {
+        events.clear();
+        mongod.closeHandler(null, 'SIG');
+
+        expect(events.size).toEqual(1);
+        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIG']);
+      }
+    });
+
     describe('stdoutHandler()', () => {
       // All the lines used to test here should be sourced from actual mongod output!
 
