@@ -284,12 +284,12 @@ describe('MongodbInstance', () => {
 
   describe('test events', () => {
     let mongod: MongodbInstance;
-    let events: Map<MongoInstanceEvents | string, unknown>;
+    let events: Map<MongoInstanceEvents | string, unknown[]>;
     beforeEach(() => {
       mongod = new MongodbInstance({ instance: { port: 1001, dbPath: 'hello' } });
       events = new Map();
-      jest.spyOn(mongod, 'emit').mockImplementation((event: string, arg1: string) => {
-        events.set(event, arg1);
+      jest.spyOn(mongod, 'emit').mockImplementation((event: string, ...args) => {
+        events.set(event, args);
 
         return true;
       });
@@ -298,15 +298,15 @@ describe('MongodbInstance', () => {
       mongod.errorHandler('hello');
 
       expect(events.size).toEqual(2);
-      expect(events.get(MongoInstanceEvents.instanceRawError)).toEqual('hello');
-      expect(events.get(MongoInstanceEvents.instanceError)).toEqual('hello');
+      expect(events.get(MongoInstanceEvents.instanceRawError)).toEqual(['hello']);
+      expect(events.get(MongoInstanceEvents.instanceError)).toEqual(['hello']);
     });
 
     it('"stderrHandler" should emit "instanceSTDERR"', () => {
       mongod.stderrHandler('hello');
 
       expect(events.size).toEqual(1);
-      expect(events.get(MongoInstanceEvents.instanceSTDERR)).toEqual('hello');
+      expect(events.get(MongoInstanceEvents.instanceSTDERR)).toEqual(['hello']);
     });
 
     describe('stdoutHandler()', () => {
@@ -322,8 +322,8 @@ describe('MongodbInstance', () => {
         mongod.stdoutHandler(line);
 
         expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instanceReady)).toEqual(undefined);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
+        expect(events.get(MongoInstanceEvents.instanceReady)).toEqual([undefined]);
       });
 
       it('should emit "instanceError" when port is already in use', () => {
@@ -334,9 +334,9 @@ describe('MongodbInstance', () => {
         mongod.stdoutHandler(line);
 
         expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
 
-        const event = events.get(MongoInstanceEvents.instanceError);
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toMatchSnapshot();
@@ -350,9 +350,9 @@ describe('MongodbInstance', () => {
         mongod.stdoutHandler(line);
 
         expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
 
-        const event = events.get(MongoInstanceEvents.instanceError);
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toMatchSnapshot();
@@ -366,9 +366,9 @@ describe('MongodbInstance', () => {
         mongod.stdoutHandler(line);
 
         expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
 
-        const event = events.get(MongoInstanceEvents.instanceError);
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toMatchSnapshot();
@@ -382,8 +382,8 @@ describe('MongodbInstance', () => {
         mongod.stdoutHandler(line);
 
         expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instancePrimary)).toEqual(undefined);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
+        expect(events.get(MongoInstanceEvents.instancePrimary)).toEqual([undefined]);
         expect(mongod.isInstancePrimary).toEqual(true);
       });
 
@@ -396,8 +396,8 @@ describe('MongodbInstance', () => {
         mongod.stdoutHandler(line);
 
         expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
-        expect(events.get(MongoInstanceEvents.instanceReplState)).toEqual('RECOVERING');
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
+        expect(events.get(MongoInstanceEvents.instanceReplState)).toEqual(['RECOVERING']);
         expect(mongod.isInstancePrimary).toEqual(false);
       });
 
@@ -409,9 +409,9 @@ describe('MongodbInstance', () => {
         mongod.stdoutHandler(line);
 
         expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
 
-        const event = events.get(MongoInstanceEvents.instanceError);
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toMatchSnapshot();
@@ -427,9 +427,9 @@ describe('MongodbInstance', () => {
           mongod.stdoutHandler(line);
 
           expect(events.size).toEqual(2);
-          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
 
-          const event = events.get(MongoInstanceEvents.instanceError);
+          const event = events.get(MongoInstanceEvents.instanceError)?.[0];
           expect(event).toBeInstanceOf(StdoutInstanceError);
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
           expect(event.message).toMatchSnapshot();
@@ -444,9 +444,9 @@ describe('MongodbInstance', () => {
           mongod.stdoutHandler(line);
 
           expect(events.size).toEqual(2);
-          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
 
-          const event = events.get(MongoInstanceEvents.instanceError);
+          const event = events.get(MongoInstanceEvents.instanceError)?.[0];
           expect(event).toBeInstanceOf(StdoutInstanceError);
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
           expect(event.message).toMatchSnapshot();
@@ -461,9 +461,9 @@ describe('MongodbInstance', () => {
           mongod.stdoutHandler(line);
 
           expect(events.size).toEqual(2);
-          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
 
-          const event = events.get(MongoInstanceEvents.instanceError);
+          const event = events.get(MongoInstanceEvents.instanceError)?.[0];
           expect(event).toBeInstanceOf(StdoutInstanceError);
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
           expect(event.message).toMatchSnapshot();
@@ -478,9 +478,9 @@ describe('MongodbInstance', () => {
           mongod.stdoutHandler(line);
 
           expect(events.size).toEqual(2);
-          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
 
-          const event = events.get(MongoInstanceEvents.instanceError);
+          const event = events.get(MongoInstanceEvents.instanceError)?.[0];
           expect(event).toBeInstanceOf(StdoutInstanceError);
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
           expect(event.message).toMatchSnapshot();
@@ -494,11 +494,10 @@ describe('MongodbInstance', () => {
 
           mongod.stdoutHandler(line);
 
-          console.log(events);
           expect(events.size).toEqual(2);
-          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual(line);
+          expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
 
-          const event = events.get(MongoInstanceEvents.instanceError);
+          const event = events.get(MongoInstanceEvents.instanceError)?.[0];
           expect(event).toBeInstanceOf(StdoutInstanceError);
           assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
           expect(event.message).toMatchSnapshot();
@@ -517,7 +516,7 @@ describe('MongodbInstance', () => {
 
         expect(events.size).toEqual(1);
 
-        const event = events.get(MongoInstanceEvents.instanceError);
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
         expect(event).toBeInstanceOf(StdoutInstanceError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toMatchSnapshot();
