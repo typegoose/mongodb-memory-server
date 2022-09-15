@@ -170,5 +170,16 @@ export class StdoutInstanceError extends Error {
   }
 }
 
+/**
+ * Error for when the instance closes with non-0 (or non-12) codes or signals
+ */
+export class UnexpectedCloseError extends Error {
+  constructor(code: number | null, signal: string | null) {
+    super();
+
+    this.message = `Instance closed unexpectedly with code "${code}" and signal "${signal}"`;
+  }
+}
+
 /* Custom Generic Error class for MMS */
 export class GenericMMSError extends Error {}
