@@ -334,7 +334,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     const launch: Promise<void> = new Promise((res, rej) => {
       this.once(MongoInstanceEvents.instanceReady, res);
       this.once(MongoInstanceEvents.instanceError, rej);
-      this.once(MongoInstanceEvents.instanceClosed, () => {
+      this.once(MongoInstanceEvents.instanceClosed, function launchInstanceClosed() {
         rej(new Error('Instance Exited before being ready and without throwing an error!'));
       });
     });
