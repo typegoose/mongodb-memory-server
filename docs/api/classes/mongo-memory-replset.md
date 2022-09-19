@@ -206,7 +206,7 @@ Will Throw an Error if `state` is not `stopped`
 
 Typings: `protected _replSetOpts!: Required<ReplSetOpts>`
 
-Stores the options used for the ReplSet Initiation
+Stores the options used for the ReplSet Initiation, uses [`ReplSetOpts`](../interfaces/replset-opts.md).
 
 ### _keyfiletmp
 
