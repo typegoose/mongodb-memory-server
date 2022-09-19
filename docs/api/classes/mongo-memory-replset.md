@@ -152,7 +152,7 @@ Typings:
 - `get instanceOpts(): MongoMemoryInstancePropBase[]`
 - `set instanceOpts(val: MongoMemoryInstancePropBase[])`
 
-Getter & Setter for [`_instanceOpts`](#_instanceOpts)
+Getter & Setter for [`_instanceOpts`](#_instanceopts)
 
 :::caution
 Will Throw an Error if `state` is not `stopped`
@@ -173,7 +173,7 @@ Typings:
 - `get binaryOpts(): MongoBinaryOpts`
 - `set binaryOpts(val: MongoBinaryOpts)`
 
-Getter & Setter for [`_binaryOpts`](#_binaryOpts)
+Getter & Setter for [`_binaryOpts`](#_binaryopts)
 
 :::caution
 Will Throw an Error if `state` is not `stopped`
@@ -194,7 +194,7 @@ Typings:
 - `get replSetOpts(): ReplSetOpts`
 - `set replSetOpts(val: ReplSetOpts)`
 
-Getter & Setter for [`_replSetOpts`](#_replSetOpts)
+Getter & Setter for [`_replSetOpts`](#_replsetopts)
 
 :::caution
 Will Throw an Error if `state` is not `stopped`
