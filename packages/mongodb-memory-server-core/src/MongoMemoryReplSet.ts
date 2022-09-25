@@ -708,11 +708,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         log('_initReplSet: trying "replSetInitiate"');
         await adminDb.command({ replSetInitiate: rsConfig });
 
-        if (typeof this._replSetOpts.auth === 'object') {
-          log('_initReplSet: "this._replSetOpts.auth" is a object');
+        if (this.enableAuth()) {
+          log('_initReplSet: "enableAuth" returned "true"');
 
           await this._waitForPrimary(undefined, '_initReplSet authIsObject');
 
+          // find the primary instance to run createAuth on
           const primary = this.servers.find(
             (server) => server.instanceInfo?.instance.isInstancePrimary
           );
