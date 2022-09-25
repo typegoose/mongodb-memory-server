@@ -412,7 +412,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       log('initAllServers: lenght of "servers" is higher than 0, starting existing servers');
 
       if (this._ranCreateAuth) {
-        log('initAllServers: "_ranCreateAuth" is true, changing "auth" to on');
+        log('initAllServers: "_ranCreateAuth" is true, re-using auth');
         const keyfilepath = resolve((await this.ensureKeyFile()).name, 'keyfile');
         for (const server of this.servers) {
           assertion(
