@@ -1,3 +1,17 @@
+## [8.9.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.2...v8.9.3) (2022-09-25)
+
+
+### Style
+
+* **MongoMemoryReplSet:** update log to more current implementation ([256d65b](https://github.com/nodkz/mongodb-memory-server/commit/256d65b850d80a1d6d499a18982316d216b465f8))
+* **MongoMemoryServer.test:** remove unused "ts-expect-error" directive ([5020be8](https://github.com/nodkz/mongodb-memory-server/commit/5020be8c7c2b63da4feb06e8d7b4b10710fb0284))
+
+
+### Fixes
+
+* **MongoMemoryReplSet:** fix creating auth regardless of "enableAuth" ([78d5aee](https://github.com/nodkz/mongodb-memory-server/commit/78d5aee1869bc494f971391c5c28e06abd57a825))
+* **MongoMemoryServer:** dont set "extraConnectionOptions" when auth-object is disabled ([80d6fe1](https://github.com/nodkz/mongodb-memory-server/commit/80d6fe1248371efc94997d0f05bdd38209bb0f4a))
+
 ## [8.9.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.1...v8.9.2) (2022-09-15)
 
 
