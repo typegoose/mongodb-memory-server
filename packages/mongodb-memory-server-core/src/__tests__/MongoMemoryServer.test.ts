@@ -26,10 +26,7 @@ describe('MongoMemoryServer', () => {
   describe('start()', () => {
     it('should not error if an MongoInstanceData is resolved by _startUpInstance', async () => {
       const mongoServer = new MongoMemoryServer();
-      jest
-        .spyOn(mongoServer, '_startUpInstance')
-        // @ts-expect-error expect an error here rather than an "as any"
-        .mockImplementationOnce(() => Promise.resolve({}));
+      jest.spyOn(mongoServer, '_startUpInstance').mockImplementationOnce(() => Promise.resolve());
 
       expect(mongoServer._startUpInstance).not.toHaveBeenCalled();
 
