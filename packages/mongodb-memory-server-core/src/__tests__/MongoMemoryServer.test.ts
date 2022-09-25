@@ -1074,4 +1074,36 @@ describe('MongoMemoryServer', () => {
     expect(mongoServer.instanceInfo).toBeFalsy();
     expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
   });
+
+  describe('authObjectEnable()', () => {
+    it('should with defaults return "false"', () => {
+      const mongoServer = new MongoMemoryServer();
+
+      expect(mongoServer.auth).toBeFalsy();
+
+      expect(
+        // @ts-expect-error "authObjectEnable" is protected
+        mongoServer.authObjectEnable()
+      ).toStrictEqual(false);
+    });
+
+    it('should with defaults return "true" if empty object OR "disable: false"', () => {
+      {
+        const mongoServer = new MongoMemoryServer({ auth: {} });
+
+        expect(
+          // @ts-expect-error "authObjectEnable" is protected
+          mongoServer.authObjectEnable()
+        ).toStrictEqual(true);
+      }
+      {
+        const mongoServer = new MongoMemoryServer({ auth: { disable: false } });
+
+        expect(
+          // @ts-expect-error "authObjectEnable" is protected
+          mongoServer.authObjectEnable()
+        ).toStrictEqual(true);
+      }
+    });
+  });
 });
