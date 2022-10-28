@@ -1,3 +1,10 @@
+## [8.9.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.3...v8.9.4) (2022-10-28)
+
+
+### Fixes
+
+* **MongoInstance:** add a timeout for the "launch" promise ([f822856](https://github.com/nodkz/mongodb-memory-server/commit/f822856ca4bb9c53a229a0399f00966fa6023e25)), closes [#710](https://github.com/nodkz/mongodb-memory-server/issues/710)
+
 ## [8.9.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.2...v8.9.3) (2022-09-25)
 
 
