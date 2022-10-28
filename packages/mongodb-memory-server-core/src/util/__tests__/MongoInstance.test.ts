@@ -4,7 +4,12 @@ import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
 import getPort from 'get-port';
-import { StartBinaryFailedError, StdoutInstanceError, UnexpectedCloseError } from '../errors';
+import {
+  GenericMMSError,
+  StartBinaryFailedError,
+  StdoutInstanceError,
+  UnexpectedCloseError,
+} from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 jest.setTimeout(100000); // 10s
@@ -17,6 +22,7 @@ beforeEach(() => {
 
 afterEach(() => {
   tmpDir.removeCallback();
+  jest.restoreAllMocks();
 });
 
 describe('MongodbInstance', () => {
@@ -596,6 +602,43 @@ describe('MongodbInstance', () => {
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toMatchSnapshot();
       });
+    });
+
+    it('"start" should emit a "instanceError" when timeout is reached and throw a error', async () => {
+      mongod.instanceOpts['launchTimeout'] = 1000;
+
+      jest.spyOn(mongod, '_launchMongod').mockImplementation(
+        // @ts-expect-error The following is not meant to work, but in this test we dont care about that result, only that it never fires any events
+        () => {
+          return { pid: 0 }; // required for a direct check afterwards
+        }
+      );
+      jest.spyOn(mongod, '_launchKiller').mockImplementation(
+        // @ts-expect-error The following is not meant to work, but in this test we dont care about that result, only that it never fires any events
+        () => undefined
+      );
+      jest.spyOn(mongod, 'stop').mockImplementation(
+        // @ts-expect-error The following is not meant to work, but in this test we dont care about that result, only that it never fires any events
+        () => undefined
+      );
+
+      try {
+        await mongod.start();
+        fail('Expected "start" to throw');
+      } catch (err) {
+        // this error could be thrown through "once => instanceError" or from the timeout directly, but it does not matter where it gets thrown from
+        expect(err).toBeInstanceOf(GenericMMSError);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+
+        expect(events.size).toEqual(1);
+
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+        expect(event).toBeInstanceOf(GenericMMSError);
+        assertIsError(event);
+        expect(event.message).toStrictEqual(err.message);
+        expect(err).toBe(event); // reference compare, because these 2 values should be the same
+      }
     });
   });
 });

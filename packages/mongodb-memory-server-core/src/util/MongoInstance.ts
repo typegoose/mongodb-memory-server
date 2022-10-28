@@ -14,6 +14,7 @@ import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
 import {
+  GenericMMSError,
   KeyFileMissingError,
   StartBinaryFailedError,
   StdoutInstanceError,
@@ -165,6 +166,12 @@ export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
    * @default undefined
    */
   keyfileLocation?: string;
+  /**
+   * Define a custom timeout for when out of some reason the binary cannot get started correctly
+   * Time in MS
+   * @default 10000 10 seconds
+   */
+  launchTimeout?: number;
 }
 
 export enum MongoInstanceEvents {
@@ -336,12 +343,30 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     this.isInstanceReady = false;
     this.isReplSet = false;
 
-    const launch: Promise<void> = new Promise((res, rej) => {
+    let timeout: NodeJS.Timeout;
+
+    const launch: Promise<void> = new Promise<void>((res, rej) => {
       this.once(MongoInstanceEvents.instanceReady, res);
       this.once(MongoInstanceEvents.instanceError, rej);
       this.once(MongoInstanceEvents.instanceClosed, function launchInstanceClosed() {
         rej(new Error('Instance Exited before being ready and without throwing an error!'));
       });
+
+      // extra conditions just to be sure that the custom defined timeout is valid
+      const timeoutTime =
+        !!this.instanceOpts.launchTimeout && this.instanceOpts.launchTimeout >= 1000
+          ? this.instanceOpts.launchTimeout
+          : 1000 * 10; // default 10 seconds
+
+      timeout = setTimeout(() => {
+        const err = new GenericMMSError(`Instance failed to start within ${timeoutTime}ms`);
+        this.emit(MongoInstanceEvents.instanceError, err);
+
+        rej(err);
+      }, timeoutTime);
+    }).finally(() => {
+      // always clear the timeout after the promise somehow resolves
+      clearTimeout(timeout);
     });
 
     const mongoBin = await MongoBinary.getPath(this.binaryOpts);
