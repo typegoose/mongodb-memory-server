@@ -72,6 +72,7 @@ export interface AutomaticAuth {
   keyfileContent?: string;
 }
 
+// TODO: consider some way to not forget to add changes from "MongoMemoryInstanceOpts"
 /**
  * Data used by _startUpInstance's "data" variable
  */
@@ -84,6 +85,7 @@ export interface StartupInstanceData {
   replSet?: NonNullable<MongoMemoryInstanceOpts['replSet']>;
   tmpDir?: tmp.DirResult;
   keyfileLocation?: NonNullable<MongoMemoryInstanceOpts['keyfileLocation']>;
+  launchTimeout?: NonNullable<MongoMemoryInstanceOpts['launchTimeout']>;
 }
 
 /**
@@ -364,6 +366,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       port = await this.getNewPort(port);
     }
 
+    // consider directly using "this.opts.instance", to pass through all options, even if not defined in "StartupInstanceData"
     const data: StartupInstanceData = {
       port: port,
       dbName: generateDbName(instOpts.dbName),
@@ -373,6 +376,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       dbPath: instOpts.dbPath,
       tmpDir: undefined,
       keyfileLocation: instOpts.keyfileLocation,
+      launchTimeout: instOpts.launchTimeout,
     };
 
     if (isNullOrUndefined(this._instanceInfo)) {

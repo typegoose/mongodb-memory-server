@@ -1106,4 +1106,25 @@ describe('MongoMemoryServer', () => {
       }
     });
   });
+
+  it('should transfer "launchTimeout" option to the MongoInstance', async () => {
+    const createSpy = jest.spyOn(MongoInstance, 'create').mockImplementation(
+      // @ts-expect-error This can work, because the instance is not used in the function that is tested here, beyond setting some extra options
+      () => Promise.resolve({})
+    );
+
+    const mongoServer = new MongoMemoryServer({ instance: { launchTimeout: 2000 } });
+
+    await mongoServer._startUpInstance();
+
+    // @ts-expect-error "_instanceInfo" is protected
+    const instanceInfo = mongoServer._instanceInfo;
+    expect(instanceInfo).toBeDefined();
+    utils.assertion(!utils.isNullOrUndefined(instanceInfo));
+    expect(instanceInfo.instance).toBeDefined();
+    expect(instanceInfo?.launchTimeout).toStrictEqual(2000);
+
+    expect(createSpy.mock.calls.length).toStrictEqual(1);
+    expect(createSpy.mock.calls[0][0].instance).toHaveProperty('launchTimeout', 2000);
+  });
 });
