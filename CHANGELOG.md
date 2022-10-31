@@ -1,3 +1,10 @@
+## [8.9.5](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.4...v8.9.5) (2022-10-31)
+
+
+### Fixes
+
+* **MongoMemoryServer:** pass-through option "launchTimeout" correctly ([6ffe62a](https://github.com/nodkz/mongodb-memory-server/commit/6ffe62a7c4b2e928dc16ca0c6beea6e80e5a107b)), closes [#710](https://github.com/nodkz/mongodb-memory-server/issues/710)
+
 ## [8.9.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.3...v8.9.4) (2022-10-28)
 
 
