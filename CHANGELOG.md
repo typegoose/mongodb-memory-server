@@ -1,3 +1,22 @@
+## [8.10.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.5...v8.10.0) (2022-11-09)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** support native macos arm64 binaries for 6.0.0 and up ([9b0dfb1](https://github.com/nodkz/mongodb-memory-server/commit/9b0dfb10dd56765d27fad77ecc52f9ad2409412a)), closes [#714](https://github.com/nodkz/mongodb-memory-server/issues/714)
+
+
+### Dependencies
+
+* **@types/jest:** upgrade to version 28.1.8 ([7eaaeb1](https://github.com/nodkz/mongodb-memory-server/commit/7eaaeb1d55ce44e5ca8903b4875ebabbb6c314cf))
+* **@types/semver:** upgrade to version 7.3.13 ([aa5ca3b](https://github.com/nodkz/mongodb-memory-server/commit/aa5ca3baadfb42cd20daae26a1bd77c36c7acc35))
+* **@typescript-eslint/*:** upgrade to version 5.42.1 ([038b07e](https://github.com/nodkz/mongodb-memory-server/commit/038b07ef8d741b58a75526504c1236989ab86466))
+* **doctoc:** upgrade to version 2.2.1 ([3c1deb9](https://github.com/nodkz/mongodb-memory-server/commit/3c1deb959de058aa07824b458d310e3f342660fb))
+* **eslint:** upgrade to version 8.27.0 ([31fece5](https://github.com/nodkz/mongodb-memory-server/commit/31fece53a05d4a1f0e8b4f50c34283efbbd158f7))
+* **mongodb:** upgrade to version 4.11.0 ([999bc2c](https://github.com/nodkz/mongodb-memory-server/commit/999bc2cf2fad683d52ffbbe7f34b0fcc78f3275b))
+* **semver:** upgrade to version 7.3.8 ([9e09446](https://github.com/nodkz/mongodb-memory-server/commit/9e09446cec4768c6ed7147ea8561fae8a0509ce6))
+* **tslib:** upgrade to version 2.4.1 ([5524cf6](https://github.com/nodkz/mongodb-memory-server/commit/5524cf6ad4ee2787bac699d4fe15dd100ccc65ab))
+
 ## [8.9.5](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.4...v8.9.5) (2022-10-31)
 
 
