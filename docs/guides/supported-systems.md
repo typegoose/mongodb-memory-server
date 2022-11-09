@@ -40,7 +40,9 @@ Should just work out of the box
 <span class="badge badge--success">Supported</span>
 
 On x64 systems, it should work right out of the box<br/>
-On Arm64 systems, the architecture needs to be overwritten with `MONGOMS_ARCH=x64`, only exception being (and based on) `ubuntu`
+Since Mongodb 6.0.0, they have `arm64` binaries<br/>
+Uses `arm64` binaries for all versions above or equal to `6.0.0`, for older versions falls back to using `x86_64` binaries (requires Rosetta)<br/>
+Usage of the `x86_64` binary can be forced with [`MONGOMS_ARCH=x64`](../api/config-options.md#arch) (or equal in `package.json`)
 
 ## Linux
 

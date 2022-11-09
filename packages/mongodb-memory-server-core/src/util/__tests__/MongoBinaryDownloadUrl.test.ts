@@ -71,7 +71,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('arm64 should use the x64 binary', async () => {
+      it('arm64 should use the x64 binary for versions below 6.0.0', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'arm64',
@@ -79,6 +79,17 @@ describe('MongoBinaryDownloadUrl', () => {
         });
         expect(await du.getDownloadUrl()).toBe(
           'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.4.0.tgz'
+        );
+      });
+
+      it('arm64 should use the arm64 binary for versions above and equal to 6.0.0', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'arm64',
+          version: '6.0.0',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-6.0.0.tgz'
         );
       });
     });

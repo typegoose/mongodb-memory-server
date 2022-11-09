@@ -130,9 +130,19 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
 
+    // mongodb has native arm64
     if (this.arch === 'aarch64') {
-      log('getArchiveNameOsx: Arch is "aarch64", using x64 binary');
-      this.arch = 'x86_64';
+      // force usage of "x86_64" binary for all versions below than 6.0.0
+      if (!isNullOrUndefined(version) && semver.lt(version, '6.0.0')) {
+        log('getArchiveNameOsx: Arch is "aarch64" and version is below 6.0.0, using x64 binary');
+        this.arch = 'x86_64';
+      } else {
+        log(
+          'getArchiveNameOsx: Arch is "aarch64" and version is above or equal to 6.0.0, using arm64 binary'
+        );
+        // naming for macos is still "arm64" instead of "aarch64"
+        this.arch = 'arm64';
+      }
     }
 
     name += `-${this.arch}-${this.version}.tgz`;
