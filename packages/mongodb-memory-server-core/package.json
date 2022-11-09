@@ -52,7 +52,7 @@
     "md5-file": "^5.0.0",
     "mongodb": "~4.9.0",
     "new-find-package-json": "^2.0.0",
-    "semver": "^7.3.7",
+    "semver": "^7.3.8",
     "tar-stream": "^2.1.4",
     "tmp": "^0.2.1",
     "tslib": "^2.4.0",
