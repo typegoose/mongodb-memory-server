@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "mongodb-memory-server-core": "8.9.5",
-    "tslib": "^2.4.0"
+    "tslib": "^2.4.1"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js"
