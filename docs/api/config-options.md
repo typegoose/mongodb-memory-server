@@ -105,7 +105,7 @@ It is discouraged to use query parameters, they may work, but not officially sup
 | :--------------------: | :-----------: |
 | `MONGOMS_DOWNLOAD_URL` | `downloadUrl` |
 
-Option `DOWNLOAD_URL` is used to overwrite the ***complete*** URL (including [`DOWNLOAD_MIRROR`](#DOWNLOAD_MIRROR))
+Option `DOWNLOAD_URL` is used to overwrite the ***complete*** URL (including [`DOWNLOAD_MIRROR`](#download_mirror))
 
 Format: `https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
 
