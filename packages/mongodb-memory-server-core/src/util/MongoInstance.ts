@@ -132,6 +132,12 @@ export interface MongoMemoryInstanceOptsBase {
    * Only has a effect when started with "MongoMemoryReplSet"
    */
   replicaMemberConfig?: ReplicaMemberConfig;
+  /**
+   * Define a custom timeout for when out of some reason the binary cannot get started correctly
+   * Time in MS
+   * @default 10000 10 seconds
+   */
+  launchTimeout?: number;
 }
 
 export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
@@ -166,12 +172,6 @@ export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
    * @default undefined
    */
   keyfileLocation?: string;
-  /**
-   * Define a custom timeout for when out of some reason the binary cannot get started correctly
-   * Time in MS
-   * @default 10000 10 seconds
-   */
-  launchTimeout?: number;
 }
 
 export enum MongoInstanceEvents {
