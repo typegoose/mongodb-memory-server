@@ -345,6 +345,9 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
 
     let timeout: NodeJS.Timeout;
 
+    const mongoBin = await MongoBinary.getPath(this.binaryOpts);
+    await checkBinaryPermissions(mongoBin);
+
     const launch: Promise<void> = new Promise<void>((res, rej) => {
       this.once(MongoInstanceEvents.instanceReady, res);
       this.once(MongoInstanceEvents.instanceError, rej);
@@ -369,8 +372,6 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       clearTimeout(timeout);
     });
 
-    const mongoBin = await MongoBinary.getPath(this.binaryOpts);
-    await checkBinaryPermissions(mongoBin);
     this.debug('start: Starting Processes');
     this.mongodProcess = this._launchMongod(mongoBin);
     // This assertion is here because somewhere between nodejs 12 and 16 the types for "childprocess.pid" changed to include "| undefined"
