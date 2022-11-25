@@ -1,3 +1,10 @@
+## [8.10.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.10.0...v8.10.1) (2022-11-25)
+
+
+### Fixes
+
+* **MongoInstance:** move getting / downloading the binary before creating the launchTimeout ([619d1fa](https://github.com/nodkz/mongodb-memory-server/commit/619d1fab5cece44865e40261bab9313027dbe44f)), closes [#719](https://github.com/nodkz/mongodb-memory-server/issues/719)
+
 ## [8.10.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.9.5...v8.10.0) (2022-11-09)
 
 
