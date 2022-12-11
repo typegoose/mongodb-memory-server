@@ -96,7 +96,7 @@ describe('MongoBinaryDownloadUrl', () => {
 
     describe('for linux', () => {
       describe('for ubuntu', () => {
-        it('for ubuntu x64', async () => {
+        it('for ubuntu 14.04 for 3.6', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -109,6 +109,54 @@ describe('MongoBinaryDownloadUrl', () => {
           });
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz'
+          );
+        });
+
+        it('for ubuntu 20.04 for 4.0', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.0',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '2004',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.0.tgz'
+          );
+        });
+
+        it('for ubuntu 22.04 for 4.0', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.0',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '2204',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.0.tgz'
+          );
+        });
+
+        it('for ubuntu 22.04 for 4.4', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.4.0',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '2204',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.0.tgz'
           );
         });
 
@@ -1147,6 +1195,28 @@ describe('MongoBinaryDownloadUrl', () => {
           os: 'linux',
           dist: 'Ubuntu Linux',
           release: '21.04',
+        })
+      ).toBe('ubuntu2004');
+    });
+
+    it('should return a archive name for Ubuntu 22.04 using 1804 4.0', () => {
+      downloadUrl.version = '4.0.0';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '22.04',
+        })
+      ).toBe('ubuntu1804');
+    });
+
+    it('should return a archive name for Ubuntu 22.04 using 2004 4.4', () => {
+      downloadUrl.version = '4.4.0';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '22.04',
         })
       ).toBe('ubuntu2004');
     });
