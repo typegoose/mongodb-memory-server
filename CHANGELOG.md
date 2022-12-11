@@ -1,3 +1,10 @@
+## [8.10.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.10.1...v8.10.2) (2022-12-11)
+
+
+### Fixes
+
+* **MongoBinaryDownload::httpDownload:** update 403 error message links ([b9307bd](https://github.com/nodkz/mongodb-memory-server/commit/b9307bd3b615e283d0b43d971ac0981bf23e014b))
+
 ## [8.10.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.10.0...v8.10.1) (2022-11-25)
 
 
