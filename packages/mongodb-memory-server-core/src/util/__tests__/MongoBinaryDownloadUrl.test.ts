@@ -120,7 +120,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2004',
+              release: '20.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -136,7 +136,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2204',
+              release: '22.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -152,7 +152,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2204',
+              release: '22.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -168,7 +168,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2004',
+              release: '20.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -184,7 +184,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2204',
+              release: '22.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -200,7 +200,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2004',
+              release: '20.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -216,7 +216,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2204',
+              release: '22.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
