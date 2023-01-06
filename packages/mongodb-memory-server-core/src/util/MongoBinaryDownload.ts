@@ -429,7 +429,7 @@ export class MongoBinaryDownload {
               return;
             }
 
-            reject(new Error('Status Code isnt 200!'));
+            reject(new Error(`Status Code isnt 200! (it is ${response.statusCode})`));
 
             return;
           }
