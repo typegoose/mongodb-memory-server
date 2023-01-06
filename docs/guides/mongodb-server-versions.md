@@ -31,12 +31,13 @@ Starting with MongoDB version 5.0, the default versions for `mongodb-memory-serv
 
 | `mongodb-memory-server-core` Version | Default MongoDB Version |
 | :----------------------------------: | :---------------------: |
-| 8.6.x - 8.6.x                        | 5.0.8                   |
-| 8.0.x - 8.5.x                        | 5.0.3                   |
-| 7.5.x - 7.5.x                        | 4.0.27                  |
-| 7.0.x - 7.4.x                        | 4.0.25                  |
-| 6.4.x - 6.9.x                        | 4.0.14                  |
-| 6.0.x - 6.4.x                        | 4.0.3                   |
+|           8.11.x - 8.11.x            |         5.0.13          |
+|            8.6.x - 8.10.x            |          5.0.8          |
+|            8.0.x - 8.5.x             |          5.0.3          |
+|            7.5.x - 7.5.x             |         4.0.27          |
+|            7.0.x - 7.4.x             |         4.0.25          |
+|            6.4.x - 6.9.x             |         4.0.14          |
+|            6.0.x - 6.4.x             |          4.0.3          |
 
 ## `mongodb-memory-server-global-*` Version Table
 
@@ -44,10 +45,10 @@ This Section will show all `mongodb-memory-server-global-*` packages that ever e
 
 If the branch is named like `old/`, then it means that this package will not be updated for new major MMS versions anymore. (Example if the package is in `old/6.x`, then it will not get any updates to MMS 7.0 or higher)
 
-| Package Name                        | Provided MongoDB Version | Current Branch |
-| :---------------------------------: | :----------------------: | :------------: |
-| `mongodb-memory-server-global-4.4`  | 4.4.13                   | `master`       |
-| `mongodb-memory-server-global-4.2`  | 4.2.18                   | `master`       |
-| `mongodb-memory-server-global-4.0`  | 4.0.28                   | `master`       |
-| `mongodb-memory-server-global-3.6`  | 3.6.23                   | `old/7.x`      |
-| `mongodb-memory-server-global-3.4`  | 3.4.20                   | `old/6.x`      |
+|            Package Name            | Provided MongoDB Version | Current Branch |
+| :--------------------------------: | :----------------------: | :------------: |
+| `mongodb-memory-server-global-4.4` |          4.4.13          |    `master`    |
+| `mongodb-memory-server-global-4.2` |          4.2.18          |    `master`    |
+| `mongodb-memory-server-global-4.0` |          4.0.28          |    `master`    |
+| `mongodb-memory-server-global-3.6` |          3.6.23          |   `old/7.x`    |
+| `mongodb-memory-server-global-3.4` |          3.4.20          |   `old/6.x`    |
