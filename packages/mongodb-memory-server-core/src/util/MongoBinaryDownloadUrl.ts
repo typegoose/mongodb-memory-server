@@ -310,10 +310,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const { release } = os;
+    const releaseAsSemver = semver.coerce(release); // coerce "8" to "8.0.0" and "8.2" to "8.2.0", makes comparing easier than "parseInt" or "parseFloat"
 
-    if (release) {
+    if (releaseAsSemver) {
       if (this.arch === 'aarch64') {
-        if (!/^8/.test(release)) {
+        // there are no versions for aarch64 before rhel 8.2 (or currently after)
+        if (semver.lt(releaseAsSemver, '8.2.0')) {
           throw new KnownVersionIncompatibilityError(
             `Rhel ${release}`,
             this.version,
@@ -321,23 +323,31 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
             'ARM64(aarch64) support for rhel is only for rhel82 or higher'
           );
         }
-        if (semver.satisfies(this.version, '<4.4.2')) {
+        // there are no versions for aarch64 before mongodb 4.4.2
+        // Note: version 4.4.2 and 4.4.3 are NOT listed at the list, but are existing; list: https://www.mongodb.com/download-center/community/releases/archive
+        if (semver.lt(this.version, '4.4.2')) {
           throw new KnownVersionIncompatibilityError(`Rhel ${release}`, this.version, '>=4.4.2');
         }
 
-        // rhel aarch64 support is only for rhel 8 and only for 82
+        if (!semver.eq(releaseAsSemver, '8.2.0')) {
+          log(`a different rhel version than 8.2 is used: "${release}", using 82 release`);
+        }
+
+        // rhel aarch64 support is only for rhel 8.2 (and no version after explicitly)
         name += '82';
-      } else if (/^8/.test(release)) {
+      } else if (semver.satisfies(releaseAsSemver, '^8.0.0')) {
         name += '80';
-      } else if (/^7/.test(release)) {
+      } else if (semver.satisfies(releaseAsSemver, '^7.0.0')) {
         name += '70';
-      } else if (/^6/.test(release)) {
+      } else if (semver.satisfies(releaseAsSemver, '^6.0.0')) {
         name += '62';
-      } else if (/^5/.test(release)) {
+      } else if (semver.satisfies(releaseAsSemver, '^5.0.0')) {
         name += '55';
       } else {
         console.warn(`Unhandled RHEL version: "${release}"("${this.arch}")`);
       }
+    } else {
+      console.warn(`Couldnt coerce RHEL version "${release}"`);
     }
     // fallback if name has not been modified yet
     if (name === 'rhel') {
