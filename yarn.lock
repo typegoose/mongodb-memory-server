@@ -1183,10 +1183,10 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
-"@google/semantic-release-replace-plugin@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@google/semantic-release-replace-plugin/-/semantic-release-replace-plugin-1.1.0.tgz#71316d584efb9feb1267fc7576e50ff6919c02f2"
-  integrity sha512-LaBZmayyxa9eSxJP0dH1FhF3Ye7aXmmkvIGPqR+kA1BxIpEfUqaKk+50puVJ2ERfEPitPmuG2A1utDqMgOgkeg==
+"@google/semantic-release-replace-plugin@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@google/semantic-release-replace-plugin/-/semantic-release-replace-plugin-1.2.0.tgz#d968bb32f5a40232e44f46aa62cb8186b2c5283d"
+  integrity sha512-ucZHG4eOtWjW+mSD3GSHg/LKyqY4N5KYk/QYpWD580FDE7eii0fmns9v0jpbsDj8W+pV7QXmbSDqIpPVfBrptg==
   dependencies:
     jest-diff "^26.5.2"
     lodash "^4.17.20"
