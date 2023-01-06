@@ -1,3 +1,36 @@
+## [8.11.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.10.2...v8.11.0) (2023-01-06)
+
+
+### Features
+
+* update default-binary 5.0.13 ([5375af3](https://github.com/nodkz/mongodb-memory-server/commit/5375af34526efe0a33f2104ca41d00c8e8589013)), closes [#727](https://github.com/nodkz/mongodb-memory-server/issues/727)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl::getRhelVersionString:** add warning for unhandled rhel versions ([ad71f21](https://github.com/nodkz/mongodb-memory-server/commit/ad71f219146818cdad550d916227b99c9d796f93))
+* **MongoBinaryDownloadUrl::getRhelVersionString:** refactor to better compare versions ([6a38d17](https://github.com/nodkz/mongodb-memory-server/commit/6a38d17374fca93d9c4d275320955aaf9432b433)), closes [#726](https://github.com/nodkz/mongodb-memory-server/issues/726)
+
+
+### Style
+
+* **MongoBinaryDownload:** add status code to "status is not 200" error ([ad304ee](https://github.com/nodkz/mongodb-memory-server/commit/ad304eeed40eca0085d93c1887fc1588a7bba3db)), closes [#720](https://github.com/nodkz/mongodb-memory-server/issues/720)
+* **MongoBinaryDownload:** rename error variables from "e" to "err" ([f7d811e](https://github.com/nodkz/mongodb-memory-server/commit/f7d811ee94910a84503a2717092fe60454476a4d))
+* **MongoBinaryDownloadUrl:** update tsdoc comments ([4af629c](https://github.com/nodkz/mongodb-memory-server/commit/4af629c409b14ca7e735eb15066ed08ce6d73f60))
+* **MongoMemoryReplSet:** rename error variables from "e" to "err" ([57d034d](https://github.com/nodkz/mongodb-memory-server/commit/57d034dff4a633f487388a348d8c5c663c677a3a))
+
+
+### Dependencies
+
+* **@google/semantic-release-replace-plugin:** upgrade to version 1.2.0 ([28f13d8](https://github.com/nodkz/mongodb-memory-server/commit/28f13d8643944b9cb518d099112aaa74965a36bf))
+* **@typescript-eslint/*:** upgrade to version 5.48.0 ([7a919ab](https://github.com/nodkz/mongodb-memory-server/commit/7a919ab13edc7edce749e7c19ffc1178595ed0f6))
+* **eslint:** upgrade to version 8.31.0 ([16e5a8a](https://github.com/nodkz/mongodb-memory-server/commit/16e5a8ae8926330a79ea0c3a3ae59d9565b5d82e))
+* **eslint-config-prettier:** upgrade to version 8.6.0 ([83d0ca9](https://github.com/nodkz/mongodb-memory-server/commit/83d0ca94395793bc86c720b432daf08cef39dc2d))
+* **mongodb:** change "~" to "^" again ([605614d](https://github.com/nodkz/mongodb-memory-server/commit/605614db338a0e7c667dcfbb38439cca337277cd))
+* **mongodb:** upgrade to version 4.13.0 ([dfbccc3](https://github.com/nodkz/mongodb-memory-server/commit/dfbccc353ea144f6b3fea9d0a6b2e7e760fd9d97))
+* **prettier:** upgrade to version 2.8.1 ([14e3e7d](https://github.com/nodkz/mongodb-memory-server/commit/14e3e7d4113f51045b5192a4b9fc0aea8bd86378))
+* **uuid:** upgrade to version 9.0.0 ([1f32d9c](https://github.com/nodkz/mongodb-memory-server/commit/1f32d9cf8c5d7b7546b9a8ec6c9868de5a837ed5))
+
 ## [8.10.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.10.1...v8.10.2) (2022-12-11)
 
 
