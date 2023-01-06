@@ -19,8 +19,10 @@ jobs:
       - uses: actions/stale@v7
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          stale-issue-message: 'Marking Issue as stale, will be closed in 7 days if no more activity is seen'
-          close-issue-message: 'Closing Issue because it is marked as stale'
+          stale-issue-message: 'Marking the Issue as stale, it will be closed in 7 days if no more activity is seen'
+          close-issue-message: 'Closing the Issue because it is marked as stale'
+          stale-pr-message: 'Marking the PR as stale, it will be closed in 7 days if no more activity is seen'
+          close-pr-message: 'Closing the PR because it is marked as stale'
           stale-issue-label: stale
           exempt-issue-labels: help wanted,docs,enhancement,feature,dependencies,Distribution support,discussion,released on @beta,released on @master,keep,breaking
           days-before-stale: 30
