@@ -930,6 +930,27 @@ describe('MongoBinaryDownloadUrl', () => {
             expect(err.message).toMatchSnapshot();
           }
         });
+
+        it('should warn when a unhandled RHEL release is used', async () => {
+          const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x86_64',
+            version: '5.0.0',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '0',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-5.0.0.tgz'
+          );
+
+          expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+          expect(consoleWarnSpy).toHaveBeenCalledWith('Unhandled RHEL version: "0"("x86_64")');
+        });
       });
     });
 

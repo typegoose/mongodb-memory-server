@@ -335,6 +335,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         name += '62';
       } else if (/^5/.test(release)) {
         name += '55';
+      } else {
+        console.warn(`Unhandled RHEL version: "${release}"("${this.arch}")`);
       }
     }
     // fallback if name has not been modified yet
