@@ -322,6 +322,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     if (baseOpts.replicaMemberConfig) {
       opts.replicaMemberConfig = baseOpts.replicaMemberConfig;
     }
+    if (baseOpts.launchTimeout) {
+      opts.launchTimeout = baseOpts.launchTimeout;
+    }
 
     log('getInstanceOpts: instance opts:', opts);
 
