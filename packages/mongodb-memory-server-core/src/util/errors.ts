@@ -186,5 +186,14 @@ export class UnexpectedCloseError extends Error {
   }
 }
 
+/**
+ * Error for when VERSION fails to coerce to a semver version but is required
+ */
+export class UnknownVersionError extends Error {
+  constructor(public version: string) {
+    super(`Could not corece VERSION to a semver version (version: "${version}")`);
+  }
+}
+
 /* Custom Generic Error class for MMS */
 export class GenericMMSError extends Error {}
