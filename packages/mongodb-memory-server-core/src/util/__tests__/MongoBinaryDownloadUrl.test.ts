@@ -1536,4 +1536,54 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(du.translatePlatform('win32')).toBe('windows');
     });
   });
+
+  describe('getArchiveNameWin()', () => {
+    const downloadUrlBase: ConstructorParameters<typeof MongoBinaryDownloadUrl>[0] = {
+      platform: 'win32',
+      arch: 'x64',
+      version: '6.0.0',
+    };
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl(downloadUrlBase);
+    });
+
+    it('for mongodb 6.0', () => {
+      downloadUrl.version = '6.0.0';
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-windows-x86_64-6.0.0.zip');
+    });
+
+    it('for mongodb 5.0', () => {
+      downloadUrl.version = '5.0.0';
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-windows-x86_64-5.0.0.zip');
+    });
+
+    it('for mongodb 4.4', () => {
+      downloadUrl.version = '4.4.0';
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-windows-x86_64-4.4.0.zip');
+    });
+
+    it('for mongodb 4.2', () => {
+      // custom reset, because of versions below 4.3.0 using win32 (setting in translatePlatform)
+      downloadUrl = new MongoBinaryDownloadUrl({
+        ...downloadUrlBase,
+        version: '4.2.0',
+      });
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-win32-x86_64-2012plus-4.2.0.zip');
+    });
+
+    it('for mongodb 4.0', () => {
+      // custom reset, because of versions below 4.3.0 using win32 (setting in translatePlatform)
+      downloadUrl = new MongoBinaryDownloadUrl({
+        ...downloadUrlBase,
+        version: '4.0.0',
+      });
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-win32-x86_64-2008plus-ssl-4.0.0.zip');
+    });
+
+    it('should allow v5.0-latest', () => {
+      downloadUrl.version = 'v5.0-latest';
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-windows-x86_64-v5.0-latest.zip');
+    });
+  });
 });
