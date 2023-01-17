@@ -314,7 +314,7 @@ describe('MongoBinaryDownload', () => {
       });
     });
     afterEach(() => {
-      // tmpdir.removeCallback(); // DEBUG
+      tmpdir.removeCallback();
     });
 
     it('should extract zip archives', async () => {
