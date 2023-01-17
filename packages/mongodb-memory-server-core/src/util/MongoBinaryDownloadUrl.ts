@@ -347,7 +347,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
         // rhel aarch64 support is only for rhel 8.2 (and no version after explicitly)
         name += '82';
-      } else if (semver.satisfies(releaseAsSemver, '^8.0.0')) {
+      } else if (semver.satisfies(releaseAsSemver, '>=8.0.0')) {
         name += '80';
       } else if (semver.satisfies(releaseAsSemver, '^7.0.0')) {
         name += '70';

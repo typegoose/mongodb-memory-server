@@ -1039,7 +1039,7 @@ describe('MongoBinaryDownloadUrl', () => {
             },
           });
           expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-v5.0-latest.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-v5.0-latest.tgz'
           );
         });
 
