@@ -8,6 +8,7 @@ import {
   KnownVersionIncompatibilityError,
   UnknownArchitectureError,
   UnknownPlatformError,
+  UnknownVersionError,
 } from './errors';
 import { deprecate } from 'util';
 
@@ -101,11 +102,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    */
   getArchiveNameWin(): string {
     let name = `mongodb-${this.platform}-${this.arch}`;
+    const coercedVersion = semver.coerce(this.version);
 
-    if (!isNullOrUndefined(semver.coerce(this.version))) {
-      if (semver.satisfies(this.version, '4.2.x')) {
+    if (!isNullOrUndefined(coercedVersion)) {
+      if (semver.satisfies(coercedVersion, '4.2.x')) {
         name += '-2012plus';
-      } else if (semver.lt(this.version, '4.1.0')) {
+      } else if (semver.lt(coercedVersion, '4.1.0')) {
         name += '-2008plus-ssl';
       }
     }
@@ -121,19 +123,19 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    */
   getArchiveNameOsx(): string {
     let name = `mongodb-osx`;
-    const version = semver.coerce(this.version);
+    const coercedVersion = semver.coerce(this.version);
 
-    if (!isNullOrUndefined(version) && semver.gte(version, '3.2.0')) {
+    if (!isNullOrUndefined(coercedVersion) && semver.gte(coercedVersion, '3.2.0')) {
       name += '-ssl';
     }
-    if (isNullOrUndefined(version) || semver.gte(version, '4.2.0')) {
+    if (isNullOrUndefined(coercedVersion) || semver.gte(coercedVersion, '4.2.0')) {
       name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
 
     // mongodb has native arm64
     if (this.arch === 'aarch64') {
       // force usage of "x86_64" binary for all versions below than 6.0.0
-      if (!isNullOrUndefined(version) && semver.lt(version, '6.0.0')) {
+      if (!isNullOrUndefined(coercedVersion) && semver.lt(coercedVersion, '6.0.0')) {
         log('getArchiveNameOsx: Arch is "aarch64" and version is below 6.0.0, using x64 binary');
         this.arch = 'x86_64';
       } else {
@@ -243,11 +245,16 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   getDebianVersionString(os: LinuxOS): string {
     let name = 'debian';
     const release: number = parseFloat(os.release);
+    const coercedVersion = semver.coerce(this.version);
+
+    if (isNullOrUndefined(coercedVersion)) {
+      throw new UnknownVersionError(this.version);
+    }
 
     if (release >= 11 || ['unstable', 'testing'].includes(os.release)) {
       // Debian 11 is compatible with the binaries for debian 10
       // but does not have binaries for before 5.0.8
-      if (semver.lt(this.version, '5.0.8')) {
+      if (semver.lt(coercedVersion, '5.0.8')) {
         log('debian11 detected, but version below 5.0.8 requested, using debian10');
         name += '10';
       } else {
@@ -264,7 +271,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     }
 
     if (release >= 10) {
-      if (semver.lt(this.version, '4.2.1')) {
+      if (semver.lt(coercedVersion, '4.2.1')) {
         throw new KnownVersionIncompatibilityError(
           `Debian ${release}`,
           this.version,
@@ -311,6 +318,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = 'rhel';
     const { release } = os;
     const releaseAsSemver = semver.coerce(release); // coerce "8" to "8.0.0" and "8.2" to "8.2.0", makes comparing easier than "parseInt" or "parseFloat"
+    const coercedVersion = semver.coerce(this.version);
+
+    if (isNullOrUndefined(coercedVersion)) {
+      throw new UnknownVersionError(this.version);
+    }
 
     if (releaseAsSemver) {
       if (this.arch === 'aarch64') {
@@ -325,7 +337,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         }
         // there are no versions for aarch64 before mongodb 4.4.2
         // Note: version 4.4.2 and 4.4.3 are NOT listed at the list, but are existing; list: https://www.mongodb.com/download-center/community/releases/archive
-        if (semver.lt(this.version, '4.4.2')) {
+        if (semver.lt(coercedVersion, '4.4.2')) {
           throw new KnownVersionIncompatibilityError(`Rhel ${release}`, this.version, '>=4.4.2');
         }
 
@@ -399,6 +411,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    */
   getUbuntuVersionString(os: LinuxOS): string {
     let ubuntuOS: LinuxOS | undefined = undefined;
+    const coercedVersion = semver.coerce(this.version);
+
+    if (isNullOrUndefined(coercedVersion)) {
+      throw new UnknownVersionError(this.version);
+    }
 
     // "id_like" processing (version conversion) [this is an block to be collapsible]
     {
@@ -460,13 +477,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     if (this.arch === 'aarch64') {
       // this is because, before version 4.1.10, everything for "arm64" / "aarch64" were just "arm64" and for "ubuntu1604"
-      if (semver.satisfies(this.version, '<4.1.10')) {
+      if (semver.satisfies(coercedVersion, '<4.1.10')) {
         this.arch = 'arm64';
 
         return 'ubuntu1604';
       }
       // this is because versions below "4.4.0" did not provide an binary for anything above 1804
-      if (semver.satisfies(this.version, '>=4.1.10 <4.4.0')) {
+      if (semver.satisfies(coercedVersion, '>=4.1.10 <4.4.0')) {
         return 'ubuntu1804';
       }
     }
@@ -477,7 +494,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     // there are no MongoDB 3.x binary distributions for ubuntu >= 18
     // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
-    if (ubuntuYear >= 18 && semver.satisfies(this.version, '3.x.x')) {
+    if (ubuntuYear >= 18 && semver.satisfies(coercedVersion, '3.x.x')) {
       log(
         `getUbuntuVersionString: ubuntuYear is "${ubuntuYear}", which dosnt have an 3.x.x version, defaulting to "1604"`
       );
@@ -487,7 +504,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     // there are no MongoDB <=4.3.x binary distributions for ubuntu > 18
     // https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
-    if (ubuntuYear > 18 && semver.satisfies(this.version, '<=4.3.x')) {
+    if (ubuntuYear > 18 && semver.satisfies(coercedVersion, '<=4.3.x')) {
       log(
         `getUbuntuVersionString: ubuntuYear is "${ubuntuYear}", which dosnt have an "<=4.3.x" version, defaulting to "1804"`
       );

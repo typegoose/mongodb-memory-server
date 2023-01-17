@@ -3,16 +3,42 @@ import {
   UnknownPlatformError,
   UnknownArchitectureError,
   KnownVersionIncompatibilityError,
+  UnknownVersionError,
 } from '../errors';
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
+import * as semver from 'semver';
+import { assertion } from '../utils';
 
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
 describe('MongoBinaryDownloadUrl', () => {
+  // the following is to make sure that semver works in expected ways and as examples of how we use it
+  describe('semver correctly coerces mongodb versions', () => {
+    it('should convert a normal semver version', () => {
+      const normal5 = semver.coerce('5.0.0');
+      assertion(normal5);
+      expect(normal5.version).toStrictEqual('5.0.0');
+
+      const normalAll = semver.coerce('4.4.2');
+      assertion(normalAll);
+      expect(normalAll.version).toStrictEqual('4.4.2');
+    });
+
+    it('should convert "-latest" version correctly', () => {
+      const latest5 = semver.coerce('v5.0-latest');
+      assertion(latest5);
+      expect(latest5.version).toStrictEqual('5.0.0');
+
+      const latest44 = semver.coerce('v4.4-latest');
+      assertion(latest44);
+      expect(latest44.version).toStrictEqual('4.4.0');
+    });
+  });
+
   describe('getDownloadUrl()', () => {
     describe('for mac', () => {
       it('latest', async () => {
@@ -90,6 +116,28 @@ describe('MongoBinaryDownloadUrl', () => {
         });
         expect(await du.getDownloadUrl()).toBe(
           'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-6.0.0.tgz'
+        );
+      });
+
+      it('should allow v5.0-latest x64', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'x64',
+          version: 'v5.0-latest',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-v5.0-latest.tgz'
+        );
+      });
+
+      it('should allow v5.0-latest arm64', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'arm64',
+          version: 'v5.0-latest',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-v5.0-latest.tgz'
         );
       });
     });
@@ -222,6 +270,44 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.0.tgz'
           );
+        });
+
+        it('should allow v5.0-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v5.0-latest',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '20.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-v5.0-latest.tgz'
+          );
+        });
+
+        it('should throw a Error when the provided version could not be coerced [UnknownVersionError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'vvv',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '20.04',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a UnknownVersionError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(UnknownVersionError);
+            expect(err.message).toMatchSnapshot();
+          }
         });
 
         describe('arm64', () => {
@@ -418,6 +504,44 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-6.0.0.tgz'
           );
+        });
+
+        it('should allow v5.0-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v5.0-latest',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '10',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-v5.0-latest.tgz'
+          );
+        });
+
+        it('should throw a Error when the provided version could not be coerced [UnknownVersionError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'vvv',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '10',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a UnknownVersionError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(UnknownVersionError);
+            expect(err.message).toMatchSnapshot();
+          }
         });
 
         it('should throw a Error when requesting a version below 4.2.1 for debian 10+ [#554] [KnownVersionIncompatibilityError]', async () => {
@@ -903,6 +1027,22 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('should allow v5.0-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v5.0-latest',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-v5.0-latest.tgz'
+          );
+        });
+
         it('should Error when ARM64 and rhel below 8 [KnownVersionIncompatibilityError]', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -987,6 +1127,28 @@ describe('MongoBinaryDownloadUrl', () => {
 
           expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
           expect(consoleWarnSpy).toHaveBeenCalledWith('Couldnt coerce RHEL version "a"');
+        });
+
+        it('should throw a Error when the provided version could not be coerced [UnknownVersionError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'vvv',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a UnknownVersionError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(UnknownVersionError);
+            expect(err.message).toMatchSnapshot();
+          }
         });
       });
     });
