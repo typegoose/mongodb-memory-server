@@ -254,7 +254,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     if (release >= 11 || ['unstable', 'testing'].includes(os.release)) {
       // Debian 11 is compatible with the binaries for debian 10
       // but does not have binaries for before 5.0.8
-      if (semver.lt(coercedVersion, '5.0.8')) {
+      // and only set to use "debian10" if the requested version is not a latest version
+      if (semver.lt(coercedVersion, '5.0.8') && !testVersionIsLatest(this.version)) {
         log('debian11 detected, but version below 5.0.8 requested, using debian10');
         name += '10';
       } else {
@@ -271,7 +272,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     }
 
     if (release >= 10) {
-      if (semver.lt(coercedVersion, '4.2.1')) {
+      if (semver.lt(coercedVersion, '4.2.1') && !testVersionIsLatest(this.version)) {
         throw new KnownVersionIncompatibilityError(
           `Debian ${release}`,
           this.version,
@@ -337,7 +338,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         }
         // there are no versions for aarch64 before mongodb 4.4.2
         // Note: version 4.4.2 and 4.4.3 are NOT listed at the list, but are existing; list: https://www.mongodb.com/download-center/community/releases/archive
-        if (semver.lt(coercedVersion, '4.4.2')) {
+        if (semver.lt(coercedVersion, '4.4.2') && !testVersionIsLatest(this.version)) {
           throw new KnownVersionIncompatibilityError(`Rhel ${release}`, this.version, '>=4.4.2');
         }
 
@@ -601,4 +602,9 @@ function regexHelper(regex: RegExp, os: LinuxOS): boolean {
     regex.test(os.dist) ||
     (!isNullOrUndefined(os.id_like) ? os.id_like.filter((v) => regex.test(v)).length >= 1 : false)
   );
+}
+
+/** Helper to consistently test if a version is a "-latest" version, like "v5.0-latest" */
+function testVersionIsLatest(version: string): boolean {
+  return /^v\d+\.\d+-latest$/.test(version);
 }

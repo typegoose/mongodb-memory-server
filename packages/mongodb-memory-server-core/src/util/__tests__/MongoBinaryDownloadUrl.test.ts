@@ -490,6 +490,22 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('for debian 11 for v5.0-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v5.0-latest',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '11',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-v5.0-latest.tgz'
+          );
+        });
+
         it('for debian 11 for 6.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -564,6 +580,22 @@ describe('MongoBinaryDownloadUrl', () => {
             expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
             expect(err.message).toMatchSnapshot();
           }
+        });
+
+        it('should not throw a error for v4.2-latest for debian 10+', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v4.2-latest',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '10',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-v4.2-latest.tgz'
+          );
         });
 
         it('should throw a Error when requesting a version below 4.2.1 for debian 11+ [#554] [KnownVersionIncompatibilityError]', async () => {
@@ -1085,6 +1117,22 @@ describe('MongoBinaryDownloadUrl', () => {
             expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
             expect(err.message).toMatchSnapshot();
           }
+        });
+
+        it('should not throw a error for arm64 v4.4-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'arm64',
+            version: 'v4.4-latest',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '8.2',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-v4.4-latest.tgz'
+          );
         });
 
         it('should warn when a unhandled RHEL release is used', async () => {
