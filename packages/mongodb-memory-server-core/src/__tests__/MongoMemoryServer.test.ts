@@ -945,6 +945,8 @@ describe('MongoMemoryServer', () => {
       expect(options.data.dbPath).toEqual(tmpDbPath.name);
       expect(readdirSpy).toHaveBeenCalledTimes(1);
       expect(options.createAuth).toEqual(true);
+
+      tmpDbPath.removeCallback();
     });
 
     it('should resolve "isNew" to "false" and set "createAuth" to "false" when dbPath is set, but not empty', async () => {
@@ -971,6 +973,8 @@ describe('MongoMemoryServer', () => {
       expect(options.data.dbPath).toEqual(tmpDbPath.name);
       expect(readdirSpy).toHaveBeenCalledTimes(1);
       expect(options.createAuth).toEqual(false);
+
+      tmpDbPath.removeCallback();
     });
 
     it('should generate a port when no suggestion is defined', async () => {
