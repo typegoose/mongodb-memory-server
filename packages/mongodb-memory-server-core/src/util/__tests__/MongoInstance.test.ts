@@ -17,7 +17,7 @@ tmp.setGracefulCleanup();
 
 let tmpDir: tmp.DirResult;
 beforeEach(() => {
-  tmpDir = tmp.dirSync({ prefix: 'mongo-mem-', unsafeCleanup: true });
+  tmpDir = tmp.dirSync({ prefix: 'mongo-mem-instance-', unsafeCleanup: true });
 });
 
 afterEach(() => {
