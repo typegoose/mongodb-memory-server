@@ -309,7 +309,7 @@ describe('MongoBinaryDownload', () => {
 
     beforeEach(() => {
       tmpdir = tmp.dirSync({
-        prefix: 'mongo-mem-test-extract',
+        prefix: 'mongo-mem-test-extract-',
         unsafeCleanup: true,
       });
     });
