@@ -1,3 +1,13 @@
+## [8.11.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.1...v8.11.2) (2023-01-18)
+
+
+### Fixes
+
+* **errors:** add error "UnknownVersionError" ([5676931](https://github.com/nodkz/mongodb-memory-server/commit/5676931f82f538762f076d7a4efb8f0bd546ea22))
+* **MongoBinaryDownload:** use coerced versions for semver ([10d1749](https://github.com/nodkz/mongodb-memory-server/commit/10d17497b8882d6d68400410d6bd7fd0ae8deb97)), closes [#734](https://github.com/nodkz/mongodb-memory-server/issues/734)
+* **MongoBinaryDownloadUrl:** handle cases where patch version is checked and "-latest" was requested ([690aa42](https://github.com/nodkz/mongodb-memory-server/commit/690aa426d390f3f7c44700b07dfa41dc74a2d953))
+* **MongoBinaryDownloadUrl::getRhelVersionString:** handle versions above 8 ([7c2d490](https://github.com/nodkz/mongodb-memory-server/commit/7c2d4901f7bf2a8fc442cf13e82bada426b30e41))
+
 ## [8.11.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.0...v8.11.1) (2023-01-13)
 
 
