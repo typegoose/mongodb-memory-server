@@ -176,7 +176,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 4.0', async () => {
+        it('for ubuntu 22.04 for 4.0 (using 1804)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -192,7 +192,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 4.4', async () => {
+        it('for ubuntu 22.04 for 4.4 (using 2004)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -224,7 +224,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 5.0', async () => {
+        it('for ubuntu 22.04 for 5.0 (using 2004)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -256,7 +256,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 6.0', async () => {
+        it('for ubuntu 22.04 for 6.0 (using 2004)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -269,6 +269,22 @@ describe('MongoBinaryDownloadUrl', () => {
           });
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.0.tgz'
+          );
+        });
+
+        it('for ubuntu 22.04 for 6.0.4', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.4',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '22.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
           );
         });
 

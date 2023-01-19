@@ -513,9 +513,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu1804';
     }
 
-    // there are not binaries for ubuntu 21.04, so defaulting to one version below for now
-    // see https://github.com/nodkz/mongodb-memory-server/issues/582
-    if (ubuntuYear >= 21) {
+    // there are only binaries for 2204 since 6.0.4 (and not binaries for ubuntu2104)
+    if (ubuntuYear >= 21 && semver.satisfies(coercedVersion, '<6.0.4')) {
       return 'ubuntu2004';
     }
 

@@ -62,7 +62,7 @@ Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an lower version of mongodb for an higher version of ubuntu
 :::
 :::note
-There are currently no native binaries for `2204`, so it is mapped to `2004` and will require `libssl1.1` to be installed.  
+Since Mongodb `6.0.4` there are binaries for `2204`, any version before is mapped to `2204` (or earlier) and will require `libssl1.1` to be installed.  
 See [this mongodb issue](https://jira.mongodb.org/browse/SERVER-62300).
 :::
 
