@@ -1,3 +1,10 @@
+## [8.11.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.2...v8.11.3) (2023-01-19)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** support ubuntu 22.04 ^6.0.4 ([6598792](https://github.com/nodkz/mongodb-memory-server/commit/6598792b2fd379a78da97f413fbc4a964f89f785)), closes [#732](https://github.com/nodkz/mongodb-memory-server/issues/732)
+
 ## [8.11.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.1...v8.11.2) (2023-01-18)
 
 
