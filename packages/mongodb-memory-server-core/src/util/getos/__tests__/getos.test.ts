@@ -110,4 +110,23 @@ HOME_URL="https://amazonlinux.com/"`;
       });
     });
   });
+
+  describe('isValidOs', () => {
+    it('should return FALSE if undefined / null', () => {
+      expect(getos.isValidOs(undefined)).toStrictEqual(false);
+      expect(getos.isValidOs(null as any)).toStrictEqual(false);
+    });
+
+    it('should return FALSE if distro is UNKNOWN', () => {
+      expect(getos.isValidOs({ dist: getos.UNKNOWN, os: 'linux', release: '0' })).toStrictEqual(
+        false
+      );
+    });
+
+    it('should return TRUE if distro is not UNKNOWN', () => {
+      expect(getos.isValidOs({ dist: 'ubuntu', os: 'linux', release: '20.04' })).toStrictEqual(
+        true
+      );
+    });
+  });
 });
