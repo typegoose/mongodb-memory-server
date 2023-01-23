@@ -28,6 +28,21 @@ DISTRIB_DESCRIPTION="Linux Mint 20.1 Ulyssa"`;
         codename: 'ulyssa',
       });
     });
+
+    it('should parse to UNKNOWN for different formats', () => {
+      // output taken from "elementary/docker:fe08f970723a" at "/etc/upstream-release/lsb-release"
+      const example = `ID=Ubuntu
+VERSION_ID=20.04
+VERSION_CODENAME=focal
+PRETTY_NAME="Ubuntu 20.04.5 LTS"`;
+
+      expect(getos.parseLSB(example)).toEqual<getos.LinuxOS>({
+        os: 'linux',
+        dist: getos.UNKNOWN,
+        release: '',
+        codename: undefined,
+      });
+    });
   });
 
   describe('parseOS', () => {
