@@ -813,6 +813,26 @@ describe('MongoBinaryDownloadUrl', () => {
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.1.tgz'
           );
         });
+
+        it('should return a archive name for elementary 6.1', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.0',
+            // from "elementary/docker:fe08f970723a"
+            os: {
+              os: 'linux',
+              dist: 'elementary',
+              codename: 'jolnir',
+              release: '6.1',
+              id_like: ['ubuntu'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.0.tgz'
+          );
+        });
       });
 
       describe('for LinuxMint', () => {

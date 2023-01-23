@@ -436,7 +436,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         };
       }
 
-      if (/^elementary\s?os\s*$/i.test(os.dist)) {
+      if (/^elementary(?:\s?os)?\s*$/i.test(os.dist)) {
         const elementaryToUbuntuRelease: Record<number, string> = {
           3: '14.04',
           4: '16.04',
