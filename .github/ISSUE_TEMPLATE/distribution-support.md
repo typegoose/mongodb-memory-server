@@ -69,6 +69,15 @@ console.log("Arch", os.arch());
 ```
 -->
 
+## Current Error
+
+<!--Please include the current error you are having, if any-->
+<!--Also if you see any "Falling back to legacy MongoDB build!" please include Debug Output, see https://nodkz.github.io/mongodb-memory-server/docs/guides/enable-debug-mode -->
+
+```txt
+Paste Error in Here
+```
+
 ## Extra
 
 <!--Extra Comments here-->
