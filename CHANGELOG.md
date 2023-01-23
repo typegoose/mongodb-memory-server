@@ -1,3 +1,11 @@
+## [8.11.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.3...v8.11.4) (2023-01-23)
+
+
+### Fixes
+
+* **getos:** check if given os is also not UNKNOWN and try different formats ([66541de](https://github.com/nodkz/mongodb-memory-server/commit/66541de422f7a720d49d681c9348005393ce8f09)), closes [#735](https://github.com/nodkz/mongodb-memory-server/issues/735)
+* **MongoBinaryDownloadUrl::getUbuntuVersionString:** change "os" for elementary to be optional ([0e90784](https://github.com/nodkz/mongodb-memory-server/commit/0e90784835f4c816e7c9b5bfbb062dc098dd1293)), closes [#735](https://github.com/nodkz/mongodb-memory-server/issues/735)
+
 ## [8.11.3](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.2...v8.11.3) (2023-01-19)
 
 
