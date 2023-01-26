@@ -70,10 +70,17 @@ export async function getOS(): Promise<AnyOS> {
 /** Function to outsource Linux Information Parsing */
 async function getLinuxInformation(): Promise<LinuxOS> {
   // Structure of this function:
-  // 1. get upstream release, if possible
-  // 2. get os release (etc) because it has an "id_like"
-  // 3. get os release (usr) because it has an "id_like"
-  // 4. get lsb-release (etc) as fallback
+  // 1. get os release from environment variable, if set
+  // 2. get upstream release, if possible
+  // 3. get os release (etc) because it has an "id_like"
+  // 4. get os release (usr) because it has an "id_like"
+  // 5. get lsb-release (etc) as fallback
+  const envOsRelease = await tryReleaseFile(process.env.LSB_OS_RELEASE, parseOS);
+  if (isValidOs(envOsRelease)) {
+    log('getLinuxInformation: Using envOsRelease');
+
+    return envOsRelease;
+  }
 
   const upstreamLSB = await tryReleaseFile('/etc/upstream-release/lsb-release', parseLSB);
 
