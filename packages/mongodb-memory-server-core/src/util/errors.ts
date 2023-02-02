@@ -170,5 +170,30 @@ export class StdoutInstanceError extends Error {
   }
 }
 
+/**
+ * Error for when the instance closes with non-0 (or non-12) codes or signals
+ */
+export class UnexpectedCloseError extends Error {
+  constructor(code: number | null, signal: string | null) {
+    super();
+
+    this.message = `Instance closed unexpectedly with code "${code}" and signal "${signal}"`;
+
+    if (signal == 'SIGILL') {
+      this.message +=
+        '\nThe Process Exited with SIGILL, which mean illegal instruction, which is commonly thrown in mongodb 5.0+ when not having AVX available on the CPU';
+    }
+  }
+}
+
+/**
+ * Error for when VERSION fails to coerce to a semver version but is required
+ */
+export class UnknownVersionError extends Error {
+  constructor(public version: string) {
+    super(`Could not corece VERSION to a semver version (version: "${version}")`);
+  }
+}
+
 /* Custom Generic Error class for MMS */
 export class GenericMMSError extends Error {}

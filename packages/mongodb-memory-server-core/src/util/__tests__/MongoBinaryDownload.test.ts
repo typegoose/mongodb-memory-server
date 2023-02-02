@@ -310,12 +310,12 @@ describe('MongoBinaryDownload', () => {
 
     beforeEach(() => {
       tmpdir = tmp.dirSync({
-        prefix: 'mongo-mem-test-extract',
+        prefix: 'mongo-mem-test-extract-',
         unsafeCleanup: true,
       });
     });
     afterEach(() => {
-      // tmpdir.removeCallback(); // DEBUG
+      tmpdir.removeCallback();
     });
 
     it('should extract zip archives', async () => {

@@ -9,6 +9,10 @@ List of all Config Options
 
 ### DOWNLOAD_DIR
 
+|  Environment Variable  |  PackageJson  |
+| :--------------------: | :-----------: |
+| `MONGOMS_DOWNLOAD_DIR` | `downloadDir` |
+
 Option `DOWNLOAD_DIR` is used to set where the binaries will be located in, this will overwrite all other directories
 
 Directory Priority:
@@ -25,21 +29,35 @@ Format:
 
 ### PLATFORM
 
+| Environment Variable | PackageJson |
+| :------------------: | :---------: |
+|  `MONGOMS_PLATFORM`  | `platform`  |
+
 Option `PLATFORM` is used to overwrite which platform should be downloaded
 
 Valid Options are `win32`, `darwin`, `linux`, ~~`sunos`~~(never actually supported, [will be removed in 9.0](../guides/error-warning-details.md#mms002))
 
 ### ARCH
 
+| Environment Variable | PackageJson |
+| :------------------: | :---------: |
+|    `MONGOMS_ARCH`    |   `arch`    |
+
 Option `ARCH` is used to overwrite the Architecture to download for
 
 Valid Options are `x64`, `arm64`
 
+[See here for what versions are available for what architectures](https://www.mongodb.com/download-center/community/releases/archive)
+
 ### VERSION
+
+| Environment Variable | PackageJson |
+| :------------------: | :---------: |
+|  `MONGOMS_VERSION`   |  `version`  |
 
 Option `VERSION` is used to set what mongodb version should be downloaded
 
-Default: `5.0.8`
+Default: `5.0.13`
 
 This Option does not have a effect when [`ARCHIVE_NAME`](#archive_name) or [`DOWNLOAD_URL`](#download_url) is defined.
 
@@ -49,11 +67,7 @@ Common MongoDB Version formats (`X` is a number):
 - `vX.X.X`
 - `vX.X-latest`
 
-Search for what version is used:
-
-- [`osx`](https://dl.mongodb.org/dl/osx/x86_64) (Note: This one does not list versions above 4.0, see [This Issue](https://jira.mongodb.org/browse/DOCS-14560))
-- [`windows`](https://www.mongodb.org/dl/win32)
-- [`linux`](https://dl.mongodb.org/dl/linux)
+[Search for what Versions are available](https://www.mongodb.com/download-center/community/releases/archive)
 
 :::note
 When using [`SYSTEM_BINARY`](#system_binary) and [`SYSTEM_BINARY_VERSION_CHECK`](#system_binary_version_check), ONLY the major, minor, and patch versions of the system binary will be compared against the desired binary.
@@ -63,9 +77,17 @@ That is, a system binary version of `4.2.19-11-ge2f2736a` will match a mongodb r
 
 ### DEBUG
 
+| Environment Variable | PackageJson |
+| :------------------: | :---------: |
+|   `MONGOMS_DEBUG`    |   `debug`   |
+
 Option `DEBUG` is used to enable Debug Output
 
 ### DOWNLOAD_MIRROR
+
+|   Environment Variable    |   PackageJson    |
+| :-----------------------: | :--------------: |
+| `MONGOMS_DOWNLOAD_MIRROR` | `downloadMirror` |
 
 Option `DOWNLOAD_MIRROR` is used to set which mirror to use
 
@@ -79,19 +101,35 @@ It is discouraged to use query parameters, they may work, but not officially sup
 
 ### DOWNLOAD_URL
 
-Option `DOWNLOAD_URL` is used to overwrite the ***complete*** URL (including [`DOWNLOAD_MIRROR`](#DOWNLOAD_MIRROR))
+|  Environment Variable  |  PackageJson  |
+| :--------------------: | :-----------: |
+| `MONGOMS_DOWNLOAD_URL` | `downloadUrl` |
+
+Option `DOWNLOAD_URL` is used to overwrite the ***complete*** URL (including [`DOWNLOAD_MIRROR`](#download_mirror))
 
 Format: `https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
 
 ### PREFER_GLOBAL_PATH
 
+|     Environment Variable     |    PackageJson     |
+| :--------------------------: | :----------------: |
+| `MONGOMS_PREFER_GLOBAL_PATH` | `preferGlobalPath` |
+
 Option `PREFER_GLOBAL_PATH` is used to force download into `~/.cache/mongodb-binaries` instead of local folder
 
 ### DISABLE_POSTINSTALL
 
+|     Environment Variable      |     PackageJson      |
+| :---------------------------: | :------------------: |
+| `MONGOMS_DISABLE_POSTINSTALL` | `disablePostinstall` |
+
 Option `DISABLE_POSTINSTALL` is used to skip all `postinstall` scripts
 
 ### SYSTEM_BINARY
+
+|  Environment Variable   |  PackageJson   |
+| :---------------------: | :------------: |
+| `MONGOMS_SYSTEM_BINARY` | `systemBinary` |
 
 Option `SYSTEM_BINARY` is used to set the path to an system binary already existing on the system
 
@@ -102,11 +140,19 @@ Format:
 
 ### SYSTEM_BINARY_VERSION_CHECK
 
+|         Environment Variable          |        PackageJson         |
+| :-----------------------------------: | :------------------------: |
+| `MONGOMS_SYSTEM_BINARY_VERSION_CHECK` | `systemBinaryVersionCheck` |
+
 Option `SYSTEM_BINARY_VERSION_CHECK` is used to disable the version conflict check if [`SYSTEM_BINARY`](#system_binary) is set and version returned from `mongod_system_binary --version` does not match [`VERSION`](#version)
 
 Default: `true`
 
 ### MD5_CHECK
+
+| Environment Variable | PackageJson |
+| :------------------: | :---------: |
+| `MONGOMS_MD5_CHECK`  | `md5Check`  |
 
 Option `MD5_CHECK` is used to enable an md5 check after download
 
@@ -114,13 +160,23 @@ Default: `true`
 
 ### ARCHIVE_NAME
 
+|  Environment Variable  |  PackageJson  |
+| :--------------------: | :-----------: |
+| `MONGOMS_ARCHIVE_NAME` | `archiveName` |
+
 Option `ARCHIVE_NAME` is used to overwrite the complete archive name
 
 Format: `mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
 
+[See here for what archive names are available](https://www.mongodb.com/download-center/community/releases/archive)
+
 This Option does not have a effect when [`DOWNLOAD_URL`](#download_url) is defined.
 
 ### RUNTIME_DOWNLOAD
+
+|    Environment Variable    |    PackageJson    |
+| :------------------------: | :---------------: |
+| `MONGOMS_RUNTIME_DOWNLOAD` | `runtimeDownload` |
 
 Option `RUNTIME_DOWNLOAD` is used to disable downloading while being in something like `.start`
 
@@ -128,11 +184,19 @@ Default: `true`
 
 ### USE_HTTP
 
+| Environment Variable | PackageJson |
+| :------------------: | :---------: |
+|  `MONGOMS_USE_HTTP`  |  `useHttp`  |
+
 Option `USE_HTTP` is used to use `http` over `https`
 
 Default: `false`
 
 ### USE_ARCHIVE_NAME_FOR_BINARY_NAME
+
+|            Environment Variable            |          PackageJson          |
+| :----------------------------------------: | :---------------------------: |
+| `MONGOMS_USE_ARCHIVE_NAME_FOR_BINARY_NAME` | `useArchiveNameForBinaryName` |
 
 Option `USE_ARCHIVE_NAME_FOR_BINARY_NAME` is used to use the archive name as binary name
 

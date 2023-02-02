@@ -6,7 +6,7 @@ import MongoMemoryReplSet, {
 import { MongoClient, MongoServerError } from 'mongodb';
 import MongoMemoryServer, { AutomaticAuth } from '../MongoMemoryServer';
 import * as utils from '../util/utils';
-import { MongoMemoryInstanceOpts } from '../util/MongoInstance';
+import MongoInstance, { MongoMemoryInstanceOpts } from '../util/MongoInstance';
 import { ReplsetCountLowError, StateError, WaitForPrimaryTimeoutError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
 import * as debug from 'debug';
@@ -704,5 +704,24 @@ describe('MongoMemoryReplSet', () => {
     expect(replSet.listeners(MongoMemoryReplSetEvents.stateChange).length).toEqual(0);
 
     await replSet.stop();
+  });
+
+  it('should transfer "launchTimeout" option to the MongoInstance', async () => {
+    jest.spyOn(MongoInstance.prototype, 'start').mockImplementation(
+      // @ts-expect-error This can work, because the instance is not used in the function that is tested here, beyond setting some extra options
+      () => Promise.resolve({})
+    );
+
+    const replSet = new MongoMemoryReplSet({ instanceOpts: [{ launchTimeout: 2000 }] });
+
+    // @ts-expect-error "initAllServers" is protected
+    await replSet.initAllServers();
+
+    // @ts-expect-error "_instanceInfo" is protected
+    const instanceInfo = replSet.servers[0]._instanceInfo;
+    expect(instanceInfo).toBeDefined();
+    utils.assertion(!utils.isNullOrUndefined(instanceInfo));
+    expect(instanceInfo.instance).toBeDefined();
+    expect(instanceInfo?.launchTimeout).toStrictEqual(2000);
   });
 });

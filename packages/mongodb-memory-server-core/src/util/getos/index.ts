@@ -20,6 +20,9 @@ const OSRegex = {
   id_like: /^id_like\s*=\s*"?([\w\s]*)"?$/im,
 };
 
+/** Helper Static so that a consistent UNKNOWN value is used */
+export const UNKNOWN = 'unknown';
+
 export interface OtherOS {
   os: 'aix' | 'android' | 'darwin' | 'freebsd' | 'openbsd' | 'sunos' | 'win32' | 'cygwin' | string;
 }
@@ -74,7 +77,7 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 
   const upstreamLSB = await tryReleaseFile('/etc/upstream-release/lsb-release', parseLSB);
 
-  if (!isNullOrUndefined(upstreamLSB)) {
+  if (isValidOs(upstreamLSB)) {
     log('getLinuxInformation: Using UpstreamLSB');
 
     return upstreamLSB;
@@ -82,7 +85,7 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 
   const etcOsRelease = await tryReleaseFile('/etc/os-release', parseOS);
 
-  if (!isNullOrUndefined(etcOsRelease)) {
+  if (isValidOs(etcOsRelease)) {
     log('getLinuxInformation: Using etcOsRelease');
 
     return etcOsRelease;
@@ -90,7 +93,7 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 
   const usrOsRelease = await tryReleaseFile('/usr/lib/os-release', parseOS);
 
-  if (!isNullOrUndefined(usrOsRelease)) {
+  if (isValidOs(usrOsRelease)) {
     log('getLinuxInformation: Using usrOsRelease');
 
     return usrOsRelease;
@@ -98,20 +101,34 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 
   const etcLSBRelease = await tryReleaseFile('/etc/lsb-release', parseLSB);
 
-  if (!isNullOrUndefined(etcLSBRelease)) {
+  if (isValidOs(etcLSBRelease)) {
     log('getLinuxInformation: Using etcLSBRelease');
 
     return etcLSBRelease;
   }
 
-  console.warn('Could not find any Release File, using fallback binary');
+  console.warn('Could not find any valid Release File, using fallback information');
 
   // if none has worked, return unknown
   return {
     os: 'linux',
-    dist: 'unknown',
+    dist: UNKNOWN,
     release: '',
   };
+}
+
+/**
+ * Helper function to check if the input os is valid
+ * @param os The OS information to check
+ * @returns `true` if not undefined AND not UNKNOWN
+ */
+export function isValidOs(os: LinuxOS | undefined): os is LinuxOS {
+  // helper for debugging
+  if (os && os.dist === UNKNOWN) {
+    log('isValidOS: found defined os, but was unknown:', os);
+  }
+
+  return !isNullOrUndefined(os) && os.dist !== UNKNOWN;
 }
 
 /**
@@ -120,7 +137,7 @@ async function getLinuxInformation(): Promise<LinuxOS> {
 export function parseLSB(input: string): LinuxOS {
   return {
     os: 'linux',
-    dist: input.match(LSBRegex.name)?.[1].toLocaleLowerCase() ?? 'unknown',
+    dist: input.match(LSBRegex.name)?.[1].toLocaleLowerCase() ?? UNKNOWN,
     codename: input.match(LSBRegex.codename)?.[1].toLocaleLowerCase(),
     release: input.match(LSBRegex.release)?.[1].toLocaleLowerCase() ?? '',
   };
@@ -132,7 +149,7 @@ export function parseLSB(input: string): LinuxOS {
 export function parseOS(input: string): LinuxOS {
   return {
     os: 'linux',
-    dist: input.match(OSRegex.name)?.[1].toLocaleLowerCase() ?? 'unknown',
+    dist: input.match(OSRegex.name)?.[1].toLocaleLowerCase() ?? UNKNOWN,
     codename: input.match(OSRegex.codename)?.[1].toLocaleLowerCase(),
     release: input.match(OSRegex.release)?.[1].toLocaleLowerCase() ?? '',
     id_like: input.match(OSRegex.id_like)?.[1].toLocaleLowerCase().split(' '),

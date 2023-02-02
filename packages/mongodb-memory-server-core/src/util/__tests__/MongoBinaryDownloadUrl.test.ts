@@ -3,16 +3,42 @@ import {
   UnknownPlatformError,
   UnknownArchitectureError,
   KnownVersionIncompatibilityError,
+  UnknownVersionError,
 } from '../errors';
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
+import * as semver from 'semver';
+import { assertion } from '../utils';
 
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
 describe('MongoBinaryDownloadUrl', () => {
+  // the following is to make sure that semver works in expected ways and as examples of how we use it
+  describe('semver correctly coerces mongodb versions', () => {
+    it('should convert a normal semver version', () => {
+      const normal5 = semver.coerce('5.0.0');
+      assertion(normal5);
+      expect(normal5.version).toStrictEqual('5.0.0');
+
+      const normalAll = semver.coerce('4.4.2');
+      assertion(normalAll);
+      expect(normalAll.version).toStrictEqual('4.4.2');
+    });
+
+    it('should convert "-latest" version correctly', () => {
+      const latest5 = semver.coerce('v5.0-latest');
+      assertion(latest5);
+      expect(latest5.version).toStrictEqual('5.0.0');
+
+      const latest44 = semver.coerce('v4.4-latest');
+      assertion(latest44);
+      expect(latest44.version).toStrictEqual('4.4.0');
+    });
+  });
+
   describe('getDownloadUrl()', () => {
     describe('for mac', () => {
       it('latest', async () => {
@@ -71,7 +97,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('arm64 should use the x64 binary', async () => {
+      it('arm64 should use the x64 binary for versions below 6.0.0', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'arm64',
@@ -81,11 +107,44 @@ describe('MongoBinaryDownloadUrl', () => {
           'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.4.0.tgz'
         );
       });
+
+      it('arm64 should use the arm64 binary for versions above and equal to 6.0.0', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'arm64',
+          version: '6.0.0',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-6.0.0.tgz'
+        );
+      });
+
+      it('should allow v5.0-latest x64', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'x64',
+          version: 'v5.0-latest',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-v5.0-latest.tgz'
+        );
+      });
+
+      it('should allow v5.0-latest arm64', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'arm64',
+          version: 'v5.0-latest',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-v5.0-latest.tgz'
+        );
+      });
     });
 
     describe('for linux', () => {
       describe('for ubuntu', () => {
-        it('for ubuntu x64', async () => {
+        it('for ubuntu 14.04 for 3.6', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -101,6 +160,54 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('for ubuntu 20.04 for 4.0', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.0',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '20.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.0.tgz'
+          );
+        });
+
+        it('for ubuntu 22.04 for 4.0 (using 1804)', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.0',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '22.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.0.tgz'
+          );
+        });
+
+        it('for ubuntu 22.04 for 4.4 (using 2004)', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.4.0',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '22.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.0.tgz'
+          );
+        });
+
         it('for ubuntu 20.04 for 5.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -109,7 +216,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2004',
+              release: '20.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -117,7 +224,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 5.0', async () => {
+        it('for ubuntu 22.04 for 5.0 (using 2004)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -125,7 +232,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2204',
+              release: '22.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -141,7 +248,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2004',
+              release: '20.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -149,7 +256,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 6.0', async () => {
+        it('for ubuntu 22.04 for 6.0 (using 2004)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -157,12 +264,66 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '2204',
+              release: '22.04',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.0.tgz'
           );
+        });
+
+        it('for ubuntu 22.04 for 6.0.4', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.4',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '22.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
+          );
+        });
+
+        it('should allow v5.0-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v5.0-latest',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '20.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-v5.0-latest.tgz'
+          );
+        });
+
+        it('should throw a Error when the provided version could not be coerced [UnknownVersionError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'vvv',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '20.04',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a UnknownVersionError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(UnknownVersionError);
+            expect(err.message).toMatchSnapshot();
+          }
         });
 
         describe('arm64', () => {
@@ -345,6 +506,22 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('for debian 11 for v5.0-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v5.0-latest',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '11',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-v5.0-latest.tgz'
+          );
+        });
+
         it('for debian 11 for 6.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -359,6 +536,44 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-6.0.0.tgz'
           );
+        });
+
+        it('should allow v5.0-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v5.0-latest',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '10',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-v5.0-latest.tgz'
+          );
+        });
+
+        it('should throw a Error when the provided version could not be coerced [UnknownVersionError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'vvv',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '10',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a UnknownVersionError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(UnknownVersionError);
+            expect(err.message).toMatchSnapshot();
+          }
         });
 
         it('should throw a Error when requesting a version below 4.2.1 for debian 10+ [#554] [KnownVersionIncompatibilityError]', async () => {
@@ -381,6 +596,22 @@ describe('MongoBinaryDownloadUrl', () => {
             expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
             expect(err.message).toMatchSnapshot();
           }
+        });
+
+        it('should not throw a error for v4.2-latest for debian 10+', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v4.2-latest',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '10',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-v4.2-latest.tgz'
+          );
         });
 
         it('should throw a Error when requesting a version below 4.2.1 for debian 11+ [#554] [KnownVersionIncompatibilityError]', async () => {
@@ -580,6 +811,26 @@ describe('MongoBinaryDownloadUrl', () => {
 
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.1.tgz'
+          );
+        });
+
+        it('should return a archive name for elementary 6.1', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.0',
+            // from "elementary/docker:fe08f970723a"
+            os: {
+              os: 'linux',
+              dist: 'elementary',
+              codename: 'jolnir',
+              release: '6.1',
+              id_like: ['ubuntu'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.0.tgz'
           );
         });
       });
@@ -796,7 +1047,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 8 & 4.4.2 arm64', async () => {
+        it('rhel 8.2 & 4.4.2 arm64', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'arm64',
@@ -812,7 +1063,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 8 & 5.0.0 arm64', async () => {
+        it('rhel 8.2 & 5.0.0 arm64', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'arm64',
@@ -825,6 +1076,38 @@ describe('MongoBinaryDownloadUrl', () => {
           });
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-5.0.0.tgz'
+          );
+        });
+
+        it('rhel 9 & 5.0.0 arm64', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'arm64',
+            version: '5.0.0',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-5.0.0.tgz'
+          );
+        });
+
+        it('should allow v5.0-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v5.0-latest',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-v5.0-latest.tgz'
           );
         });
 
@@ -868,6 +1151,86 @@ describe('MongoBinaryDownloadUrl', () => {
           } catch (err) {
             assertIsError(err);
             expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
+            expect(err.message).toMatchSnapshot();
+          }
+        });
+
+        it('should not throw a error for arm64 v4.4-latest', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'arm64',
+            version: 'v4.4-latest',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '8.2',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-v4.4-latest.tgz'
+          );
+        });
+
+        it('should warn when a unhandled RHEL release is used', async () => {
+          const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x86_64',
+            version: '5.0.0',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '0',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-5.0.0.tgz'
+          );
+
+          expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+          expect(consoleWarnSpy).toHaveBeenCalledWith('Unhandled RHEL version: "0"("x86_64")');
+        });
+
+        it('should warn when a RHEL release could not be coerced', async () => {
+          const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x86_64',
+            version: '5.0.0',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: 'a',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-5.0.0.tgz'
+          );
+
+          expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+          expect(consoleWarnSpy).toHaveBeenCalledWith('Couldnt coerce RHEL version "a"');
+        });
+
+        it('should throw a Error when the provided version could not be coerced [UnknownVersionError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'vvv',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a UnknownVersionError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(UnknownVersionError);
             expect(err.message).toMatchSnapshot();
           }
         });
@@ -1140,6 +1503,28 @@ describe('MongoBinaryDownloadUrl', () => {
       ).toBe('ubuntu2004');
     });
 
+    it('should return a archive name for Ubuntu 22.04 using 1804 4.0', () => {
+      downloadUrl.version = '4.0.0';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '22.04',
+        })
+      ).toBe('ubuntu1804');
+    });
+
+    it('should return a archive name for Ubuntu 22.04 using 2004 4.4', () => {
+      downloadUrl.version = '4.4.0';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '22.04',
+        })
+      ).toBe('ubuntu2004');
+    });
+
     it('should return default version with warning when using ID_LIKE but not being ubuntu', () => {
       // Test for https://github.com/nodkz/mongodb-memory-server/issues/616
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
@@ -1399,6 +1784,56 @@ describe('MongoBinaryDownloadUrl', () => {
         },
       });
       expect(() => du.translatePlatform('sunos')).toThrowError(UnknownPlatformError);
+    });
+  });
+
+  describe('getArchiveNameWin()', () => {
+    const downloadUrlBase: ConstructorParameters<typeof MongoBinaryDownloadUrl>[0] = {
+      platform: 'win32',
+      arch: 'x64',
+      version: '6.0.0',
+    };
+    let downloadUrl: MongoBinaryDownloadUrl;
+    beforeEach(() => {
+      downloadUrl = new MongoBinaryDownloadUrl(downloadUrlBase);
+    });
+
+    it('for mongodb 6.0', () => {
+      downloadUrl.version = '6.0.0';
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-windows-x86_64-6.0.0.zip');
+    });
+
+    it('for mongodb 5.0', () => {
+      downloadUrl.version = '5.0.0';
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-windows-x86_64-5.0.0.zip');
+    });
+
+    it('for mongodb 4.4', () => {
+      downloadUrl.version = '4.4.0';
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-windows-x86_64-4.4.0.zip');
+    });
+
+    it('for mongodb 4.2', () => {
+      // custom reset, because of versions below 4.3.0 using win32 (setting in translatePlatform)
+      downloadUrl = new MongoBinaryDownloadUrl({
+        ...downloadUrlBase,
+        version: '4.2.0',
+      });
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-win32-x86_64-2012plus-4.2.0.zip');
+    });
+
+    it('for mongodb 4.0', () => {
+      // custom reset, because of versions below 4.3.0 using win32 (setting in translatePlatform)
+      downloadUrl = new MongoBinaryDownloadUrl({
+        ...downloadUrlBase,
+        version: '4.0.0',
+      });
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-win32-x86_64-2008plus-ssl-4.0.0.zip');
+    });
+
+    it('should allow v5.0-latest', () => {
+      downloadUrl.version = 'v5.0-latest';
+      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-windows-x86_64-v5.0-latest.zip');
     });
   });
 });

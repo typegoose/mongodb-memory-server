@@ -39,7 +39,9 @@ Should just work out of the box
 <span class="badge badge--success">Supported</span>
 
 On x64 systems, it should work right out of the box<br/>
-On Arm64 systems, the architecture needs to be overwritten with `MONGOMS_ARCH=x64`, only exception being (and based on) `ubuntu`
+Since Mongodb 6.0.0, they have `arm64` binaries<br/>
+Uses `arm64` binaries for all versions above or equal to `6.0.0`, for older versions falls back to using `x86_64` binaries (requires Rosetta)<br/>
+Usage of the `x86_64` binary can be forced with [`MONGOMS_ARCH=x64`](../api/config-options.md#arch) (or equal in `package.json`)
 
 ## Linux
 
@@ -59,7 +61,7 @@ Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an lower version of mongodb for an higher version of ubuntu
 :::
 :::note
-There are currently no native binaries for `2204`, so it is mapped to `2004` and will require `libssl1.1` to be installed.  
+Since Mongodb `6.0.4` there are binaries for `2204`, any version before is mapped to `2204` (or earlier) and will require `libssl1.1` to be installed.  
 See [this mongodb issue](https://jira.mongodb.org/browse/SERVER-62300).
 :::
 

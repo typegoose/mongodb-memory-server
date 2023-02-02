@@ -54,20 +54,20 @@ Function `getConnectionString` got removed in favor of just `getUri`
 
 ### MongoInstance.waitPrimaryReady got removed
 
-Function `MongoInstance.waitPrimaryReady` got removed, in favor of listening to event `instancePrimary`
+Function `MongoInstance.prototype.waitPrimaryReady` got removed, in favor of listening to event `instancePrimary`
 
 ### Functions that returned public values on classes got removed
 
-Functions like `MongoMemoryServer.getInstanceInfo` got removed in favor of `MongoMemoryServer.instanceInfo` (readonly value)
+Functions like `MongoMemoryServer.prototype.getInstanceInfo` got removed in favor of `MongoMemoryServer.prototype.instanceInfo` (readonly value)
 
 These include:
 
-- `MongoMemoryServer.getInstanceInfo` -> `MongoMemoryServer.instanceInfo` (readonly value)
-- `MongoMemoryServer.getPort` -> `MongoMemoryServer.instanceInfo.port` (readonly value)
-- `MongoMemoryServer.getDbPath` -> `MongoMemoryServer.instanceInfo.dbPath` (readonly value)
-- `MongoMemoryServer.getDbName` -> `MongoMemoryServer.instanceInfo.dbName` (readonly value)
-- `MongoMemoryReplSet.getDbName` -> `MongoMemoryReplSet.opts.replSet.db` (readonly value)
-- `MongoInstance.getPid` -> `MongoInstance.mongodProcess.pid` (readonly value)
+- `MongoMemoryServer.prototype.getInstanceInfo` -> `MongoMemoryServer.prototype.instanceInfo` (readonly value)
+- `MongoMemoryServer.prototype.getPort` -> `MongoMemoryServer.prototype.instanceInfo.port` (readonly value)
+- `MongoMemoryServer.prototype.getDbPath` -> `MongoMemoryServer.prototype.instanceInfo.dbPath` (readonly value)
+- `MongoMemoryServer.prototype.getDbName` -> `MongoMemoryServer.prototype.instanceInfo.dbName` (readonly value)
+- `MongoMemoryReplSet.prototype.getDbName` -> `MongoMemoryReplSet.prototype.opts.replSet.db` (readonly value)
+- `MongoInstance.prototype.getPid` -> `MongoInstance.prototype.mongodProcess.pid` (readonly value)
 
 ### Manager Class functions got unified
 
@@ -77,8 +77,8 @@ This means that all of them have unified typings for `start`, `stop`, `create`, 
 This also includes function renames:
 
 - (static) `MongoInstance.run` -> `MongoInstance.create`
-- `MongoInstance.run` -> `MongoInstance.start`
-- `MongoInstance.kill` -> `MongoInstance.stop`
+- `MongoInstance.prototype.run` -> `MongoInstance.prototype.start`
+- `MongoInstance.prototype.kill` -> `MongoInstance.prototype.stop`
 
 ### getUri by default does not include any dbName anymore
 

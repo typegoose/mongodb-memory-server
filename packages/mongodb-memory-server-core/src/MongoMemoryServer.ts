@@ -72,6 +72,7 @@ export interface AutomaticAuth {
   keyfileContent?: string;
 }
 
+// TODO: consider some way to not forget to add changes from "MongoMemoryInstanceOpts"
 /**
  * Data used by _startUpInstance's "data" variable
  */
@@ -84,6 +85,7 @@ export interface StartupInstanceData {
   replSet?: NonNullable<MongoMemoryInstanceOpts['replSet']>;
   tmpDir?: tmp.DirResult;
   keyfileLocation?: NonNullable<MongoMemoryInstanceOpts['keyfileLocation']>;
+  launchTimeout?: NonNullable<MongoMemoryInstanceOpts['launchTimeout']>;
 }
 
 /**
@@ -234,6 +236,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     super();
     this.opts = { ...opts };
 
+    // TODO: consider changing this to not be set if "instance.auth" is false in 9.0
     if (!isNullOrUndefined(this.opts.auth)) {
       // assign defaults
       this.auth = authDefault(this.opts.auth);
@@ -363,6 +366,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       port = await this.getNewPort(port);
     }
 
+    // consider directly using "this.opts.instance", to pass through all options, even if not defined in "StartupInstanceData"
     const data: StartupInstanceData = {
       port: port,
       dbName: generateDbName(instOpts.dbName),
@@ -372,6 +376,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       dbPath: instOpts.dbPath,
       tmpDir: undefined,
       keyfileLocation: instOpts.keyfileLocation,
+      launchTimeout: instOpts.launchTimeout,
     };
 
     if (isNullOrUndefined(this._instanceInfo)) {
@@ -399,8 +404,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     const enableAuth: boolean =
       (typeof instOpts.auth === 'boolean' ? instOpts.auth : true) && // check if auth is even meant to be enabled
-      !isNullOrUndefined(this.auth) && // check if "this.auth" is defined
-      !this.auth.disable; // check that "this.auth.disable" is falsey
+      this.authObjectEnable();
 
     const createAuth: boolean =
       enableAuth && // re-use all the checks from "enableAuth"
@@ -458,7 +462,11 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     };
 
     // always set the "extraConnectionOptions" when "auth" is enabled, regardless of if "createAuth" gets run
-    if (!isNullOrUndefined(this.auth) && !isNullOrUndefined(mongodOptions.instance?.auth)) {
+    if (
+      this.authObjectEnable() &&
+      mongodOptions.instance?.auth === true &&
+      !isNullOrUndefined(this.auth) // extra check again for typescript, because it cant reuse checks from "enableAuth" yet
+    ) {
       instance.extraConnectionOptions = {
         authSource: 'admin',
         authMechanism: 'SCRAM-SHA-256',
@@ -812,6 +820,21 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       // close connection in any case (even if throwing a error or being successfull)
       await con.close();
     }
+  }
+
+  /**
+   * Helper function to determine if the "auth" object is set and not to be disabled
+   * This function expectes to be run after the auth object has been transformed to a object
+   * @returns "true" when "auth" should be enabled
+   */
+  protected authObjectEnable(): boolean {
+    if (isNullOrUndefined(this.auth)) {
+      return false;
+    }
+
+    return typeof this.auth.disable === 'boolean' // if "this._replSetOpts.auth.disable" is defined, use that
+      ? !this.auth.disable // invert the disable boolean, because "auth" should only be disabled if "disabled = true"
+      : true; // if "this._replSetOpts.auth.disable" is not defined, default to true because "this._replSetOpts.auth" is defined
   }
 }
 

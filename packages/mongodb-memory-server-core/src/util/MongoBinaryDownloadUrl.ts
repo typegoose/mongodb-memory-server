@@ -8,6 +8,7 @@ import {
   KnownVersionIncompatibilityError,
   UnknownArchitectureError,
   UnknownPlatformError,
+  UnknownVersionError,
 } from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
@@ -100,11 +101,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    */
   getArchiveNameWin(): string {
     let name = `mongodb-${this.platform}-${this.arch}`;
+    const coercedVersion = semver.coerce(this.version);
 
-    if (!isNullOrUndefined(semver.coerce(this.version))) {
-      if (semver.satisfies(this.version, '4.2.x')) {
+    if (!isNullOrUndefined(coercedVersion)) {
+      if (semver.satisfies(coercedVersion, '4.2.x')) {
         name += '-2012plus';
-      } else if (semver.lt(this.version, '4.1.0')) {
+      } else if (semver.lt(coercedVersion, '4.1.0')) {
         name += '-2008plus-ssl';
       }
     }
@@ -120,18 +122,28 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    */
   getArchiveNameOsx(): string {
     let name = `mongodb-osx`;
-    const version = semver.coerce(this.version);
+    const coercedVersion = semver.coerce(this.version);
 
-    if (!isNullOrUndefined(version) && semver.gte(version, '3.2.0')) {
+    if (!isNullOrUndefined(coercedVersion) && semver.gte(coercedVersion, '3.2.0')) {
       name += '-ssl';
     }
-    if (isNullOrUndefined(version) || semver.gte(version, '4.2.0')) {
+    if (isNullOrUndefined(coercedVersion) || semver.gte(coercedVersion, '4.2.0')) {
       name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
     }
 
+    // mongodb has native arm64
     if (this.arch === 'aarch64') {
-      log('getArchiveNameOsx: Arch is "aarch64", using x64 binary');
-      this.arch = 'x86_64';
+      // force usage of "x86_64" binary for all versions below than 6.0.0
+      if (!isNullOrUndefined(coercedVersion) && semver.lt(coercedVersion, '6.0.0')) {
+        log('getArchiveNameOsx: Arch is "aarch64" and version is below 6.0.0, using x64 binary');
+        this.arch = 'x86_64';
+      } else {
+        log(
+          'getArchiveNameOsx: Arch is "aarch64" and version is above or equal to 6.0.0, using arm64 binary'
+        );
+        // naming for macos is still "arm64" instead of "aarch64"
+        this.arch = 'arm64';
+      }
     }
 
     name += `-${this.arch}-${this.version}.tgz`;
@@ -228,11 +240,17 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   getDebianVersionString(os: LinuxOS): string {
     let name = 'debian';
     const release: number = parseFloat(os.release);
+    const coercedVersion = semver.coerce(this.version);
+
+    if (isNullOrUndefined(coercedVersion)) {
+      throw new UnknownVersionError(this.version);
+    }
 
     if (release >= 11 || ['unstable', 'testing'].includes(os.release)) {
       // Debian 11 is compatible with the binaries for debian 10
       // but does not have binaries for before 5.0.8
-      if (semver.lt(this.version, '5.0.8')) {
+      // and only set to use "debian10" if the requested version is not a latest version
+      if (semver.lt(coercedVersion, '5.0.8') && !testVersionIsLatest(this.version)) {
         log('debian11 detected, but version below 5.0.8 requested, using debian10');
         name += '10';
       } else {
@@ -249,7 +267,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     }
 
     if (release >= 10) {
-      if (semver.lt(this.version, '4.2.1')) {
+      if (semver.lt(coercedVersion, '4.2.1') && !testVersionIsLatest(this.version)) {
         throw new KnownVersionIncompatibilityError(
           `Debian ${release}`,
           this.version,
@@ -295,10 +313,17 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   getRhelVersionString(os: LinuxOS): string {
     let name = 'rhel';
     const { release } = os;
+    const releaseAsSemver = semver.coerce(release); // coerce "8" to "8.0.0" and "8.2" to "8.2.0", makes comparing easier than "parseInt" or "parseFloat"
+    const coercedVersion = semver.coerce(this.version);
 
-    if (release) {
+    if (isNullOrUndefined(coercedVersion)) {
+      throw new UnknownVersionError(this.version);
+    }
+
+    if (releaseAsSemver) {
       if (this.arch === 'aarch64') {
-        if (!/^8/.test(release)) {
+        // there are no versions for aarch64 before rhel 8.2 (or currently after)
+        if (semver.lt(releaseAsSemver, '8.2.0')) {
           throw new KnownVersionIncompatibilityError(
             `Rhel ${release}`,
             this.version,
@@ -306,21 +331,31 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
             'ARM64(aarch64) support for rhel is only for rhel82 or higher'
           );
         }
-        if (semver.satisfies(this.version, '<4.4.2')) {
+        // there are no versions for aarch64 before mongodb 4.4.2
+        // Note: version 4.4.2 and 4.4.3 are NOT listed at the list, but are existing; list: https://www.mongodb.com/download-center/community/releases/archive
+        if (semver.lt(coercedVersion, '4.4.2') && !testVersionIsLatest(this.version)) {
           throw new KnownVersionIncompatibilityError(`Rhel ${release}`, this.version, '>=4.4.2');
         }
 
-        // rhel aarch64 support is only for rhel 8 and only for 82
+        if (!semver.eq(releaseAsSemver, '8.2.0')) {
+          log(`a different rhel version than 8.2 is used: "${release}", using 82 release`);
+        }
+
+        // rhel aarch64 support is only for rhel 8.2 (and no version after explicitly)
         name += '82';
-      } else if (/^8/.test(release)) {
+      } else if (semver.satisfies(releaseAsSemver, '>=8.0.0')) {
         name += '80';
-      } else if (/^7/.test(release)) {
+      } else if (semver.satisfies(releaseAsSemver, '^7.0.0')) {
         name += '70';
-      } else if (/^6/.test(release)) {
+      } else if (semver.satisfies(releaseAsSemver, '^6.0.0')) {
         name += '62';
-      } else if (/^5/.test(release)) {
+      } else if (semver.satisfies(releaseAsSemver, '^5.0.0')) {
         name += '55';
+      } else {
+        console.warn(`Unhandled RHEL version: "${release}"("${this.arch}")`);
       }
+    } else {
+      console.warn(`Couldnt coerce RHEL version "${release}"`);
     }
     // fallback if name has not been modified yet
     if (name === 'rhel') {
@@ -372,6 +407,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    */
   getUbuntuVersionString(os: LinuxOS): string {
     let ubuntuOS: LinuxOS | undefined = undefined;
+    const coercedVersion = semver.coerce(this.version);
+
+    if (isNullOrUndefined(coercedVersion)) {
+      throw new UnknownVersionError(this.version);
+    }
 
     // "id_like" processing (version conversion) [this is an block to be collapsible]
     {
@@ -391,7 +431,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         };
       }
 
-      if (/^elementary\s?os\s*$/i.test(os.dist)) {
+      if (/^elementary(?:\s?os)?\s*$/i.test(os.dist)) {
         const elementaryToUbuntuRelease: Record<number, string> = {
           3: '14.04',
           4: '16.04',
@@ -433,13 +473,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     if (this.arch === 'aarch64') {
       // this is because, before version 4.1.10, everything for "arm64" / "aarch64" were just "arm64" and for "ubuntu1604"
-      if (semver.satisfies(this.version, '<4.1.10')) {
+      if (semver.satisfies(coercedVersion, '<4.1.10')) {
         this.arch = 'arm64';
 
         return 'ubuntu1604';
       }
       // this is because versions below "4.4.0" did not provide an binary for anything above 1804
-      if (semver.satisfies(this.version, '>=4.1.10 <4.4.0')) {
+      if (semver.satisfies(coercedVersion, '>=4.1.10 <4.4.0')) {
         return 'ubuntu1804';
       }
     }
@@ -450,7 +490,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     // there are no MongoDB 3.x binary distributions for ubuntu >= 18
     // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
-    if (ubuntuYear >= 18 && semver.satisfies(this.version, '3.x.x')) {
+    if (ubuntuYear >= 18 && semver.satisfies(coercedVersion, '3.x.x')) {
       log(
         `getUbuntuVersionString: ubuntuYear is "${ubuntuYear}", which dosnt have an 3.x.x version, defaulting to "1604"`
       );
@@ -460,7 +500,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     // there are no MongoDB <=4.3.x binary distributions for ubuntu > 18
     // https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
-    if (ubuntuYear > 18 && semver.satisfies(this.version, '<=4.3.x')) {
+    if (ubuntuYear > 18 && semver.satisfies(coercedVersion, '<=4.3.x')) {
       log(
         `getUbuntuVersionString: ubuntuYear is "${ubuntuYear}", which dosnt have an "<=4.3.x" version, defaulting to "1804"`
       );
@@ -468,9 +508,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu1804';
     }
 
-    // there are not binaries for ubuntu 21.04, so defaulting to one version below for now
-    // see https://github.com/nodkz/mongodb-memory-server/issues/582
-    if (ubuntuYear >= 21) {
+    // there are only binaries for 2204 since 6.0.4 (and not binaries for ubuntu2104)
+    if (ubuntuYear >= 21 && semver.satisfies(coercedVersion, '<6.0.4')) {
       return 'ubuntu2004';
     }
 
@@ -534,4 +573,9 @@ function regexHelper(regex: RegExp, os: LinuxOS): boolean {
     regex.test(os.dist) ||
     (!isNullOrUndefined(os.id_like) ? os.id_like.filter((v) => regex.test(v)).length >= 1 : false)
   );
+}
+
+/** Helper to consistently test if a version is a "-latest" version, like "v5.0-latest" */
+function testVersionIsLatest(version: string): boolean {
+  return /^v\d+\.\d+-latest$/.test(version);
 }

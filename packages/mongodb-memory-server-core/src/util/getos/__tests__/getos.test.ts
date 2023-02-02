@@ -28,6 +28,21 @@ DISTRIB_DESCRIPTION="Linux Mint 20.1 Ulyssa"`;
         codename: 'ulyssa',
       });
     });
+
+    it('should parse to UNKNOWN for different formats', () => {
+      // output taken from "elementary/docker:fe08f970723a" at "/etc/upstream-release/lsb-release"
+      const example = `ID=Ubuntu
+VERSION_ID=20.04
+VERSION_CODENAME=focal
+PRETTY_NAME="Ubuntu 20.04.5 LTS"`;
+
+      expect(getos.parseLSB(example)).toEqual<getos.LinuxOS>({
+        os: 'linux',
+        dist: getos.UNKNOWN,
+        release: '',
+        codename: undefined,
+      });
+    });
   });
 
   describe('parseOS', () => {
@@ -108,6 +123,25 @@ HOME_URL="https://amazonlinux.com/"`;
         codename: undefined,
         id_like: ['centos', 'rhel', 'fedora'],
       });
+    });
+  });
+
+  describe('isValidOs', () => {
+    it('should return FALSE if undefined / null', () => {
+      expect(getos.isValidOs(undefined)).toStrictEqual(false);
+      expect(getos.isValidOs(null as any)).toStrictEqual(false);
+    });
+
+    it('should return FALSE if distro is UNKNOWN', () => {
+      expect(getos.isValidOs({ dist: getos.UNKNOWN, os: 'linux', release: '0' })).toStrictEqual(
+        false
+      );
+    });
+
+    it('should return TRUE if distro is not UNKNOWN', () => {
+      expect(getos.isValidOs({ dist: 'ubuntu', os: 'linux', release: '20.04' })).toStrictEqual(
+        true
+      );
     });
   });
 });

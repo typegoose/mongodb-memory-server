@@ -322,6 +322,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     if (baseOpts.replicaMemberConfig) {
       opts.replicaMemberConfig = baseOpts.replicaMemberConfig;
     }
+    if (baseOpts.launchTimeout) {
+      opts.launchTimeout = baseOpts.launchTimeout;
+    }
 
     log('getInstanceOpts: instance opts:', opts);
 
@@ -412,7 +415,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       log('initAllServers: lenght of "servers" is higher than 0, starting existing servers');
 
       if (this._ranCreateAuth) {
-        log('initAllServers: "_ranCreateAuth" is true, changing "auth" to on');
+        log('initAllServers: "_ranCreateAuth" is true, re-using auth');
         const keyfilepath = resolve((await this.ensureKeyFile()).name, 'keyfile');
         for (const server of this.servers) {
           assertion(
@@ -708,11 +711,12 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         log('_initReplSet: trying "replSetInitiate"');
         await adminDb.command({ replSetInitiate: rsConfig });
 
-        if (typeof this._replSetOpts.auth === 'object') {
-          log('_initReplSet: "this._replSetOpts.auth" is a object');
+        if (this.enableAuth()) {
+          log('_initReplSet: "enableAuth" returned "true"');
 
           await this._waitForPrimary(undefined, '_initReplSet authIsObject');
 
+          // find the primary instance to run createAuth on
           const primary = this.servers.find(
             (server) => server.instanceInfo?.instance.isInstancePrimary
           );

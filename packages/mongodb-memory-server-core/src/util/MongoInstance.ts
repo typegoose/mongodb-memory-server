@@ -18,6 +18,7 @@ import {
   KeyFileMissingError,
   StartBinaryFailedError,
   StdoutInstanceError,
+  UnexpectedCloseError,
 } from './errors';
 
 // ignore the nodejs warning for coverage
@@ -131,6 +132,12 @@ export interface MongoMemoryInstanceOptsBase {
    * Only has a effect when started with "MongoMemoryReplSet"
    */
   replicaMemberConfig?: ReplicaMemberConfig;
+  /**
+   * Define a custom timeout for when out of some reason the binary cannot get started correctly
+   * Time in MS
+   * @default 10000 10 seconds
+   */
+  launchTimeout?: number;
 }
 
 export interface MongoMemoryInstanceOpts extends MongoMemoryInstanceOptsBase {
@@ -343,16 +350,35 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     this.isInstanceReady = false;
     this.isReplSet = false;
 
-    const launch: Promise<void> = new Promise((res, rej) => {
-      this.once(MongoInstanceEvents.instanceReady, res);
-      this.once(MongoInstanceEvents.instanceError, rej);
-      this.once(MongoInstanceEvents.instanceClosed, () => {
-        rej(new Error('Instance Exited before being ready and without throwing an error!'));
-      });
-    });
+    let timeout: NodeJS.Timeout;
 
     const mongoBin = await MongoBinary.getPath(this.binaryOpts);
     await checkBinaryPermissions(mongoBin);
+
+    const launch: Promise<void> = new Promise<void>((res, rej) => {
+      this.once(MongoInstanceEvents.instanceReady, res);
+      this.once(MongoInstanceEvents.instanceError, rej);
+      this.once(MongoInstanceEvents.instanceClosed, function launchInstanceClosed() {
+        rej(new Error('Instance Exited before being ready and without throwing an error!'));
+      });
+
+      // extra conditions just to be sure that the custom defined timeout is valid
+      const timeoutTime =
+        !!this.instanceOpts.launchTimeout && this.instanceOpts.launchTimeout >= 1000
+          ? this.instanceOpts.launchTimeout
+          : 1000 * 10; // default 10 seconds
+
+      timeout = setTimeout(() => {
+        const err = new GenericMMSError(`Instance failed to start within ${timeoutTime}ms`);
+        this.emit(MongoInstanceEvents.instanceError, err);
+
+        rej(err);
+      }, timeoutTime);
+    }).finally(() => {
+      // always clear the timeout after the promise somehow resolves
+      clearTimeout(timeout);
+    });
+
     this.debug('start: Starting Processes');
     this.mongodProcess = this._launchMongod(mongoBin);
     // This assertion is here because somewhere between nodejs 12 and 16 the types for "childprocess.pid" changed to include "| undefined"
@@ -511,14 +537,17 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
   /**
    * Write the CLOSE event to the debug function
    * @param code The Exit code to handle
+   * @param signal The Signal to handle
    * @fires MongoInstance#instanceClosed
    */
-  closeHandler(code: number, signal: string): void {
+  closeHandler(code: number | null, signal: string | null): void {
     // check if the platform is windows, if yes check if the code is not "12" or "0" otherwise just check code is not "0"
     // because for mongodb any event on windows (like SIGINT / SIGTERM) will result in an code 12
     // https://docs.mongodb.com/manual/reference/exit-codes/#12
     if ((process.platform === 'win32' && code != 12 && code != 0) || code != 0) {
       this.debug('closeHandler: Mongod instance closed with an non-0 (or non 12 on windows) code!');
+      // Note: this also emits when a signal is present, which is expected because signals are not expected here
+      this.emit(MongoInstanceEvents.instanceError, new UnexpectedCloseError(code, signal));
     }
 
     this.debug(`closeHandler: code: "${code}", signal: "${signal}"`);
@@ -598,6 +627,21 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           new StdoutInstanceError(
             `Instance Failed to start with "${execptionMatch[1] ?? 'unknown'}". Original Error:\n` +
               line.substring(execptionMatch.index + execptionMatch[0].length)
+          )
+        );
+      }
+
+      // special handling for when mongodb outputs this error as json
+      const execptionMatchJson = /\bDBException in initAndListen,/i.test(line);
+
+      if (execptionMatchJson) {
+        const loadedJSON = JSON.parse(line) ?? {};
+
+        this.emit(
+          MongoInstanceEvents.instanceError,
+          new StdoutInstanceError(
+            `Instance Failed to start with "DBException in initAndListen". Original Error:\n` +
+              loadedJSON?.attr?.error ?? line // try to use the parsed json, but as fallback use the entire line
           )
         );
       }

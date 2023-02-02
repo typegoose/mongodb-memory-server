@@ -26,10 +26,7 @@ describe('MongoMemoryServer', () => {
   describe('start()', () => {
     it('should not error if an MongoInstanceData is resolved by _startUpInstance', async () => {
       const mongoServer = new MongoMemoryServer();
-      jest
-        .spyOn(mongoServer, '_startUpInstance')
-        // @ts-expect-error expect an error here rather than an "as any"
-        .mockImplementationOnce(() => Promise.resolve({}));
+      jest.spyOn(mongoServer, '_startUpInstance').mockImplementationOnce(() => Promise.resolve());
 
       expect(mongoServer._startUpInstance).not.toHaveBeenCalled();
 
@@ -948,6 +945,8 @@ describe('MongoMemoryServer', () => {
       expect(options.data.dbPath).toEqual(tmpDbPath.name);
       expect(readdirSpy).toHaveBeenCalledTimes(1);
       expect(options.createAuth).toEqual(true);
+
+      tmpDbPath.removeCallback();
     });
 
     it('should resolve "isNew" to "false" and set "createAuth" to "false" when dbPath is set, but not empty', async () => {
@@ -974,6 +973,8 @@ describe('MongoMemoryServer', () => {
       expect(options.data.dbPath).toEqual(tmpDbPath.name);
       expect(readdirSpy).toHaveBeenCalledTimes(1);
       expect(options.createAuth).toEqual(false);
+
+      tmpDbPath.removeCallback();
     });
 
     it('should generate a port when no suggestion is defined', async () => {
@@ -1076,5 +1077,58 @@ describe('MongoMemoryServer', () => {
     expect(await utils.statPath(dbPath)).toBeFalsy();
     expect(mongoServer.instanceInfo).toBeFalsy();
     expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
+  });
+
+  describe('authObjectEnable()', () => {
+    it('should with defaults return "false"', () => {
+      const mongoServer = new MongoMemoryServer();
+
+      expect(mongoServer.auth).toBeFalsy();
+
+      expect(
+        // @ts-expect-error "authObjectEnable" is protected
+        mongoServer.authObjectEnable()
+      ).toStrictEqual(false);
+    });
+
+    it('should with defaults return "true" if empty object OR "disable: false"', () => {
+      {
+        const mongoServer = new MongoMemoryServer({ auth: {} });
+
+        expect(
+          // @ts-expect-error "authObjectEnable" is protected
+          mongoServer.authObjectEnable()
+        ).toStrictEqual(true);
+      }
+      {
+        const mongoServer = new MongoMemoryServer({ auth: { disable: false } });
+
+        expect(
+          // @ts-expect-error "authObjectEnable" is protected
+          mongoServer.authObjectEnable()
+        ).toStrictEqual(true);
+      }
+    });
+  });
+
+  it('should transfer "launchTimeout" option to the MongoInstance', async () => {
+    const createSpy = jest.spyOn(MongoInstance, 'create').mockImplementation(
+      // @ts-expect-error This can work, because the instance is not used in the function that is tested here, beyond setting some extra options
+      () => Promise.resolve({})
+    );
+
+    const mongoServer = new MongoMemoryServer({ instance: { launchTimeout: 2000 } });
+
+    await mongoServer._startUpInstance();
+
+    // @ts-expect-error "_instanceInfo" is protected
+    const instanceInfo = mongoServer._instanceInfo;
+    expect(instanceInfo).toBeDefined();
+    utils.assertion(!utils.isNullOrUndefined(instanceInfo));
+    expect(instanceInfo.instance).toBeDefined();
+    expect(instanceInfo?.launchTimeout).toStrictEqual(2000);
+
+    expect(createSpy.mock.calls.length).toStrictEqual(1);
+    expect(createSpy.mock.calls[0][0].instance).toHaveProperty('launchTimeout', 2000);
   });
 });

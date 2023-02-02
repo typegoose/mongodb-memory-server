@@ -22,14 +22,13 @@ Workaround:
 - Use a SystemBinary with [`SYSTEM_BINARY`](../api/config-options.md#SYSTEM_BINARY)
 - Do not use AlpineLinux
 
-## libcurl on slim Docker images
+## libcurl on older or custom Docker images
 
-Docker images of the "slim" variety often don't have `libcurl` installed, such as [the official "slim" Node.js image](https://hub.docker.com/_/node) or [sitespeed.io node](https://hub.docker.com/r/sitespeedio/node).  
-If you don't install it manually, then `mongodb-memory-server` will not start up in your container, with the following exception message:
+When running older docker images or a custom image not based on any `node` image, then `libcurl4` will likely need to be manually installed, otherwise MongoDB binary will not start since version `5.0.0` on most distributions.
 
-> Instance Exited before being ready and without throwing an error!
+> libcurl4 is not available on your system. Mongod requires it and cannot be started without it.
 
-This can easily be resolved by installing it in your image:
+This can be resolved by installing it in your image:
 
 ```sh
 apt-get install libcurl4

@@ -16,6 +16,8 @@ module.exports = {
       'api/interfaces/mongo-memory-instance-opts',
       'api/interfaces/mongo-memory-instance-replicamemberconfig',
       'api/interfaces/mongo-memory-binary-opts',
+      'api/interfaces/mongo-memory-replset-opts',
+      'api/interfaces/replset-opts',
     ],
   },
   guides: {
