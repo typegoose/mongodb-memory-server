@@ -53,7 +53,7 @@
     "mongodb": "^4.13.0",
     "new-find-package-json": "^2.0.0",
     "semver": "^7.3.8",
-    "tar-stream": "^2.1.4",
+    "tar-stream": "^3.0.0",
     "tmp": "^0.2.1",
     "tslib": "^2.5.0",
     "uuid": "^9.0.0",
