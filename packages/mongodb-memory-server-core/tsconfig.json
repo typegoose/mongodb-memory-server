@@ -3,7 +3,7 @@
     "rootDir": "./src",
     "outDir": "./build",
     "noEmit": false,
-    "target": "es2019",
+    "target": "es2020",
     "module": "commonjs",
     "sourceMap": true,
     "declaration": true,
