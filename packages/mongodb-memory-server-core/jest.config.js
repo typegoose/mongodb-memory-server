@@ -1,15 +1,15 @@
 module.exports = {
   preset: 'ts-jest',
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.json',
-      diagnostics: false,
-    },
+  transform: {
+    '\\.ts$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.json',
+        diagnostics: true,
+      },
+    ],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-  },
   roots: ['<rootDir>/src'],
   testPathIgnorePatterns: ['/node_modules/', '/lib/'],
   testMatch: ['**/__tests__/**/*.test.(ts|js)'],
@@ -19,4 +19,8 @@ module.exports = {
     '!<rootDir>/src/util/postinstallHelper.ts', // exclude this file, because it is only made for postInstall, not tests
   ],
   globalSetup: '<rootDir>/src/__tests__/testUtils/globalSetup.ts',
+  snapshotFormat: {
+    escapeString: true,
+    printBasicPrototype: true,
+  },
 };
