@@ -191,7 +191,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return this.getAmazonVersionString(os);
     } else if (regexHelper(/suse/i, os)) {
       return this.getSuseVersionString(os);
-    } else if (regexHelper(/(rhel|centos|scientific)/i, os)) {
+      // handle "oracle linux"(ol) as "rhel", because they define "id_like: fedora", but the versions themself match up with rhel
+    } else if (regexHelper(/(rhel|centos|scientific|^ol$)/i, os)) {
       return this.getRhelVersionString(os);
     } else if (regexHelper(/fedora/i, os)) {
       return this.getFedoraVersionString(os);

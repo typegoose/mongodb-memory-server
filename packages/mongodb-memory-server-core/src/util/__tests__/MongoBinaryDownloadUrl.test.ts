@@ -1235,6 +1235,42 @@ describe('MongoBinaryDownloadUrl', () => {
           }
         });
       });
+
+      describe('Oracle Linux', () => {
+        it('ol 8.7 & 5.0.0 x86_64', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.0',
+            os: {
+              os: 'linux',
+              dist: 'ol',
+              release: '8.7',
+              id_like: ['fedora'],
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-5.0.0.tgz'
+          );
+        });
+
+        it('ol 8.7 & 4.4.17 x86_64', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.4.17',
+            os: {
+              os: 'linux',
+              dist: 'ol',
+              release: '8.7',
+              id_like: ['fedora'],
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.4.17.tgz'
+          );
+        });
+      });
     });
 
     describe('for win32 & windows', () => {
