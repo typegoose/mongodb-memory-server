@@ -1,3 +1,15 @@
+## [8.11.5](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.4...v8.11.5) (2023-02-21)
+
+
+### Style
+
+* **resolveConfig:** dont enable debug mode twice ([6ae0c73](https://github.com/nodkz/mongodb-memory-server/commit/6ae0c73f3d0563716b823780ca5d14fea4c41a04)), closes [#745](https://github.com/nodkz/mongodb-memory-server/issues/745)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** add support for Oracle Linux ([75fa22e](https://github.com/nodkz/mongodb-memory-server/commit/75fa22e9a227d1f82b9014fad535ca31159de00e)), closes [#746](https://github.com/nodkz/mongodb-memory-server/issues/746)
+
 ## [8.11.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.3...v8.11.4) (2023-01-23)
 
 
