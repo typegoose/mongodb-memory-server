@@ -64,7 +64,6 @@ This Option does not have a effect when [`ARCHIVE_NAME`](#archive_name) or [`DOW
 Common MongoDB Version formats (`X` is a number):
 
 - `X.X.X`
-- `vX.X.X`
 - `vX.X-latest`
 
 [Search for what Versions are available](https://www.mongodb.com/download-center/community/releases/archive)
