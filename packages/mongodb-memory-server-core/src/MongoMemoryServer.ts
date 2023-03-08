@@ -1,5 +1,4 @@
 import { SpawnOptions } from 'child_process';
-import * as tmp from 'tmp';
 import getPort from 'get-port';
 import {
   assertion,
@@ -10,6 +9,8 @@ import {
   statPath,
   ManagerAdvanced,
   Cleanup,
+  createTmpDir,
+  removeDir,
 } from './util/utils';
 import { MongoInstance, MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -22,8 +23,6 @@ import { EnsureInstanceError, StateError } from './util/errors';
 import * as os from 'os';
 
 const log = debug('MongoMS:MongoMemoryServer');
-
-tmp.setGracefulCleanup();
 
 /**
  * MongoMemoryServer Stored Options
@@ -83,7 +82,7 @@ export interface StartupInstanceData {
   ip: NonNullable<MongoMemoryInstanceOpts['ip']>;
   storageEngine: NonNullable<MongoMemoryInstanceOpts['storageEngine']>;
   replSet?: NonNullable<MongoMemoryInstanceOpts['replSet']>;
-  tmpDir?: tmp.DirResult;
+  tmpDir?: string;
   keyfileLocation?: NonNullable<MongoMemoryInstanceOpts['keyfileLocation']>;
   launchTimeout?: NonNullable<MongoMemoryInstanceOpts['launchTimeout']>;
 }
@@ -382,12 +381,8 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     if (isNullOrUndefined(this._instanceInfo)) {
       // create an tmpDir instance if no "dbPath" is given
       if (!data.dbPath) {
-        data.tmpDir = tmp.dirSync({
-          mode: 0o755,
-          prefix: 'mongo-mem-',
-          unsafeCleanup: true,
-        });
-        data.dbPath = data.tmpDir.name;
+        data.tmpDir = await createTmpDir('mongo-mem-');
+        data.dbPath = data.tmpDir;
 
         isNew = true; // just to ensure "isNew" is "true" because an new temporary directory got created
       } else {
@@ -603,8 +598,8 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     const tmpDir = this._instanceInfo.tmpDir;
 
     if (!isNullOrUndefined(tmpDir)) {
-      this.debug(`cleanup: removing tmpDir at ${tmpDir.name}`);
-      tmpDir.removeCallback();
+      this.debug(`cleanup: removing tmpDir at ${tmpDir}`);
+      await removeDir(tmpDir);
     }
 
     if (cleanup.force) {
