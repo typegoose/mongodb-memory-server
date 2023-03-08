@@ -8,7 +8,6 @@ import MongoMemoryServer, {
 } from '../MongoMemoryServer';
 import MongoInstance from '../util/MongoInstance';
 import * as utils from '../util/utils';
-import * as semver from 'semver';
 import { EnsureInstanceError, StateError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
 import { promises as fspromises } from 'fs';
@@ -773,8 +772,7 @@ describe('MongoMemoryServer', () => {
     // "beforeAll" dosnt work here, thanks to the top-level "afterAll" hook
     beforeEach(() => {
       jest.spyOn(utils, 'statPath');
-      // @ts-expect-error because "default" dosnt exist in the definitions
-      jest.spyOn(semver.default, 'lt'); // it needs to be ".default" otherwise "lt" is only an getter
+      jest.spyOn(utils, 'removeDir');
     });
 
     afterEach(async () => {
@@ -795,7 +793,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.cleanup();
 
       expect(utils.statPath).not.toHaveBeenCalled();
-      expect(semver.lt).not.toHaveBeenCalled();
+      expect(utils.removeDir).toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
@@ -811,7 +809,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.cleanup(true);
 
       expect(utils.statPath).toHaveBeenCalledTimes(1);
-      expect(semver.lt).not.toHaveBeenCalled();
+      expect(utils.removeDir).toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
@@ -828,7 +826,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.cleanup(true);
 
       expect(utils.statPath).toHaveBeenCalledTimes(1);
-      expect(semver.lt).toHaveBeenCalled(); // not testing on how many, because it would change with nodejs version
+      expect(utils.removeDir).toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
@@ -845,7 +843,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup();
       expect(utils.statPath).not.toHaveBeenCalled();
-      expect(semver.lt).not.toHaveBeenCalled();
+      expect(utils.removeDir).toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
@@ -863,7 +861,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup({ doCleanup: true, force: true });
       expect(utils.statPath).toHaveBeenCalledTimes(1);
-      expect(semver.lt).not.toHaveBeenCalled();
+      expect(utils.removeDir).toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
@@ -882,7 +880,7 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop({ doCleanup: false });
       await mongoServer.cleanup({ doCleanup: true, force: true });
       expect(utils.statPath).toHaveBeenCalledTimes(1);
-      expect(semver.lt).toHaveBeenCalled(); // not testing on how many, because it would change with nodejs version
+      expect(utils.removeDir).toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();

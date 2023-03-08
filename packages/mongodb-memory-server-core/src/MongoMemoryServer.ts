@@ -18,7 +18,6 @@ import debug from 'debug';
 import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
 import { MongoClient } from 'mongodb';
-import { lt } from 'semver';
 import { EnsureInstanceError, StateError } from './util/errors';
 import * as os from 'os';
 
@@ -611,13 +610,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       } else {
         assertion(res.isDirectory(), new Error('Defined dbPath is not an directory'));
 
-        if (lt(process.version, '14.14.0')) {
-          // this has to be used for 12.10 - 14.13 (inclusive) because ".rm" did not exist yet
-          await fspromises.rmdir(dbPath, { recursive: true, maxRetries: 1 });
-        } else {
-          // this has to be used for 14.14+ (inclusive) because ".rmdir" and "recursive" got deprecated (DEP0147)
-          await fspromises.rm(dbPath, { recursive: true, maxRetries: 1 });
-        }
+        await removeDir(dbPath);
       }
     }
 
