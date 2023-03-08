@@ -35,7 +35,7 @@
     "@types/find-cache-dir": "^3.2.1",
     "@types/semver": "^7.3.13",
     "@types/tar-stream": "^2.2.2",
-    "@types/uuid": "^8.3.4",
+    "@types/uuid": "^9.0.1",
     "@types/yauzl": "^2.10.0",
     "@types/yazl": "^2.4.2",
     "rimraf": "^3.0.2",
