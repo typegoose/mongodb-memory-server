@@ -1,7 +1,6 @@
 import * as binary from '../DryMongoBinary';
 import { DryMongoBinary } from '../DryMongoBinary';
 import * as path from 'path';
-import * as tmp from 'tmp';
 import { constants, promises as fspromises } from 'fs';
 import { DEFAULT_VERSION, envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
@@ -9,8 +8,6 @@ import * as getOs from '../getos';
 import { LinuxOS, OtherOS } from '../getos';
 import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
-
-tmp.setGracefulCleanup();
 
 describe('DryBinary', () => {
   it('should combine options with base and binary', () => {
@@ -49,9 +46,9 @@ describe('DryBinary', () => {
 
   describe('generatePaths', () => {
     /** Used for all files */
-    let tmpDir: tmp.DirResult;
+    let tmpDir: string;
     /** Used for non "find-cache-dir" */
-    let tmpDir2: tmp.DirResult;
+    let tmpDir2: string;
     const cwdBefore = process.cwd();
     const version = '1.1.1';
     let opts: binary.DryMongoBinaryOptions & binary.DryMongoBinaryNameOptions;
@@ -59,33 +56,33 @@ describe('DryBinary', () => {
     beforeAll(async () => {
       delete process.env[envName(ResolveConfigVariables.DOWNLOAD_DIR)]; // i dont know where this comes from, but without it, this property exists
       process.env['INIT_CWD'] = undefined; // removing this, because it would mess with stuff - but still should be used when available (postinstall)
-      tmpDir = tmp.dirSync({ prefix: 'mongo-mem-drybinGP-', unsafeCleanup: true });
-      tmpDir2 = tmp.dirSync({ prefix: 'mongo-mem-drybinGP-', unsafeCleanup: true });
+      tmpDir = await utils.createTmpDir('mongo-mem-drybinGP-');
+      tmpDir2 = await utils.createTmpDir('mongo-mem-drybinGP-');
       jest
         .spyOn(
           binary.DryMongoBinary,
           // @ts-expect-error expected, because function "homedir" is private
           'homedir'
         )
-        .mockReturnValue(path.resolve(tmpDir.name, 'homedir') as any); // casting is needed, since around "@types/jest@28.1.3~4" private values do not seem to be exposed anymore
+        .mockReturnValue(path.resolve(tmpDir, 'homedir') as any); // casting is needed, since around "@types/jest@28.1.3~4" private values do not seem to be exposed anymore
 
       // Create all directories
       {
-        await utils.mkdir(path.resolve(tmpDir.name, 'node_modules/mongodb-memory-server')); // mock being in an postinstall directory path
-        await utils.mkdir(path.resolve(tmpDir.name, 'node_modules/.cache')); // mock having an local modules cache
-        await utils.mkdir(path.resolve(tmpDir.name, 'homedir/.cache/mongodb-binaries')); // mock having an "legacy" global directory
-        await fspromises.writeFile(path.resolve(tmpDir.name, 'package.json'), '');
+        await utils.mkdir(path.resolve(tmpDir, 'node_modules/mongodb-memory-server')); // mock being in an postinstall directory path
+        await utils.mkdir(path.resolve(tmpDir, 'node_modules/.cache')); // mock having an local modules cache
+        await utils.mkdir(path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries')); // mock having an "legacy" global directory
+        await fspromises.writeFile(path.resolve(tmpDir, 'package.json'), '');
       }
     });
-    afterAll(() => {
-      tmpDir.removeCallback();
-      tmpDir2.removeCallback();
+    afterAll(async () => {
+      await utils.removeDir(tmpDir);
+      await utils.removeDir(tmpDir2);
       process.chdir(cwdBefore);
     });
 
     beforeEach(async () => {
       // execute this before each test, to always have the correct cwd
-      process.chdir(path.resolve(tmpDir.name));
+      process.chdir(path.resolve(tmpDir));
       opts = await binary.DryMongoBinary.generateOptions({ version });
       delete opts.downloadDir; // delete, because these tests are about "generatePaths", which will prioritise "opts.downloadDir" over env
       binaryName = await binary.DryMongoBinary.getBinaryName(opts);
@@ -98,33 +95,25 @@ describe('DryBinary', () => {
       const returnValue = await binary.DryMongoBinary.generatePaths(opts);
       expect(returnValue).toStrictEqual({
         resolveConfig: '', // empty because not having an extra config value
-        relative: path.resolve(tmpDir.name, 'mongodb-binaries', binaryName),
-        legacyHomeCache: path.resolve(tmpDir.name, 'homedir/.cache/mongodb-binaries', binaryName),
-        modulesCache: path.resolve(
-          tmpDir.name,
-          'node_modules/.cache/mongodb-memory-server',
-          binaryName
-        ),
+        relative: path.resolve(tmpDir, 'mongodb-binaries', binaryName),
+        legacyHomeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
+        modulesCache: path.resolve(tmpDir, 'node_modules/.cache/mongodb-memory-server', binaryName),
       } as binary.DryMongoBinaryPaths);
     });
 
     it('should have 3 complete paths while being in postinstall and not having a config', async () => {
-      process.chdir(path.resolve(tmpDir.name, 'node_modules/mongodb-memory-server'));
+      process.chdir(path.resolve(tmpDir, 'node_modules/mongodb-memory-server'));
       const returnValue = await binary.DryMongoBinary.generatePaths(opts);
       expect(returnValue).toStrictEqual({
         resolveConfig: '', // empty because not having an extra config value
         relative: path.resolve(
-          tmpDir.name,
+          tmpDir,
           'node_modules/mongodb-memory-server',
           'mongodb-binaries',
           binaryName
         ),
-        legacyHomeCache: path.resolve(tmpDir.name, 'homedir/.cache/mongodb-binaries', binaryName),
-        modulesCache: path.resolve(
-          tmpDir.name,
-          'node_modules/.cache/mongodb-memory-server',
-          binaryName
-        ),
+        legacyHomeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
+        modulesCache: path.resolve(tmpDir, 'node_modules/.cache/mongodb-memory-server', binaryName),
       } as binary.DryMongoBinaryPaths);
     });
 
@@ -134,24 +123,20 @@ describe('DryBinary', () => {
       const returnValue = await binary.DryMongoBinary.generatePaths(opts);
       expect(returnValue).toStrictEqual({
         resolveConfig: path.resolve('/some/custom/path', binaryName),
-        relative: path.resolve(tmpDir.name, 'mongodb-binaries', binaryName),
-        legacyHomeCache: path.resolve(tmpDir.name, 'homedir/.cache/mongodb-binaries', binaryName),
-        modulesCache: path.resolve(
-          tmpDir.name,
-          'node_modules/.cache/mongodb-memory-server',
-          binaryName
-        ),
+        relative: path.resolve(tmpDir, 'mongodb-binaries', binaryName),
+        legacyHomeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
+        modulesCache: path.resolve(tmpDir, 'node_modules/.cache/mongodb-memory-server', binaryName),
       } as binary.DryMongoBinaryPaths);
     });
 
     it('should have 2 complete paths while not being in postinstall and not having a config and not being in an project', async () => {
-      const customPath = path.resolve(tmpDir2.name);
+      const customPath = path.resolve(tmpDir2);
       process.chdir(customPath);
       const returnValue = await binary.DryMongoBinary.generatePaths(opts);
       expect(returnValue).toStrictEqual({
         resolveConfig: '', // empty because not having an extra config value
-        relative: path.resolve(tmpDir2.name, 'mongodb-binaries', binaryName),
-        legacyHomeCache: path.resolve(tmpDir.name, 'homedir/.cache/mongodb-binaries', binaryName),
+        relative: path.resolve(tmpDir2, 'mongodb-binaries', binaryName),
+        legacyHomeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
         modulesCache: '', // because not being in an project
       } as binary.DryMongoBinaryPaths);
     });

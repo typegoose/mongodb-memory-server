@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MongoClient, MongoServerError } from 'mongodb';
-import * as tmp from 'tmp';
 import MongoMemoryServer, {
   CreateUser,
   MongoInstanceData,
@@ -15,7 +14,6 @@ import { assertIsError } from './testUtils/test_utils';
 import { promises as fspromises } from 'fs';
 import * as path from 'path';
 
-tmp.setGracefulCleanup();
 jest.setTimeout(100000); // 10s
 
 afterEach(() => {
@@ -770,7 +768,7 @@ describe('MongoMemoryServer', () => {
 
   describe('cleanup()', () => {
     /** Cleanup the created tmp-dir, even if the cleanup test tested to not clean it up */
-    let tmpdir: tmp.DirResult | undefined;
+    let tmpdir: string | undefined;
 
     // "beforeAll" dosnt work here, thanks to the top-level "afterAll" hook
     beforeEach(() => {
@@ -779,9 +777,9 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(semver.default, 'lt'); // it needs to be ".default" otherwise "lt" is only an getter
     });
 
-    afterEach(() => {
+    afterEach(async () => {
       if (!utils.isNullOrUndefined(tmpdir)) {
-        tmpdir.removeCallback();
+        await utils.removeDir(tmpdir);
 
         tmpdir = undefined; // reset, just to be sure its clean
       }
@@ -820,8 +818,8 @@ describe('MongoMemoryServer', () => {
     });
 
     it('should properly cleanup with force (without tmpDir) (old)', async () => {
-      const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-cleanup-', unsafeCleanup: true });
-      const mongoServer = await MongoMemoryServer.create({ instance: { dbPath: tmpDir.name } });
+      const tmpDir = await utils.createTmpDir('mongo-mem-cleanup-');
+      const mongoServer = await MongoMemoryServer.create({ instance: { dbPath: tmpDir } });
       const dbPath = mongoServer.instanceInfo!.dbPath;
 
       tmpdir = mongoServer.instanceInfo?.tmpDir;
@@ -873,8 +871,8 @@ describe('MongoMemoryServer', () => {
     });
 
     it('should properly cleanup with force (without tmpDir) (new)', async () => {
-      const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-cleanup-', unsafeCleanup: true });
-      const mongoServer = await MongoMemoryServer.create({ instance: { dbPath: tmpDir.name } });
+      const tmpDir = await utils.createTmpDir('mongo-mem-cleanup-');
+      const mongoServer = await MongoMemoryServer.create({ instance: { dbPath: tmpDir } });
       const dbPath = mongoServer.instanceInfo!.dbPath;
 
       const cleanupSpy = jest.spyOn(mongoServer, 'cleanup');
@@ -926,10 +924,10 @@ describe('MongoMemoryServer', () => {
 
     it('should resolve "isNew" to "true" and set "createAuth" to "true" when dbPath is set, but empty', async () => {
       const readdirSpy = jest.spyOn(fspromises, 'readdir');
-      const tmpDbPath = tmp.dirSync({ prefix: 'mongo-mem-getStartOptions1-', unsafeCleanup: true });
+      const tmpDbPath = await utils.createTmpDir('mongo-mem-getStartOptions1-');
 
       const mongoServer = new MongoMemoryServer({
-        instance: { dbPath: tmpDbPath.name },
+        instance: { dbPath: tmpDbPath },
         auth: {},
       });
 
@@ -942,22 +940,22 @@ describe('MongoMemoryServer', () => {
         new Error('Expected "options.data.dbPath" to be defined')
       );
       expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
-      expect(options.data.dbPath).toEqual(tmpDbPath.name);
+      expect(options.data.dbPath).toEqual(tmpDbPath);
       expect(readdirSpy).toHaveBeenCalledTimes(1);
       expect(options.createAuth).toEqual(true);
 
-      tmpDbPath.removeCallback();
+      await utils.removeDir(tmpDbPath);
     });
 
     it('should resolve "isNew" to "false" and set "createAuth" to "false" when dbPath is set, but not empty', async () => {
       const readdirSpy = jest.spyOn(fspromises, 'readdir');
-      const tmpDbPath = tmp.dirSync({ prefix: 'mongo-mem-getStartOptions1-', unsafeCleanup: true });
+      const tmpDbPath = await utils.createTmpDir('mongo-mem-getStartOptions2-');
 
       // create dummy file, to make the directory non-empty
-      await fspromises.writeFile(path.resolve(tmpDbPath.name, 'testfile'), '');
+      await fspromises.writeFile(path.resolve(tmpDbPath, 'testfile'), '');
 
       const mongoServer = new MongoMemoryServer({
-        instance: { dbPath: tmpDbPath.name },
+        instance: { dbPath: tmpDbPath },
         auth: {},
       });
 
@@ -970,11 +968,11 @@ describe('MongoMemoryServer', () => {
         new Error('Expected "options.data.dbPath" to be defined')
       );
       expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
-      expect(options.data.dbPath).toEqual(tmpDbPath.name);
+      expect(options.data.dbPath).toEqual(tmpDbPath);
       expect(readdirSpy).toHaveBeenCalledTimes(1);
       expect(options.createAuth).toEqual(false);
 
-      tmpDbPath.removeCallback();
+      await utils.removeDir(tmpDbPath);
     });
 
     it('should generate a port when no suggestion is defined', async () => {
@@ -1027,17 +1025,17 @@ describe('MongoMemoryServer', () => {
   });
 
   it('"getDbPath" should return the dbPath', async () => {
-    const tmpDir = tmp.dirSync({ prefix: 'mongo-mem-getDbPath-', unsafeCleanup: true });
+    const tmpDir = await utils.createTmpDir('mongo-mem-getDbPath-');
     const mongoServer = new MongoMemoryServer({
-      instance: { dbPath: tmpDir.name },
+      instance: { dbPath: tmpDir },
     });
 
     await mongoServer.start();
 
-    expect(mongoServer.instanceInfo!.dbPath).toEqual(tmpDir.name);
+    expect(mongoServer.instanceInfo!.dbPath).toEqual(tmpDir);
 
     await mongoServer.stop();
-    tmpDir.removeCallback();
+    await utils.removeDir(tmpDir);
   });
 
   it('"state" should return correct state', () => {

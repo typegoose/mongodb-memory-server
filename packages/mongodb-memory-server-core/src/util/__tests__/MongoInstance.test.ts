@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import * as tmp from 'tmp';
 import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
@@ -13,15 +12,14 @@ import {
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 jest.setTimeout(100000); // 10s
-tmp.setGracefulCleanup();
 
-let tmpDir: tmp.DirResult;
-beforeEach(() => {
-  tmpDir = tmp.dirSync({ prefix: 'mongo-mem-instance-', unsafeCleanup: true });
+let tmpDir: string;
+beforeEach(async () => {
+  tmpDir = await dbUtil.createTmpDir('mongo-mem-instance-');
 });
 
-afterEach(() => {
-  tmpDir.removeCallback();
+afterEach(async () => {
+  await dbUtil.removeDir(tmpDir);
   jest.restoreAllMocks();
 });
 
@@ -41,7 +39,7 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27333,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           storageEngine: 'ephemeralForTest',
         },
       });
@@ -49,7 +47,7 @@ describe('MongodbInstance', () => {
         '--port',
         '27333',
         '--dbpath',
-        tmpDir.name,
+        tmpDir,
         '--storageEngine',
         'ephemeralForTest',
         '--noauth',
@@ -60,7 +58,7 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27555,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           replSet: 'testset',
         },
       });
@@ -68,7 +66,7 @@ describe('MongodbInstance', () => {
         '--port',
         '27555',
         '--dbpath',
-        tmpDir.name,
+        tmpDir,
         '--replSet',
         'testset',
         '--noauth',
@@ -79,17 +77,11 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27555,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           auth: true,
         },
       });
-      expect(inst.prepareCommandArgs()).toEqual([
-        '--port',
-        '27555',
-        '--dbpath',
-        tmpDir.name,
-        '--auth',
-      ]);
+      expect(inst.prepareCommandArgs()).toEqual(['--port', '27555', '--dbpath', tmpDir, '--auth']);
     });
 
     it('should be able to pass arbitrary args', () => {
@@ -97,19 +89,19 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27555,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           args,
         },
       });
       expect(inst.prepareCommandArgs()).toEqual(
-        ['--port', '27555', '--dbpath', tmpDir.name, '--noauth'].concat(args)
+        ['--port', '27555', '--dbpath', tmpDir, '--noauth'].concat(args)
       );
     });
 
     it('should throw an error if no port is provided', () => {
       const inst = new MongodbInstance({
         instance: {
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
         },
       });
       try {
@@ -142,7 +134,7 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27555,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           auth: true,
           replSet: replsetName,
           keyfileLocation: keyfileLocation,
@@ -152,7 +144,7 @@ describe('MongodbInstance', () => {
         '--port',
         '27555',
         '--dbpath',
-        tmpDir.name,
+        tmpDir,
         '--replSet',
         replsetName,
         '--auth',
@@ -165,7 +157,7 @@ describe('MongodbInstance', () => {
   it('should start instance on port specific port', async () => {
     const gotPort = await getPort({ port: 27333 });
     const mongod = await MongodbInstance.create({
-      instance: { port: gotPort, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
     });
 
@@ -177,13 +169,13 @@ describe('MongodbInstance', () => {
   it('should throw error if port is busy', async () => {
     const gotPort = await getPort({ port: 27444 });
     const mongod = await MongodbInstance.create({
-      instance: { port: gotPort, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
     });
 
     try {
       await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version },
       });
 
@@ -200,7 +192,7 @@ describe('MongodbInstance', () => {
   it('should wait until childprocess and killerprocess are killed', async () => {
     const gotPort = await getPort({ port: 27445 });
     const mongod: MongodbInstance = await MongodbInstance.create({
-      instance: { port: gotPort, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
     });
     const pid: any = mongod.mongodProcess!.pid;
@@ -219,7 +211,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 4.0', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.0.28' }, // explicit version instead of default to not mess it up later
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
@@ -229,7 +221,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 4.2', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.2.18' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
@@ -239,7 +231,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 4.4', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.4.13' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
@@ -249,7 +241,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 5.0', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '5.0.13' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
@@ -259,7 +251,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 6.0', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '6.0.0' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);

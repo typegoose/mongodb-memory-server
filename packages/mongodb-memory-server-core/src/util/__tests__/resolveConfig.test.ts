@@ -1,15 +1,12 @@
 import { promises as fspromises } from 'fs';
-import * as tmp from 'tmp';
 import resolveConfig, {
   envToBool,
   findPackageJson,
   processConfigOption,
   ResolveConfigVariables,
 } from '../resolveConfig';
-import { assertion, isNullOrUndefined } from '../utils';
+import * as utils from '../utils';
 import camelCase from 'camelcase';
-
-tmp.setGracefulCleanup();
 
 const outerPackageJson = {
   config: {
@@ -30,7 +27,7 @@ const innerPackageJson = {
 
 describe('resolveConfig', () => {
   const originalDir = process.cwd();
-  let tmpObj: tmp.DirResult;
+  let tmpDir: string;
 
   afterEach(() => {
     jest.restoreAllMocks();
@@ -45,8 +42,8 @@ describe('resolveConfig', () => {
       //     |   +-- package.json
       //     +-- package.json
 
-      tmpObj = tmp.dirSync({ unsafeCleanup: true });
-      const tmpName = tmpObj.name;
+      tmpDir = await utils.createTmpDir('mongo-mem-resolve');
+      const tmpName = tmpDir;
 
       await fspromises.mkdir(`${tmpName}/project`);
       await fspromises.mkdir(`${tmpName}/project/subproject`);
@@ -64,34 +61,34 @@ describe('resolveConfig', () => {
       ]);
     });
 
-    afterAll(() => {
+    afterAll(async () => {
       process.chdir(originalDir);
-      tmpObj.removeCallback();
+      await utils.removeDir(tmpDir);
     });
 
     test('in project', () => {
       // expect to get the outer package.json
-      process.chdir(`${tmpObj.name}/project`);
+      process.chdir(`${tmpDir}/project`);
       const out = findPackageJson();
-      assertion(!isNullOrUndefined(out));
+      utils.assertion(!utils.isNullOrUndefined(out));
       expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('3.0.0');
       expect(out.config.inner).toBe(false);
     });
 
     test('in subproject', () => {
       // expect to get the inner package.json
-      process.chdir(`${tmpObj.name}/project/subproject`);
+      process.chdir(`${tmpDir}/project/subproject`);
       const out = findPackageJson();
-      assertion(!isNullOrUndefined(out));
+      utils.assertion(!utils.isNullOrUndefined(out));
       expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('4.0.0');
       expect(out.config.inner).toBe(true);
     });
 
     test('with explicit directory in reInitializePackageJson', () => {
       // expect to get the inner package.json
-      process.chdir(`${tmpObj.name}/project`);
-      const out = findPackageJson(`${tmpObj.name}/project/subproject`);
-      assertion(!isNullOrUndefined(out));
+      process.chdir(`${tmpDir}/project`);
+      const out = findPackageJson(`${tmpDir}/project/subproject`);
+      utils.assertion(!utils.isNullOrUndefined(out));
       expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('4.0.0');
       expect(out.config.inner).toBe(true);
     });
