@@ -42,7 +42,6 @@
     "yazl": "^2.5.1"
   },
   "dependencies": {
-    "@types/tmp": "^0.2.3",
     "async-mutex": "^0.3.2",
     "camelcase": "^6.3.0",
     "debug": "^4.3.4",
@@ -54,7 +53,6 @@
     "new-find-package-json": "^2.0.0",
     "semver": "^7.3.8",
     "tar-stream": "^2.1.4",
-    "tmp": "^0.2.1",
     "tslib": "^2.4.1",
     "uuid": "^9.0.0",
     "yauzl": "^2.10.0"
