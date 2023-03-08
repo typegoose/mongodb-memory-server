@@ -4,11 +4,13 @@ import {
   assertion,
   authDefault,
   Cleanup,
+  createTmpDir,
   ensureAsync,
   generateDbName,
   getHost,
   isNullOrUndefined,
   ManagerAdvanced,
+  removeDir,
   statPath,
   uriTemplate,
 } from './util/utils';
@@ -29,13 +31,10 @@ import {
   StateError,
   WaitForPrimaryTimeoutError,
 } from './util/errors';
-import * as tmp from 'tmp';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
-
-tmp.setGracefulCleanup();
 
 // "setImmediate" is used to ensure the functions are async, otherwise the process might evaluate the one function before other async functions (like "start")
 // and so skip to next state check or return before actually ready
@@ -162,7 +161,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   /** Options for the Replset itself and defaults for instances */
   protected _replSetOpts!: Required<ReplSetOpts>;
   /** TMPDIR for the keyfile, when auth is used */
-  protected _keyfiletmp?: tmp.DirResult;
+  protected _keyfiletmp?: string;
 
   protected _state: MongoMemoryReplSetStates = MongoMemoryReplSetStates.stopped;
   protected _ranCreateAuth: boolean = false;
@@ -416,7 +415,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
       if (this._ranCreateAuth) {
         log('initAllServers: "_ranCreateAuth" is true, re-using auth');
-        const keyfilepath = resolve((await this.ensureKeyFile()).name, 'keyfile');
+        const keyfilepath = resolve(await this.ensureKeyFile(), 'keyfile');
         for (const server of this.servers) {
           assertion(
             !isNullOrUndefined(server.instanceInfo),
@@ -445,7 +444,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     let keyfilePath: string | undefined = undefined;
 
     if (this.enableAuth()) {
-      keyfilePath = resolve((await this.ensureKeyFile()).name, 'keyfile');
+      keyfilePath = resolve(await this.ensureKeyFile(), 'keyfile');
     }
 
     // Any servers defined within `_instanceOpts` should be started first as
@@ -479,18 +478,14 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
    * Ensure "_keyfiletmp" is defined
    * @returns the ensured "_keyfiletmp" value
    */
-  protected async ensureKeyFile(): Promise<tmp.DirResult> {
+  protected async ensureKeyFile(): Promise<string> {
     log('ensureKeyFile');
 
     if (isNullOrUndefined(this._keyfiletmp)) {
-      this._keyfiletmp = tmp.dirSync({
-        mode: 0o766,
-        prefix: 'mongo-mem-keyfile-',
-        unsafeCleanup: true,
-      });
+      this._keyfiletmp = await createTmpDir('mongo-mem-keyfile-');
     }
 
-    const keyfilepath = resolve(this._keyfiletmp.name, 'keyfile');
+    const keyfilepath = resolve(this._keyfiletmp, 'keyfile');
 
     // if path does not exist or have no access, create it (or fail)
     if (!(await statPath(keyfilepath))) {
@@ -499,7 +494,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       assertion(typeof this._replSetOpts.auth === 'object', new AuthNotObjectError());
 
       await fs.writeFile(
-        resolve(this._keyfiletmp.name, 'keyfile'),
+        resolve(this._keyfiletmp, 'keyfile'),
         this._replSetOpts.auth.keyfileContent ?? '0123456789',
         { mode: 0o700 } // this is because otherwise mongodb errors with "permissions are too open" on unix systems
       );
@@ -617,7 +612,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     // cleanup the keyfile tmpdir
     if (!isNullOrUndefined(this._keyfiletmp)) {
-      this._keyfiletmp.removeCallback();
+      await removeDir(this._keyfiletmp);
       this._keyfiletmp = undefined;
     }
 
