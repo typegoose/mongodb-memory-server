@@ -360,7 +360,7 @@ describe('MongodbInstance', () => {
         expect(event.message).toMatchSnapshot();
       });
 
-      it('should emit "instanceError" with non-0 or non-12 code', () => {
+      it('should emit "instanceError" with non-0 or signal', () => {
         // test code non-0
         {
           events.clear();

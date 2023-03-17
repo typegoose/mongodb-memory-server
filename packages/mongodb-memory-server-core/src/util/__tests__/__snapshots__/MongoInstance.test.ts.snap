@@ -22,9 +22,9 @@ exports[`MongodbInstance test events closeHandler() should emit "instanceError" 
 The Process Exited with SIGILL, which mean illegal instruction, which is commonly thrown in mongodb 5.0+ when not having AVX available on the CPU"
 `;
 
-exports[`MongodbInstance test events closeHandler() should emit "instanceError" with non-0 or non-12 code 1`] = `"Instance closed unexpectedly with code \\"1\\" and signal \\"null\\""`;
+exports[`MongodbInstance test events closeHandler() should emit "instanceError" with non-0 or signal 1`] = `"Instance closed unexpectedly with code \\"1\\" and signal \\"null\\""`;
 
-exports[`MongodbInstance test events closeHandler() should emit "instanceError" with non-0 or non-12 code 2`] = `"Instance closed unexpectedly with code \\"null\\" and signal \\"SIG\\""`;
+exports[`MongodbInstance test events closeHandler() should emit "instanceError" with non-0 or signal 2`] = `"Instance closed unexpectedly with code \\"null\\" and signal \\"SIG\\""`;
 
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "excepetion in initAndListen" is thrown DBException in initAndListen 1`] = `
 "Instance Failed to start with \\"DBException in initAndListen\\". Original Error:
