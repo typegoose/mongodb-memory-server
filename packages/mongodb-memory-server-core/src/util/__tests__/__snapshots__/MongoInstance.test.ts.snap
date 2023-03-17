@@ -10,6 +10,11 @@ exports[`MongodbInstance test events "start" should emit a "instanceError" when 
 
 exports[`MongodbInstance test events checkErrorInLine() should emit "instanceError" when shared libraries fail to load 1`] = `"Instance failed to start because a library is missing or cannot be opened: \\"libcrypto.so.1.1\\""`;
 
+exports[`MongodbInstance test events closeHandler() "closeHandler" should emit "instanceError" with vc_redist helper message on windows on high exit code 1`] = `
+"Instance closed unexpectedly with code \\"3221225785\\" and signal \\"null\\"
+Exit Code is large, commonly meaning that vc_redist is not installed, the latest vc_redist can be found at https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170"
+`;
+
 exports[`MongodbInstance test events closeHandler() should emit "instanceClosed" 1`] = `"Instance closed unexpectedly with code \\"null\\" and signal \\"SIG\\""`;
 
 exports[`MongodbInstance test events closeHandler() should emit "instanceError" with extra information on "SIGILL" 1`] = `

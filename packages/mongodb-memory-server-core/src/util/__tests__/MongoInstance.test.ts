@@ -389,6 +389,22 @@ describe('MongodbInstance', () => {
           expect(event.message).toMatchSnapshot();
         }
       });
+
+      it('"closeHandler" should emit "instanceError" with vc_redist helper message on windows on high exit code', () => {
+        events.clear();
+        Object.defineProperty(process, 'platform', {
+          value: 'win32',
+        });
+
+        mongod.closeHandler(3221225785, null);
+
+        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([3221225785, null]);
+
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+        expect(event).toBeInstanceOf(UnexpectedCloseError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toMatchSnapshot();
+      });
     });
 
     describe('stdoutHandler()', () => {

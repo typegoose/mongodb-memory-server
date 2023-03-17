@@ -183,6 +183,11 @@ export class UnexpectedCloseError extends Error {
       this.message +=
         '\nThe Process Exited with SIGILL, which mean illegal instruction, which is commonly thrown in mongodb 5.0+ when not having AVX available on the CPU';
     }
+
+    if (process.platform === 'win32' && (code ?? 0) > 1000000000) {
+      this.message +=
+        '\nExit Code is large, commonly meaning that vc_redist is not installed, the latest vc_redist can be found at https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170';
+    }
   }
 }
 
