@@ -1,3 +1,11 @@
+## [8.12.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.12.0...v8.12.1) (2023-03-17)
+
+
+### Fixes
+
+* **errors:** add helper message if exit code is large on windows for "UnexpectedCloseError" ([d066643](https://github.com/nodkz/mongodb-memory-server/commit/d066643d93fed6e2bd2b5f744891130bf2185b90)), closes [#748](https://github.com/nodkz/mongodb-memory-server/issues/748)
+* **MongoInstance::closeHandler:** actually dont error with code 12 on windows ([0668c35](https://github.com/nodkz/mongodb-memory-server/commit/0668c355cf6bc01525a11727633b13716c5af712))
+
 ## [8.12.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.5...v8.12.0) (2023-03-08)
 
 
