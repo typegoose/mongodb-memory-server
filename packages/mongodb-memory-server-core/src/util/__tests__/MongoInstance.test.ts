@@ -390,6 +390,30 @@ describe('MongodbInstance', () => {
         }
       });
 
+      it('should not emit "instanceError" with 0 or 12 exit code on windows', () => {
+        Object.defineProperty(process, 'platform', {
+          value: 'win32',
+        });
+
+        // test code 0
+        {
+          events.clear();
+          mongod.closeHandler(0, null);
+
+          expect(events.size).toEqual(1);
+          expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([0, null]);
+        }
+
+        // test code 12
+        {
+          events.clear();
+          mongod.closeHandler(12, null);
+
+          expect(events.size).toEqual(1);
+          expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([12, null]);
+        }
+      });
+
       it('"closeHandler" should emit "instanceError" with vc_redist helper message on windows on high exit code', () => {
         events.clear();
         Object.defineProperty(process, 'platform', {
