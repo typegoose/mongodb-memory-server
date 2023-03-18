@@ -38,6 +38,7 @@ module.exports = {
       'guides/known-issues',
       'guides/error-warning-details',
       'guides/mongodb-server-versions',
+      'guides/common-issues',
     ],
     Migration: ['guides/migration/migrate8', 'guides/migration/migrate7'],
   },
