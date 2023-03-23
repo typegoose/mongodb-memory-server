@@ -578,7 +578,7 @@ describe('MongoMemoryServer', () => {
       mongoServer.emit(MongoMemoryServerEvents.stateChange, MongoMemoryServerStates.stopped);
 
       expect(ensureInstancePromise).rejects.toThrow(
-        `"ensureInstance" waited for "running" but got an different state: "${MongoMemoryServerStates.stopped}"`
+        `"ensureInstance" waited for "running" but got a different state: "${MongoMemoryServerStates.stopped}"`
       );
     });
 
