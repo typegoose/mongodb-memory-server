@@ -227,7 +227,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   readonly auth?: Required<AutomaticAuth>;
 
   /**
-   * Create an Mongo-Memory-Sever Instance
+   * Create a Mongo-Memory-Sever Instance
    * @param opts Mongo-Memory-Sever Options
    */
   constructor(opts?: MongoMemoryServerOpts) {
@@ -242,7 +242,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   }
 
   /**
-   * Create an Mongo-Memory-Sever Instance that can be awaited
+   * Create a Mongo-Memory-Sever Instance that can be awaited
    * @param opts Mongo-Memory-Sever Options
    */
   static async create(opts?: MongoMemoryServerOpts): Promise<MongoMemoryServer> {
@@ -328,13 +328,13 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   }
 
   /**
-   * Find an new unlocked port
-   * @param port An User defined default port
+   * Find a new unlocked port
+   * @param port A User defined default port
    */
   protected async getNewPort(port?: number): Promise<number> {
     const newPort = await getPort({ port });
 
-    // only log this message if an custom port was provided
+    // only log this message if a custom port was provided
     if (port != newPort && typeof port === 'number') {
       this.debug(`getNewPort: starting with port "${newPort}", since "${port}" was locked`);
     }
@@ -378,12 +378,12 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     };
 
     if (isNullOrUndefined(this._instanceInfo)) {
-      // create an tmpDir instance if no "dbPath" is given
+      // create a tmpDir instance if no "dbPath" is given
       if (!data.dbPath) {
         data.tmpDir = await createTmpDir('mongo-mem-');
         data.dbPath = data.tmpDir;
 
-        isNew = true; // just to ensure "isNew" is "true" because an new temporary directory got created
+        isNew = true; // just to ensure "isNew" is "true" because a new temporary directory got created
       } else {
         this.debug(
           `getStartOptions: Checking if "${data.dbPath}}" (no new tmpDir) already has data`
@@ -404,7 +404,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       enableAuth && // re-use all the checks from "enableAuth"
       !isNullOrUndefined(this.auth) && // needs to be re-checked because typescript complains
       (this.auth.force || isNew) && // check that either "isNew" or "this.auth.force" is "true"
-      !instOpts.replSet; // dont run "createAuth" when its an replset, it will be run by the replset controller
+      !instOpts.replSet; // dont run "createAuth" when its a replset, it will be run by the replset controller
 
     return {
       data: data,
@@ -608,7 +608,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       if (isNullOrUndefined(res)) {
         this.debug(`cleanup: force is true, but path "${dbPath}" dosnt exist anymore`);
       } else {
-        assertion(res.isDirectory(), new Error('Defined dbPath is not an directory'));
+        assertion(res.isDirectory(), new Error('Defined dbPath is not a directory'));
 
         await removeDir(dbPath);
       }
@@ -655,7 +655,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
             if (state != MongoMemoryServerStates.running) {
               rej(
                 new Error(
-                  `"ensureInstance" waited for "running" but got an different state: "${state}"`
+                  `"ensureInstance" waited for "running" but got a different state: "${state}"`
                 )
               );
 
@@ -697,11 +697,11 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Generate the Connection string used by mongodb
-   * @param otherDb add an database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
+   * @param otherDb add a database into the uri (in mongodb its the auth database, in mongoose its the default database for models)
    * @param otherIp change the ip in the generated uri, default will otherwise always be "127.0.0.1"
    * @throws if state is not "running" (or "starting")
-   * @throws if an server doesnt have "instanceInfo.port" defined
-   * @returns an valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
+   * @throws if a server doesnt have "instanceInfo.port" defined
+   * @returns a valid mongo URI, by the definition of https://docs.mongodb.com/manual/reference/connection-string/
    */
   getUri(otherDb?: string, otherIp?: string): string {
     this.debug('getUri:', this.state, otherDb, otherIp);
