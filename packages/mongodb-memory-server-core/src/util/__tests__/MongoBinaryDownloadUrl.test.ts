@@ -1684,7 +1684,7 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getLinuxOSVersionString()', () => {
-    it('should give an warning about "alpine"', () => {
+    it('should give a warning about "alpine"', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => void 0);
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
@@ -1704,7 +1704,7 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(ret).toBe('');
     });
 
-    it('should give an warning about "unknown"', () => {
+    it('should give a warning about "unknown"', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => void 0);
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
@@ -1722,6 +1722,24 @@ describe('MongoBinaryDownloadUrl', () => {
       expect(console.warn).toHaveBeenCalledTimes(2);
       expect(du.getLegacyVersionString).toHaveBeenCalledTimes(1);
       expect(ret).toBe('');
+    });
+
+    it('should give a warning about "arch"', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+      const du = new MongoBinaryDownloadUrl({
+        platform: 'linux',
+        arch: 'x64',
+        version: '3.6.3',
+        os: {
+          os: 'linux',
+          dist: 'archlinux',
+          release: '0',
+          codename: 'archlinux',
+        },
+      });
+      const ret = du.getLinuxOSVersionString(du.os as LinuxOS);
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(ret).toBe('ubuntu1604');
     });
   });
 
