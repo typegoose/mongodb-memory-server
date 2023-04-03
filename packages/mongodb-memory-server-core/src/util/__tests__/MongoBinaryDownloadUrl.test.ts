@@ -659,6 +659,46 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(console.warn).toHaveBeenCalledTimes(1);
         });
 
+        it('for arch for 5.0.0', async () => {
+          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.0',
+            os: {
+              os: 'linux',
+              dist: 'Arch',
+              release: 'rolling',
+              id_like: ['arch'],
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.0.tgz'
+          );
+          expect(console.warn).toHaveBeenCalledTimes(1);
+        });
+
+        it('for arch for 6.0.4', async () => {
+          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.4',
+            os: {
+              os: 'linux',
+              dist: 'Arch',
+              release: 'rolling',
+              id_like: ['arch'],
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
+          );
+          expect(console.warn).toHaveBeenCalledTimes(1);
+        });
+
         it('for manjaro for 4.4.2', async () => {
           jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
