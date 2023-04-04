@@ -1,3 +1,15 @@
+## [8.12.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.12.1...v8.12.2) (2023-04-04)
+
+
+### Style
+
+* fix minor grammar mistakes ([#756](https://github.com/nodkz/mongodb-memory-server/issues/756)) ([661468f](https://github.com/nodkz/mongodb-memory-server/commit/661468fafccc91ec276a342111b370d8e349a911))
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** update mapping for arch to "ubuntu2204" ([20dab94](https://github.com/nodkz/mongodb-memory-server/commit/20dab94e2427771f0d84d58237ba7af083b11d19))
+
 ## [8.12.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.12.0...v8.12.1) (2023-03-17)
 
 
