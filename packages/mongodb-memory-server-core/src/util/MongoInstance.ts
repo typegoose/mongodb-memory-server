@@ -491,6 +491,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       throw new StartBinaryFailedError(path.resolve(mongoBin));
     }
 
+    childProcess.unref();
+
     this.emit(MongoInstanceEvents.instanceLaunched);
 
     return childProcess;
