@@ -686,7 +686,7 @@ describe('MongodbInstance', () => {
   it('should throw error if instance is already started (#662)', async () => {
     const gotPort = await getPort();
     const mongod = await MongodbInstance.create({
-      instance: { port: gotPort, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
     });
 
