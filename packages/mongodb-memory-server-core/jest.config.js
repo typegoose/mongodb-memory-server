@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   preset: 'ts-jest',
   transform: {
     '\\.ts$': [
@@ -6,6 +6,7 @@ module.exports = {
       {
         tsconfig: '<rootDir>/tsconfig.json',
         diagnostics: true,
+        useESM: true,
       },
     ],
   },
