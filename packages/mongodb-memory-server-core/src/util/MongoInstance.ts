@@ -688,9 +688,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     }
 
     if (/\*\*\*aborting after/i.test(line)) {
+      const match = line.match(/\*\*\*aborting after ([^\n]+)/i);
+
+      const extra = match?.[1] ? ` (${match[1]})` : '';
+
       this.emit(
         MongoInstanceEvents.instanceError,
-        new StdoutInstanceError('Mongod internal error')
+        new StdoutInstanceError('Mongod internal error' + extra)
       );
     }
   }
