@@ -18,7 +18,7 @@ import debug from 'debug';
 import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
 import { AddUserOptions, MongoClient } from 'mongodb';
-import { EnsureInstanceError, StateError } from './util/errors';
+import { InstanceInfoError, StateError } from './util/errors';
 import * as os from 'os';
 
 const log = debug('MongoMS:MongoMemoryServer');
@@ -627,7 +627,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
           return this._instanceInfo;
         }
 
-        throw new EnsureInstanceError(true);
+        throw new InstanceInfoError('MongoMemoryServer.ensureInstance (state: running)');
       case MongoMemoryServerStates.new:
       case MongoMemoryServerStates.stopped:
         break;
@@ -670,9 +670,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.debug('ensureInstance: "start()" command was succesfully resolved');
 
     // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
-    if (!this._instanceInfo) {
-      throw new EnsureInstanceError(false);
-    }
+    assertion(
+      !!this._instanceInfo,
+      new InstanceInfoError('MongoMemoryServer.ensureInstance (after starting)')
+    );
 
     return this._instanceInfo;
   }

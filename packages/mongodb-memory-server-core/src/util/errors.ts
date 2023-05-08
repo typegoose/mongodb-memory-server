@@ -52,20 +52,6 @@ export class WaitForPrimaryTimeoutError extends Error {
   }
 }
 
-// REFACTOR: consider merging this with InstanceInfoError
-export class EnsureInstanceError extends Error {
-  constructor(public isRunning: boolean) {
-    super();
-    const baseMesasge = '"ensureInstance" failed, because';
-
-    if (isRunning) {
-      this.message = `${baseMesasge} state was "running" but "instanceInfo" was undefined!`;
-    } else {
-      this.message = `${baseMesasge} "instanceInfo" was undefined after running "start"`;
-    }
-  }
-}
-
 // REFACTOR: merge this error with BinaryNotFoundError
 export class NoSystemBinaryFoundError extends Error {
   constructor(public binaryPath: string) {

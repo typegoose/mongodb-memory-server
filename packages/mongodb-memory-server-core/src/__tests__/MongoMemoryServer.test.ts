@@ -8,7 +8,7 @@ import MongoMemoryServer, {
 } from '../MongoMemoryServer';
 import MongoInstance from '../util/MongoInstance';
 import * as utils from '../util/utils';
-import { EnsureInstanceError, StateError } from '../util/errors';
+import { InstanceInfoError, StateError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
 import { promises as fspromises } from 'fs';
 import * as path from 'path';
@@ -523,8 +523,9 @@ describe('MongoMemoryServer', () => {
         await mongoServer.ensureInstance();
         fail('Expected "ensureInstance" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(EnsureInstanceError);
-        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
+        expect(err).toBeInstanceOf(InstanceInfoError);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
 
       expect(mongoServer.start).toHaveBeenCalledTimes(1);
@@ -549,8 +550,9 @@ describe('MongoMemoryServer', () => {
         await mongoServer.ensureInstance();
         fail('Expected "ensureInstance" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(EnsureInstanceError);
-        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
+        expect(err).toBeInstanceOf(InstanceInfoError);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
     });
 

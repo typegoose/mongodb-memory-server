@@ -14,9 +14,9 @@ This may be because of using a v6.x way of calling functions, look at the follow
 https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
 
-exports[`MongoMemoryServer ensureInstance() should throw an error if "instanceInfo" is undefined but "_state" is "running" 1`] = `"{\\"isRunning\\":true,\\"message\\":\\"\\\\\\"ensureInstance\\\\\\" failed, because state was \\\\\\"running\\\\\\" but \\\\\\"instanceInfo\\\\\\" was undefined!\\"}"`;
+exports[`MongoMemoryServer ensureInstance() should throw an error if "instanceInfo" is undefined but "_state" is "running" 1`] = `"\\"instanceInfo\\" was undefined when expected to be defined! (where: \\"MongoMemoryServer.ensureInstance (state: running)\\")"`;
 
-exports[`MongoMemoryServer ensureInstance() should throw an error if no "instanceInfo" is defined after calling start 1`] = `"{\\"isRunning\\":false,\\"message\\":\\"\\\\\\"ensureInstance\\\\\\" failed, because \\\\\\"instanceInfo\\\\\\" was undefined after running \\\\\\"start\\\\\\"\\"}"`;
+exports[`MongoMemoryServer ensureInstance() should throw an error if no "instanceInfo" is defined after calling start 1`] = `"\\"instanceInfo\\" was undefined when expected to be defined! (where: \\"MongoMemoryServer.ensureInstance (after starting)\\")"`;
 
 exports[`MongoMemoryServer ensureInstance() should throw an error if the given "_state" has no case 1`] = `
 "Incorrect State for operation: \\"not Existing\\", allowed States: \\"[running,new,stopped,starting]\\"

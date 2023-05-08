@@ -68,6 +68,10 @@ Default Timeout: `1000 * 30` (30 seconds)
 
 ## EnsureInstanceError
 
+:::note
+Merged into [`InstanceInfoError`](#instanceinfoerror) in 9.0.0
+:::
+
 Example:
 
 - `${baseMesasge} state was "running" but "instanceInfo" was undefined!`
