@@ -35,7 +35,6 @@
     "@types/find-cache-dir": "^3.2.1",
     "@types/semver": "^7.3.13",
     "@types/tar-stream": "^2.2.2",
-    "@types/uuid": "^9.0.1",
     "@types/yauzl": "^2.10.0",
     "@types/yazl": "^2.4.2",
     "rimraf": "^5.0.0",
@@ -53,7 +52,6 @@
     "new-find-package-json": "^2.0.0",
     "semver": "^7.5.0",
     "tar-stream": "^3.0.0",
-    "uuid": "^9.0.0",
     "yauzl": "^2.10.0"
   },
   "scripts": {
