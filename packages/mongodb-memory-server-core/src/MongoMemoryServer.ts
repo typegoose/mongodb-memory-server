@@ -235,6 +235,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.opts = { ...opts };
 
     if (!isNullOrUndefined(this.opts.auth)) {
+      if (this.opts.instance?.auth === false) {
+        log('opts.instance.auth is false, but opts.auth was defined!');
+      }
+
       // assign defaults
       this.auth = authDefault(this.opts.auth);
     }
