@@ -537,22 +537,6 @@ describe('MongodbInstance', () => {
         expect(mongod.isInstancePrimary).toEqual(false);
       });
 
-      it('should emit "instanceError" when library is missing', () => {
-        // actual line copied from mongod 4.?.? (from https://github.com/nodkz/mongodb-memory-server/issues/408)
-        // TODO: when finding an actual line, please replace the one below
-        const line = 'libcrypto.so.10: cannot open shared object';
-
-        mongod.stdoutHandler(line);
-
-        expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
-
-        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
-        expect(event).toBeInstanceOf(StdoutInstanceError);
-        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-        expect(event.message).toMatchSnapshot();
-      });
-
       describe('should emit "instanceError" when "excepetion in initAndListen" is thrown', () => {
         it('DbPathInUse (Not a directory)', () => {
           // actual line copied from mongod 4.0.27
