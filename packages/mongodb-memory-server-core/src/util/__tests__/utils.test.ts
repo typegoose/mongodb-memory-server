@@ -1,7 +1,6 @@
 import { Stats, promises as fspromises } from 'fs';
 import { ChildProcess } from 'child_process';
 import * as utils from '../utils';
-import * as tmp from 'tmp';
 import { resolve } from 'path';
 import {
   AssertionFallbackError,
@@ -9,8 +8,6 @@ import {
   InsufficientPermissionsError,
 } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
-
-tmp.setGracefulCleanup();
 
 describe('utils', () => {
   describe('uriTemplate', () => {
@@ -151,18 +148,18 @@ describe('utils', () => {
   });
 
   describe('checkBinaryPermissions', () => {
-    let tmpDir: tmp.DirResult;
-    beforeEach(() => {
+    let tmpDir: string;
+    beforeEach(async () => {
       jest.restoreAllMocks();
-      tmpDir = tmp.dirSync({ prefix: 'mongo-mem-utils-', unsafeCleanup: true });
+      tmpDir = await utils.createTmpDir('mongo-mem-utils-');
     });
-    afterEach(() => {
-      tmpDir.removeCallback();
+    afterEach(async () => {
+      await utils.removeDir(tmpDir);
     });
 
     it('should throw nothing', async () => {
       jest.spyOn(fspromises, 'access');
-      const binaryPath = resolve(tmpDir.name, 'noThrow');
+      const binaryPath = resolve(tmpDir, 'noThrow');
 
       await fspromises.writeFile(binaryPath, '', { mode: 0o777 });
 
@@ -185,7 +182,7 @@ describe('utils', () => {
           throw newError;
         }
       });
-      const binaryPath = resolve(tmpDir.name, 'throwInsufficientPermissionsError');
+      const binaryPath = resolve(tmpDir, 'throwInsufficientPermissionsError');
 
       await fspromises.writeFile(binaryPath, '', { mode: 0o600 });
 
@@ -214,7 +211,7 @@ describe('utils', () => {
           throw newError;
         }
       });
-      const binaryPath = resolve(tmpDir.name, 'doesNotExist');
+      const binaryPath = resolve(tmpDir, 'doesNotExist');
 
       try {
         await utils.checkBinaryPermissions(binaryPath);

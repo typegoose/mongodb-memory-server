@@ -8,13 +8,11 @@ import MongoBinaryDownload from '../MongoBinaryDownload';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
 import { envName, ResolveConfigVariables } from '../resolveConfig';
 import * as utils from '../utils';
-import * as tmp from 'tmp';
 import * as path from 'path';
 import * as yazl from 'yazl';
 import { pack } from 'tar-stream';
 import { createGzip } from 'zlib';
 
-tmp.setGracefulCleanup();
 jest.mock('md5-file');
 
 describe('MongoBinaryDownload', () => {
@@ -306,21 +304,18 @@ describe('MongoBinaryDownload', () => {
   });
 
   describe('extract()', () => {
-    let tmpdir: tmp.DirResult;
+    let tmpdir: string;
 
-    beforeEach(() => {
-      tmpdir = tmp.dirSync({
-        prefix: 'mongo-mem-test-extract-',
-        unsafeCleanup: true,
-      });
+    beforeEach(async () => {
+      tmpdir = await utils.createTmpDir('mongo-mem-test-extract-');
     });
-    afterEach(() => {
-      tmpdir.removeCallback();
+    afterEach(async () => {
+      await utils.removeDir(tmpdir);
     });
 
     it('should extract zip archives', async () => {
-      const zipPath = path.join(tmpdir.name, 'archive.zip');
-      const outPath = path.join(tmpdir.name, 'binary.exe');
+      const zipPath = path.join(tmpdir, 'archive.zip');
+      const outPath = path.join(tmpdir, 'binary.exe');
       const options: MongoBinaryOpts = {
         arch: 'x64',
         downloadDir: path.join(outPath, 'downloadDir'),
@@ -369,8 +364,8 @@ describe('MongoBinaryDownload', () => {
     });
 
     it('should extract tar.gz archives', async () => {
-      const tarPath = path.join(tmpdir.name, 'archive.tgz');
-      const outPath = path.join(tmpdir.name, 'binary');
+      const tarPath = path.join(tmpdir, 'archive.tgz');
+      const outPath = path.join(tmpdir, 'binary');
       const options: MongoBinaryOpts = {
         arch: 'x64',
         downloadDir: path.join(outPath, 'downloadDir'),

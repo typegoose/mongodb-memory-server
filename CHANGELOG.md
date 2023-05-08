@@ -1,3 +1,60 @@
+## [8.12.2](https://github.com/nodkz/mongodb-memory-server/compare/v8.12.1...v8.12.2) (2023-04-04)
+
+
+### Style
+
+* fix minor grammar mistakes ([#756](https://github.com/nodkz/mongodb-memory-server/issues/756)) ([661468f](https://github.com/nodkz/mongodb-memory-server/commit/661468fafccc91ec276a342111b370d8e349a911))
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** update mapping for arch to "ubuntu2204" ([20dab94](https://github.com/nodkz/mongodb-memory-server/commit/20dab94e2427771f0d84d58237ba7af083b11d19))
+
+## [8.12.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.12.0...v8.12.1) (2023-03-17)
+
+
+### Fixes
+
+* **errors:** add helper message if exit code is large on windows for "UnexpectedCloseError" ([d066643](https://github.com/nodkz/mongodb-memory-server/commit/d066643d93fed6e2bd2b5f744891130bf2185b90)), closes [#748](https://github.com/nodkz/mongodb-memory-server/issues/748)
+* **MongoInstance::closeHandler:** actually dont error with code 12 on windows ([0668c35](https://github.com/nodkz/mongodb-memory-server/commit/0668c355cf6bc01525a11727633b13716c5af712))
+
+## [8.12.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.5...v8.12.0) (2023-03-08)
+
+
+### Features
+
+* **MongoMemoryReplSet:** remove usage of "tmp" package ([3690a00](https://github.com/nodkz/mongodb-memory-server/commit/3690a00dd32171def601edc28d6debb324e708b2))
+* **MongoMemoryServer:** remove usage of "tmp" package ([6911daf](https://github.com/nodkz/mongodb-memory-server/commit/6911dafe3e52e353306ac78883f88ab16c36f442))
+* **utils:** add function "createTmpDir" and "removeDir" ([62d7876](https://github.com/nodkz/mongodb-memory-server/commit/62d78761134ae53d54e633c346e9d78518525e1d))
+
+
+### Dependencies
+
+* **@types/uuid:** upgrade to version 9.0.1 ([5fb105c](https://github.com/nodkz/mongodb-memory-server/commit/5fb105caf41c454193eda7635b40adc8ffa4e791))
+* **@typescript-eslint/*:** upgrade to version 5.54.1 ([db3d2b5](https://github.com/nodkz/mongodb-memory-server/commit/db3d2b52c7277e4b2cca7092d441cfae6d97a08c))
+* **eslint:** upgrade to version 8.35.0 ([665f90f](https://github.com/nodkz/mongodb-memory-server/commit/665f90f8bde943d00e561021f88a1cb41ed41d0d))
+* **eslint-config-prettier:** upgrade to version 8.7.0 ([7260324](https://github.com/nodkz/mongodb-memory-server/commit/72603240eca01908bf1928f0a3b7084ffb7ccb17))
+* **prettier:** upgrade to version 2.8.4 ([07196a9](https://github.com/nodkz/mongodb-memory-server/commit/07196a99747e7027e818bd8508f5011531216b1f))
+* **tslib:** upgrade to version 2.5.0 ([26166e7](https://github.com/nodkz/mongodb-memory-server/commit/26166e711da9c56a740c54279630785b0e06fc9c))
+* remove "tmp" and "@types/tmp" ([5e718ee](https://github.com/nodkz/mongodb-memory-server/commit/5e718ee2b10c830d3f9b8e29f8cdeb5d1884bc89))
+
+
+### Refactor
+
+* **MongoMemoryServer::cleanup:** use "utils.removeDir" instead of custom ([2f1f2e8](https://github.com/nodkz/mongodb-memory-server/commit/2f1f2e8efd46efd7012d11e0555cc6955dd7495e))
+
+## [8.11.5](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.4...v8.11.5) (2023-02-21)
+
+
+### Style
+
+* **resolveConfig:** dont enable debug mode twice ([6ae0c73](https://github.com/nodkz/mongodb-memory-server/commit/6ae0c73f3d0563716b823780ca5d14fea4c41a04)), closes [#745](https://github.com/nodkz/mongodb-memory-server/issues/745)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** add support for Oracle Linux ([75fa22e](https://github.com/nodkz/mongodb-memory-server/commit/75fa22e9a227d1f82b9014fad535ca31159de00e)), closes [#746](https://github.com/nodkz/mongodb-memory-server/issues/746)
+
 ## [8.11.4](https://github.com/nodkz/mongodb-memory-server/compare/v8.11.3...v8.11.4) (2023-01-23)
 
 

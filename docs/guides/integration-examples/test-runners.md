@@ -7,7 +7,7 @@ This Guide will show how `mongodb-memory-server` can be used with different fram
 
 ## jest
 
-<span class="badge badge--secondary">jest version 28</span>
+<span class="badge badge--secondary">jest version 29</span>
 
 For usage with `jest` it is recommended to use the [`globalSetup`](https://jestjs.io/docs/en/configuration#globalsetup-string) and [`globalTeardown`](https://jestjs.io/docs/en/configuration#globalteardown-string) options
 
@@ -97,6 +97,10 @@ afterAll(async () => {
 :::caution
 It is very important to limit the spawned number of Jest workers on machines that have many cores, because otherwise the tests may run slower than with fewer workers, because the database instance(s) may be hit very hard.  
 Use either [`--maxWorkers 4`](https://jestjs.io/docs/configuration#maxworkers-number--string) or [`--runInBand`](https://jestjs.io/docs/cli#--runinband) to limit the workers.
+:::
+
+:::note
+Keep in mind that jest's global-setup and global-teardown do **not** share a environment with the tests themself, and so require `setupFile` / `setupFilesAfterEnv` to actually connect.
 :::
 
 ## mocha / chai

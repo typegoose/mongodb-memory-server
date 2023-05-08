@@ -8,6 +8,8 @@ import {
   BinaryNotFoundError,
   InsufficientPermissionsError,
 } from './errors';
+import { tmpdir } from 'os';
+import * as path from 'path';
 
 const log = debug('MongoMS:utils');
 
@@ -305,4 +307,52 @@ export async function checkBinaryPermissions(path: string): Promise<void> {
  */
 export async function mkdir(path: string): Promise<void> {
   await fspromises.mkdir(path, { recursive: true });
+}
+
+/**
+ * Create a Temporary directory with prefix, and optionally at "atPath"
+ * @param prefix The prefix to use to create the tmpdir
+ * @param atPath Optionally set a custom path other than "os.tmpdir"
+ * @returns The created Path
+ */
+export async function createTmpDir(prefix: string, atPath?: string): Promise<string> {
+  const tmpPath = atPath ?? tmpdir();
+
+  return fspromises.mkdtemp(path.join(tmpPath, prefix));
+}
+
+// outsourced instead of () or without, because prettier cant decide which it wants
+type tfsPromises = typeof fspromises;
+
+// workaround for already using @types/node 14 (instead of 12)
+interface RmDir {
+  rmdir: tfsPromises['rmdir'];
+}
+
+/**
+ * Removes the given "path", if it is a directory, and does not throw a error if not existing
+ * @param dirPath The Directory Path to delete
+ * @returns "true" if deleted, otherwise "false"
+ */
+export async function removeDir(dirPath: string): Promise<void> {
+  const stat = await statPath(dirPath);
+
+  if (isNullOrUndefined(stat)) {
+    return;
+  }
+
+  if (!stat.isDirectory()) {
+    throw new Error(`Given Path is not a directory! (Path: "${dirPath}")`);
+  }
+
+  if ('rm' in fspromises) {
+    // only since NodeJS 14
+    await fspromises.rm(dirPath, { force: true, recursive: true });
+  } else {
+    // before NodeJS 14
+    // needs the bridge via the interface, because we are using @types/node 14, where this if evaluates to a always "true" in typescript's eyes
+    await (fspromises as RmDir).rmdir(dirPath, {
+      recursive: true,
+    });
+  }
 }

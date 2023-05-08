@@ -1,24 +1,23 @@
 import * as lockFile from '../lockfile';
-import * as tmp from 'tmp';
 import * as path from 'path';
 import { pathExists } from '../utils';
 import { promises as fspromises } from 'fs';
 import { UnknownLockfileStatusError } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
+import * as utils from '../utils';
 
-tmp.setGracefulCleanup();
-let tmpDir: tmp.DirResult;
-beforeAll(() => {
-  tmpDir = tmp.dirSync({ prefix: 'reuse-mongo-mem-', unsafeCleanup: true });
+let tmpDir: string;
+beforeAll(async () => {
+  tmpDir = await utils.createTmpDir('lockfile-mongo-mem-');
 });
 
-afterAll(() => {
-  tmpDir.removeCallback();
+afterAll(async () => {
+  await utils.removeDir(tmpDir);
 });
 
 describe('LockFile', () => {
   it('should successfully acquire and release an lock', async () => {
-    const lockPath = path.resolve(tmpDir.name, 'sucessful.lock');
+    const lockPath = path.resolve(tmpDir, 'sucessful.lock');
     expect(await pathExists(lockPath)).toBeFalsy();
 
     expect(lockFile.LockFile.files.size).toBe(0);
@@ -47,7 +46,7 @@ describe('LockFile', () => {
   it('should successfully acquire lock after another unlocked', async () => {
     // @ts-expect-error Somehow jest dosnt find the method "waitForLock" in types
     jest.spyOn(lockFile.LockFile, 'waitForLock');
-    const lockPath = path.resolve(tmpDir.name, 'sucessful_another.lock');
+    const lockPath = path.resolve(tmpDir, 'sucessful_another.lock');
     expect(await pathExists(lockPath)).toBeFalsy();
 
     expect(lockFile.LockFile.files.size).toBe(0);

@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-core",
-  "version": "8.11.4",
+  "version": "8.12.2",
   "description": "MongoDB Server for testing (core package, without autodownload). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "lib/index",
   "types": "lib/index.d.ts",
@@ -35,14 +35,13 @@
     "@types/find-cache-dir": "^3.2.1",
     "@types/semver": "^7.3.13",
     "@types/tar-stream": "^2.2.2",
-    "@types/uuid": "^9.0.0",
+    "@types/uuid": "^9.0.1",
     "@types/yauzl": "^2.10.0",
     "@types/yazl": "^2.4.2",
     "rimraf": "^4.1.2",
     "yazl": "^2.5.1"
   },
   "dependencies": {
-    "@types/tmp": "^0.2.3",
     "async-mutex": "^0.4.0",
     "camelcase": "^6.3.0",
     "debug": "^4.3.4",
@@ -54,8 +53,6 @@
     "new-find-package-json": "^2.0.0",
     "semver": "^7.3.8",
     "tar-stream": "^3.0.0",
-    "tmp": "^0.2.1",
-    "tslib": "^2.5.0",
     "uuid": "^9.0.0",
     "yauzl": "^2.10.0"
   },

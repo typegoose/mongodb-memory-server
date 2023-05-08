@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import * as tmp from 'tmp';
 import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
@@ -13,15 +12,14 @@ import {
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 jest.setTimeout(100000); // 10s
-tmp.setGracefulCleanup();
 
-let tmpDir: tmp.DirResult;
-beforeEach(() => {
-  tmpDir = tmp.dirSync({ prefix: 'mongo-mem-instance-', unsafeCleanup: true });
+let tmpDir: string;
+beforeEach(async () => {
+  tmpDir = await dbUtil.createTmpDir('mongo-mem-instance-');
 });
 
-afterEach(() => {
-  tmpDir.removeCallback();
+afterEach(async () => {
+  await dbUtil.removeDir(tmpDir);
   jest.restoreAllMocks();
 });
 
@@ -41,7 +39,7 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27333,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           storageEngine: 'ephemeralForTest',
         },
       });
@@ -49,7 +47,7 @@ describe('MongodbInstance', () => {
         '--port',
         '27333',
         '--dbpath',
-        tmpDir.name,
+        tmpDir,
         '--storageEngine',
         'ephemeralForTest',
         '--noauth',
@@ -60,7 +58,7 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27555,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           replSet: 'testset',
         },
       });
@@ -68,7 +66,7 @@ describe('MongodbInstance', () => {
         '--port',
         '27555',
         '--dbpath',
-        tmpDir.name,
+        tmpDir,
         '--replSet',
         'testset',
         '--noauth',
@@ -79,17 +77,11 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27555,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           auth: true,
         },
       });
-      expect(inst.prepareCommandArgs()).toEqual([
-        '--port',
-        '27555',
-        '--dbpath',
-        tmpDir.name,
-        '--auth',
-      ]);
+      expect(inst.prepareCommandArgs()).toEqual(['--port', '27555', '--dbpath', tmpDir, '--auth']);
     });
 
     it('should be able to pass arbitrary args', () => {
@@ -97,19 +89,19 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27555,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           args,
         },
       });
       expect(inst.prepareCommandArgs()).toEqual(
-        ['--port', '27555', '--dbpath', tmpDir.name, '--noauth'].concat(args)
+        ['--port', '27555', '--dbpath', tmpDir, '--noauth'].concat(args)
       );
     });
 
     it('should throw an error if no port is provided', () => {
       const inst = new MongodbInstance({
         instance: {
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
         },
       });
       try {
@@ -142,7 +134,7 @@ describe('MongodbInstance', () => {
       const inst = new MongodbInstance({
         instance: {
           port: 27555,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
           auth: true,
           replSet: replsetName,
           keyfileLocation: keyfileLocation,
@@ -152,7 +144,7 @@ describe('MongodbInstance', () => {
         '--port',
         '27555',
         '--dbpath',
-        tmpDir.name,
+        tmpDir,
         '--replSet',
         replsetName,
         '--auth',
@@ -165,7 +157,7 @@ describe('MongodbInstance', () => {
   it('should start instance on port specific port', async () => {
     const gotPort = await getPort({ port: 27333 });
     const mongod = await MongodbInstance.create({
-      instance: { port: gotPort, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
     });
 
@@ -177,13 +169,13 @@ describe('MongodbInstance', () => {
   it('should throw error if port is busy', async () => {
     const gotPort = await getPort({ port: 27444 });
     const mongod = await MongodbInstance.create({
-      instance: { port: gotPort, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
     });
 
     try {
       await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version },
       });
 
@@ -200,7 +192,7 @@ describe('MongodbInstance', () => {
   it('should wait until childprocess and killerprocess are killed', async () => {
     const gotPort = await getPort({ port: 27445 });
     const mongod: MongodbInstance = await MongodbInstance.create({
-      instance: { port: gotPort, dbPath: tmpDir.name },
+      instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
     });
     const pid: any = mongod.mongodProcess!.pid;
@@ -219,7 +211,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 4.0', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.0.28' }, // explicit version instead of default to not mess it up later
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
@@ -229,7 +221,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 4.2', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.2.18' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
@@ -239,7 +231,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 4.4', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.4.13' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
@@ -249,7 +241,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 5.0', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '5.0.13' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
@@ -259,7 +251,7 @@ describe('MongodbInstance', () => {
     it('should work with mongodb 6.0', async () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir.name },
+        instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '6.0.0' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
@@ -315,79 +307,128 @@ describe('MongodbInstance', () => {
       expect(events.get(MongoInstanceEvents.instanceSTDERR)).toEqual(['hello']);
     });
 
-    it('"closeHandler" should emit "instanceClosed"', () => {
-      // test both code and signal
-      {
-        events.clear();
-        mongod.closeHandler(0, 'SIG');
+    describe('closeHandler()', () => {
+      const origPlatform = process.platform;
+      beforeEach(() => {
+        Object.defineProperty(process, 'platform', {
+          value: origPlatform,
+        });
+      });
 
-        expect(events.size).toEqual(1);
-        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([0, 'SIG']);
-      }
-      // test only code
-      {
-        events.clear();
-        mongod.closeHandler(0, null);
+      it('should emit "instanceClosed"', () => {
+        // test both code and signal
+        {
+          events.clear();
+          mongod.closeHandler(0, 'SIG');
 
-        expect(events.size).toEqual(1);
-        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([0, null]);
-      }
-      // test only Signal
-      {
-        events.clear();
-        mongod.closeHandler(null, 'SIG');
+          expect(events.size).toEqual(1);
+          expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([0, 'SIG']);
+        }
+        // test only code
+        {
+          events.clear();
+          mongod.closeHandler(0, null);
+
+          expect(events.size).toEqual(1);
+          expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([0, null]);
+        }
+        // test only Signal
+        {
+          events.clear();
+          mongod.closeHandler(null, 'SIG');
+
+          expect(events.size).toEqual(2);
+          expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIG']);
+
+          const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+          expect(event).toBeInstanceOf(UnexpectedCloseError);
+          assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+          expect(event.message).toMatchSnapshot();
+        }
+      });
+
+      it('should emit "instanceError" with extra information on "SIGILL"', () => {
+        // test SIGILL
+        mongod.closeHandler(null, 'SIGILL');
 
         expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIG']);
+        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIGILL']);
 
         const event = events.get(MongoInstanceEvents.instanceError)?.[0];
         expect(event).toBeInstanceOf(UnexpectedCloseError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toMatchSnapshot();
-      }
-    });
+      });
 
-    it('"closeHandler" should emit "instanceError" with extra information on "SIGILL"', () => {
-      // test SIGILL
-      mongod.closeHandler(null, 'SIGILL');
+      it('should emit "instanceError" with non-0 or signal', () => {
+        // test code non-0
+        {
+          events.clear();
+          mongod.closeHandler(1, null);
 
-      expect(events.size).toEqual(2);
-      expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIGILL']);
+          expect(events.size).toEqual(2);
+          expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([1, null]);
 
-      const event = events.get(MongoInstanceEvents.instanceError)?.[0];
-      expect(event).toBeInstanceOf(UnexpectedCloseError);
-      assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-      expect(event.message).toMatchSnapshot();
-    });
+          const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+          expect(event).toBeInstanceOf(UnexpectedCloseError);
+          assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+          expect(event.message).toMatchSnapshot();
+        }
 
-    it('"closeHandler" should emit "instanceError" with non-0 or non-12 code', () => {
-      // test code non-0
-      {
+        // test signal
+        {
+          events.clear();
+          mongod.closeHandler(null, 'SIG');
+
+          expect(events.size).toEqual(2);
+          expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIG']);
+
+          const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+          expect(event).toBeInstanceOf(UnexpectedCloseError);
+          assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+          expect(event.message).toMatchSnapshot();
+        }
+      });
+
+      it('should not emit "instanceError" with 0 or 12 exit code on windows', () => {
+        Object.defineProperty(process, 'platform', {
+          value: 'win32',
+        });
+
+        // test code 0
+        {
+          events.clear();
+          mongod.closeHandler(0, null);
+
+          expect(events.size).toEqual(1);
+          expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([0, null]);
+        }
+
+        // test code 12
+        {
+          events.clear();
+          mongod.closeHandler(12, null);
+
+          expect(events.size).toEqual(1);
+          expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([12, null]);
+        }
+      });
+
+      it('"closeHandler" should emit "instanceError" with vc_redist helper message on windows on high exit code', () => {
         events.clear();
-        mongod.closeHandler(1, null);
+        Object.defineProperty(process, 'platform', {
+          value: 'win32',
+        });
 
-        expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([1, null]);
+        mongod.closeHandler(3221225785, null);
+
+        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([3221225785, null]);
 
         const event = events.get(MongoInstanceEvents.instanceError)?.[0];
         expect(event).toBeInstanceOf(UnexpectedCloseError);
         assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
         expect(event.message).toMatchSnapshot();
-      }
-
-      // test signal
-      {
-        events.clear();
-        mongod.closeHandler(null, 'SIG');
-
-        expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceClosed)).toEqual([null, 'SIG']);
-
-        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
-        expect(event).toBeInstanceOf(UnexpectedCloseError);
-        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-        expect(event.message).toMatchSnapshot();
-      }
+      });
     });
 
     describe('stdoutHandler()', () => {

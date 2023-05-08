@@ -1,4 +1,3 @@
-import * as tmp from 'tmp';
 import os from 'os';
 import MongoBinary, { MongoBinaryOpts } from '../MongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
@@ -7,8 +6,6 @@ import * as utils from '../utils';
 import { DryMongoBinary } from '../DryMongoBinary';
 import * as childProcess from 'child_process';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
-
-tmp.setGracefulCleanup();
 
 const mockedPath = '/path/to/binary';
 const mockGetMongodPath = jest.fn().mockResolvedValue(mockedPath);
@@ -22,16 +19,16 @@ jest.mock('../MongoBinaryDownload', () => {
 jest.mock('child_process');
 
 describe('MongoBinary', () => {
-  let tmpDir: tmp.DirResult;
+  let tmpDir: string;
 
-  beforeEach(() => {
-    tmpDir = tmp.dirSync({ prefix: 'mongo-mem-bin-', unsafeCleanup: true });
+  beforeEach(async () => {
+    tmpDir = await utils.createTmpDir('mongo-mem-bin-');
     DryMongoBinary.binaryCache.clear();
   });
 
   // cleanup
-  afterEach(() => {
-    tmpDir.removeCallback();
+  afterEach(async () => {
+    await utils.removeDir(tmpDir);
     jest.restoreAllMocks(); // restore all mocked functions to original
     DryMongoBinary.binaryCache.clear();
     delete process.env[envName(ResolveConfigVariables.RUNTIME_DOWNLOAD)];
@@ -42,7 +39,7 @@ describe('MongoBinary', () => {
       const version = resolveConfig(ResolveConfigVariables.VERSION);
       utils.assertion(typeof version === 'string', new Error('Expected "version" to be an string'));
       const binPath = await MongoBinary.download({
-        downloadDir: tmpDir.name,
+        downloadDir: tmpDir,
         version,
         arch: 'x64',
         platform: 'linux',
@@ -51,7 +48,7 @@ describe('MongoBinary', () => {
 
       // eg. /tmp/mongo-mem-bin-33990ScJTSRNSsFYf/mongodb-download/a811facba94753a2eba574f446561b7e/mongodb-macOS-x86_64-3.5.5-13-g00ee4f5/
       expect(MongoBinaryDownload).toHaveBeenCalledWith({
-        downloadDir: tmpDir.name,
+        downloadDir: tmpDir,
         platform: os.platform(),
         arch: os.arch(),
         version,

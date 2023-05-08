@@ -71,7 +71,7 @@ Used by [`start`](#start) and to restart without fully running everything again
 
 <span class="badge badge--warning">Internal</span>
 
-Typings: `protected async ensureKeyFile(): Promise<tmp.DirResult>`
+Typings: `protected async ensureKeyFile(): Promise<string>`
 
 Ensures and returns that [`_keyfiletmp`](#_keyfiletmp) is defined an exists and also that the keyfile is created
 
@@ -212,9 +212,9 @@ Stores the options used for the ReplSet Initiation, uses [`ReplSetOpts`](../inte
 
 <span class="badge badge--warning">Internal</span>
 
-Typings: `protected _keyfiletmp?: tmp.DirResult`
+Typings: `protected _keyfiletmp?: string`
 
-Stores the `tmpDir` for the keyfile location
+Stores the path of the created temporary directory for the keyfile location
 
 ### state
 

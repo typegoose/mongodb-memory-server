@@ -1,6 +1,5 @@
 module.exports = {
   preset: 'ts-jest',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   transform: {
     '\\.ts$': [
       'ts-jest',
@@ -10,6 +9,7 @@ module.exports = {
       },
     ],
   },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   roots: ['<rootDir>/src'],
   testPathIgnorePatterns: ['/node_modules/', '/lib/'],
   testMatch: ['**/__tests__/**/*.test.(ts|js)'],

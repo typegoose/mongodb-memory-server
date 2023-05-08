@@ -1,14 +1,13 @@
 import MongoMemoryReplSet, { MongoMemoryReplSetOpts } from '../MongoMemoryReplSet';
-import * as tmp from 'tmp';
+import { createTmpDir, removeDir } from '../util/utils';
 
-tmp.setGracefulCleanup();
-let tmpDir: tmp.DirResult;
-beforeEach(() => {
-  tmpDir = tmp.dirSync({ prefix: 'reuse-mongo-mem-', unsafeCleanup: true });
+let tmpDir: string;
+beforeEach(async () => {
+  tmpDir = await createTmpDir('reuse-mongo-mem-');
 });
 
-afterEach(() => {
-  tmpDir.removeCallback();
+afterEach(async () => {
+  await removeDir(tmpDir);
 });
 
 const sleep = (ms: number) => {
@@ -24,7 +23,7 @@ describe('Restart single MongoMemoryReplSet instance', () => {
       instanceOpts: [
         {
           port: 27017,
-          dbPath: tmpDir.name,
+          dbPath: tmpDir,
         },
       ],
     } as MongoMemoryReplSetOpts;

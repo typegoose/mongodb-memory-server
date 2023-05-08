@@ -186,7 +186,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return this.getAmazonVersionString(os);
     } else if (regexHelper(/suse/i, os)) {
       return this.getSuseVersionString(os);
-    } else if (regexHelper(/(rhel|centos|scientific)/i, os)) {
+      // handle "oracle linux"(ol) as "rhel", because they define "id_like: fedora", but the versions themself match up with rhel
+    } else if (regexHelper(/(rhel|centos|scientific|^ol$)/i, os)) {
       return this.getRhelVersionString(os);
     } else if (regexHelper(/fedora/i, os)) {
       return this.getFedoraVersionString(os);
@@ -197,13 +198,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       // Match "arch", "archlinux", "manjaro", "manjarolinux", "arco", "arcolinux"
     } else if (regexHelper(/(arch|manjaro|arco)(?:linux)?$/i, os)) {
       console.warn(
-        `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu 20.04 release.`
+        `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu 22.04 release.`
       );
 
       return this.getUbuntuVersionString({
         os: 'linux',
         dist: 'Ubuntu Linux',
-        release: '20.04',
+        release: '22.04',
       });
     } else if (regexHelper(/gentoo/i, os)) {
       // it seems like debian binaries work for gentoo too (at least most), see https://github.com/nodkz/mongodb-memory-server/issues/639

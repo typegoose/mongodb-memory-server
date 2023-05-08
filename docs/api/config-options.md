@@ -64,7 +64,6 @@ This Option does not have a effect when [`ARCHIVE_NAME`](#archive_name) or [`DOW
 Common MongoDB Version formats (`X` is a number):
 
 - `X.X.X`
-- `vX.X.X`
 - `vX.X-latest`
 
 [Search for what Versions are available](https://www.mongodb.com/download-center/community/releases/archive)
@@ -198,9 +197,21 @@ Default: `false`
 | :----------------------------------------: | :---------------------------: |
 | `MONGOMS_USE_ARCHIVE_NAME_FOR_BINARY_NAME` | `useArchiveNameForBinaryName` |
 
-Option `USE_ARCHIVE_NAME_FOR_BINARY_NAME` is used to use the archive name as binary name
+Option `USE_ARCHIVE_NAME_FOR_BINARY_NAME` is used to use the archive name as binary
 
 Default: `false`
+
+This can resolve conflicts when resolving binary names for different systems changes between versions (like support for ubuntu 22.04 becoming available instead of using 20.04) or if the same cache is shared between different distros (like docker pass-through).
+
+Example:  
+
+By default the binary name gets set like `mongod-ARCH-CURRENT_DISTRO-VERSION` (`mongod-x64-ubuntu-6.0.4`), but with this option it will use the downloaded archive name (without extension) like `mongodb-linux-x86_64-ubuntu2004-6.0.4`.
+
+Also see [ARCHIVE_NAME](#archive_name).
+
+:::note
+Keep in mind that downloaded binaries will never be automatically deleted.
+:::
 
 ## How to use them in the package.json
 

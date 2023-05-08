@@ -13,7 +13,7 @@ It is currently recommended to directly look at the TSDoc for these properties t
 
 ### Do testing database paths get cleaned up?
 
-If the Database-path is a temporary directory (generated with `tmp`), then it will automatically get cleaned-up when calling `.stop()`, this can be disabled with `.stop(false)`.  
+If the Database-path is a temporary directory (generated with `mkdtemp`), then it will automatically get cleaned-up when calling `.stop()`, this can be disabled with `.stop(false)`.  
 If the Database-path is manually set with `dbPath`, then it needs to be manually cleaned-up with `.cleanup(true)`.
 
 :::tip

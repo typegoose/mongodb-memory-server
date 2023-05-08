@@ -143,10 +143,13 @@ Default version is none
 <span class="badge badge--danger">Unsupported</span> <span class="badge badge--secondary">Working</span>
 
 There are no official mongodb builds for Arch Distributions, but the `ubuntu` binaries work on most Arch systems, so they are used.<br/>
-Currently Mapping to: `ubuntu2004`
+Currently Mapping to: `ubuntu2204`
 
 :::note
 Because Arch* dosnt base on ubuntu, there is no specific ubuntu version associated with an arch version, so it defaults to highest supported `ubuntu` version
+:::
+:::note
+MongoDB Binary versions before `6.0.4` require OpenSSL 1.1 installed, on arch can be installed via `core/openssl-1.1`.
 :::
 
 ### Gentoo
