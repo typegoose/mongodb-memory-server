@@ -532,32 +532,20 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Remove the defined dbPath
-   * @param force Remove the dbPath even if it is no "tmpDir" (and re-check if tmpDir actually removed it)
-   * @throws If "state" is not "stopped"
-   * @throws If "instanceInfo" is not defined
-   * @throws If an fs error occured
-   *
-   * @deprecated replace argument with `Cleanup` interface object
-   */
-  async cleanup(force: boolean): Promise<void>; // TODO: for next major release (9.0), this should be removed
-  /**
-   * Remove the defined dbPath
    * @param options Set how to run a cleanup, by default `{ doCleanup: true }` is used
    * @throws If "state" is not "stopped"
    * @throws If "instanceInfo" is not defined
    * @throws If an fs error occured
    */
-  async cleanup(options?: Cleanup): Promise<void>;
-  async cleanup(options?: boolean | Cleanup): Promise<void> {
+  async cleanup(options?: Cleanup): Promise<void> {
     assertionIsMMSState(MongoMemoryServerStates.stopped, this.state);
 
     /** Default to doing cleanup, but not forcing it */
     let cleanup: Cleanup = { doCleanup: true, force: false };
 
-    // handle the old way of setting wheter to cleanup or not
-    // TODO: for next major release (9.0), this should be removed
+    // TODO: for next major release (10.0), this should be removed
     if (typeof options === 'boolean') {
-      cleanup.force = options;
+      throw new Error('Unsupported argument type: boolean');
     }
 
     // handle the new way of setting what and how to cleanup

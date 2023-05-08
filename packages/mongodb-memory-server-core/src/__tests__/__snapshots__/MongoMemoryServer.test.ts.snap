@@ -2,6 +2,12 @@
 
 exports[`MongoMemoryServer "createAuth" should throw an error if called without "this.auth" defined 1`] = `"\\"createAuth\\" got called, but \\"this.auth\\" is undefined!"`;
 
+exports[`MongoMemoryServer cleanup() should not support boolean arguments 1`] = `
+"Incorrect State for operation: \\"new\\", allowed States: \\"[stopped]\\"
+This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
+https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
+`;
+
 exports[`MongoMemoryServer cleanup() should throw an error if state is not "stopped" 1`] = `
 "Incorrect State for operation: \\"new\\", allowed States: \\"[stopped]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:

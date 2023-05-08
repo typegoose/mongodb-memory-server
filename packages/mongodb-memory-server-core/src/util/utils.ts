@@ -273,8 +273,6 @@ export abstract class ManagerBase {
  */
 export abstract class ManagerAdvanced extends ManagerBase {
   abstract getUri(otherDB?: string | boolean): string;
-  /** @deprecated replace argument with `Cleanup` interface object */
-  abstract cleanup(force: boolean): Promise<void>; // TODO: for next major release (9.0), this should be removed
   abstract cleanup(cleanup: Cleanup): Promise<void>;
 }
 

@@ -658,9 +658,9 @@ describe('MongoMemoryReplSet', () => {
         .mockResolvedValue(void 0);
 
       await replSet.stop({ doCleanup: false });
-      await replSet.cleanup(false);
+      await replSet.cleanup({ doCleanup: true, force: false });
 
-      expect(cleanupSpy).toHaveBeenCalledWith(false);
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: false });
       expect(cleanupInstance0Spy).toHaveBeenCalledWith({
         doCleanup: true,
         force: false,
@@ -675,11 +675,27 @@ describe('MongoMemoryReplSet', () => {
         .mockResolvedValue(void 0);
 
       await replSet.stop({ doCleanup: false });
-      await replSet.cleanup(true);
+      await replSet.cleanup({ doCleanup: true, force: true });
       expect(cleanupInstance1Spy).toHaveBeenCalledWith({
         doCleanup: true,
         force: true,
       } as utils.Cleanup);
+    });
+
+    it('should not support boolean arguments', async () => {
+      const replSet = new MongoMemoryReplSet();
+
+      try {
+        await replSet.cleanup(
+          // @ts-expect-error Testing a non-existing overload
+          true
+        );
+        fail('Expected to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+      }
     });
 
     it('should run cleanup with cleanup options and pass-through options to lower', async () => {

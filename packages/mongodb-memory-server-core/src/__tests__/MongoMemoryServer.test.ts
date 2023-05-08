@@ -822,7 +822,7 @@ describe('MongoMemoryServer', () => {
       tmpdir = mongoServer.instanceInfo?.tmpDir;
 
       await mongoServer.stop({ doCleanup: false });
-      await mongoServer.cleanup(true);
+      await mongoServer.cleanup({ doCleanup: true, force: true });
 
       expect(utils.statPath).toHaveBeenCalledTimes(1);
       expect(utils.removeDir).toHaveBeenCalled();
@@ -839,13 +839,29 @@ describe('MongoMemoryServer', () => {
       tmpdir = mongoServer.instanceInfo?.tmpDir;
 
       await mongoServer.stop({ doCleanup: false });
-      await mongoServer.cleanup(true);
+      await mongoServer.cleanup({ doCleanup: true, force: true });
 
       expect(utils.statPath).toHaveBeenCalledTimes(1);
       expect(utils.removeDir).toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
+    });
+
+    it('should not support boolean arguments', async () => {
+      const mongoServer = new MongoMemoryServer();
+
+      try {
+        await mongoServer.cleanup(
+          // @ts-expect-error Testing a non-existing overload
+          true
+        );
+        fail('Expected to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+      }
     });
 
     it('should properly cleanup with tmpDir with default no force (new)', async () => {
