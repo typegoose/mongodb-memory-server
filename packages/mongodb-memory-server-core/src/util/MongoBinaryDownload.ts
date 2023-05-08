@@ -2,7 +2,6 @@ import os from 'os';
 import { URL } from 'url';
 import path from 'path';
 import { promises as fspromises, createWriteStream, createReadStream, constants } from 'fs';
-import md5File from 'md5-file';
 import https from 'https';
 import { createUnzip } from 'zlib';
 import tar from 'tar-stream';
@@ -11,7 +10,7 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
-import { assertion, mkdir, pathExists } from './utils';
+import { assertion, mkdir, pathExists, md5 } from './utils';
 import { DryMongoBinary } from './DryMongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
@@ -200,7 +199,7 @@ export class MongoBinaryDownload {
     const signatureContent = (await fspromises.readFile(archiveMD5Path)).toString('utf-8');
     const regexMatch = signatureContent.match(/^\s*([\w\d]+)\s*/i);
     const md5SigRemote = regexMatch ? regexMatch[1] : null;
-    const md5SigLocal = md5File.sync(mongoDBArchive);
+    const md5SigLocal = md5(mongoDBArchive);
     log(`makeMD5check: Local MD5: ${md5SigLocal}, Remote MD5: ${md5SigRemote}`);
 
     if (md5SigRemote !== md5SigLocal) {

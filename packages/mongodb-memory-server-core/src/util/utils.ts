@@ -10,7 +10,7 @@ import {
 } from './errors';
 import { tmpdir } from 'os';
 import * as path from 'path';
-import { randomUUID } from 'crypto';
+import { BinaryLike, createHash, randomUUID } from 'crypto';
 
 const log = debug('MongoMS:utils');
 
@@ -364,4 +364,13 @@ export async function removeDir(dirPath: string): Promise<void> {
  */
 export function uuidv4(): string {
   return randomUUID();
+}
+
+/**
+ * Helper function to have md5 generation and definition in one place
+ * @param content the content to checksum
+ * @returns a md5 of the input
+ */
+export function md5(content: BinaryLike): string {
+  return createHash('md5').update(content).digest('hex');
 }
