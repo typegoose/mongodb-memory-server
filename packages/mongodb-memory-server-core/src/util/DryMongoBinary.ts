@@ -5,7 +5,7 @@ import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
 import { getOS, AnyOS, isLinuxOS, OtherOS } from './getos';
-import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from './errors';
+import { BinaryNotFoundError, NoRegexMatchError, ParseArchiveRegexError } from './errors';
 import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 
 const log = debug('MongoMS:DryMongoBinary');
@@ -78,7 +78,7 @@ export class DryMongoBinary {
       const systemReturn = await this.getSystemPath(useOpts.systemBinary);
 
       if (isNullOrUndefined(systemReturn)) {
-        throw new NoSystemBinaryFoundError(useOpts.systemBinary);
+        throw new BinaryNotFoundError(useOpts.systemBinary, ' (systemBinary)');
       }
 
       return systemReturn;

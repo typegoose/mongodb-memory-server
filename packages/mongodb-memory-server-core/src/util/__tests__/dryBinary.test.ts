@@ -6,7 +6,7 @@ import { DEFAULT_VERSION, envName, ResolveConfigVariables } from '../resolveConf
 import * as utils from '../utils';
 import * as getOs from '../getos';
 import { LinuxOS, OtherOS } from '../getos';
-import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from '../errors';
+import { BinaryNotFoundError, NoRegexMatchError, ParseArchiveRegexError } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 
 describe('DryBinary', () => {
@@ -411,8 +411,9 @@ describe('DryBinary', () => {
         await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
         fail('Expected "locateBinary" to throw');
       } catch (err) {
-        expect(err).toBeInstanceOf(NoSystemBinaryFoundError);
-        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
+        expect(err).toBeInstanceOf(BinaryNotFoundError);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
         expect(binary.DryMongoBinary.binaryCache.size).toBe(0);
         expect(fspromises.access).toHaveBeenCalled();
       }

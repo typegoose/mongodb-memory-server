@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DryBinary locateBinary should throw an error if SystemBinary was provided, but not found 1`] = `"{\\"binaryPath\\":\\"/usr/local/bin/mongod\\"}"`;
+exports[`DryBinary locateBinary should throw an error if SystemBinary was provided, but not found 1`] = `"No Binary at path \\"/usr/local/bin/mongod\\" was found! (ENOENT) (systemBinary)"`;
 
 exports[`DryBinary parseArchiveNameRegex should throw a Error when no "version" is found [ParseArchiveRegexError] 1`] = `"Expected \\"version\\" to be found in regex groups"`;
 

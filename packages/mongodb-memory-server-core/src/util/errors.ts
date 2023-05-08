@@ -52,15 +52,6 @@ export class WaitForPrimaryTimeoutError extends Error {
   }
 }
 
-// REFACTOR: merge this error with BinaryNotFoundError
-export class NoSystemBinaryFoundError extends Error {
-  constructor(public binaryPath: string) {
-    super(
-      `Config option "SYSTEM_BINARY" was provided with value "${binaryPath}", but no binary could be found!`
-    );
-  }
-}
-
 export class Md5CheckFailedError extends Error {
   constructor(public binarymd5: string, public checkfilemd5: string) {
     super(`MD5 check failed! Binary MD5 is "${binarymd5}", Checkfile MD5 is "${checkfilemd5}"`);
@@ -98,8 +89,8 @@ export class InsufficientPermissionsError extends Error {
 }
 
 export class BinaryNotFoundError extends Error {
-  constructor(public path: string) {
-    super(`No Binary at path "${path}" was found! (ENOENT)`);
+  constructor(public path: string, public extra: string = '') {
+    super(`No Binary at path "${path}" was found! (ENOENT)${extra}`);
   }
 }
 
