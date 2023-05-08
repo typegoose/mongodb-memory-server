@@ -26,6 +26,8 @@ exports[`MongodbInstance test events closeHandler() should emit "instanceError" 
 
 exports[`MongodbInstance test events closeHandler() should emit "instanceError" with non-0 or signal 2`] = `"Instance closed unexpectedly with code \\"null\\" and signal \\"SIG\\""`;
 
+exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "aborting after" is found 1`] = `"Mongod internal error (invariant() failure)"`;
+
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "excepetion in initAndListen" is thrown DBException in initAndListen 1`] = `
 "Instance Failed to start with \\"DBException in initAndListen\\". Original Error:
 Location18656: Cannot start server with an unknown storage engine: ephemeralForTest"

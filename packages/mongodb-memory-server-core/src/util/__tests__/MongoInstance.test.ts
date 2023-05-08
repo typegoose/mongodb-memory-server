@@ -434,7 +434,21 @@ describe('MongodbInstance', () => {
     describe('stdoutHandler()', () => {
       // All the lines used to test here should be sourced from actual mongod output!
 
-      // TODO: add test for "aborting after"
+      it('should emit "instanceError" when "aborting after" is found', () => {
+        // actual line copied from mongod 5.0.8 (from https://github.com/nodkz/mongodb-memory-server/issues/727)
+        const line =
+          '{"t":{"$date":"2023-01-05T13:55:59.493+00:00"},"s":"F",  "c":"-",        "id":23079,   "ctx":"conn13","msg":"Invariant failure","attr":{"expr":"readTs","file":"src/mongo/db/read_concern_mongod.cpp","line":529}}\n{"t":{"$date":"2023-01-05T13:55:59.493+00:00"},"s":"F",  "c":"-",        "id":23080,   "ctx":"conn13","msg":"\n\n***aborting after invariant() failure\n\n"}';
+
+        mongod.stdoutHandler(line);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
+
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+        expect(event).toBeInstanceOf(StdoutInstanceError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toMatchSnapshot();
+      });
 
       it('should emit "instanceReady" when waiting for connections', () => {
         // actual line copied from mongod 4.0.14
