@@ -10,7 +10,7 @@
     "directory": "packages/mongodb-memory-server-core"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=14.20.1"
   },
   "files": [
     "lib",

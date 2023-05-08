@@ -12,7 +12,7 @@
     "directory": "packages/mongodb-memory-server-global-4.2"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=14.20.1"
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "keywords": [
