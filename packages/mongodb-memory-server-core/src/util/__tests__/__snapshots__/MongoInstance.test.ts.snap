@@ -63,6 +63,4 @@ exports[`MongodbInstance test events stdoutHandler() should emit "instanceError"
 You need to manually install libcurl4"
 `;
 
-exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when library is missing 1`] = `"Instance failed to start because a library is missing or cannot be opened: \\"libcrypto.so.10\\""`;
-
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when port is already in use 1`] = `"Port \\"1001\\" already in use"`;
