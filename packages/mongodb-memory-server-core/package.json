@@ -47,7 +47,6 @@
     "find-cache-dir": "^3.3.2",
     "get-port": "^5.1.1",
     "https-proxy-agent": "^6.1.0",
-    "md5-file": "^5.0.0",
     "mongodb": "^5.4.0",
     "new-find-package-json": "^2.0.0",
     "semver": "^7.5.0",
