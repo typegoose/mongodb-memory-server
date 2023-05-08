@@ -265,8 +265,6 @@ export abstract class ManagerBase {
   // abstract static create(opts: Record<string, any>): Promise<new (...args: any) => any>;
   abstract start(forceSamePort: boolean): Promise<void>;
   abstract start(): Promise<void>;
-  /** @deprecated replace argument with `Cleanup` interface object */
-  abstract stop(cleanup: boolean): Promise<boolean>; // TODO: for next major release (9.0), this should be removed
   abstract stop(cleanup: Cleanup): Promise<boolean>;
 }
 

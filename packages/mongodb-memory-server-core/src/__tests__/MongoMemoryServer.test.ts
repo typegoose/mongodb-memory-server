@@ -669,15 +669,31 @@ describe('MongoMemoryServer', () => {
 
       const cleanupSpy = jest.spyOn(mongoServer, 'cleanup').mockResolvedValue(void 0);
 
-      await mongoServer.stop(false);
+      await mongoServer.stop({ doCleanup: false });
 
       expect(cleanupSpy).not.toHaveBeenCalled();
 
       cleanupSpy.mockClear();
 
-      await mongoServer.stop(true);
+      await mongoServer.stop({ doCleanup: true });
 
-      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: false } as utils.Cleanup);
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true } as utils.Cleanup);
+    });
+
+    it('should not support boolean arguments', async () => {
+      const mongoServer = new MongoMemoryServer();
+
+      try {
+        await mongoServer.stop(
+          // @ts-expect-error Testing a non-existing overload
+          true
+        );
+        fail('Expected to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+      }
     });
 
     it('should call cleanup and pass-through cleanup options', async () => {

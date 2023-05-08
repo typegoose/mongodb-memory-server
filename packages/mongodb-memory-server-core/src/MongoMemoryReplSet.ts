@@ -505,26 +505,17 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
   /**
    * Stop the underlying `mongod` instance(s).
-   * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
-   *
-   * @deprecated replace argument with `Cleanup` interface object
-   */
-  async stop(runCleanup: boolean): Promise<boolean>; // TODO: for next major release (9.0), this should be removed
-  /**
-   * Stop the underlying `mongod` instance(s).
    * @param cleanupOptions Set how to run ".cleanup", by default only `{ doCleanup: true }` is used
    */
-  async stop(cleanupOptions?: Cleanup): Promise<boolean>;
-  async stop(cleanupOptions?: boolean | Cleanup): Promise<boolean> {
+  async stop(cleanupOptions?: Cleanup): Promise<boolean> {
     log(`stop: called by ${isNullOrUndefined(process.exitCode) ? 'manual' : 'process exit'}`);
 
     /** Default to cleanup temporary, but not custom dbpaths */
     let cleanup: Cleanup = { doCleanup: true, force: false };
 
-    // handle the old way of setting wheter to cleanup or not
-    // TODO: for next major release (9.0), this should be removed
+    // TODO: for next major release (10.0), this should be removed
     if (typeof cleanupOptions === 'boolean') {
-      cleanup.doCleanup = cleanupOptions;
+      throw new Error('Unsupported argument type: boolean');
     }
 
     // handle the new way of setting what and how to cleanup
