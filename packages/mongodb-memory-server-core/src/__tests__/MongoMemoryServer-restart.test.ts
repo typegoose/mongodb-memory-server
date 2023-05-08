@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MongoClient } from 'mongodb';
-import { v4 } from 'uuid';
 import { MongoMemoryServer } from '../index';
-import { assertion, isNullOrUndefined } from '../util/utils';
+import { assertion, isNullOrUndefined, uuidv4 } from '../util/utils';
 
 // This is an Example test, do not merge it with others and do not delete this file
 
@@ -14,8 +13,8 @@ describe('Restart single MongoMemoryServer instance', () => {
 
     const instance = await MongoMemoryServer.create({ instance: { storageEngine: 'wiredTiger' } });
 
-    const databaseName = v4();
-    const collectionName = v4();
+    const databaseName = uuidv4();
+    const collectionName = uuidv4();
     let insertedDoc: Record<string, any>;
     // first connect and insert
     {

@@ -10,6 +10,7 @@ import {
 } from './errors';
 import { tmpdir } from 'os';
 import * as path from 'path';
+import { randomUUID } from 'crypto';
 
 const log = debug('MongoMS:utils');
 
@@ -355,4 +356,12 @@ export async function removeDir(dirPath: string): Promise<void> {
       recursive: true,
     });
   }
+}
+
+/**
+ * Helper function to have uuidv4 generation and definition in one place
+ * @returns a uuid-v4
+ */
+export function uuidv4(): string {
+  return randomUUID();
 }
