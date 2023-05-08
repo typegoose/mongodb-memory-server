@@ -245,7 +245,6 @@ export class DryMongoBinary {
    * @returns System Binary path or undefined
    */
   static async getSystemPath(systemBinary: string): Promise<string | undefined> {
-    // REFACTOR: change this function to always return "string"
     log('getSystempath');
     try {
       await checkBinaryPermissions(systemBinary);
