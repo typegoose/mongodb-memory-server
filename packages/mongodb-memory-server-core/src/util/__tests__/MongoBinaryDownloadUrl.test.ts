@@ -1608,7 +1608,7 @@ describe('MongoBinaryDownloadUrl', () => {
       // Test for https://github.com/nodkz/mongodb-memory-server/issues/616
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
 
-      downloadUrl.version = '5.0.3';
+      downloadUrl.version = '6.0.4';
       expect(
         downloadUrl.getUbuntuVersionString({
           os: 'linux',
@@ -1616,7 +1616,22 @@ describe('MongoBinaryDownloadUrl', () => {
           release: '16',
           id_like: ['ubuntu'],
         })
-      ).toBe('ubuntu2004');
+      ).toBe('ubuntu2204');
+
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should fallback to default version if release is not parsed correctly', () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+
+      downloadUrl.version = '6.0.4';
+      expect(
+        downloadUrl.getUbuntuVersionString({
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: 'nan',
+        })
+      ).toBe('ubuntu2204');
 
       expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
     });

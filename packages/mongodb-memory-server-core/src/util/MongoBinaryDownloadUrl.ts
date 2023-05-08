@@ -20,6 +20,9 @@ export interface MongoBinaryDownloadUrlOpts {
   os?: AnyOS;
 }
 
+/** Set the default ubuntu version number */
+export const DEFAULT_UBUNTU_YEAR = 22; // TODO: try to keep this up-to-date to the latest LTS
+
 /**
  * Download URL generator
  */
@@ -463,14 +466,19 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         ubuntuOS = {
           os: 'linux',
           dist: 'ubuntu',
-          release: '20.04', // TODO: try to keep this up-to-date to the latest LTS
+          release: `${DEFAULT_UBUNTU_YEAR}.04`,
         };
       } else {
         ubuntuOS = os;
       }
     }
 
-    const ubuntuYear: number = parseInt(ubuntuOS.release.split('.')[0], 10);
+    let ubuntuYear: number = parseInt(ubuntuOS.release.split('.')[0], 10);
+
+    if (Number.isNaN(ubuntuYear)) {
+      console.warn(`Could not parse ubuntu year from "${ubuntuOS.release}", using default`);
+      ubuntuYear = DEFAULT_UBUNTU_YEAR;
+    }
 
     if (this.arch === 'aarch64') {
       // this is because, before version 4.1.10, everything for "arm64" / "aarch64" were just "arm64" and for "ubuntu1604"
@@ -514,9 +522,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu2004';
     }
 
-    // TODO: change or remove "14" default, since it no-longer is supported above 4.0
     // the "04" version always exists for ubuntu, use that as default
-    return `ubuntu${ubuntuYear || 14}04`;
+    return `ubuntu${ubuntuYear}04`;
   }
 
   /**
