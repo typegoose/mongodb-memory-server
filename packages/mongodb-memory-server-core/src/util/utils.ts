@@ -370,3 +370,12 @@ export function uuidv4(): string {
 export function md5(content: BinaryLike): string {
   return createHash('md5').update(content).digest('hex');
 }
+
+/**
+ * Helper function to have md5 generation and definition in one place for a file
+ * @param file the location of a file to read for a hash
+ * @returns a md5 of the input file
+ */
+export async function md5FromFile(file: string): Promise<string> {
+  return md5(await fspromises.readFile(file));
+}
