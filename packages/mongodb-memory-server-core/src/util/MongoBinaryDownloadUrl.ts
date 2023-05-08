@@ -1,15 +1,15 @@
-import { getOS, AnyOS, LinuxOS } from './getos';
-import { resolveConfig, ResolveConfigVariables } from './resolveConfig';
+import { getOS, AnyOS, LinuxOS } from './getos/index.js';
+import { resolveConfig, ResolveConfigVariables } from './resolveConfig.js';
 import debug from 'debug';
 import * as semver from 'semver';
-import { isNullOrUndefined } from './utils';
+import { isNullOrUndefined } from './utils.js';
 import { URL } from 'url';
 import {
   KnownVersionIncompatibilityError,
   UnknownArchitectureError,
   UnknownPlatformError,
   UnknownVersionError,
-} from './errors';
+} from './errors.js';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 

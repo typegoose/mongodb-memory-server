@@ -1,12 +1,17 @@
 import debug from 'debug';
-import { DEFAULT_VERSION, envToBool, resolveConfig, ResolveConfigVariables } from './resolveConfig';
-import { assertion, checkBinaryPermissions, isNullOrUndefined, pathExists } from './utils';
+import {
+  DEFAULT_VERSION,
+  envToBool,
+  resolveConfig,
+  ResolveConfigVariables,
+} from './resolveConfig.js';
+import { assertion, checkBinaryPermissions, isNullOrUndefined, pathExists } from './utils.js';
 import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
-import { getOS, AnyOS, isLinuxOS, OtherOS } from './getos';
-import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from './errors';
-import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
+import { getOS, AnyOS, isLinuxOS, OtherOS } from './getos/index.js';
+import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from './errors.js';
+import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl.js';
 
 const log = debug('MongoMS:DryMongoBinary');
 

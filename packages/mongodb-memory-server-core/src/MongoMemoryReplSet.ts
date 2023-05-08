@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { MongoMemoryServer, AutomaticAuth, MongoMemoryServerOpts } from './MongoMemoryServer';
+import { MongoMemoryServer, AutomaticAuth, MongoMemoryServerOpts } from './MongoMemoryServer.js';
 import {
   assertion,
   authDefault,
@@ -13,8 +13,8 @@ import {
   removeDir,
   statPath,
   uriTemplate,
-} from './util/utils';
-import { MongoBinaryOpts } from './util/MongoBinary';
+} from './util/utils.js';
+import { MongoBinaryOpts } from './util/MongoBinary.js';
 import debug from 'debug';
 import { MongoClient, MongoError } from 'mongodb';
 import {
@@ -22,7 +22,7 @@ import {
   MongoMemoryInstanceOpts,
   MongoMemoryInstanceOptsBase,
   StorageEngine,
-} from './util/MongoInstance';
+} from './util/MongoInstance.js';
 import { SpawnOptions } from 'child_process';
 import {
   AuthNotObjectError,
@@ -30,7 +30,7 @@ import {
   ReplsetCountLowError,
   StateError,
   WaitForPrimaryTimeoutError,
-} from './util/errors';
+} from './util/errors.js';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
 

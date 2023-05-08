@@ -1,10 +1,10 @@
-import * as lockFile from '../lockfile';
+import * as lockFile from '../lockfile.js';
 import * as path from 'path';
-import { pathExists } from '../utils';
+import { pathExists } from '../utils.js';
 import { promises as fspromises } from 'fs';
-import { UnknownLockfileStatusError } from '../errors';
-import { assertIsError } from '../../__tests__/testUtils/test_utils';
-import * as utils from '../utils';
+import { UnknownLockfileStatusError } from '../errors.js';
+import { assertIsError } from '../../__tests__/testUtils/test_utils.js';
+import * as utils from '../utils.js';
 
 let tmpDir: string;
 beforeAll(async () => {

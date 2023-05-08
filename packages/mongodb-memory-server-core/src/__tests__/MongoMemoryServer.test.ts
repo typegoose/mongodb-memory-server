@@ -5,11 +5,11 @@ import MongoMemoryServer, {
   MongoInstanceData,
   MongoMemoryServerEvents,
   MongoMemoryServerStates,
-} from '../MongoMemoryServer';
-import MongoInstance from '../util/MongoInstance';
-import * as utils from '../util/utils';
-import { EnsureInstanceError, StateError } from '../util/errors';
-import { assertIsError } from './testUtils/test_utils';
+} from '../MongoMemoryServer.js';
+import MongoInstance from '../util/MongoInstance.js';
+import * as utils from '../util/utils.js';
+import { EnsureInstanceError, StateError } from '../util/errors.js';
+import { assertIsError } from './testUtils/test_utils.js';
 import { promises as fspromises } from 'fs';
 import * as path from 'path';
 

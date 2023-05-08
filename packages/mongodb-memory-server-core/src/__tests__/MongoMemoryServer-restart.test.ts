@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MongoClient } from 'mongodb';
 import { v4 } from 'uuid';
-import { MongoMemoryServer } from '../index';
-import { assertion, isNullOrUndefined } from '../util/utils';
+import { MongoMemoryServer } from '../index.js';
+import { assertion, isNullOrUndefined } from '../util/utils.js';
 
 // This is an Example test, do not merge it with others and do not delete this file
 

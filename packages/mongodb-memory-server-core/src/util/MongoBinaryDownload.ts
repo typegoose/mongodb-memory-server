@@ -7,15 +7,15 @@ import https from 'https';
 import { createUnzip } from 'zlib';
 import tar from 'tar-stream';
 import yauzl from 'yauzl';
-import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
+import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl.js';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
+import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig.js';
 import debug from 'debug';
-import { assertion, mkdir, pathExists } from './utils';
-import { DryMongoBinary } from './DryMongoBinary';
-import { MongoBinaryOpts } from './MongoBinary';
+import { assertion, mkdir, pathExists } from './utils.js';
+import { DryMongoBinary } from './DryMongoBinary.js';
+import { MongoBinaryOpts } from './MongoBinary.js';
 import { clearLine } from 'readline';
-import { GenericMMSError, Md5CheckFailedError } from './errors';
+import { GenericMMSError, Md5CheckFailedError } from './errors.js';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 

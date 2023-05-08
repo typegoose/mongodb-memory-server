@@ -1,6 +1,6 @@
 import { platform } from 'os';
 import debug from 'debug';
-import { isNullOrUndefined, tryReleaseFile } from '../utils';
+import { isNullOrUndefined, tryReleaseFile } from '../utils.js';
 
 const log = debug('MongoMS:getos');
 

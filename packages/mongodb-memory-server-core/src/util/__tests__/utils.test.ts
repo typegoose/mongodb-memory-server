@@ -1,13 +1,13 @@
 import { Stats, promises as fspromises } from 'fs';
 import { ChildProcess } from 'child_process';
-import * as utils from '../utils';
+import * as utils from '../utils.js';
 import { resolve } from 'path';
 import {
   AssertionFallbackError,
   BinaryNotFoundError,
   InsufficientPermissionsError,
-} from '../errors';
-import { assertIsError } from '../../__tests__/testUtils/test_utils';
+} from '../errors.js';
+import { assertIsError } from '../../__tests__/testUtils/test_utils.js';
 
 describe('utils', () => {
   describe('uriTemplate', () => {

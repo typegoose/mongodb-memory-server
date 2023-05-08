@@ -2,13 +2,13 @@
 import MongoMemoryReplSet, {
   MongoMemoryReplSetEvents,
   MongoMemoryReplSetStates,
-} from '../MongoMemoryReplSet';
+} from '../MongoMemoryReplSet.js';
 import { MongoClient, MongoServerError } from 'mongodb';
-import MongoMemoryServer, { AutomaticAuth } from '../MongoMemoryServer';
-import * as utils from '../util/utils';
-import MongoInstance, { MongoMemoryInstanceOpts } from '../util/MongoInstance';
-import { ReplsetCountLowError, StateError, WaitForPrimaryTimeoutError } from '../util/errors';
-import { assertIsError } from './testUtils/test_utils';
+import MongoMemoryServer, { AutomaticAuth } from '../MongoMemoryServer.js';
+import * as utils from '../util/utils.js';
+import MongoInstance, { MongoMemoryInstanceOpts } from '../util/MongoInstance.js';
+import { ReplsetCountLowError, StateError, WaitForPrimaryTimeoutError } from '../util/errors.js';
+import { assertIsError } from './testUtils/test_utils.js';
 import * as debug from 'debug';
 
 jest.setTimeout(100000); // 10s

@@ -1,6 +1,6 @@
 import { ChildProcess, fork, spawn, SpawnOptions } from 'child_process';
 import * as path from 'path';
-import { MongoBinary, MongoBinaryOpts } from './MongoBinary';
+import { MongoBinary, MongoBinaryOpts } from './MongoBinary.js';
 import debug from 'debug';
 import {
   assertion,
@@ -9,7 +9,7 @@ import {
   killProcess,
   ManagerBase,
   checkBinaryPermissions,
-} from './utils';
+} from './utils.js';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
@@ -19,7 +19,7 @@ import {
   StartBinaryFailedError,
   StdoutInstanceError,
   UnexpectedCloseError,
-} from './errors';
+} from './errors.js';
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */

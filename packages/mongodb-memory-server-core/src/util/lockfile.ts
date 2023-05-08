@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
-import * as utils from './utils';
+import * as utils from './utils.js';
 import debug from 'debug';
 import * as path from 'path';
 import { promises as fspromises } from 'fs';
 import { Mutex } from 'async-mutex';
 import { v4 as uuidv4 } from 'uuid';
-import { UnableToUnlockLockfileError, UnknownLockfileStatusError } from './errors';
+import { UnableToUnlockLockfileError, UnknownLockfileStatusError } from './errors.js';
 
 const log = debug('MongoMS:LockFile');
 

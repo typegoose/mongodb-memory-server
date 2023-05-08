@@ -1,4 +1,4 @@
-import * as getos from '../index';
+import * as getos from '../index.js';
 
 // This File will use example input, it should be formatted with multiple template strings
 

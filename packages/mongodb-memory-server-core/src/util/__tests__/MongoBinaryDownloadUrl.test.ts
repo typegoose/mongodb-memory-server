@@ -1,15 +1,15 @@
-import { assertIsError } from '../../__tests__/testUtils/test_utils';
+import { assertIsError } from '../../__tests__/testUtils/test_utils.js';
 import {
   UnknownPlatformError,
   UnknownArchitectureError,
   KnownVersionIncompatibilityError,
   UnknownVersionError,
-} from '../errors';
-import { LinuxOS } from '../getos';
-import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
-import { envName, ResolveConfigVariables } from '../resolveConfig';
+} from '../errors.js';
+import { LinuxOS } from '../getos/index.js';
+import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl.js';
+import { envName, ResolveConfigVariables } from '../resolveConfig.js';
 import * as semver from 'semver';
-import { assertion } from '../utils';
+import { assertion } from '../utils.js';
 
 afterEach(() => {
   jest.restoreAllMocks();

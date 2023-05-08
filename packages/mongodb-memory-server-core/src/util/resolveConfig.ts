@@ -3,7 +3,7 @@ import { findSync } from 'new-find-package-json';
 import debug from 'debug';
 import * as path from 'path';
 import { readFileSync } from 'fs';
-import { isNullOrUndefined } from './utils';
+import { isNullOrUndefined } from './utils.js';
 
 const log = debug('MongoMS:ResolveConfig');
 

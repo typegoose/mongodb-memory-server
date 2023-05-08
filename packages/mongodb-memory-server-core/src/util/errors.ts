@@ -1,4 +1,4 @@
-import { isNullOrUndefined } from './utils';
+import { isNullOrUndefined } from './utils.js';
 
 export class StateError extends Error {
   constructor(public wantedStates: string[], public gotState: string) {

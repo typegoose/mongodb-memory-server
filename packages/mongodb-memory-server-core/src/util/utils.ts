@@ -1,13 +1,13 @@
 import debug from 'debug';
 import { ChildProcess } from 'child_process';
-import { AutomaticAuth } from '../MongoMemoryServer';
+import { AutomaticAuth } from '../MongoMemoryServer.js';
 import { promises as fspromises, Stats, constants } from 'fs';
-import { LinuxOS } from './getos';
+import { LinuxOS } from './getos/index.js';
 import {
   AssertionFallbackError,
   BinaryNotFoundError,
   InsufficientPermissionsError,
-} from './errors';
+} from './errors.js';
 import { tmpdir } from 'os';
 import * as path from 'path';
 

@@ -4,8 +4,8 @@ import resolveConfig, {
   findPackageJson,
   processConfigOption,
   ResolveConfigVariables,
-} from '../resolveConfig';
-import * as utils from '../utils';
+} from '../resolveConfig.js';
+import * as utils from '../utils.js';
 import camelCase from 'camelcase';
 
 const outerPackageJson = {

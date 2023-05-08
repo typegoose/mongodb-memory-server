@@ -1,4 +1,4 @@
-import MongoMemoryReplSet from '../MongoMemoryReplSet';
+import MongoMemoryReplSet from '../MongoMemoryReplSet.js';
 import { MongoClient } from 'mongodb';
 
 jest.setTimeout(100000); // 10s

@@ -1,11 +1,11 @@
 import os from 'os';
-import MongoBinary, { MongoBinaryOpts } from '../MongoBinary';
-import MongoBinaryDownload from '../MongoBinaryDownload';
-import resolveConfig, { envName, ResolveConfigVariables } from '../resolveConfig';
-import * as utils from '../utils';
-import { DryMongoBinary } from '../DryMongoBinary';
+import MongoBinary, { MongoBinaryOpts } from '../MongoBinary.js';
+import MongoBinaryDownload from '../MongoBinaryDownload.js';
+import resolveConfig, { envName, ResolveConfigVariables } from '../resolveConfig.js';
+import * as utils from '../utils.js';
+import { DryMongoBinary } from '../DryMongoBinary.js';
 import * as childProcess from 'child_process';
-import { assertIsError } from '../../__tests__/testUtils/test_utils';
+import { assertIsError } from '../../__tests__/testUtils/test_utils.js';
 
 const mockedPath = '/path/to/binary';
 const mockGetMongodPath = jest.fn().mockResolvedValue(mockedPath);

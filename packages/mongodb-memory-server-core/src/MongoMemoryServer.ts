@@ -11,14 +11,14 @@ import {
   Cleanup,
   createTmpDir,
   removeDir,
-} from './util/utils';
-import { MongoInstance, MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
-import { MongoBinaryOpts } from './util/MongoBinary';
+} from './util/utils.js';
+import { MongoInstance, MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance.js';
+import { MongoBinaryOpts } from './util/MongoBinary.js';
 import debug from 'debug';
 import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
 import { AddUserOptions, MongoClient } from 'mongodb';
-import { EnsureInstanceError, StateError } from './util/errors';
+import { EnsureInstanceError, StateError } from './util/errors.js';
 import * as os from 'os';
 
 const log = debug('MongoMS:MongoMemoryServer');

@@ -1,13 +1,13 @@
-import * as binary from '../DryMongoBinary';
-import { DryMongoBinary } from '../DryMongoBinary';
+import * as binary from '../DryMongoBinary.js';
+import { DryMongoBinary } from '../DryMongoBinary.js';
 import * as path from 'path';
 import { constants, promises as fspromises } from 'fs';
-import { DEFAULT_VERSION, envName, ResolveConfigVariables } from '../resolveConfig';
-import * as utils from '../utils';
-import * as getOs from '../getos';
-import { LinuxOS, OtherOS } from '../getos';
-import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from '../errors';
-import { assertIsError } from '../../__tests__/testUtils/test_utils';
+import { DEFAULT_VERSION, envName, ResolveConfigVariables } from '../resolveConfig.js';
+import * as utils from '../utils.js';
+import * as getOs from '../getos/index.js';
+import { LinuxOS, OtherOS } from '../getos/index.js';
+import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from '../errors.js';
+import { assertIsError } from '../../__tests__/testUtils/test_utils.js';
 
 describe('DryBinary', () => {
   it('should combine options with base and binary', () => {

@@ -1,13 +1,13 @@
 import os from 'os';
 import path from 'path';
-import MongoBinaryDownload from './MongoBinaryDownload';
-import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
+import MongoBinaryDownload from './MongoBinaryDownload.js';
+import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig.js';
 import debug from 'debug';
 import * as semver from 'semver';
-import { assertion, isNullOrUndefined, mkdir } from './utils';
+import { assertion, isNullOrUndefined, mkdir } from './utils.js';
 import { spawnSync } from 'child_process';
-import { LockFile } from './lockfile';
-import { DryMongoBinary, BaseDryMongoBinaryOptions } from './DryMongoBinary';
+import { LockFile } from './lockfile.js';
+import { DryMongoBinary, BaseDryMongoBinaryOptions } from './DryMongoBinary.js';
 
 const log = debug('MongoMS:MongoBinary');
 

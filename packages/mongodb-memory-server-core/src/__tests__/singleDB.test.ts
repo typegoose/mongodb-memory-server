@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MongoClient } from 'mongodb';
-import { MongoMemoryServer } from '../index';
+import { MongoMemoryServer } from '../index.js';
 
 // This is an Example test, do not merge it with others and do not delete this file
 

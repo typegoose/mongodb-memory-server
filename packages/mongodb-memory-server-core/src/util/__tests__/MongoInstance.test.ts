@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import * as dbUtil from '../utils';
-import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
-import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
+import * as dbUtil from '../utils.js';
+import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance.js';
+import resolveConfig, { ResolveConfigVariables } from '../resolveConfig.js';
 import getPort from 'get-port';
 import {
   GenericMMSError,
   StartBinaryFailedError,
   StdoutInstanceError,
   UnexpectedCloseError,
-} from '../errors';
-import { assertIsError } from '../../__tests__/testUtils/test_utils';
+} from '../errors.js';
+import { assertIsError } from '../../__tests__/testUtils/test_utils.js';
 
 jest.setTimeout(100000); // 10s
 

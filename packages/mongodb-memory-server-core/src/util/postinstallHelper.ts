@@ -3,7 +3,7 @@
 
 import { homedir } from 'os';
 import { resolve } from 'path';
-import { MongoBinary } from './MongoBinary';
+import { MongoBinary } from './MongoBinary.js';
 import {
   envName,
   envToBool,
@@ -11,7 +11,7 @@ import {
   resolveConfig,
   ResolveConfigVariables,
   setDefaultValue,
-} from './resolveConfig';
+} from './resolveConfig.js';
 
 findPackageJson(process.env.INIT_CWD);
 

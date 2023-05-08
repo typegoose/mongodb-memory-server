@@ -1,4 +1,4 @@
-import { assertion } from '../../util/utils';
+import { assertion } from '../../util/utils.js';
 
 /**
  * This function is just here because "expect(err).toBeInstanceOf(Error)" does not use "asserts", and so stays "unknown" which makes typescript error

@@ -1,5 +1,5 @@
-import MongoMemoryReplSet, { MongoMemoryReplSetOpts } from '../MongoMemoryReplSet';
-import { createTmpDir, removeDir } from '../util/utils';
+import MongoMemoryReplSet, { MongoMemoryReplSetOpts } from '../MongoMemoryReplSet.js';
+import { createTmpDir, removeDir } from '../util/utils.js';
 
 let tmpDir: string;
 beforeEach(async () => {
