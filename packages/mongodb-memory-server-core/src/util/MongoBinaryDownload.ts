@@ -35,49 +35,6 @@ export class MongoBinaryDownload {
   /**These options are kind of raw, they are not run through DryMongoBinary.generateOptions */
   binaryOpts: Required<MongoBinaryOpts>;
 
-  // TODO: for an major version, remove the compat get/set
-  // the following get/set are to not break existing stuff
-
-  get checkMD5(): boolean {
-    return this.binaryOpts.checkMD5;
-  }
-
-  set checkMD5(val: boolean) {
-    this.binaryOpts.checkMD5 = val;
-  }
-
-  get downloadDir(): string {
-    return this.binaryOpts.downloadDir;
-  }
-
-  set downloadDir(val: string) {
-    this.binaryOpts.downloadDir = val;
-  }
-
-  get arch(): string {
-    return this.binaryOpts.arch;
-  }
-
-  set arch(val: string) {
-    this.binaryOpts.arch = val;
-  }
-
-  get version(): string {
-    return this.binaryOpts.version;
-  }
-
-  set version(val: string) {
-    this.binaryOpts.version = val;
-  }
-
-  get platform(): string {
-    return this.binaryOpts.platform;
-  }
-
-  set platform(val: string) {
-    this.binaryOpts.platform = val;
-  }
-
   // end get/set backwards compat section
 
   constructor(opts: MongoBinaryOpts) {
@@ -115,7 +72,7 @@ export class MongoBinaryDownload {
     const opts = await DryMongoBinary.generateOptions(this.binaryOpts);
 
     return DryMongoBinary.combineBinaryName(
-      this.downloadDir,
+      this.binaryOpts.downloadDir,
       await DryMongoBinary.getBinaryName(opts)
     );
   }
@@ -153,13 +110,13 @@ export class MongoBinaryDownload {
     log('startDownload');
     const mbdUrl = new MongoBinaryDownloadUrl(this.binaryOpts);
 
-    await mkdir(this.downloadDir);
+    await mkdir(this.binaryOpts.downloadDir);
 
     try {
-      await fspromises.access(this.downloadDir, constants.X_OK | constants.W_OK); // check that this process has permissions to create files & modify file contents & read file contents
+      await fspromises.access(this.binaryOpts.downloadDir, constants.X_OK | constants.W_OK); // check that this process has permissions to create files & modify file contents & read file contents
     } catch (err) {
       console.error(
-        `Download Directory at "${this.downloadDir}" does not have sufficient permissions to be used by this process\n` +
+        `Download Directory at "${this.binaryOpts.downloadDir}" does not have sufficient permissions to be used by this process\n` +
           'Needed Permissions: Write & Execute (-wx)\n'
       );
       throw err;
@@ -189,7 +146,7 @@ export class MongoBinaryDownload {
   ): Promise<boolean | undefined> {
     log('makeMD5check: Checking MD5 of downloaded binary...');
 
-    if (!this.checkMD5) {
+    if (!this.binaryOpts.checkMD5) {
       log('makeMD5check: checkMD5 is disabled');
 
       return undefined;
@@ -246,8 +203,11 @@ export class MongoBinaryDownload {
       throw new Error(`MongoBinaryDownload: missing filename for url "${downloadUrl}"`);
     }
 
-    const downloadLocation = path.resolve(this.downloadDir, filename);
-    const tempDownloadLocation = path.resolve(this.downloadDir, `${filename}.downloading`);
+    const downloadLocation = path.resolve(this.binaryOpts.downloadDir, filename);
+    const tempDownloadLocation = path.resolve(
+      this.binaryOpts.downloadDir,
+      `${filename}.downloading`
+    );
     log(`download: Downloading${proxy ? ` via proxy "${proxy}"` : ''}: "${downloadUrl}"`);
 
     if (await pathExists(downloadLocation)) {
@@ -500,8 +460,8 @@ export class MongoBinaryDownload {
       Math.round(((100.0 * this.dlProgress.current) / this.dlProgress.length) * 10) / 10;
     const mbComplete = Math.round((this.dlProgress.current / 1048576) * 10) / 10;
 
-    const crReturn = this.platform === 'win32' ? '\x1b[0G' : '\r';
-    const message = `Downloading MongoDB "${this.version}": ${percentComplete}% (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`;
+    const crReturn = this.binaryOpts.platform === 'win32' ? '\x1b[0G' : '\r';
+    const message = `Downloading MongoDB "${this.binaryOpts.version}": ${percentComplete}% (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`;
 
     if (process.stdout.isTTY) {
       // if TTY overwrite last line over and over until finished and clear line to avoid residual characters

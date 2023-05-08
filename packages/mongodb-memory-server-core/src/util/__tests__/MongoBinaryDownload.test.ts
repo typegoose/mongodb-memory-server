@@ -19,15 +19,19 @@ describe('MongoBinaryDownload', () => {
   });
 
   it('checkMD5 attribute can be set via constructor parameter', () => {
-    expect(new MongoBinaryDownload({ checkMD5: true, downloadDir: '/' }).checkMD5).toBe(true);
-    expect(new MongoBinaryDownload({ checkMD5: false, downloadDir: '/' }).checkMD5).toBe(false);
+    expect(new MongoBinaryDownload({ checkMD5: true, downloadDir: '/' }).binaryOpts.checkMD5).toBe(
+      true
+    );
+    expect(new MongoBinaryDownload({ checkMD5: false, downloadDir: '/' }).binaryOpts.checkMD5).toBe(
+      false
+    );
   });
 
   it('"checkMD5" should be disabled when config option is "false" and if config options is "true" it should be enabled', () => {
     process.env[envName(ResolveConfigVariables.MD5_CHECK)] = '0';
-    expect(new MongoBinaryDownload({ downloadDir: '/' }).checkMD5).toBe(false);
+    expect(new MongoBinaryDownload({ downloadDir: '/' }).binaryOpts.checkMD5).toBe(false);
     process.env[envName(ResolveConfigVariables.MD5_CHECK)] = '1';
-    expect(new MongoBinaryDownload({ downloadDir: '/' }).checkMD5).toBe(true);
+    expect(new MongoBinaryDownload({ downloadDir: '/' }).binaryOpts.checkMD5).toBe(true);
   });
 
   it('should use direct download', async () => {
