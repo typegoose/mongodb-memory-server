@@ -77,5 +77,5 @@ await replset.stop();
 ## Final Notes
 
 :::danger
-When not using an global instance for tests and use multi-threaded tests, it can cause Race Conditions
+When you are not using a global instance for tests and run multi-threaded tests, it can cause Race Conditions.
 :::
