@@ -49,7 +49,7 @@
     "https-proxy-agent": "^6.1.0",
     "mongodb": "^5.4.0",
     "new-find-package-json": "^2.0.0",
-    "semver": "^7.5.0",
+    "semver": "^7.5.1",
     "tar-stream": "^3.0.0",
     "yauzl": "^2.10.0"
   },
