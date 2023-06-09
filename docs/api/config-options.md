@@ -49,6 +49,22 @@ Valid Options are `x64`, `arm64`, ~~`ia32`~~([will be removed in 9.0](../guides/
 
 [See here for what versions are available for what architectures](https://www.mongodb.com/download-center/community/releases/archive)
 
+### DISTRO
+
+| Environment Variable | PackageJson |
+| :------------------: | :---------: |
+|   `MONGOMS_DISTRO`   |  `distro`   |
+
+Option `DISTRO` is used to overwrite the Distribution used instead of the detected one.
+
+Only works for when [`PLATFORM`](#platform) (automatic or manually set) is `linux`.
+
+Format is `distro-release`, both distro and release need to be always defined.
+
+Example: `ubuntu-18.04`
+
+[See here for what versions are available for what distros](https://www.mongodb.com/download-center/community/releases/archive)
+
 ### VERSION
 
 | Environment Variable | PackageJson |

@@ -5,6 +5,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
 import { URL } from 'url';
 import {
+  GenericMMSError,
   KnownVersionIncompatibilityError,
   UnknownArchitectureError,
   UnknownPlatformError,
@@ -161,8 +162,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
     // the highest version for "i686" seems to be 3.3
     if (this.arch !== 'i686') {
-      if (!this.os) {
+      if (!this.os && resolveConfig(ResolveConfigVariables.DISTRO)) {
         this.os = await getOS();
+      }
+
+      if (resolveConfig(ResolveConfigVariables.DISTRO)) {
+        this.overwriteDistro();
       }
 
       osString = this.getLinuxOSVersionString(this.os as LinuxOS);
@@ -178,6 +183,38 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     name += `-${this.version}.tgz`;
 
     return name;
+  }
+
+  /**
+   * Parse and apply config option DISTRO
+   */
+  protected overwriteDistro() {
+    const env = resolveConfig(ResolveConfigVariables.DISTRO);
+
+    if (isNullOrUndefined(env)) {
+      return;
+    }
+
+    const split = env.split('-');
+
+    const distro = split[0];
+    const release = split[1];
+
+    if (isNullOrUndefined(distro)) {
+      throw new GenericMMSError('Expected DISTRO option to have a distro like "ubuntu-18.04"');
+    }
+
+    if (isNullOrUndefined(release)) {
+      throw new GenericMMSError(
+        'Expected DISTRO option to have a release like "ubuntu-18.04" (delimited by "-")'
+      );
+    }
+
+    this.os = {
+      os: 'linux',
+      dist: distro,
+      release: release,
+    } as LinuxOS;
   }
 
   /**
