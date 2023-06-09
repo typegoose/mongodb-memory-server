@@ -44,10 +44,10 @@ const log = debug('MongoMS:MongoMemoryReplSet');
  */
 export interface ReplSetOpts {
   /**
-   * enable auth ("--auth" / "--noauth")
+   * Enable Authentication
    * @default false
    */
-  auth?: boolean | AutomaticAuth; // TODO: remove "boolean" option next major version
+  auth?: AutomaticAuth;
   /**
    * additional command line arguments passed to `mongod`
    * @default []
@@ -240,7 +240,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   set replSetOpts(val: ReplSetOpts) {
     assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
     const defaults: Required<ReplSetOpts> = {
-      auth: false,
+      auth: { enable: false },
       args: [],
       name: 'testset',
       count: 1,
@@ -253,11 +253,6 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     this._replSetOpts = { ...defaults, ...val };
 
     assertion(this._replSetOpts.count > 0, new ReplsetCountLowError(this._replSetOpts.count));
-
-    // setting this for sanity
-    if (typeof this._replSetOpts.auth === 'boolean') {
-      this._replSetOpts.auth = { enable: this._replSetOpts.auth };
-    }
 
     // only set default is enabled
     if (this._replSetOpts.auth.enable) {

@@ -439,7 +439,7 @@ describe('MongoMemoryReplSet', () => {
         storageEngine: 'ephemeralForTest',
         configSettings: {},
       });
-      replSet.replSetOpts = { auth: true };
+      replSet.replSetOpts = { auth: { enable: true } };
       // @ts-expect-error because "_replSetOpts" is protected
       expect(replSet.replSetOpts).toEqual(replSet._replSetOpts);
       const authDefault = utils.authDefault(replSet.replSetOpts.auth as AutomaticAuth);
