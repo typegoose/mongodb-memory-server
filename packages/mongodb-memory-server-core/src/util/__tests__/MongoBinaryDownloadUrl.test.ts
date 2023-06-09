@@ -1735,6 +1735,41 @@ describe('MongoBinaryDownloadUrl', () => {
         expect(err.message).toStrictEqual('Unknown/unsupported linux "unknown" id_like\'s: []');
       }
     });
+
+    describe('wrap config options', () => {
+      const originalEnv = process.env;
+
+      beforeEach(() => {
+        process.env = originalEnv;
+      });
+
+      afterAll(() => {
+        process.env = originalEnv;
+      });
+
+      it('should apply config option DISTRO', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'linux',
+          arch: 'x64',
+          version: '5.0.0',
+          os: {
+            os: 'linux',
+            dist: 'unknown',
+            release: '0',
+            codename: 'unknown',
+          },
+        });
+        // @ts-expect-error "overwriteDistro" is protected
+        jest.spyOn(du, 'overwriteDistro');
+
+        process.env[envName(ResolveConfigVariables.DISTRO)] = 'ubuntu-18.04';
+
+        expect((await du.getArchiveNameLinux()).includes('ubuntu1804')).toBeTruthy();
+
+        // @ts-expect-error "overwriteDistro" is protected
+        expect(du.overwriteDistro).toBeCalledTimes(1);
+      });
+    });
   });
 
   describe('translateArch()', () => {

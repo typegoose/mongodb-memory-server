@@ -5,6 +5,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from './utils';
 import { URL } from 'url';
 import {
+  GenericMMSError,
   KnownVersionIncompatibilityError,
   UnknownArchitectureError,
   UnknownLinuxDistro,
@@ -160,8 +161,12 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * (from: https://www.mongodb.org/dl/linux)
    */
   async getArchiveNameLinux(): Promise<string> {
-    if (!this.os) {
+    if (!this.os && resolveConfig(ResolveConfigVariables.DISTRO)) {
       this.os = await getOS();
+    }
+
+    if (resolveConfig(ResolveConfigVariables.DISTRO)) {
+      this.overwriteDistro();
     }
 
     const osString: string = this.getLinuxOSVersionString(this.os as LinuxOS);
@@ -177,6 +182,38 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     name += `-${this.version}.tgz`;
 
     return name;
+  }
+
+  /**
+   * Parse and apply config option DISTRO
+   */
+  protected overwriteDistro() {
+    const env = resolveConfig(ResolveConfigVariables.DISTRO);
+
+    if (isNullOrUndefined(env)) {
+      return;
+    }
+
+    const split = env.split('-');
+
+    const distro = split[0];
+    const release = split[1];
+
+    if (isNullOrUndefined(distro)) {
+      throw new GenericMMSError('Expected DISTRO option to have a distro like "ubuntu-18.04"');
+    }
+
+    if (isNullOrUndefined(release)) {
+      throw new GenericMMSError(
+        'Expected DISTRO option to have a release like "ubuntu-18.04" (delimited by "-")'
+      );
+    }
+
+    this.os = {
+      os: 'linux',
+      dist: distro,
+      release: release,
+    } as LinuxOS;
   }
 
   /**
