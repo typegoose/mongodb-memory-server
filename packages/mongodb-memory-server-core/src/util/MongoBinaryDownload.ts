@@ -33,7 +33,7 @@ export class MongoBinaryDownload {
   dlProgress: MongoBinaryDownloadProgress;
   _downloadingUrl?: string;
 
-  /**These options are kind of raw, they are not run through DryMongoBinary.generateOptions */
+  /** These options are kind of raw, they are not run through DryMongoBinary.generateOptions */
   binaryOpts: Required<MongoBinaryOpts>;
 
   // TODO: for an major version, remove the compat get/set
