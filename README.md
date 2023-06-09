@@ -86,7 +86,7 @@ On Linux, you will also need `libcurl4` (or `libcurl3` on some older distro vers
 
 ### Configuring which mongod binary to use
 
-The default behavior is that version `5.0.13` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
+The default behavior is that version `5.0.18` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
 
 ```sh
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
@@ -128,7 +128,7 @@ const mongod = new MongoMemoryServer({
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },
   binary: {
-    version?: string, // by default '5.0.13'
+    version?: string, // by default '5.0.18'
     downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()

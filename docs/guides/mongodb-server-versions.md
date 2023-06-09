@@ -31,7 +31,8 @@ Starting with MongoDB version 5.0, the default versions for `mongodb-memory-serv
 
 | `mongodb-memory-server-core` Version | Default MongoDB Version |
 | :----------------------------------: | :---------------------: |
-|           8.11.x - 8.11.x            |         5.0.13          |
+|           8.13.x - 8.13.x            |         5.0.18          |
+|           8.11.x - 8.12.x            |         5.0.13          |
 |            8.6.x - 8.10.x            |          5.0.8          |
 |            8.0.x - 8.5.x             |          5.0.3          |
 |            7.5.x - 7.5.x             |         4.0.27          |

@@ -57,7 +57,7 @@ Valid Options are `x64`, `arm64`, ~~`ia32`~~([will be removed in 9.0](../guides/
 
 Option `VERSION` is used to set what mongodb version should be downloaded
 
-Default: `5.0.13`
+Default: `5.0.18`
 
 This Option does not have a effect when [`ARCHIVE_NAME`](#archive_name) or [`DOWNLOAD_URL`](#download_url) is defined.
 
