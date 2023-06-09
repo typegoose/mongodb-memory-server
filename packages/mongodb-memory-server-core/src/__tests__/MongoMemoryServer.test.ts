@@ -73,7 +73,6 @@ describe('MongoMemoryServer', () => {
       const mongoServer = await MongoMemoryServer.create({
         auth: {},
         instance: {
-          auth: true,
           storageEngine: 'ephemeralForTest',
         },
       });
@@ -206,7 +205,6 @@ describe('MongoMemoryServer', () => {
       const mongoServer = await MongoMemoryServer.create({
         auth: {},
         instance: {
-          auth: true,
           storageEngine: 'wiredTiger',
         },
       });
@@ -300,7 +298,6 @@ describe('MongoMemoryServer', () => {
           ],
         },
         instance: {
-          auth: true,
           storageEngine: 'ephemeralForTest',
         },
       });
@@ -413,7 +410,6 @@ describe('MongoMemoryServer', () => {
           disable: true,
         },
         instance: {
-          auth: true,
           storageEngine: 'ephemeralForTest',
         },
       });
@@ -439,35 +435,19 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop();
     });
 
-    it('"createAuth" should not be called if "instance.auth" is false', async () => {
+    it('"createAuth" should ignore "instance.auth"', async () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(MongoMemoryServer.prototype, 'createAuth');
-      const mongoServer = await MongoMemoryServer.create({
+      const mongoServer = new MongoMemoryServer({
         auth: {},
         instance: {
+          // @ts-expect-error "auth" is removed from the type
           auth: false,
           storageEngine: 'ephemeralForTest',
         },
       });
 
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
-
-      const con: MongoClient = await MongoClient.connect(
-        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin')
-      );
-      const db = con.db('admin');
-      await db.command({
-        usersInfo: 1,
-      });
-      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
-      expect(MongoMemoryServer.prototype.createAuth).not.toHaveBeenCalled();
-      expect(
-        mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth')
-      ).toStrictEqual(true);
-
-      await con.close();
-      await mongoServer.stop();
+      expect(mongoServer.opts.instance).not.toHaveProperty('auth');
     });
 
     it('should throw an error if state is not "new" or "stopped"', async () => {

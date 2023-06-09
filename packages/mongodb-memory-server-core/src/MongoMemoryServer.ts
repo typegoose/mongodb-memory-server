@@ -24,10 +24,16 @@ import * as os from 'os';
 const log = debug('MongoMS:MongoMemoryServer');
 
 /**
+ * Type with automatic options removed
+ * "auth" is automatically handled and set via {@link AutomaticAuth}
+ */
+export type MemoryServerInstanceOpts = Omit<MongoMemoryInstanceOpts, 'auth'>;
+
+/**
  * MongoMemoryServer Stored Options
  */
 export interface MongoMemoryServerOpts {
-  instance?: MongoMemoryInstanceOpts;
+  instance?: MemoryServerInstanceOpts;
   binary?: MongoBinaryOpts;
   spawn?: SpawnOptions;
   /**
@@ -234,11 +240,13 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     super();
     this.opts = { ...opts };
 
-    if (!isNullOrUndefined(this.opts.auth)) {
-      if (this.opts.instance?.auth === false) {
-        log('opts.instance.auth is false, but opts.auth was defined!');
-      }
+    // instance option "auth" will be automatically set and handled via AutomaticAuth
+    if ('auth' in (this.opts.instance ?? {})) {
+      log('opts.instance.auth was defined, but will be set automatically, ignoring');
+      delete (this.opts.instance as MongoMemoryInstanceOpts | undefined)?.auth;
+    }
 
+    if (!isNullOrUndefined(this.opts.auth)) {
       // assign defaults
       this.auth = authDefault(this.opts.auth);
     }
@@ -399,9 +407,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       isNew = false;
     }
 
-    const enableAuth: boolean =
-      (typeof instOpts.auth === 'boolean' ? instOpts.auth : true) && // check if auth is even meant to be enabled
-      this.authObjectEnable();
+    const enableAuth: boolean = this.authObjectEnable();
 
     const createAuth: boolean =
       enableAuth && // re-use all the checks from "enableAuth"
