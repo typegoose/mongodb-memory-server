@@ -30,7 +30,7 @@ export interface MongoBinaryDownloadProgress {
  */
 export class MongoBinaryDownload {
   dlProgress: MongoBinaryDownloadProgress;
-  _downloadingUrl?: string;
+  protected _downloadingUrl?: string;
 
   /**These options are kind of raw, they are not run through DryMongoBinary.generateOptions */
   binaryOpts: Required<MongoBinaryOpts>;
