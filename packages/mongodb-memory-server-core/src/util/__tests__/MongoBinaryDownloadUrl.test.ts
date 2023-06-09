@@ -4,6 +4,7 @@ import {
   UnknownArchitectureError,
   KnownVersionIncompatibilityError,
   UnknownVersionError,
+  UnknownLinuxDistro,
 } from '../errors';
 import { LinuxOS } from '../getos';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
@@ -738,46 +739,6 @@ describe('MongoBinaryDownloadUrl', () => {
           );
           expect(console.warn).toHaveBeenCalledTimes(1);
         });
-      });
-
-      it('fallback', async () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'linux',
-          arch: 'x64',
-          version: '3.6.3',
-          os: {
-            os: 'linux',
-            dist: 'Something Unhandled', // not "unknown", because that is when it failed to parse
-            release: '',
-          },
-        });
-
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
-        );
-        expect(console.warn).toHaveBeenCalledTimes(1);
-      });
-
-      it('fallback unknown', async () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'linux',
-          arch: 'x64',
-          version: '3.6.3',
-          os: {
-            os: 'linux',
-            dist: 'unknown', // "unknown" to test the case of failing to parse a name
-            release: '',
-          },
-        });
-
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.3.tgz'
-        );
-        expect(console.warn).toHaveBeenCalledTimes(2);
       });
 
       describe('for gentoo', () => {
@@ -1725,24 +1686,8 @@ describe('MongoBinaryDownloadUrl', () => {
     });
   });
 
-  describe('getLegacyVersionString()', () => {
-    let downloadUrl: MongoBinaryDownloadUrl;
-    beforeEach(() => {
-      downloadUrl = new MongoBinaryDownloadUrl({
-        platform: 'linux',
-        arch: 'x64',
-        version: '3.6.3',
-      });
-    });
-
-    it('should return an empty string', () => {
-      downloadUrl.version = '3.6.3';
-      expect(downloadUrl.getLegacyVersionString()).toBe('');
-    });
-  });
-
   describe('getLinuxOSVersionString()', () => {
-    it('should give a warning about "alpine"', () => {
+    it('should give a throw when distro is "alpine"', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => void 0);
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
@@ -1755,14 +1700,19 @@ describe('MongoBinaryDownloadUrl', () => {
           codename: 'alpine',
         },
       });
-      jest.spyOn(du, 'getLegacyVersionString');
-      const ret = du.getLinuxOSVersionString(du.os as LinuxOS);
-      expect(console.warn).toHaveBeenCalledTimes(2);
-      expect(du.getLegacyVersionString).toHaveBeenCalledTimes(1);
-      expect(ret).toBe('');
+
+      try {
+        du.getLinuxOSVersionString(du.os as LinuxOS);
+        fail('Expected to throw');
+      } catch (err) {
+        assertIsError(err);
+        expect(err).toBeInstanceOf(UnknownLinuxDistro);
+        expect(err.message).toStrictEqual('Unknown/unsupported linux "alpine" id_like\'s: []');
+      }
+      expect(console.warn).toHaveBeenCalledTimes(1);
     });
 
-    it('should give a warning about "unknown"', () => {
+    it('should give a error when distro is "unknown"', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => void 0);
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
@@ -1775,11 +1725,15 @@ describe('MongoBinaryDownloadUrl', () => {
           codename: 'unknown',
         },
       });
-      jest.spyOn(du, 'getLegacyVersionString');
-      const ret = du.getLinuxOSVersionString(du.os as LinuxOS);
-      expect(console.warn).toHaveBeenCalledTimes(2);
-      expect(du.getLegacyVersionString).toHaveBeenCalledTimes(1);
-      expect(ret).toBe('');
+
+      try {
+        du.getLinuxOSVersionString(du.os as LinuxOS);
+        fail('Expected to throw');
+      } catch (err) {
+        assertIsError(err);
+        expect(err).toBeInstanceOf(UnknownLinuxDistro);
+        expect(err.message).toStrictEqual('Unknown/unsupported linux "unknown" id_like\'s: []');
+      }
     });
   });
 

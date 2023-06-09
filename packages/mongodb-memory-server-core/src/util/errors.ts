@@ -186,5 +186,14 @@ export class DownloadError extends Error {
   }
 }
 
+/**
+ * Error for when the linux distro is unknown
+ */
+export class UnknownLinuxDistro extends Error {
+  constructor(public distro: string, public id_like: string[]) {
+    super(`Unknown/unsupported linux "${distro}" id_like's: [${id_like?.join(', ')}]`);
+  }
+}
+
 /* Custom Generic Error class for MMS */
 export class GenericMMSError extends Error {}

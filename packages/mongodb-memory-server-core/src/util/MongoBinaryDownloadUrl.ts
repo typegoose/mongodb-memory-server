@@ -7,6 +7,7 @@ import { URL } from 'url';
 import {
   KnownVersionIncompatibilityError,
   UnknownArchitectureError,
+  UnknownLinuxDistro,
   UnknownPlatformError,
   UnknownVersionError,
 } from './errors';
@@ -227,14 +228,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       );
     }
 
-    // warn for the fallback
-    console.warn(
-      `Unknown/unsupported linux "${os.dist}(${os.id_like?.join(
-        ', '
-      )})". Falling back to legacy MongoDB build!`
-    );
-
-    return this.getLegacyVersionString();
+    // mongodb does not ship generic linux builds anymore
+    throw new UnknownLinuxDistro(os.dist, os.id_like ?? []);
   }
 
   /**
@@ -385,13 +380,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     // dont add anthing as fallback, because for "amazon 1", mongodb just uses "amazon"
 
     return name;
-  }
-
-  /**
-   * Linux Fallback
-   */
-  getLegacyVersionString(): string {
-    return '';
   }
 
   /**

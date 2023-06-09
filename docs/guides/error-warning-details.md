@@ -172,6 +172,13 @@ Example: `ReplSet Count needs to be 1 or higher! (specified count: "${count}")`
 Details:  
 ReplSet count (like `new MongoMemoryReplSet({ replSet: { count: 0 } })`) needs to be `1` or higher
 
+## UnknownLinuxDistro
+
+Example: `Unknown/unsupported linux "${distro}" id_like's: [${id_like?.join(', ')}]`
+
+Details:  
+The Linux distro in use does not have a mapping for a mongodb version, please report this issue if the distro / idlike is not mentioned in [Supported Systems](./supported-systems.md).
+
 ## Deprecation Codes
 
 ### MMS001
