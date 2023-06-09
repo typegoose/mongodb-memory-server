@@ -35,8 +35,6 @@ export class MongoBinaryDownload {
   /**These options are kind of raw, they are not run through DryMongoBinary.generateOptions */
   binaryOpts: Required<MongoBinaryOpts>;
 
-  // end get/set backwards compat section
-
   constructor(opts: MongoBinaryOpts) {
     assertion(typeof opts.downloadDir === 'string', new Error('An DownloadDir must be specified!'));
     const version = opts.version ?? resolveConfig(ResolveConfigVariables.VERSION);
