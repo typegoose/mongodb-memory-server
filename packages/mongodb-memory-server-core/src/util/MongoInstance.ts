@@ -29,7 +29,7 @@ if (lt(process.version, '14.0.0')) {
 
 const log = debug('MongoMS:MongoInstance');
 
-export type StorageEngine = 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
+export type StorageEngine = 'ephemeralForTest' | 'wiredTiger';
 
 /**
  * Overwrite replica member-specific configuration

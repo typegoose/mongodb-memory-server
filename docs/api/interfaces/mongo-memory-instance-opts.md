@@ -85,12 +85,11 @@ Only has a effect when started with [`MongoMemoryReplSet`](../classes/mongo-memo
 
 ## Helper Type `StorageEngine`
 
-Typings: `StorageEngine = 'ephemeralForTest' | 'mmapv1' | 'wiredTiger'`
+Typings: `StorageEngine = 'ephemeralForTest' | 'wiredTiger'`
 
 Storage Engines supported by mongodb, see [MongoDB Storage Engines](https://www.mongodb.com/docs/manual/core/storage-engines/).
 
 Custom Explanation:
 
 - `ephemeralForTest` is a in-memory storage engine, which stores everything in RAM, which is great to use when wanting a simple database testing backend, is not the same as the Enterprise In-Memory Engine
-- `mmapv1` is storage engine which stores data on disk, was removed in mongodb 4.2
 - `wiredTiger` is a storage engine which stores data on disk.

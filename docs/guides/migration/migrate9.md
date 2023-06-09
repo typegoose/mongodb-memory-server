@@ -56,6 +56,10 @@ Some error classes have been merged:
 - `EnsureInstanceError` & `InstanceInfoError` -> `InstanceInfoError`
 - `NoSystemBinaryFoundError` & `BinaryNotFoundError` -> `BinaryNotFoundError`
 
+### Removed Storage engine `devnull` and `mmapv1`
+
+Storage Engines `devnull` and `mmapv1` have been removed because they are not supported in newer versions of mongodb anymore, `wiredTiger` should be used instead.
+
 ## Non-Breaking changes / Additions
 
 ### Compiler target is now `es2019`
