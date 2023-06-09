@@ -238,7 +238,7 @@ describe('single server replset', () => {
     jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
     jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
     const replSet = await MongoMemoryReplSet.create({
-      replSet: { auth: {}, count: 3, storageEngine: 'ephemeralForTest' },
+      replSet: { auth: { enable: true }, count: 3, storageEngine: 'ephemeralForTest' },
     });
 
     utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth));
@@ -309,7 +309,7 @@ describe('single server replset', () => {
     jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
     jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
     const replSet = await MongoMemoryReplSet.create({
-      replSet: { auth: {}, count: 3, storageEngine: 'wiredTiger' },
+      replSet: { auth: { enable: true }, count: 3, storageEngine: 'wiredTiger' },
     });
 
     async function testConnections() {
@@ -429,7 +429,7 @@ describe('MongoMemoryReplSet', () => {
       // @ts-expect-error because "_replSetOpts" is protected
       expect(replSet.replSetOpts).toEqual(replSet._replSetOpts);
       expect(replSet.replSetOpts).toEqual({
-        auth: { disable: true },
+        auth: { enable: false },
         args: [],
         name: 'testset',
         count: 1,
@@ -444,7 +444,7 @@ describe('MongoMemoryReplSet', () => {
       expect(replSet.replSetOpts).toEqual(replSet._replSetOpts);
       const authDefault = utils.authDefault(replSet.replSetOpts.auth as AutomaticAuth);
       expect(replSet.replSetOpts).toEqual({
-        auth: { ...authDefault, disable: false },
+        auth: { ...authDefault, enable: true },
         args: [],
         name: 'testset',
         count: 1,

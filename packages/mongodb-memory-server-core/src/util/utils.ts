@@ -181,7 +181,7 @@ export async function ensureAsync(): Promise<void> {
 export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
   return {
     force: false,
-    disable: false,
+    enable: true,
     customRootName: 'mongodb-memory-server-root',
     customRootPwd: 'rootuser',
     extraUsers: [],

@@ -124,7 +124,6 @@ const mongod = new MongoMemoryServer({
     dbPath?: string, // by default create in temp directory
     storageEngine?: string, // by default `ephemeralForTest`, available engines: [ 'ephemeralForTest', 'wiredTiger' ]
     replSet?: string, // by default no replica set, replica set name
-    auth?: boolean, // by default `mongod` is started with '--noauth', start `mongod` with '--auth'
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },
   binary: {
@@ -173,7 +172,7 @@ const replSet = new MongoMemoryReplSet({
   // unless otherwise noted below these values will be in common with all instances spawned:
   replSet: {
     name, // replica set name (default: 'testset')
-    auth, //  enable auth support? (default: false)
+    auth, //  enable auth support? (default: undefined / disabled)
     args, // any args specified here will be combined with any per instance args from `instanceOpts`
     count, // number of additional `mongod` processes to start (will not start any extra if instanceOpts.length > replSet.count); (default: 1)
     dbName, // default database for db URI strings. (default: uuid.v4())

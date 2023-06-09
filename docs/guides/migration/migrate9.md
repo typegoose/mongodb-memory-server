@@ -34,7 +34,15 @@ With 9.0.0 the option `instance.auth` option is going to be ignored, because its
 
 Example:
 
-`new MongoMemoryServer({ instance: { auth: true } })` is going to be ignored, use `new MongoMemoryServer({ auth: {} })`
+`new MongoMemoryServer({ instance: { auth: true } })` is going to be ignored, use `new MongoMemoryServer({ auth: { enable: true } })`
+
+### `AutomaticAuth` changes
+
+`AutomaticAuth` has been changed to **not** be enabled anymore by just having a empty object. Also property `disable` has been removed and `enable` has been added.
+
+Replace `auth: {}` with `auth: { enable: true }`.  
+Replace `auth: { disable: true }` with `auth: { enable: false }`.  
+Replace `auth: { disable: false }` with `auth: { enable: true }`.  
 
 ### MongoMemoryServer and MongoReplSet `.cleanup(boolean)` and `.stop(boolean)` have been removed
 

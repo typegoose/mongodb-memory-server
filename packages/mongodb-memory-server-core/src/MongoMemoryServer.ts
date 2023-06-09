@@ -44,10 +44,10 @@ export interface MongoMemoryServerOpts {
 
 export interface AutomaticAuth {
   /**
-   * Disable Automatic User creation
-   * @default false because when defining this object it usually means that AutomaticAuth is wanted
+   * Enable Automatic User creation
+   * @default false
    */
-  disable?: boolean;
+  enable?: boolean;
   /**
    * Extra Users to create besides the root user
    * @default []
@@ -246,7 +246,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       delete (this.opts.instance as MongoMemoryInstanceOpts | undefined)?.auth;
     }
 
-    if (!isNullOrUndefined(this.opts.auth)) {
+    if (this.opts.auth?.enable === true) {
       // assign defaults
       this.auth = authDefault(this.opts.auth);
     }
@@ -484,13 +484,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     if (!isNullOrUndefined(this.auth) && createAuth) {
       this.debug(`_startUpInstance: Running "createAuth" (force: "${this.auth.force}")`);
       await this.createAuth(data);
-    } else {
-      // extra "if" to log when "disable" is set to "true"
-      if (this.opts.auth?.disable) {
-        this.debug(
-          '_startUpInstance: AutomaticAuth.disable is set to "true" skipping "createAuth"'
-        );
-      }
     }
   }
 
@@ -809,9 +802,9 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       return false;
     }
 
-    return typeof this.auth.disable === 'boolean' // if "this._replSetOpts.auth.disable" is defined, use that
-      ? !this.auth.disable // invert the disable boolean, because "auth" should only be disabled if "disabled = true"
-      : true; // if "this._replSetOpts.auth.disable" is not defined, default to true because "this._replSetOpts.auth" is defined
+    return typeof this.auth.enable === 'boolean' // if "this._replSetOpts.auth.enable" is defined, use that
+      ? this.auth.enable
+      : false; // if "this._replSetOpts.auth.enable" is not defined, default to false
   }
 }
 

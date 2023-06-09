@@ -71,7 +71,7 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
-        auth: {},
+        auth: { enable: true },
         instance: {
           storageEngine: 'ephemeralForTest',
         },
@@ -133,8 +133,8 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop();
     });
 
-    it('should make use of "AutomaticAuth" even when "instance.auth" is not set (wiredTiger)', async () => {
-      jest.spyOn(MongoInstance.prototype, 'start');
+    it('should not start auth when "instance.auth" is not set (wiredTiger)', async () => {
+      jest.spyOn(MongoInstance.prototype, 'start').mockResolvedValueOnce();
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
         auth: {},
@@ -143,67 +143,22 @@ describe('MongoMemoryServer', () => {
         },
       });
 
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
+      const args =
+        // @ts-expect-error "_instanceInfo" is protected
+        mongoServer._instanceInfo?.instance
+          // separator comment
+          .prepareCommandArgs();
 
-      // test unpriviliged connection
-      {
-        const con = await MongoClient.connect(mongoServer.getUri());
+      utils.assertion(!utils.isNullOrUndefined(args));
 
-        const db = con.db('somedb');
-        const col = db.collection('somecol');
-
-        try {
-          await col.insertOne({ test: 1 });
-          fail('Expected insertion to fail');
-        } catch (err) {
-          expect(err).toBeInstanceOf(MongoServerError);
-          expect((err as MongoServerError).codeName).toEqual('Unauthorized');
-        } finally {
-          await con.close();
-        }
-      }
-
-      // test priviliged connection
-      {
-        const con: MongoClient = await MongoClient.connect(
-          utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
-          {
-            authSource: 'admin',
-            authMechanism: 'SCRAM-SHA-256',
-            auth: {
-              username: mongoServer.auth.customRootName,
-              password: mongoServer.auth.customRootPwd,
-            },
-          }
-        );
-
-        const admindb = con.db('admin');
-        const users: { users?: { user: string }[] } = await admindb.command({
-          usersInfo: mongoServer.auth.customRootName,
-        });
-        expect(users.users).toHaveLength(1);
-        expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
-
-        const db = con.db('somedb');
-        const col = db.collection('somecol');
-
-        expect(await col.insertOne({ test: 1 })).toHaveProperty('acknowledged', true);
-
-        await con.close();
-      }
-
-      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
-      expect(console.warn).toHaveBeenCalledTimes(0);
-
-      await mongoServer.stop();
+      expect(args.includes('--noauth')).toBeTruthy();
     });
 
     it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
-        auth: {},
+        auth: { enable: true },
         instance: {
           storageEngine: 'wiredTiger',
         },
@@ -276,6 +231,7 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
         auth: {
+          enable: true,
           extraUsers: [
             readOnlyUser,
             {
@@ -402,12 +358,12 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop();
     });
 
-    it('"createAuth" should not be called if "disabled" is true', async () => {
+    it('"createAuth" should not be called if "enabled" is false', async () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(MongoMemoryServer.prototype, 'createAuth');
       const mongoServer = await MongoMemoryServer.create({
         auth: {
-          disable: true,
+          enable: false,
         },
         instance: {
           storageEngine: 'ephemeralForTest',
@@ -415,8 +371,10 @@ describe('MongoMemoryServer', () => {
       });
 
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
-      expect(mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth'));
+      utils.assertion(utils.isNullOrUndefined(mongoServer.auth));
+      expect(
+        mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth')
+      ).toBeTruthy();
 
       const con: MongoClient = await MongoClient.connect(
         utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
@@ -439,7 +397,7 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(MongoMemoryServer.prototype, 'createAuth');
       const mongoServer = new MongoMemoryServer({
-        auth: {},
+        auth: { enable: true },
         instance: {
           // @ts-expect-error "auth" is removed from the type
           auth: false,
@@ -940,7 +898,7 @@ describe('MongoMemoryServer', () => {
 
       const mongoServer = new MongoMemoryServer({
         instance: { dbPath: tmpDbPath },
-        auth: {},
+        auth: { enable: true },
       });
 
       // @ts-expect-error "getStartOptions" is protected
@@ -968,7 +926,7 @@ describe('MongoMemoryServer', () => {
 
       const mongoServer = new MongoMemoryServer({
         instance: { dbPath: tmpDbPath },
-        auth: {},
+        auth: { enable: true },
       });
 
       // @ts-expect-error "getStartOptions" is protected
@@ -1101,22 +1059,22 @@ describe('MongoMemoryServer', () => {
       ).toStrictEqual(false);
     });
 
-    it('should with defaults return "true" if empty object OR "disable: false"', () => {
+    it('should with defaults return "false" if empty object OR "enable: false"', () => {
       {
         const mongoServer = new MongoMemoryServer({ auth: {} });
 
         expect(
           // @ts-expect-error "authObjectEnable" is protected
           mongoServer.authObjectEnable()
-        ).toStrictEqual(true);
+        ).toStrictEqual(false);
       }
       {
-        const mongoServer = new MongoMemoryServer({ auth: { disable: false } });
+        const mongoServer = new MongoMemoryServer({ auth: { enable: false } });
 
         expect(
           // @ts-expect-error "authObjectEnable" is protected
           mongoServer.authObjectEnable()
-        ).toStrictEqual(true);
+        ).toStrictEqual(false);
       }
     });
   });

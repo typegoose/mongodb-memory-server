@@ -256,11 +256,11 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     // setting this for sanity
     if (typeof this._replSetOpts.auth === 'boolean') {
-      this._replSetOpts.auth = { disable: !this._replSetOpts.auth };
+      this._replSetOpts.auth = { enable: this._replSetOpts.auth };
     }
 
-    // do not set default when "disable" is "true" to save execution and memory
-    if (!this._replSetOpts.auth.disable) {
+    // only set default is enabled
+    if (this._replSetOpts.auth.enable) {
       this._replSetOpts.auth = authDefault(this._replSetOpts.auth);
     }
   }
@@ -277,9 +277,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     assertion(typeof this._replSetOpts.auth === 'object', new AuthNotObjectError());
 
-    return typeof this._replSetOpts.auth.disable === 'boolean' // if "this._replSetOpts.auth.disable" is defined, use that
-      ? !this._replSetOpts.auth.disable // invert the disable boolean, because "auth" should only be disabled if "disabled = true"
-      : true; // if "this._replSetOpts.auth.disable" is not defined, default to true because "this._replSetOpts.auth" is defined
+    return typeof this._replSetOpts.auth.enable === 'boolean' // if "this._replSetOpts.auth.enable" is defined, use that
+      ? this._replSetOpts.auth.enable
+      : false; // if "this._replSetOpts.auth.enable" is not defined, default to false
   }
 
   /**
