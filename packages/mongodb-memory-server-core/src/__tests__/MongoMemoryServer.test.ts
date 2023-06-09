@@ -902,15 +902,13 @@ describe('MongoMemoryServer', () => {
 
   describe('getStartOptions()', () => {
     it('should create a tmpdir if "dbPath" is not set', async () => {
-      // somehow, jest cannot redefine function "dirSync", so this is disabled
-      // const tmpSpy = jest.spyOn(tmp, 'dirSync');
+      const tmpSpy = jest.spyOn(utils, 'createTmpDir');
       const mongoServer = new MongoMemoryServer({});
 
       // @ts-expect-error "getStartOptions" is protected
       const options = await mongoServer.getStartOptions();
 
-      // see comment above
-      // expect(tmpSpy).toHaveBeenCalledTimes(1);
+      expect(tmpSpy).toHaveBeenCalledTimes(1);
       expect(options.data.tmpDir).toBeDefined();
       // jest "expect" do not act as typescript typeguards
       utils.assertion(
@@ -918,6 +916,8 @@ describe('MongoMemoryServer', () => {
         new Error('Expected "options.data.dbPath" to be defined')
       );
       expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
+
+      await utils.removeDir(options.data.tmpDir!); // manual cleanup
     });
 
     it('should resolve "isNew" to "true" and set "createAuth" to "true" when dbPath is set, but empty', async () => {
@@ -986,6 +986,8 @@ describe('MongoMemoryServer', () => {
 
       expect(newPortSpy).toHaveBeenCalledTimes(1);
       expect(typeof options.data.port === 'number').toBeTruthy();
+
+      await utils.removeDir(options.data.tmpDir!); // manual cleanup
     });
 
     it('should use a predefined port as a suggestion for a port', async () => {
@@ -1003,6 +1005,8 @@ describe('MongoMemoryServer', () => {
 
       expect(newPortSpy).toHaveBeenCalledWith(predefinedPort);
       expect(options.data.port).toStrictEqual(predefinedPort);
+
+      await utils.removeDir(options.data.tmpDir!); // manual cleanup
     });
 
     it('should use a predefined port for a port with "forceSamePort" on', async () => {
@@ -1019,6 +1023,8 @@ describe('MongoMemoryServer', () => {
 
       expect(newPortSpy).not.toHaveBeenCalled();
       expect(options.data.port).toStrictEqual(predefinedPort);
+
+      await utils.removeDir(options.data.tmpDir!); // manual cleanup
     });
   });
 
@@ -1126,5 +1132,10 @@ describe('MongoMemoryServer', () => {
 
     expect(createSpy.mock.calls.length).toStrictEqual(1);
     expect(createSpy.mock.calls[0][0].instance).toHaveProperty('launchTimeout', 2000);
+
+    await utils.removeDir(
+      // @ts-expect-error "_instanceInfo" is protected
+      mongoServer._instanceInfo.tmpDir!
+    ); // manual cleanup
   });
 });
