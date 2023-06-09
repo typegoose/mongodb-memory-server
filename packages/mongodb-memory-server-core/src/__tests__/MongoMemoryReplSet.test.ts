@@ -551,9 +551,7 @@ describe('MongoMemoryReplSet', () => {
       const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
 
       const cleanupSpy = jest.spyOn(replSet, 'cleanup');
-      const cleanupInstance0Spy = jest
-        .spyOn(replSet.servers[0], 'cleanup')
-        .mockResolvedValue(void 0);
+      const cleanupInstance0Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
       await replSet.stop();
 
@@ -568,9 +566,7 @@ describe('MongoMemoryReplSet', () => {
       const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
 
       const cleanupSpy = jest.spyOn(replSet, 'cleanup');
-      const cleanupInstance0Spy = jest
-        .spyOn(replSet.servers[0], 'cleanup')
-        .mockResolvedValue(void 0);
+      const cleanupInstance0Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
       await replSet.stop(false);
 
@@ -593,9 +589,7 @@ describe('MongoMemoryReplSet', () => {
       const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
 
       const cleanupSpy = jest.spyOn(replSet, 'cleanup');
-      const cleanupInstance0Spy = jest
-        .spyOn(replSet.servers[0], 'cleanup')
-        .mockResolvedValue(void 0);
+      const cleanupInstance0Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
       await replSet.stop({ doCleanup: false, force: false });
 
@@ -620,9 +614,7 @@ describe('MongoMemoryReplSet', () => {
       const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
 
       const cleanupSpy = jest.spyOn(replSet, 'cleanup');
-      const cleanupInstance0Spy = jest
-        .spyOn(replSet.servers[0], 'cleanup')
-        .mockResolvedValue(void 0);
+      const cleanupInstance0Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
       await replSet.stop({ doCleanup: false });
       await replSet.cleanup();
@@ -638,9 +630,7 @@ describe('MongoMemoryReplSet', () => {
       const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
 
       const cleanupSpy = jest.spyOn(replSet, 'cleanup');
-      const cleanupInstance0Spy = jest
-        .spyOn(replSet.servers[0], 'cleanup')
-        .mockResolvedValue(void 0);
+      const cleanupInstance0Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
       await replSet.stop({ doCleanup: false });
       await replSet.cleanup(false);
@@ -655,9 +645,7 @@ describe('MongoMemoryReplSet', () => {
 
       await replSet.start();
 
-      const cleanupInstance1Spy = jest
-        .spyOn(replSet.servers[0], 'cleanup')
-        .mockResolvedValue(void 0);
+      const cleanupInstance1Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
       await replSet.stop({ doCleanup: false });
       await replSet.cleanup(true);
@@ -671,9 +659,7 @@ describe('MongoMemoryReplSet', () => {
       const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
 
       const cleanupSpy = jest.spyOn(replSet, 'cleanup');
-      const cleanupInstance0Spy = jest
-        .spyOn(replSet.servers[0], 'cleanup')
-        .mockResolvedValue(void 0);
+      const cleanupInstance0Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
       await replSet.stop({ doCleanup: false });
       await replSet.cleanup({ doCleanup: true, force: true });
@@ -723,5 +709,10 @@ describe('MongoMemoryReplSet', () => {
     utils.assertion(!utils.isNullOrUndefined(instanceInfo));
     expect(instanceInfo.instance).toBeDefined();
     expect(instanceInfo?.launchTimeout).toStrictEqual(2000);
+
+    await utils.removeDir(
+      // @ts-expect-error "_instanceInfo" is protected
+      replSet.servers[0]._instanceInfo.tmpDir!
+    ); // manual cleanup
   });
 });
