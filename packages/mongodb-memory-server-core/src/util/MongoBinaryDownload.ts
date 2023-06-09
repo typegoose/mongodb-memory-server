@@ -14,7 +14,7 @@ import { assertion, mkdir, pathExists, md5FromFile } from './utils';
 import { DryMongoBinary } from './DryMongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
-import { GenericMMSError, Md5CheckFailedError } from './errors';
+import { DownloadError, GenericMMSError, Md5CheckFailedError } from './errors';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -375,10 +375,10 @@ export class MongoBinaryDownload {
           if (response.statusCode != 200) {
             if (response.statusCode === 403) {
               reject(
-                new Error(
+                new DownloadError(
+                  downloadUrl,
                   "Status Code is 403 (MongoDB's 404)\n" +
                     "This means that the requested version-platform combination doesn't exist\n" +
-                    `  Used Url: "${downloadUrl}"\n` +
                     "Try to use different version 'new MongoMemoryServer({ binary: { version: 'X.Y.Z' } })'\n" +
                     'List of available versions can be found here: ' +
                     'https://www.mongodb.com/download-center/community/releases/archive'
@@ -388,12 +388,14 @@ export class MongoBinaryDownload {
               return;
             }
 
-            reject(new Error(`Status Code isnt 200! (it is ${response.statusCode})`));
+            reject(
+              new DownloadError(downloadUrl, `Status Code isnt 200! (it is ${response.statusCode})`)
+            );
 
             return;
           }
           if (typeof response.headers['content-length'] != 'string') {
-            reject(new Error('Response header "content-length" is empty!'));
+            reject(new DownloadError(downloadUrl, 'Response header "content-length" is empty!'));
 
             return;
           }
@@ -412,8 +414,9 @@ export class MongoBinaryDownload {
               !httpOptions.path?.endsWith('.md5')
             ) {
               reject(
-                new Error(
-                  `Too small (${this.dlProgress.current} bytes) mongod binary downloaded from ${downloadUrl}`
+                new DownloadError(
+                  downloadUrl,
+                  `Too small (${this.dlProgress.current} bytes) mongod binary downloaded.`
                 )
               );
 
@@ -436,7 +439,7 @@ export class MongoBinaryDownload {
         .on('error', (err: Error) => {
           // log it without having debug enabled
           console.error(`Couldnt download "${downloadUrl}"!`, err.message);
-          reject(err);
+          reject(new DownloadError(downloadUrl, err.message));
         });
     });
   }

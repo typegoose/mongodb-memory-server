@@ -222,7 +222,7 @@ describe('MongodbInstance', () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '4.2.18' },
+        binary: { version: '4.2.23' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
@@ -232,7 +232,7 @@ describe('MongodbInstance', () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '4.4.13' },
+        binary: { version: '4.4.22' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
@@ -242,7 +242,7 @@ describe('MongodbInstance', () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '5.0.13' },
+        binary: { version: '5.0.18' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
@@ -252,7 +252,7 @@ describe('MongodbInstance', () => {
       const gotPort = await getPort({ port: 27445 });
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '6.0.0' },
+        binary: { version: '6.0.6' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();

@@ -177,5 +177,14 @@ export class UnknownVersionError extends Error {
   }
 }
 
+/**
+ * Error for when downloading fails
+ */
+export class DownloadError extends Error {
+  constructor(public url: string, public msg: string) {
+    super(`Download failed for url \"${url}\", Details:\n${msg}`);
+  }
+}
+
 /* Custom Generic Error class for MMS */
 export class GenericMMSError extends Error {}
