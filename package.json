@@ -7,7 +7,7 @@
   "devDependencies": {
     "@commitlint/cli": "17.6.5",
     "@commitlint/config-conventional": "17.6.5",
-    "@google/semantic-release-replace-plugin": "1.2.0",
+    "semantic-release-replace-plugin": "1.2.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@semantic-release/git": "^10.0.1",
