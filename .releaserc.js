@@ -46,7 +46,7 @@ module.exports = {
     ],
     [
       // Update versions in sub-packages dependencies
-      "@google/semantic-release-replace-plugin",
+      "semantic-release-replace-plugin",
       {
         "replacements": [
           {
