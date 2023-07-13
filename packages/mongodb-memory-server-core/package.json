@@ -46,13 +46,13 @@
     "debug": "^4.3.4",
     "find-cache-dir": "^3.3.2",
     "get-port": "^5.1.1",
-    "https-proxy-agent": "^6.1.0",
+    "https-proxy-agent": "^7.0.1",
     "mongodb": "^5.6.0",
     "new-find-package-json": "^2.0.0",
     "semver": "^7.5.1",
     "tar-stream": "^3.0.0",
-    "yauzl": "^2.10.0",
-    "tslib": "^2.5.3"
+    "tslib": "^2.5.3",
+    "yauzl": "^2.10.0"
   },
   "scripts": {
     "clean": "rimraf tmp lib build coverage node_modules/.cache",
