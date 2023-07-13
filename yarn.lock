@@ -306,23 +306,7 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@commitlint/cli@17.6.5":
-  version "17.6.5"
-  resolved "https://registry.yarnpkg.com/@commitlint/cli/-/cli-17.6.5.tgz#3a8abd6499f9d4aeafe3bf9201338ccb868a14b9"
-  integrity sha512-3PQrWr/uo6lzF5k7n5QuosCYnzaxP9qGBp3jhWP0Vmsa7XA6wrl9ccPqfQyXpSbQE3zBROVO3TDqgPKe4tfmLQ==
-  dependencies:
-    "@commitlint/format" "^17.4.4"
-    "@commitlint/lint" "^17.6.5"
-    "@commitlint/load" "^17.5.0"
-    "@commitlint/read" "^17.5.1"
-    "@commitlint/types" "^17.4.4"
-    execa "^5.0.0"
-    lodash.isfunction "^3.0.9"
-    resolve-from "5.0.0"
-    resolve-global "1.0.0"
-    yargs "^17.0.0"
-
-"@commitlint/cli@^17.6.5":
+"@commitlint/cli@17.6.6", "@commitlint/cli@^17.6.6":
   version "17.6.6"
   resolved "https://registry.yarnpkg.com/@commitlint/cli/-/cli-17.6.6.tgz#416da9c45901323e5bf931aa1eac5995a3aa251c"
   integrity sha512-sTKpr2i/Fjs9OmhU+beBxjPavpnLSqZaO6CzwKVq2Tc4UYVTMFgpKOslDhUBVlfAUBfjVO8ParxC/MXkIOevEA==
@@ -338,10 +322,10 @@
     resolve-global "1.0.0"
     yargs "^17.0.0"
 
-"@commitlint/config-conventional@17.6.5":
-  version "17.6.5"
-  resolved "https://registry.yarnpkg.com/@commitlint/config-conventional/-/config-conventional-17.6.5.tgz#a8ec286e634a071329fe45dc4955032c2176aeb5"
-  integrity sha512-Xl9H9KLl86NZm5CYNTNF9dcz1xelE/EbvhWIWcYxG/rn3UWYWdWmmnX2q6ZduNdLFSGbOxzUpIx61j5zxbeXxg==
+"@commitlint/config-conventional@17.6.6":
+  version "17.6.6"
+  resolved "https://registry.yarnpkg.com/@commitlint/config-conventional/-/config-conventional-17.6.6.tgz#5452aa601d34503b88530ba38432116bcffdd005"
+  integrity sha512-phqPz3BDhfj49FUYuuZIuDiw+7T6gNAEy7Yew1IBHqSohVUCWOK2FXMSAExzS2/9X+ET93g0Uz83KjiHDOOFag==
   dependencies:
     conventional-changelog-conventionalcommits "^5.0.0"
 
@@ -386,7 +370,7 @@
     "@commitlint/types" "^17.4.4"
     semver "7.5.2"
 
-"@commitlint/lint@^17.6.5", "@commitlint/lint@^17.6.6":
+"@commitlint/lint@^17.6.6":
   version "17.6.6"
   resolved "https://registry.yarnpkg.com/@commitlint/lint/-/lint-17.6.6.tgz#d7ff64b6783f2bda56526195a66e6bb587e1fe1a"
   integrity sha512-5bN+dnHcRLkTvwCHYMS7Xpbr+9uNi0Kq5NR3v4+oPNx6pYXt8ACuw9luhM/yMgHYwW0ajIR20wkPAFkZLEMGmg==
@@ -2272,12 +2256,12 @@ commander@^10.0.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-10.0.1.tgz#881ee46b4f77d1c1dccc5823433aa39b022cbe06"
   integrity sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==
 
-commitlint@17.6.5:
-  version "17.6.5"
-  resolved "https://registry.yarnpkg.com/commitlint/-/commitlint-17.6.5.tgz#ecafcc2b7c823bff1a1ad7026d9dd5c0c7989c99"
-  integrity sha512-YRpFI8ABdvh0TbR6T72HaJFDn0TQdMVGgKnv6/GFkTdYTqzGo3ItTKn2bh/sxSVy/5ziOrVVAXtCy3PEq5Vs8w==
+commitlint@17.6.6:
+  version "17.6.6"
+  resolved "https://registry.yarnpkg.com/commitlint/-/commitlint-17.6.6.tgz#39535c407c515286900aad110d62798d507c3aa0"
+  integrity sha512-Q5M+w1nqGQSEkEW43EtPNrU+uKL2pENrJl6QigFupZ0v4AfvI8k5Q6uFgWmxlEOrSkgCYaN436Q9c9pydqyJqg==
   dependencies:
-    "@commitlint/cli" "^17.6.5"
+    "@commitlint/cli" "^17.6.6"
     "@commitlint/types" "^17.4.4"
 
 common-ancestor-path@^1.0.1:
