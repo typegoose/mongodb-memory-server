@@ -16,7 +16,7 @@ module.exports = {
         'test',
         'chore',
         'revert',
-        'dependencies',
+        'deps',
         'release',
       ],
     ],
