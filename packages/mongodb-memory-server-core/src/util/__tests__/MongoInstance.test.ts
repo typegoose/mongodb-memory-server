@@ -2,7 +2,7 @@
 import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
-import getPort from 'get-port';
+import { getFreePort } from '../getport';
 import {
   GenericMMSError,
   StartBinaryFailedError,
@@ -155,7 +155,7 @@ describe('MongodbInstance', () => {
   });
 
   it('should start instance on port specific port', async () => {
-    const gotPort = await getPort({ port: 27333 });
+    const gotPort = await getFreePort(27333);
     const mongod = await MongodbInstance.create({
       instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
@@ -167,7 +167,7 @@ describe('MongodbInstance', () => {
   });
 
   it('should throw error if port is busy', async () => {
-    const gotPort = await getPort({ port: 27444 });
+    const gotPort = await getFreePort(27444);
     const mongod = await MongodbInstance.create({
       instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
@@ -190,7 +190,7 @@ describe('MongodbInstance', () => {
   });
 
   it('should wait until childprocess and killerprocess are killed', async () => {
-    const gotPort = await getPort({ port: 27445 });
+    const gotPort = await getFreePort(27445);
     const mongod: MongodbInstance = await MongodbInstance.create({
       instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
@@ -209,7 +209,7 @@ describe('MongodbInstance', () => {
 
   describe('should work with mongodb LTS releases', () => {
     it('should work with mongodb 4.0', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.0.28' }, // explicit version instead of default to not mess it up later
@@ -219,7 +219,7 @@ describe('MongodbInstance', () => {
     });
 
     it('should work with mongodb 4.2', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.2.23' },
@@ -229,7 +229,7 @@ describe('MongodbInstance', () => {
     });
 
     it('should work with mongodb 4.4', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.4.22' },
@@ -239,7 +239,7 @@ describe('MongodbInstance', () => {
     });
 
     it('should work with mongodb 5.0', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '5.0.18' },
@@ -249,7 +249,7 @@ describe('MongodbInstance', () => {
     });
 
     it('should work with mongodb 6.0', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '6.0.6' },
@@ -682,7 +682,7 @@ describe('MongodbInstance', () => {
   });
 
   it('should throw error if instance is already started (#662)', async () => {
-    const gotPort = await getPort();
+    const gotPort = await getFreePort();
     const mongod = await MongodbInstance.create({
       instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
