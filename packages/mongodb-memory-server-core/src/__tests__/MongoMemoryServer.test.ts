@@ -12,6 +12,7 @@ import { InstanceInfoError, StateError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
 import { promises as fspromises } from 'fs';
 import * as path from 'path';
+import getFreePort from '../util/getport';
 
 jest.setTimeout(100000); // 10s
 
@@ -33,12 +34,13 @@ describe('MongoMemoryServer', () => {
     });
 
     it('"_startUpInstance" should use an different port if address is already in use (use same port for 2 servers)', async () => {
+      const testPort = await getFreePort(27444);
       const mongoServer1 = await MongoMemoryServer.create({
-        instance: { port: 27444 },
+        instance: { port: testPort },
       });
 
       const mongoServer2 = await MongoMemoryServer.create({
-        instance: { port: mongoServer1.instanceInfo!.port },
+        instance: { port: testPort },
       });
 
       expect(mongoServer1.instanceInfo).toBeDefined();
