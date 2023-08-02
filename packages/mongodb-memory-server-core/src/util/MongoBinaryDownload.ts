@@ -3,7 +3,7 @@ import { URL } from 'url';
 import path from 'path';
 import { promises as fspromises, createWriteStream, createReadStream, constants } from 'fs';
 import md5File from 'md5-file';
-import https from 'https';
+import { https } from 'follow-redirects';
 import { createUnzip } from 'zlib';
 import tar from 'tar-stream';
 import yauzl from 'yauzl';
@@ -16,6 +16,7 @@ import { DryMongoBinary } from './DryMongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
 import { DownloadError, GenericMMSError, Md5CheckFailedError } from './errors';
+import { RequestOptions } from 'https';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -234,7 +235,7 @@ export class MongoBinaryDownload {
     const urlObject = new URL(downloadUrl);
     urlObject.port = urlObject.port || '443';
 
-    const requestOptions: https.RequestOptions = {
+    const requestOptions: RequestOptions = {
       method: 'GET',
       rejectUnauthorized: strictSsl,
       protocol: envToBool(resolveConfig(ResolveConfigVariables.USE_HTTP)) ? 'http:' : 'https:',
@@ -402,7 +403,7 @@ export class MongoBinaryDownload {
    */
   async httpDownload(
     url: URL,
-    httpOptions: https.RequestOptions,
+    httpOptions: RequestOptions,
     downloadLocation: string,
     tempDownloadLocation: string
   ): Promise<string> {
