@@ -410,10 +410,16 @@ export class MongoBinaryDownload {
     log('httpDownload');
     const downloadUrl = this.assignDownloadingURL(url);
 
+    const maxRedirects = parseInt(resolveConfig(ResolveConfigVariables.MAX_REDIRECTS) || '');
+    const useHttpsOptions: Parameters<typeof https.get>[1] = {
+      maxRedirects: Number.isNaN(maxRedirects) ? 2 : maxRedirects,
+      ...httpOptions,
+    };
+
     return new Promise((resolve, reject) => {
       log(`httpDownload: trying to download "${downloadUrl}"`);
       https
-        .get(url, httpOptions, (response) => {
+        .get(url, useHttpsOptions, (response) => {
           if (response.statusCode != 200) {
             if (response.statusCode === 403) {
               reject(

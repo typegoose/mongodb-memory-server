@@ -25,6 +25,7 @@ export enum ResolveConfigVariables {
   USE_HTTP = 'USE_HTTP',
   SYSTEM_BINARY_VERSION_CHECK = 'SYSTEM_BINARY_VERSION_CHECK',
   USE_ARCHIVE_NAME_FOR_BINARY_NAME = 'USE_ARCHIVE_NAME_FOR_BINARY_NAME',
+  MAX_REDIRECTS = 'MAX_REDIRECTS',
 }
 
 /** The Prefix for Environmental values */
@@ -40,6 +41,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.USE_HTTP, 'false'],
   [ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK, 'true'],
   [ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME, 'false'],
+  [ResolveConfigVariables.MAX_REDIRECTS, '2'],
 ]);
 
 /** Interface for storing information about the found package.json from `findPackageJson` */

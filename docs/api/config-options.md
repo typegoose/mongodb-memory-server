@@ -191,6 +191,16 @@ Option `USE_HTTP` is used to use `http` over `https`
 
 Default: `false`
 
+### MAX_REDIRECTS
+
+| Environment Variable | PackageJson |
+| :------------------: | :---------: |
+|  `MONGOMS_MAX_REDIRECTS`  |  `maxRedirects`  |
+
+Option `MAX_REDIRECTS` is used to set the maximal amount of redirects to follow
+
+Default: `2`
+
 ### USE_ARCHIVE_NAME_FOR_BINARY_NAME
 
 |            Environment Variable            |          PackageJson          |
