@@ -1,3 +1,20 @@
+## [8.14.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.13.0...v8.14.0) (2023-08-04)
+
+
+### Features
+
+* update default-binary 5.0.19 ([296b2f6](https://github.com/nodkz/mongodb-memory-server/commit/296b2f6a4604d6ab1bfc81130b030df829203dac))
+* **MongoBinaryDownload:** add option to configure max amount of redirects ([0d81c81](https://github.com/nodkz/mongodb-memory-server/commit/0d81c816eacf2b149ac01cd6bc18088f8486ccbe))
+* **MongoBinaryDownload:** follow redirects ([9ec4aee](https://github.com/nodkz/mongodb-memory-server/commit/9ec4aee40d8ac429599b4b97385db1a4ff860c82)), closes [#785](https://github.com/nodkz/mongodb-memory-server/issues/785)
+
+
+### Dependencies
+
+* **eslint:** upgrade to version 8.46.0 ([713b1a5](https://github.com/nodkz/mongodb-memory-server/commit/713b1a5f5e2040a5297c1d41cf570f0ef7982316))
+* **eslint-config-prettier:** upgrade to version 8.10.0 ([097077f](https://github.com/nodkz/mongodb-memory-server/commit/097077ff170f9907ddc7597179f91babdf0cd41a))
+* **semver:** upgrade to version 7.5.4 ([f7c4837](https://github.com/nodkz/mongodb-memory-server/commit/f7c483743fdc90ed1eda0fec901d5673d14827f5))
+* **tslib:** upgrade to version 2.6.1 ([db16d8f](https://github.com/nodkz/mongodb-memory-server/commit/db16d8fcc6bd9a6735a3f1414d1d3f4420dd9890))
+
 ## [8.13.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.12.2...v8.13.0) (2023-06-09)
 
 
