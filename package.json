@@ -23,7 +23,7 @@
     "cross-env": "7.0.3",
     "doctoc": "2.2.1",
     "eslint": "8.42.0",
-    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-prettier": "4.2.1",
     "husky": "7.0.4",
     "jest": "28.1.3",
