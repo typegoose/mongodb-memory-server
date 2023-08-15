@@ -1,3 +1,23 @@
+## [8.15.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.14.0...v8.15.0) (2023-08-15)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** add ability to overwrite distro used ([826c72e](https://github.com/nodkz/mongodb-memory-server/commit/826c72e1d56d409bc760949797d62fd10dc8eaf8)), closes [#753](https://github.com/nodkz/mongodb-memory-server/issues/753)
+
+
+### Dependencies
+
+* **@typescript-eslint/*:** upgrade to version 5.61.0 ([121f0fc](https://github.com/nodkz/mongodb-memory-server/commit/121f0fcfb06919dbe3a778db520031f394aa4ea7))
+* **eslint:** upgrade to version 8.44.0 ([f7487b1](https://github.com/nodkz/mongodb-memory-server/commit/f7487b1027eead475f3e1057d2990a624e2d7ba4))
+* **semver:** upgrade to version 7.5.3 ([3498c33](https://github.com/nodkz/mongodb-memory-server/commit/3498c33929b54aa9d09c63021d4d2393401ce5f7))
+* **tslib:** upgrade to version 2.6.0 ([2cbd3dc](https://github.com/nodkz/mongodb-memory-server/commit/2cbd3dc6d68154295bc572dce2e5b120c629ddb1))
+
+
+### Style
+
+* **MongoBinaryDownload:** fix comment ([615b681](https://github.com/nodkz/mongodb-memory-server/commit/615b681138dc4e23bb44c94c88fa413268eb26a5))
+
 ## [8.14.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.13.0...v8.14.0) (2023-08-04)
 
 
