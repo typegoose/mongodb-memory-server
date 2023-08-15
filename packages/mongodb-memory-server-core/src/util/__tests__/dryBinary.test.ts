@@ -70,7 +70,7 @@ describe('DryBinary', () => {
       {
         await utils.mkdir(path.resolve(tmpDir, 'node_modules/mongodb-memory-server')); // mock being in an postinstall directory path
         await utils.mkdir(path.resolve(tmpDir, 'node_modules/.cache')); // mock having an local modules cache
-        await utils.mkdir(path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries')); // mock having an "legacy" global directory
+        await utils.mkdir(path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries')); // mock having an global directory in home
         await fspromises.writeFile(path.resolve(tmpDir, 'package.json'), '');
       }
     });
@@ -96,7 +96,7 @@ describe('DryBinary', () => {
       expect(returnValue).toStrictEqual({
         resolveConfig: '', // empty because not having an extra config value
         relative: path.resolve(tmpDir, 'mongodb-binaries', binaryName),
-        legacyHomeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
+        homeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
         modulesCache: path.resolve(tmpDir, 'node_modules/.cache/mongodb-memory-server', binaryName),
       } as binary.DryMongoBinaryPaths);
     });
@@ -112,7 +112,7 @@ describe('DryBinary', () => {
           'mongodb-binaries',
           binaryName
         ),
-        legacyHomeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
+        homeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
         modulesCache: path.resolve(tmpDir, 'node_modules/.cache/mongodb-memory-server', binaryName),
       } as binary.DryMongoBinaryPaths);
     });
@@ -124,7 +124,7 @@ describe('DryBinary', () => {
       expect(returnValue).toStrictEqual({
         resolveConfig: path.resolve('/some/custom/path', binaryName),
         relative: path.resolve(tmpDir, 'mongodb-binaries', binaryName),
-        legacyHomeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
+        homeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
         modulesCache: path.resolve(tmpDir, 'node_modules/.cache/mongodb-memory-server', binaryName),
       } as binary.DryMongoBinaryPaths);
     });
@@ -136,7 +136,7 @@ describe('DryBinary', () => {
       expect(returnValue).toStrictEqual({
         resolveConfig: '', // empty because not having an extra config value
         relative: path.resolve(tmpDir2, 'mongodb-binaries', binaryName),
-        legacyHomeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
+        homeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
         modulesCache: '', // because not being in an project
       } as binary.DryMongoBinaryPaths);
     });
@@ -252,7 +252,7 @@ describe('DryBinary', () => {
         jest.spyOn(fspromises, 'access').mockResolvedValueOnce(void 0);
         const expectedPath = '/some/systembinary/somewhere';
         expectedPaths = {
-          legacyHomeCache: '',
+          homeCache: '',
           modulesCache: '',
           relative: '',
           resolveConfig: '',
@@ -270,7 +270,7 @@ describe('DryBinary', () => {
       it('should return the DOWNLOAD_DIR when provided', async () => {
         const expectedPath = '/some/custom/path/binary';
         expectedPaths = {
-          legacyHomeCache: '',
+          homeCache: '',
           modulesCache: '',
           relative: '',
           resolveConfig: expectedPath,
@@ -281,10 +281,10 @@ describe('DryBinary', () => {
         expect(returnValue).toStrictEqual([true, expectedPath]);
       });
 
-      it('should return the legacyHome when provided', async () => {
+      it('should return the homeCache when provided', async () => {
         const expectedPath = '/some/home/path/binary';
         expectedPaths = {
-          legacyHomeCache: expectedPath,
+          homeCache: expectedPath,
           modulesCache: '',
           relative: '',
           resolveConfig: '/no',
@@ -298,7 +298,7 @@ describe('DryBinary', () => {
       it('should return the modulesCache when provided', async () => {
         const expectedPath = '/some/.cache/path/binary';
         expectedPaths = {
-          legacyHomeCache: '/no',
+          homeCache: '/no',
           modulesCache: expectedPath,
           relative: '',
           resolveConfig: '/no',
@@ -312,7 +312,7 @@ describe('DryBinary', () => {
       it('should return the relative when provided', async () => {
         const expectedPath = '/some/relative/path/binary';
         expectedPaths = {
-          legacyHomeCache: '/no',
+          homeCache: '/no',
           modulesCache: '/no',
           relative: expectedPath,
           resolveConfig: '/no',
@@ -328,7 +328,7 @@ describe('DryBinary', () => {
       it('should return the DOWNLOAD_DIR when provided', async () => {
         const expectedPath = '/some/custom/path/binary';
         expectedPaths = {
-          legacyHomeCache: '',
+          homeCache: '',
           modulesCache: '',
           relative: '',
           resolveConfig: expectedPath,
@@ -338,11 +338,11 @@ describe('DryBinary', () => {
         expect(returnValue).toStrictEqual([false, expectedPath]);
       });
 
-      it('should return the legacyHome when provided with PREFER_GLOBAL "true"', async () => {
+      it('should return the homeCache when provided with PREFER_GLOBAL "true"', async () => {
         process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)] = 'true';
         const expectedPath = '/some/home/path/binary';
         expectedPaths = {
-          legacyHomeCache: expectedPath,
+          homeCache: expectedPath,
           modulesCache: '',
           relative: '',
           resolveConfig: '',
@@ -356,7 +356,7 @@ describe('DryBinary', () => {
         process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)] = 'false';
         const expectedPath = '/some/.cache/path/binary';
         expectedPaths = {
-          legacyHomeCache: '',
+          homeCache: '',
           modulesCache: expectedPath,
           relative: '',
           resolveConfig: '',
@@ -370,7 +370,7 @@ describe('DryBinary', () => {
         process.env[envName(ResolveConfigVariables.PREFER_GLOBAL_PATH)] = 'false';
         const expectedPath = '/some/relative/path/binary';
         expectedPaths = {
-          legacyHomeCache: '',
+          homeCache: '',
           modulesCache: '',
           relative: expectedPath,
           resolveConfig: '',
