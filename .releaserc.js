@@ -15,6 +15,8 @@ module.exports = {
           {type: "test", release: false},
           {type: "chore", release: false},
           {type: "deps", release: "minor"},
+          // backwards compatability, remove after 9.0 has been published
+          {type: "dependencies", release: "minor"},
           // dont trigger another release on release commit
           {type: "release", release: false}
         ],
