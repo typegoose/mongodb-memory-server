@@ -93,3 +93,9 @@ Custom Explanation:
 
 - `ephemeralForTest` is a in-memory storage engine, which stores everything in RAM, which is great to use when wanting a simple database testing backend, is not the same as the Enterprise In-Memory Engine
 - `wiredTiger` is a storage engine which stores data on disk.
+
+:::warning
+MongoDB has stated that storage-engine `ephemeralForTest` is unstable and has been deprecated, it will be removed with mongodb 7.
+
+In MMS there has been no observation of `ephemeralForTest` being unstable (aside from some missing features) and will continue to be the default until mongodb-memory-server changes to a version where `ephemeralForTest` is not present anymore.
+:::
