@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - 'master'
-      - '!beta' # only deploy the website on "master"
-      - '!gh-pages'
+      - 'old/**'
+      - 'beta'
     paths: # only run this deploy if an file in the following directories are changed
       - 'docs/**'
       - 'website/**'
-  release:
-    types: [created]
+      - '.github/workflows/website.yml'
+      - 'scripts/getDeployInfo.js'
+      - 'scripts/ghPagesDeploy.js'
 
 permissions:
   contents: read
