@@ -145,8 +145,7 @@ describe('MongoMemoryServer', () => {
         },
       });
 
-      const args =
-        // @ts-expect-error "_instanceInfo" is protected
+      const args = // @ts-expect-error "_instanceInfo" is protected
         mongoServer._instanceInfo?.instance
           // separator comment
           .prepareCommandArgs();
