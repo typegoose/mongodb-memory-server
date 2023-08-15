@@ -23,8 +23,8 @@ import {
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */
-if (lt(process.version, '14.0.0')) {
-  console.warn('Using NodeJS below 14.0.0');
+if (lt(process.version, '14.20.1')) {
+  console.warn('Using NodeJS below 14.20.1');
 }
 
 const log = debug('MongoMS:MongoInstance');
