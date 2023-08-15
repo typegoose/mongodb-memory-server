@@ -6099,10 +6099,10 @@ saslprep@^1.0.3:
   dependencies:
     sparse-bitfield "^3.0.3"
 
-semantic-release-replace-plugin@1.2.6:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/semantic-release-replace-plugin/-/semantic-release-replace-plugin-1.2.6.tgz#c1866174193bed05b4de5d6a7c384951cf623d0e"
-  integrity sha512-/0aRwQ3taocrfIOYQ94IQHVUYJXyVGkhJCBNp2dagE4KKghGPMWKGaisvxveJV28X4V9PogxCvHdTd+Rrz8kxw==
+semantic-release-replace-plugin@1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/semantic-release-replace-plugin/-/semantic-release-replace-plugin-1.2.3.tgz#eb7b71191bf744796abd76651cf3f5a68a0a190a"
+  integrity sha512-ueSO5k+itkHnlC7ye+Jsx9MIZi9dy2pHx5S7gSW7teNPCmPWK/PEBvZjorvyRfymTk4cWiz+/q66wc+yg4c+SQ==
   dependencies:
     jest-diff "^29.6.0"
     lodash-es "^4.17.21"

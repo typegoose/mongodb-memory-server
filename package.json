@@ -29,7 +29,7 @@
     "lint-staged": "13.2.3",
     "prettier": "3.0.1",
     "semantic-release": "^19.0.5",
-    "semantic-release-replace-plugin": "1.2.6",
+    "semantic-release-replace-plugin": "1.2.3",
     "ts-jest": "29.1.1",
     "typescript": "5.0.4"
   },
