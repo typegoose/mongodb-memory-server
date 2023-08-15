@@ -2,7 +2,7 @@ import os from 'os';
 import { URL } from 'url';
 import path from 'path';
 import { promises as fspromises, createWriteStream, createReadStream, constants } from 'fs';
-import https from 'https';
+import { https } from 'follow-redirects';
 import { createUnzip } from 'zlib';
 import tar from 'tar-stream';
 import yauzl from 'yauzl';
@@ -15,6 +15,7 @@ import { DryMongoBinary } from './DryMongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
 import { DownloadError, GenericMMSError, Md5CheckFailedError } from './errors';
+import { RequestOptions } from 'https';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -188,7 +189,7 @@ export class MongoBinaryDownload {
     const urlObject = new URL(downloadUrl);
     urlObject.port = urlObject.port || '443';
 
-    const requestOptions: https.RequestOptions = {
+    const requestOptions: RequestOptions = {
       method: 'GET',
       rejectUnauthorized: strictSsl,
       protocol: envToBool(resolveConfig(ResolveConfigVariables.USE_HTTP)) ? 'http:' : 'https:',
@@ -359,17 +360,23 @@ export class MongoBinaryDownload {
    */
   async httpDownload(
     url: URL,
-    httpOptions: https.RequestOptions,
+    httpOptions: RequestOptions,
     downloadLocation: string,
     tempDownloadLocation: string
   ): Promise<string> {
     log('httpDownload');
     const downloadUrl = this.assignDownloadingURL(url);
 
+    const maxRedirects = parseInt(resolveConfig(ResolveConfigVariables.MAX_REDIRECTS) || '');
+    const useHttpsOptions: Parameters<typeof https.get>[1] = {
+      maxRedirects: Number.isNaN(maxRedirects) ? 2 : maxRedirects,
+      ...httpOptions,
+    };
+
     return new Promise((resolve, reject) => {
       log(`httpDownload: trying to download "${downloadUrl}"`);
       https
-        .get(url, httpOptions, (response) => {
+        .get(url, useHttpsOptions, (response) => {
           if (response.statusCode != 200) {
             if (response.statusCode === 403) {
               reject(

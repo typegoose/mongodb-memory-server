@@ -26,12 +26,13 @@ export enum ResolveConfigVariables {
   SYSTEM_BINARY_VERSION_CHECK = 'SYSTEM_BINARY_VERSION_CHECK',
   USE_ARCHIVE_NAME_FOR_BINARY_NAME = 'USE_ARCHIVE_NAME_FOR_BINARY_NAME',
   DISTRO = 'DISTRO',
+  MAX_REDIRECTS = 'MAX_REDIRECTS',
 }
 
 /** The Prefix for Environmental values */
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 /** This Value exists here, because "defaultValues" can be changed with "setDefaultValue", but this property is constant */
-export const DEFAULT_VERSION = '5.0.18';
+export const DEFAULT_VERSION = '5.0.19';
 /** Default values for some config options that require explicit setting, it is constant so that the default values cannot be interfered with */
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
@@ -42,6 +43,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK, 'true'],
   [ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME, 'false'],
   [ResolveConfigVariables.MD5_CHECK, 'true'],
+  [ResolveConfigVariables.MAX_REDIRECTS, '2'],
 ]);
 
 /** Interface for storing information about the found package.json from `findPackageJson` */
