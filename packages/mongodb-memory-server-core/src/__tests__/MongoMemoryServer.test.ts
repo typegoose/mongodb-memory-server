@@ -8,10 +8,11 @@ import MongoMemoryServer, {
 } from '../MongoMemoryServer';
 import MongoInstance from '../util/MongoInstance';
 import * as utils from '../util/utils';
-import { EnsureInstanceError, StateError } from '../util/errors';
+import { InstanceInfoError, StateError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
 import { promises as fspromises } from 'fs';
 import * as path from 'path';
+import getFreePort from '../util/getport';
 
 jest.setTimeout(100000); // 10s
 
@@ -33,12 +34,13 @@ describe('MongoMemoryServer', () => {
     });
 
     it('"_startUpInstance" should use an different port if address is already in use (use same port for 2 servers)', async () => {
+      const testPort = await getFreePort(27444);
       const mongoServer1 = await MongoMemoryServer.create({
-        instance: { port: 27444 },
+        instance: { port: testPort },
       });
 
       const mongoServer2 = await MongoMemoryServer.create({
-        instance: { port: mongoServer1.instanceInfo!.port },
+        instance: { port: testPort },
       });
 
       expect(mongoServer1.instanceInfo).toBeDefined();
@@ -71,9 +73,8 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
-        auth: {},
+        auth: { enable: true },
         instance: {
-          auth: true,
           storageEngine: 'ephemeralForTest',
         },
       });
@@ -134,8 +135,8 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop();
     });
 
-    it('should make use of "AutomaticAuth" even when "instance.auth" is not set (wiredTiger)', async () => {
-      jest.spyOn(MongoInstance.prototype, 'start');
+    it('should not start auth when "instance.auth" is not set (wiredTiger)', async () => {
+      jest.spyOn(MongoInstance.prototype, 'start').mockResolvedValueOnce();
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
         auth: {},
@@ -144,69 +145,24 @@ describe('MongoMemoryServer', () => {
         },
       });
 
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
+      const args = // @ts-expect-error "_instanceInfo" is protected
+        mongoServer._instanceInfo?.instance
+          // separator comment
+          .prepareCommandArgs();
 
-      // test unpriviliged connection
-      {
-        const con = await MongoClient.connect(mongoServer.getUri());
+      utils.assertion(!utils.isNullOrUndefined(args));
 
-        const db = con.db('somedb');
-        const col = db.collection('somecol');
+      expect(args.includes('--noauth')).toBeTruthy();
 
-        try {
-          await col.insertOne({ test: 1 });
-          fail('Expected insertion to fail');
-        } catch (err) {
-          expect(err).toBeInstanceOf(MongoServerError);
-          expect((err as MongoServerError).codeName).toEqual('Unauthorized');
-        } finally {
-          await con.close();
-        }
-      }
-
-      // test priviliged connection
-      {
-        const con: MongoClient = await MongoClient.connect(
-          utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
-          {
-            authSource: 'admin',
-            authMechanism: 'SCRAM-SHA-256',
-            auth: {
-              username: mongoServer.auth.customRootName,
-              password: mongoServer.auth.customRootPwd,
-            },
-          }
-        );
-
-        const admindb = con.db('admin');
-        const users: { users?: { user: string }[] } = await admindb.command({
-          usersInfo: mongoServer.auth.customRootName,
-        });
-        expect(users.users).toHaveLength(1);
-        expect(users.users?.[0].user).toEqual(mongoServer.auth.customRootName);
-
-        const db = con.db('somedb');
-        const col = db.collection('somecol');
-
-        expect(await col.insertOne({ test: 1 })).toHaveProperty('acknowledged', true);
-
-        await con.close();
-      }
-
-      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
-      expect(console.warn).toHaveBeenCalledTimes(0);
-
-      await mongoServer.stop();
+      await mongoServer.stop(); // cleanup
     });
 
     it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
-        auth: {},
+        auth: { enable: true },
         instance: {
-          auth: true,
           storageEngine: 'wiredTiger',
         },
       });
@@ -278,6 +234,7 @@ describe('MongoMemoryServer', () => {
       jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
       const mongoServer = await MongoMemoryServer.create({
         auth: {
+          enable: true,
           extraUsers: [
             readOnlyUser,
             {
@@ -300,7 +257,6 @@ describe('MongoMemoryServer', () => {
           ],
         },
         instance: {
-          auth: true,
           storageEngine: 'ephemeralForTest',
         },
       });
@@ -405,22 +361,23 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop();
     });
 
-    it('"createAuth" should not be called if "disabled" is true', async () => {
+    it('"createAuth" should not be called if "enabled" is false', async () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(MongoMemoryServer.prototype, 'createAuth');
       const mongoServer = await MongoMemoryServer.create({
         auth: {
-          disable: true,
+          enable: false,
         },
         instance: {
-          auth: true,
           storageEngine: 'ephemeralForTest',
         },
       });
 
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
-      expect(mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth'));
+      utils.assertion(utils.isNullOrUndefined(mongoServer.auth));
+      expect(
+        mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth')
+      ).toBeTruthy();
 
       const con: MongoClient = await MongoClient.connect(
         utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
@@ -439,35 +396,19 @@ describe('MongoMemoryServer', () => {
       await mongoServer.stop();
     });
 
-    it('"createAuth" should not be called if "instance.auth" is false', async () => {
+    it('"createAuth" should ignore "instance.auth"', async () => {
       jest.spyOn(MongoInstance.prototype, 'start');
       jest.spyOn(MongoMemoryServer.prototype, 'createAuth');
-      const mongoServer = await MongoMemoryServer.create({
-        auth: {},
+      const mongoServer = new MongoMemoryServer({
+        auth: { enable: true },
         instance: {
+          // @ts-expect-error "auth" is removed from the type
           auth: false,
           storageEngine: 'ephemeralForTest',
         },
       });
 
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
-      utils.assertion(!utils.isNullOrUndefined(mongoServer.auth));
-
-      const con: MongoClient = await MongoClient.connect(
-        utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin')
-      );
-      const db = con.db('admin');
-      await db.command({
-        usersInfo: 1,
-      });
-      expect(MongoInstance.prototype.start).toHaveBeenCalledTimes(1);
-      expect(MongoMemoryServer.prototype.createAuth).not.toHaveBeenCalled();
-      expect(
-        mongoServer.instanceInfo.instance.prepareCommandArgs().includes('--noauth')
-      ).toStrictEqual(true);
-
-      await con.close();
-      await mongoServer.stop();
+      expect(mongoServer.opts.instance).not.toHaveProperty('auth');
     });
 
     it('should throw an error if state is not "new" or "stopped"', async () => {
@@ -523,8 +464,9 @@ describe('MongoMemoryServer', () => {
         await mongoServer.ensureInstance();
         fail('Expected "ensureInstance" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(EnsureInstanceError);
-        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
+        expect(err).toBeInstanceOf(InstanceInfoError);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
 
       expect(mongoServer.start).toHaveBeenCalledTimes(1);
@@ -549,8 +491,9 @@ describe('MongoMemoryServer', () => {
         await mongoServer.ensureInstance();
         fail('Expected "ensureInstance" to fail');
       } catch (err) {
-        expect(err).toBeInstanceOf(EnsureInstanceError);
-        expect(JSON.stringify(err)).toMatchSnapshot(); // this is to test all the custom values on the error
+        expect(err).toBeInstanceOf(InstanceInfoError);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
       }
     });
 
@@ -669,15 +612,31 @@ describe('MongoMemoryServer', () => {
 
       const cleanupSpy = jest.spyOn(mongoServer, 'cleanup').mockResolvedValue(void 0);
 
-      await mongoServer.stop(false);
+      await mongoServer.stop({ doCleanup: false });
 
       expect(cleanupSpy).not.toHaveBeenCalled();
 
       cleanupSpy.mockClear();
 
-      await mongoServer.stop(true);
+      await mongoServer.stop({ doCleanup: true });
 
-      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: false } as utils.Cleanup);
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true } as utils.Cleanup);
+    });
+
+    it('should not support boolean arguments', async () => {
+      const mongoServer = new MongoMemoryServer();
+
+      try {
+        await mongoServer.stop(
+          // @ts-expect-error Testing a non-existing overload
+          true
+        );
+        fail('Expected to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+      }
     });
 
     it('should call cleanup and pass-through cleanup options', async () => {
@@ -806,7 +765,7 @@ describe('MongoMemoryServer', () => {
       tmpdir = mongoServer.instanceInfo?.tmpDir;
 
       await mongoServer.stop({ doCleanup: false });
-      await mongoServer.cleanup(true);
+      await mongoServer.cleanup({ doCleanup: true, force: true });
 
       expect(utils.statPath).toHaveBeenCalledTimes(1);
       expect(utils.removeDir).toHaveBeenCalled();
@@ -823,13 +782,29 @@ describe('MongoMemoryServer', () => {
       tmpdir = mongoServer.instanceInfo?.tmpDir;
 
       await mongoServer.stop({ doCleanup: false });
-      await mongoServer.cleanup(true);
+      await mongoServer.cleanup({ doCleanup: true, force: true });
 
       expect(utils.statPath).toHaveBeenCalledTimes(1);
       expect(utils.removeDir).toHaveBeenCalled();
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
+    });
+
+    it('should not support boolean arguments', async () => {
+      const mongoServer = new MongoMemoryServer();
+
+      try {
+        await mongoServer.cleanup(
+          // @ts-expect-error Testing a non-existing overload
+          true
+        );
+        fail('Expected to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+      }
     });
 
     it('should properly cleanup with tmpDir with default no force (new)', async () => {
@@ -902,15 +877,13 @@ describe('MongoMemoryServer', () => {
 
   describe('getStartOptions()', () => {
     it('should create a tmpdir if "dbPath" is not set', async () => {
-      // somehow, jest cannot redefine function "dirSync", so this is disabled
-      // const tmpSpy = jest.spyOn(tmp, 'dirSync');
+      const tmpSpy = jest.spyOn(utils, 'createTmpDir');
       const mongoServer = new MongoMemoryServer({});
 
       // @ts-expect-error "getStartOptions" is protected
       const options = await mongoServer.getStartOptions();
 
-      // see comment above
-      // expect(tmpSpy).toHaveBeenCalledTimes(1);
+      expect(tmpSpy).toHaveBeenCalledTimes(1);
       expect(options.data.tmpDir).toBeDefined();
       // jest "expect" do not act as typescript typeguards
       utils.assertion(
@@ -918,6 +891,8 @@ describe('MongoMemoryServer', () => {
         new Error('Expected "options.data.dbPath" to be defined')
       );
       expect(await utils.pathExists(options.data.dbPath)).toEqual(true);
+
+      await utils.removeDir(options.data.tmpDir!); // manual cleanup
     });
 
     it('should resolve "isNew" to "true" and set "createAuth" to "true" when dbPath is set, but empty', async () => {
@@ -926,7 +901,7 @@ describe('MongoMemoryServer', () => {
 
       const mongoServer = new MongoMemoryServer({
         instance: { dbPath: tmpDbPath },
-        auth: {},
+        auth: { enable: true },
       });
 
       // @ts-expect-error "getStartOptions" is protected
@@ -954,7 +929,7 @@ describe('MongoMemoryServer', () => {
 
       const mongoServer = new MongoMemoryServer({
         instance: { dbPath: tmpDbPath },
-        auth: {},
+        auth: { enable: true },
       });
 
       // @ts-expect-error "getStartOptions" is protected
@@ -986,6 +961,8 @@ describe('MongoMemoryServer', () => {
 
       expect(newPortSpy).toHaveBeenCalledTimes(1);
       expect(typeof options.data.port === 'number').toBeTruthy();
+
+      await utils.removeDir(options.data.tmpDir!); // manual cleanup
     });
 
     it('should use a predefined port as a suggestion for a port', async () => {
@@ -1003,6 +980,8 @@ describe('MongoMemoryServer', () => {
 
       expect(newPortSpy).toHaveBeenCalledWith(predefinedPort);
       expect(options.data.port).toStrictEqual(predefinedPort);
+
+      await utils.removeDir(options.data.tmpDir!); // manual cleanup
     });
 
     it('should use a predefined port for a port with "forceSamePort" on', async () => {
@@ -1019,6 +998,8 @@ describe('MongoMemoryServer', () => {
 
       expect(newPortSpy).not.toHaveBeenCalled();
       expect(options.data.port).toStrictEqual(predefinedPort);
+
+      await utils.removeDir(options.data.tmpDir!); // manual cleanup
     });
   });
 
@@ -1087,22 +1068,22 @@ describe('MongoMemoryServer', () => {
       ).toStrictEqual(false);
     });
 
-    it('should with defaults return "true" if empty object OR "disable: false"', () => {
+    it('should with defaults return "false" if empty object OR "enable: false"', () => {
       {
         const mongoServer = new MongoMemoryServer({ auth: {} });
 
         expect(
           // @ts-expect-error "authObjectEnable" is protected
           mongoServer.authObjectEnable()
-        ).toStrictEqual(true);
+        ).toStrictEqual(false);
       }
       {
-        const mongoServer = new MongoMemoryServer({ auth: { disable: false } });
+        const mongoServer = new MongoMemoryServer({ auth: { enable: false } });
 
         expect(
           // @ts-expect-error "authObjectEnable" is protected
           mongoServer.authObjectEnable()
-        ).toStrictEqual(true);
+        ).toStrictEqual(false);
       }
     });
   });
@@ -1126,5 +1107,10 @@ describe('MongoMemoryServer', () => {
 
     expect(createSpy.mock.calls.length).toStrictEqual(1);
     expect(createSpy.mock.calls[0][0].instance).toHaveProperty('launchTimeout', 2000);
+
+    await utils.removeDir(
+      // @ts-expect-error "_instanceInfo" is protected
+      mongoServer._instanceInfo.tmpDir!
+    ); // manual cleanup
   });
 });

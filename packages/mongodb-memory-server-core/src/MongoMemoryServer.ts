@@ -1,5 +1,5 @@
 import { SpawnOptions } from 'child_process';
-import getPort from 'get-port';
+import { getFreePort } from './util/getport';
 import {
   assertion,
   generateDbName,
@@ -17,17 +17,23 @@ import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
-import { MongoClient } from 'mongodb';
-import { EnsureInstanceError, StateError } from './util/errors';
+import { AddUserOptions, MongoClient } from 'mongodb';
+import { InstanceInfoError, StateError } from './util/errors';
 import * as os from 'os';
 
 const log = debug('MongoMS:MongoMemoryServer');
 
 /**
+ * Type with automatic options removed
+ * "auth" is automatically handled and set via {@link AutomaticAuth}
+ */
+export type MemoryServerInstanceOpts = Omit<MongoMemoryInstanceOpts, 'auth'>;
+
+/**
  * MongoMemoryServer Stored Options
  */
 export interface MongoMemoryServerOpts {
-  instance?: MongoMemoryInstanceOpts;
+  instance?: MemoryServerInstanceOpts;
   binary?: MongoBinaryOpts;
   spawn?: SpawnOptions;
   /**
@@ -38,10 +44,10 @@ export interface MongoMemoryServerOpts {
 
 export interface AutomaticAuth {
   /**
-   * Disable Automatic User creation
-   * @default false because when defining this object it usually means that AutomaticAuth is wanted
+   * Enable Automatic User creation
+   * @default false
    */
-  disable?: boolean;
+  enable?: boolean;
   /**
    * Extra Users to create besides the root user
    * @default []
@@ -160,7 +166,7 @@ export interface CreateUserMongoDB {
   /**
    * The Roles for the user, can be an empty array
    */
-  roles: ({ role: UserRoles; db: string } | UserRoles)[];
+  roles: AddUserOptions['roles'];
   /**
    * Specify the specific SCRAM mechanism or mechanisms for creating SCRAM user credentials.
    */
@@ -234,8 +240,13 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     super();
     this.opts = { ...opts };
 
-    // TODO: consider changing this to not be set if "instance.auth" is false in 9.0
-    if (!isNullOrUndefined(this.opts.auth)) {
+    // instance option "auth" will be automatically set and handled via AutomaticAuth
+    if ('auth' in (this.opts.instance ?? {})) {
+      log('opts.instance.auth was defined, but will be set automatically, ignoring');
+      delete (this.opts.instance as MongoMemoryInstanceOpts | undefined)?.auth;
+    }
+
+    if (this.opts.auth?.enable === true) {
       // assign defaults
       this.auth = authDefault(this.opts.auth);
     }
@@ -332,7 +343,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * @param port A User defined default port
    */
   protected async getNewPort(port?: number): Promise<number> {
-    const newPort = await getPort({ port });
+    const newPort = await getFreePort(port);
 
     // only log this message if a custom port was provided
     if (port != newPort && typeof port === 'number') {
@@ -396,9 +407,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       isNew = false;
     }
 
-    const enableAuth: boolean =
-      (typeof instOpts.auth === 'boolean' ? instOpts.auth : true) && // check if auth is even meant to be enabled
-      this.authObjectEnable();
+    const enableAuth: boolean = this.authObjectEnable();
 
     const createAuth: boolean =
       enableAuth && // re-use all the checks from "enableAuth"
@@ -475,38 +484,22 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     if (!isNullOrUndefined(this.auth) && createAuth) {
       this.debug(`_startUpInstance: Running "createAuth" (force: "${this.auth.force}")`);
       await this.createAuth(data);
-    } else {
-      // extra "if" to log when "disable" is set to "true"
-      if (this.opts.auth?.disable) {
-        this.debug(
-          '_startUpInstance: AutomaticAuth.disable is set to "true" skipping "createAuth"'
-        );
-      }
     }
   }
 
   /**
    * Stop the current In-Memory Instance
-   * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
-   *
-   * @deprecated replace argument with `Cleanup` interface object
-   */
-  async stop(runCleanup: boolean): Promise<boolean>; // TODO: for next major release (9.0), this should be removed
-  /**
-   * Stop the current In-Memory Instance
    * @param cleanupOptions Set how to run ".cleanup", by default only `{ doCleanup: true }` is used
    */
-  async stop(cleanupOptions?: Cleanup): Promise<boolean>;
-  async stop(cleanupOptions?: boolean | Cleanup): Promise<boolean> {
+  async stop(cleanupOptions?: Cleanup): Promise<boolean> {
     this.debug('stop: Called .stop() method');
 
     /** Default to cleanup temporary, but not custom dbpaths */
     let cleanup: Cleanup = { doCleanup: true, force: false };
 
-    // handle the old way of setting wheter to cleanup or not
-    // TODO: for next major release (9.0), this should be removed
+    // TODO: for next major release (10.0), this should be removed
     if (typeof cleanupOptions === 'boolean') {
-      cleanup.doCleanup = cleanupOptions;
+      throw new Error('Unsupported argument type: boolean');
     }
 
     // handle the new way of setting what and how to cleanup
@@ -541,32 +534,20 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Remove the defined dbPath
-   * @param force Remove the dbPath even if it is no "tmpDir" (and re-check if tmpDir actually removed it)
-   * @throws If "state" is not "stopped"
-   * @throws If "instanceInfo" is not defined
-   * @throws If an fs error occured
-   *
-   * @deprecated replace argument with `Cleanup` interface object
-   */
-  async cleanup(force: boolean): Promise<void>; // TODO: for next major release (9.0), this should be removed
-  /**
-   * Remove the defined dbPath
    * @param options Set how to run a cleanup, by default `{ doCleanup: true }` is used
    * @throws If "state" is not "stopped"
    * @throws If "instanceInfo" is not defined
    * @throws If an fs error occured
    */
-  async cleanup(options?: Cleanup): Promise<void>;
-  async cleanup(options?: boolean | Cleanup): Promise<void> {
+  async cleanup(options?: Cleanup): Promise<void> {
     assertionIsMMSState(MongoMemoryServerStates.stopped, this.state);
 
     /** Default to doing cleanup, but not forcing it */
     let cleanup: Cleanup = { doCleanup: true, force: false };
 
-    // handle the old way of setting wheter to cleanup or not
-    // TODO: for next major release (9.0), this should be removed
+    // TODO: for next major release (10.0), this should be removed
     if (typeof options === 'boolean') {
-      cleanup.force = options;
+      throw new Error('Unsupported argument type: boolean');
     }
 
     // handle the new way of setting what and how to cleanup
@@ -645,7 +626,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
           return this._instanceInfo;
         }
 
-        throw new EnsureInstanceError(true);
+        throw new InstanceInfoError('MongoMemoryServer.ensureInstance (state: running)');
       case MongoMemoryServerStates.new:
       case MongoMemoryServerStates.stopped:
         break;
@@ -688,9 +669,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.debug('ensureInstance: "start()" command was succesfully resolved');
 
     // check again for 1. Typescript-type reasons and 2. if .start failed to throw an error
-    if (!this._instanceInfo) {
-      throw new EnsureInstanceError(false);
-    }
+    assertion(
+      !!this._instanceInfo,
+      new InstanceInfoError('MongoMemoryServer.ensureInstance (after starting)')
+    );
 
     return this._instanceInfo;
   }
@@ -820,9 +802,9 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       return false;
     }
 
-    return typeof this.auth.disable === 'boolean' // if "this._replSetOpts.auth.disable" is defined, use that
-      ? !this.auth.disable // invert the disable boolean, because "auth" should only be disabled if "disabled = true"
-      : true; // if "this._replSetOpts.auth.disable" is not defined, default to true because "this._replSetOpts.auth" is defined
+    return typeof this.auth.enable === 'boolean' // if "this._replSetOpts.auth.enable" is defined, use that
+      ? this.auth.enable
+      : false; // if "this._replSetOpts.auth.enable" is not defined, default to false
   }
 }
 

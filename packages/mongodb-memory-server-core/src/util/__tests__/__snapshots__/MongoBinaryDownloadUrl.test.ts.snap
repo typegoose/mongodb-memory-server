@@ -30,6 +30,6 @@ exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platfo
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platform is unknown (translatePlatform) 1`] = `"Unknown Platform: \\"unknown\\""`;
 
-exports[`MongoBinaryDownloadUrl translateArch() should throw an error for "ia32" and unsupported platform 1`] = `"Unsupported Architecture-Platform combination: arch: \\"ia32\\", platform: \\"darwin\\""`;
-
 exports[`MongoBinaryDownloadUrl translateArch() should throw an error for an unsupported architecture 1`] = `"Unsupported Architecture: \\"risc\\""`;
+
+exports[`MongoBinaryDownloadUrl translateArch() should throw error when "ia32" is used 1`] = `"Unsupported Architecture: \\"ia32\\""`;

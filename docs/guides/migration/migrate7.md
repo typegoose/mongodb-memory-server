@@ -11,7 +11,7 @@ This Guide is written for migration from version `6.9.6` to `7.0.0`, for version
 
 ## Requirement Changes
 
-- Nodejs `10` & `11` are now unsupported, lowest supported version is now `12.22`
+- Nodejs `10` & `11` are now unsupported, lowest supported version is now `14.0`
 
 ## Breaking Changes
 

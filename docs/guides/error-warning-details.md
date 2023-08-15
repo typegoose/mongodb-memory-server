@@ -68,6 +68,10 @@ Default Timeout: `1000 * 30` (30 seconds)
 
 ## EnsureInstanceError
 
+:::note
+Merged into [`InstanceInfoError`](#instanceinfoerror) in 9.0.0
+:::
+
 Example:
 
 - `${baseMesasge} state was "running" but "instanceInfo" was undefined!`
@@ -167,6 +171,13 @@ Example: `ReplSet Count needs to be 1 or higher! (specified count: "${count}")`
 
 Details:  
 ReplSet count (like `new MongoMemoryReplSet({ replSet: { count: 0 } })`) needs to be `1` or higher
+
+## UnknownLinuxDistro
+
+Example: `Unknown/unsupported linux "${distro}" id_like's: [${id_like?.join(', ')}]`
+
+Details:  
+The Linux distro in use does not have a mapping for a mongodb version, please report this issue if the distro / idlike is not mentioned in [Supported Systems](./supported-systems.md).
 
 ## Deprecation Codes
 

@@ -10,6 +10,7 @@ import {
 } from './errors';
 import { tmpdir } from 'os';
 import * as path from 'path';
+import { BinaryLike, createHash, randomUUID } from 'crypto';
 
 const log = debug('MongoMS:utils');
 
@@ -180,7 +181,7 @@ export async function ensureAsync(): Promise<void> {
 export function authDefault(opts: AutomaticAuth): Required<AutomaticAuth> {
   return {
     force: false,
-    disable: false,
+    enable: true,
     customRootName: 'mongodb-memory-server-root',
     customRootPwd: 'rootuser',
     extraUsers: [],
@@ -264,8 +265,6 @@ export abstract class ManagerBase {
   // abstract static create(opts: Record<string, any>): Promise<new (...args: any) => any>;
   abstract start(forceSamePort: boolean): Promise<void>;
   abstract start(): Promise<void>;
-  /** @deprecated replace argument with `Cleanup` interface object */
-  abstract stop(cleanup: boolean): Promise<boolean>; // TODO: for next major release (9.0), this should be removed
   abstract stop(cleanup: Cleanup): Promise<boolean>;
 }
 
@@ -274,8 +273,6 @@ export abstract class ManagerBase {
  */
 export abstract class ManagerAdvanced extends ManagerBase {
   abstract getUri(otherDB?: string | boolean): string;
-  /** @deprecated replace argument with `Cleanup` interface object */
-  abstract cleanup(force: boolean): Promise<void>; // TODO: for next major release (9.0), this should be removed
   abstract cleanup(cleanup: Cleanup): Promise<void>;
 }
 
@@ -355,4 +352,30 @@ export async function removeDir(dirPath: string): Promise<void> {
       recursive: true,
     });
   }
+}
+
+/**
+ * Helper function to have uuidv4 generation and definition in one place
+ * @returns a uuid-v4
+ */
+export function uuidv4(): string {
+  return randomUUID();
+}
+
+/**
+ * Helper function to have md5 generation and definition in one place
+ * @param content the content to checksum
+ * @returns a md5 of the input
+ */
+export function md5(content: BinaryLike): string {
+  return createHash('md5').update(content).digest('hex');
+}
+
+/**
+ * Helper function to have md5 generation and definition in one place for a file
+ * @param file the location of a file to read for a hash
+ * @returns a md5 of the input file
+ */
+export async function md5FromFile(file: string): Promise<string> {
+  return md5(await fspromises.readFile(file));
 }

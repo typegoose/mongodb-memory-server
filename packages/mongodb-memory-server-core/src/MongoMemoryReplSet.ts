@@ -44,10 +44,10 @@ const log = debug('MongoMS:MongoMemoryReplSet');
  */
 export interface ReplSetOpts {
   /**
-   * enable auth ("--auth" / "--noauth")
+   * Enable Authentication
    * @default false
    */
-  auth?: boolean | AutomaticAuth; // TODO: remove "boolean" option next major version
+  auth?: AutomaticAuth;
   /**
    * additional command line arguments passed to `mongod`
    * @default []
@@ -240,7 +240,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
   set replSetOpts(val: ReplSetOpts) {
     assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
     const defaults: Required<ReplSetOpts> = {
-      auth: false,
+      auth: { enable: false },
       args: [],
       name: 'testset',
       count: 1,
@@ -254,13 +254,8 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     assertion(this._replSetOpts.count > 0, new ReplsetCountLowError(this._replSetOpts.count));
 
-    // setting this for sanity
-    if (typeof this._replSetOpts.auth === 'boolean') {
-      this._replSetOpts.auth = { disable: !this._replSetOpts.auth };
-    }
-
-    // do not set default when "disable" is "true" to save execution and memory
-    if (!this._replSetOpts.auth.disable) {
+    // only set default is enabled
+    if (this._replSetOpts.auth.enable) {
       this._replSetOpts.auth = authDefault(this._replSetOpts.auth);
     }
   }
@@ -277,9 +272,9 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     assertion(typeof this._replSetOpts.auth === 'object', new AuthNotObjectError());
 
-    return typeof this._replSetOpts.auth.disable === 'boolean' // if "this._replSetOpts.auth.disable" is defined, use that
-      ? !this._replSetOpts.auth.disable // invert the disable boolean, because "auth" should only be disabled if "disabled = true"
-      : true; // if "this._replSetOpts.auth.disable" is not defined, default to true because "this._replSetOpts.auth" is defined
+    return typeof this._replSetOpts.auth.enable === 'boolean' // if "this._replSetOpts.auth.enable" is defined, use that
+      ? this._replSetOpts.auth.enable
+      : false; // if "this._replSetOpts.auth.enable" is not defined, default to false
   }
 
   /**
@@ -505,26 +500,17 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
   /**
    * Stop the underlying `mongod` instance(s).
-   * @param runCleanup run "this.cleanup"? (remove dbPath & reset "instanceInfo")
-   *
-   * @deprecated replace argument with `Cleanup` interface object
-   */
-  async stop(runCleanup: boolean): Promise<boolean>; // TODO: for next major release (9.0), this should be removed
-  /**
-   * Stop the underlying `mongod` instance(s).
    * @param cleanupOptions Set how to run ".cleanup", by default only `{ doCleanup: true }` is used
    */
-  async stop(cleanupOptions?: Cleanup): Promise<boolean>;
-  async stop(cleanupOptions?: boolean | Cleanup): Promise<boolean> {
+  async stop(cleanupOptions?: Cleanup): Promise<boolean> {
     log(`stop: called by ${isNullOrUndefined(process.exitCode) ? 'manual' : 'process exit'}`);
 
     /** Default to cleanup temporary, but not custom dbpaths */
     let cleanup: Cleanup = { doCleanup: true, force: false };
 
-    // handle the old way of setting wheter to cleanup or not
-    // TODO: for next major release (9.0), this should be removed
+    // TODO: for next major release (10.0), this should be removed
     if (typeof cleanupOptions === 'boolean') {
-      cleanup.doCleanup = cleanupOptions;
+      throw new Error('Unsupported argument type: boolean');
     }
 
     // handle the new way of setting what and how to cleanup
@@ -565,33 +551,21 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
   /**
    * Remove the defined dbPath's
-   * @param force Remove the dbPath even if it is no "tmpDir" (and re-check if tmpDir actually removed it)
-   * @throws If "state" is not "stopped"
-   * @throws If "instanceInfo" is not defined
-   * @throws If an fs error occured
-   *
-   * @deprecated replace argument with `Cleanup` interface object
-   */
-  async cleanup(force: boolean): Promise<void>; // TODO: for next major release (9.0), this should be removed
-  /**
-   * Remove the defined dbPath's
    * @param options Set how to run a cleanup, by default `{ doCleanup: true }` is used
    * @throws If "state" is not "stopped"
    * @throws If "instanceInfo" is not defined
    * @throws If an fs error occured
    */
-  async cleanup(options?: Cleanup): Promise<void>;
-  async cleanup(options?: boolean | Cleanup): Promise<void> {
+  async cleanup(options?: Cleanup): Promise<void> {
     assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
     log(`cleanup for "${this.servers.length}" servers`);
 
     /** Default to doing cleanup, but not forcing it */
     let cleanup: Cleanup = { doCleanup: true, force: false };
 
-    // handle the old way of setting wheter to cleanup or not
-    // TODO: for next major release (9.0), this should be removed
+    // TODO: for next major release (10.0), this should be removed
     if (typeof options === 'boolean') {
-      cleanup.force = options;
+      throw new Error('Unsupported argument type: boolean');
     }
 
     // handle the new way of setting what and how to cleanup

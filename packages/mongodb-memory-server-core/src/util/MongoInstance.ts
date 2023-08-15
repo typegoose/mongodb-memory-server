@@ -23,13 +23,13 @@ import {
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */
-if (lt(process.version, '12.22.0')) {
-  console.warn('Using NodeJS below 12.22.0');
+if (lt(process.version, '14.20.1')) {
+  console.warn('Using NodeJS below 14.20.1');
 }
 
 const log = debug('MongoMS:MongoInstance');
 
-export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
+export type StorageEngine = 'ephemeralForTest' | 'wiredTiger';
 
 /**
  * Overwrite replica member-specific configuration
@@ -339,6 +339,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    */
   async start(): Promise<void> {
     this.debug('start');
+
+    if (!isNullOrUndefined(this.mongodProcess?.pid)) {
+      throw new GenericMMSError(
+        `Cannot run "MongoInstance.start" because "mongodProcess.pid" is still defined (pid: ${this.mongodProcess?.pid})`
+      );
+    }
+
     this.isInstancePrimary = false;
     this.isInstanceReady = false;
     this.isReplSet = false;
@@ -484,6 +491,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       throw new StartBinaryFailedError(path.resolve(mongoBin));
     }
 
+    childProcess.unref();
+
     this.emit(MongoInstanceEvents.instanceLaunched);
 
     return childProcess;
@@ -622,9 +631,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           MongoInstanceEvents.instanceError,
           new StdoutInstanceError(
             `Instance Failed to start with "${execptionMatch[1] ?? 'unknown'}". Original Error:\n` +
-              line
-                .substring(execptionMatch.index + execptionMatch[0].length)
-                .replace(/, terminating$/gi, '')
+              line.substring(execptionMatch.index + execptionMatch[0].length)
           )
         );
       }
@@ -683,9 +690,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     }
 
     if (/\*\*\*aborting after/i.test(line)) {
+      const match = line.match(/\*\*\*aborting after ([^\n]+)/i);
+
+      const extra = match?.[1] ? ` (${match[1]})` : '';
+
       this.emit(
         MongoInstanceEvents.instanceError,
-        new StdoutInstanceError('Mongod internal error')
+        new StdoutInstanceError('Mongod internal error' + extra)
       );
     }
   }

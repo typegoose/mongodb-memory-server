@@ -9,9 +9,11 @@ API Documentation of `MongoMemoryServerOpts`-Interface
 
 ### instance
 
-Typings: `instance?: MongoMemoryInstanceOpts`
+Typings: `instance?: MemoryServerInstanceOpts`
 
-Set custom options for the instance, uses [`MongoMemoryInstanceOpts`](./mongo-memory-instance-opts.md).
+Set custom options based on [`MongoMemoryInstanceOpts`](./mongo-memory-instance-opts.md), but ignores some properties:
+
+- `auth` is ignored because it is set via [auth](#auth) property.
 
 ### binary
 

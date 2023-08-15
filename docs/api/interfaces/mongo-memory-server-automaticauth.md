@@ -7,13 +7,12 @@ API Documentation of `AutomaticAuth`-Interface
 
 ## Values
 
-### disable
+### enable
 
-Typings: `disable?: boolean`  
+Typings: `enable?: boolean`  
 Default: `false`
 
-Disable Authentication creation.  
-Normally authentication is enabled when the `auth` field a object, but with this option it can be explicitly disabled.
+Enable or disable Authentication creation.  
 
 ### extraUsers
 

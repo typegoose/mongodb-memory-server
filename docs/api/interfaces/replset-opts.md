@@ -9,10 +9,10 @@ API Documentation of `ReplSetOpts`-Interface
 
 ### auth
 
-Typings: `auth?: boolean | AutomaticAuth`  
-Default: `false`
+Typings: `auth?: AutomaticAuth`  
+Default: `{ enable: false }`
 
-Set wheter to enable Authentication, with configuration from [`AutomaticAuth`](./mongo-memory-server-automaticauth.md).
+Set whether to enable Authentication, with configuration from [`AutomaticAuth`](./mongo-memory-server-automaticauth.md).
 
 Also see [`MongoMemoryInstanceOpts.auth`](./mongo-memory-instance-opts.md#auth).
 

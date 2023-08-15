@@ -5,7 +5,7 @@ import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
 import { getOS, AnyOS, isLinuxOS, OtherOS } from './getos';
-import { NoRegexMatchError, NoSystemBinaryFoundError, ParseArchiveRegexError } from './errors';
+import { BinaryNotFoundError, NoRegexMatchError, ParseArchiveRegexError } from './errors';
 import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 
 const log = debug('MongoMS:DryMongoBinary');
@@ -38,7 +38,7 @@ export interface DryMongoBinaryPaths {
   /** Path from `DOWNLOAD_DIR` config option */
   resolveConfig: string;
   /** Path for "~/.config/" (user home) */
-  legacyHomeCache: string;
+  homeCache: string;
   /** Path for "PROJECT/node_modules/.cache/" (project local cache) */
   modulesCache: string;
   /** Path for relative to CWD "CWD/" (relative CWD path) */
@@ -78,7 +78,7 @@ export class DryMongoBinary {
       const systemReturn = await this.getSystemPath(useOpts.systemBinary);
 
       if (isNullOrUndefined(systemReturn)) {
-        throw new NoSystemBinaryFoundError(useOpts.systemBinary);
+        throw new BinaryNotFoundError(useOpts.systemBinary, ' (systemBinary)');
       }
 
       return systemReturn;
@@ -245,7 +245,6 @@ export class DryMongoBinary {
    * @returns System Binary path or undefined
    */
   static async getSystemPath(systemBinary: string): Promise<string | undefined> {
-    // REFACTOR: change this function to always return "string"
     log('getSystempath');
     try {
       await checkBinaryPermissions(systemBinary);
@@ -275,7 +274,7 @@ export class DryMongoBinary {
   ): Promise<DryMongoBinaryPaths> {
     log('generatePaths', opts);
     const final: DryMongoBinaryPaths = {
-      legacyHomeCache: '',
+      homeCache: '',
       modulesCache: '',
       relative: '',
       resolveConfig: '',
@@ -300,9 +299,9 @@ export class DryMongoBinary {
       final.modulesCache = this.combineBinaryName(path.resolve(tmpModulesCache), binaryName);
     }
 
-    const legacyHomeCache = path.resolve(this.homedir(), '.cache/mongodb-binaries');
+    const homeCache = path.resolve(this.homedir(), '.cache/mongodb-binaries');
 
-    final.legacyHomeCache = this.combineBinaryName(legacyHomeCache, binaryName);
+    final.homeCache = this.combineBinaryName(homeCache, binaryName);
 
     // Resolve the config value "DOWNLOAD_DIR" if provided, otherwise remove from list
     const resolveConfigValue =
@@ -352,10 +351,10 @@ export class DryMongoBinary {
 
       return [true, paths.resolveConfig];
     }
-    if (await pathExists(paths.legacyHomeCache)) {
-      log(`generateDownloadPath: Found binary in legacyHomeCache: "${paths.legacyHomeCache}"`);
+    if (await pathExists(paths.homeCache)) {
+      log(`generateDownloadPath: Found binary in homeCache: "${paths.homeCache}"`);
 
-      return [true, paths.legacyHomeCache];
+      return [true, paths.homeCache];
     }
     if (await pathExists(paths.modulesCache)) {
       log(`generateDownloadPath: Found binary in modulesCache: "${paths.modulesCache}"`);
@@ -376,10 +375,10 @@ export class DryMongoBinary {
 
       return [false, paths.resolveConfig];
     }
-    if (preferGlobal && !!paths.legacyHomeCache) {
-      log(`generateDownloadPath: using global (preferGlobal) "${paths.legacyHomeCache}"`);
+    if (preferGlobal && !!paths.homeCache) {
+      log(`generateDownloadPath: using global (preferGlobal) "${paths.homeCache}"`);
 
-      return [false, paths.legacyHomeCache];
+      return [false, paths.homeCache];
     }
     // this case may not happen, if somehow the cwd gets changed outside of "node_modules" reach
     if (paths.modulesCache.length > 0) {

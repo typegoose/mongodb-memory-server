@@ -10,7 +10,7 @@
     "directory": "packages/mongodb-memory-server-core"
   },
   "engines": {
-    "node": ">=12.22.0"
+    "node": ">=14.20.1"
   },
   "files": [
     "lib",
@@ -36,27 +36,23 @@
     "@types/follow-redirects": "^1.14.1",
     "@types/semver": "^7.5.0",
     "@types/tar-stream": "^2.2.2",
-    "@types/uuid": "^9.0.2",
     "@types/yauzl": "^2.10.0",
     "@types/yazl": "^2.4.2",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.1",
     "yazl": "^2.5.1"
   },
   "dependencies": {
-    "async-mutex": "^0.3.2",
+    "async-mutex": "^0.4.0",
     "camelcase": "^6.3.0",
     "debug": "^4.3.4",
     "find-cache-dir": "^3.3.2",
-    "follow-redirects": "^1.15.2",
-    "get-port": "^5.1.1",
-    "https-proxy-agent": "^5.0.1",
-    "md5-file": "^5.0.0",
-    "mongodb": "^4.16.0",
+    "https-proxy-agent": "^7.0.1",
+    "mongodb": "^5.6.0",
     "new-find-package-json": "^2.0.0",
     "semver": "^7.5.4",
-    "tar-stream": "^2.1.4",
+    "tar-stream": "^3.0.0",
     "tslib": "^2.6.1",
-    "uuid": "^9.0.0",
+    "follow-redirects": "^1.15.2",
     "yauzl": "^2.10.0"
   },
   "scripts": {
