@@ -17,6 +17,11 @@
   --ifm-code-font-size: 95%;
 }
 
+[data-theme='dark'] {
+  /* The following is to work around the badge text color being hard to read */
+  --ifm-badge-color: var(--ifm-font-color-base-inverse);
+}
+
 .docusaurus-highlight-code-line {
   background-color: rgb(72, 77, 91);
   display: block;

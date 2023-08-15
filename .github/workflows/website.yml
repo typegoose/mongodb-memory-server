@@ -27,12 +27,4 @@ jobs:
         with:
           node-version: 18.x
       - name: Install & Build
-        run: bash ./ghPagesPre.sh
-      - name: Deploy to Github Pages
-        uses: JamesIves/github-pages-deploy-action@v4.4.2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: . # the root, because the provided script already moves files
-          git-config-email: <> # disable gh-pages commits to have a email assigned to them
-          git-config-name: 'actions-deploy' # set a custom name, so that the original author of the commit that triggered the website build is not associated with this commit, which was not made by them
+        run: node scripts/ghPagesDeploy.js

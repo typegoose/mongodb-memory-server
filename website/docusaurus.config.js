@@ -1,9 +1,22 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+const deployInfo = require('../scripts/getDeployInfo.js')();
+
+console.log(
+  `Deploying editBranch "${deployInfo.branch}" and deployPath "${deployInfo.deployPath}" deployName "${deployInfo.deployName}"`
+);
+
+let baseUrl = '/mongodb-memory-server/' + deployInfo.deployPath;
+
+if (!baseUrl.endsWith('/')) {
+  baseUrl += '/';
+}
+
 module.exports = {
   title: 'mongodb-memory-server',
   tagline:
     'Spinning up mongod in memory for fast tests. If you run tests in parallel this lib helps to spin up dedicated mongodb servers for every test file in MacOS, *nix, Windows or CI environments (in most cases with zero-config).',
   url: 'https://nodkz.github.io',
-  baseUrl: '/mongodb-memory-server/',
+  baseUrl: baseUrl,
   favicon: 'img/favicon.ico',
   organizationName: 'nodkz',
   projectName: 'mongodb-memory-server',
@@ -13,6 +26,9 @@ module.exports = {
       appId: '3KTVP2YGJO',
       indexName: 'docusaurus',
       contextualSearch: false, // since docusaurus v2.beta-15, it is defaulted to "true", but somehow breaks current search
+      searchParameters: {
+        facetFilters: [`version:${deployInfo.searchName}`],
+      },
     },
     navbar: {
       title: 'mongodb-memory-server',
@@ -21,6 +37,16 @@ module.exports = {
       //   src: 'img/logo.svg',
       // },
       items: [
+        {
+          type: 'custom-beta-notice',
+          position: 'left',
+        },
+        {
+          // cannot use "docsVersionDropdown" because we are not using docusaurus' versioning system
+          type: 'custom-versions-selector',
+          position: 'right',
+          label: deployInfo.deployName,
+        },
         {
           to: 'docs/guides/quick-start-guide',
           activeBasePath: 'guides',
@@ -31,6 +57,11 @@ module.exports = {
           to: 'docs/api/index-api',
           activeBasePath: 'api',
           label: 'API',
+          position: 'right',
+        },
+        {
+          href: 'https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md',
+          label: 'Changelog',
           position: 'right',
         },
         {
@@ -84,4 +115,7 @@ module.exports = {
       },
     ],
   ],
+  customFields: {
+    deployInfo: deployInfo,
+  },
 };
