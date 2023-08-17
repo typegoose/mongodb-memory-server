@@ -289,6 +289,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       throw new UnknownVersionError(this.version);
     }
 
+    // without any "release"(empty string), fallback to testing
+    // see https://tracker.debian.org/news/1433360/accepted-base-files-13-source-into-unstable/
     const isTesting = ['unstable', 'testing', ''].includes(os.release);
 
     if (isTesting || release >= 11) {
