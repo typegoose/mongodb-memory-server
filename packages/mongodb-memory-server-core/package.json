@@ -39,6 +39,7 @@
     "@types/yauzl": "^2.10.0",
     "@types/yazl": "^2.4.2",
     "rimraf": "^5.0.1",
+    "saslprep": "^1.0.3",
     "yazl": "^2.5.1"
   },
   "dependencies": {
