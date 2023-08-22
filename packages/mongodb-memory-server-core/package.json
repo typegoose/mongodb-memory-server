@@ -46,13 +46,13 @@
     "camelcase": "^6.3.0",
     "debug": "^4.3.4",
     "find-cache-dir": "^3.3.2",
+    "follow-redirects": "^1.15.2",
     "https-proxy-agent": "^7.0.1",
     "mongodb": "^5.6.0",
     "new-find-package-json": "^2.0.0",
     "semver": "^7.5.4",
     "tar-stream": "^3.0.0",
-    "tslib": "^2.6.1",
-    "follow-redirects": "^1.15.2",
+    "tslib": "^2.6.2",
     "yauzl": "^2.10.0"
   },
   "scripts": {
