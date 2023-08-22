@@ -110,11 +110,11 @@ export class DryMongoBinary {
    * Generate All required options for the binary name / path generation
    */
   static async generateOptions(
-    opts?: DryMongoBinaryOptions
+    opts?: BaseDryMongoBinaryOptions
   ): Promise<Required<DryMongoBinaryOptions>> {
     log('generateOptions');
     const defaultVersion = resolveConfig(ResolveConfigVariables.VERSION) ?? DEFAULT_VERSION;
-    const ensuredOpts: DryMongoBinaryOptions = isNullOrUndefined(opts)
+    const ensuredOpts: BaseDryMongoBinaryOptions = isNullOrUndefined(opts)
       ? { version: defaultVersion }
       : opts;
 
