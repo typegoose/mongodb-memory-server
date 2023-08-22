@@ -1113,4 +1113,28 @@ describe('MongoMemoryServer', () => {
       mongoServer._instanceInfo.tmpDir!
     ); // manual cleanup
   });
+
+  describe('server version specific', () => {
+    // should use default options that are supported for 7.0 (like not using "ephemeralForTest" by default)
+    it('should allow mongodb by default 7.0', async () => {
+      const server = await MongoMemoryServer.create({ binary: { version: '7.0.0' } });
+
+      await server.stop();
+    });
+
+    it('should warn if "ephemeralForTest" is used explicitly in mongodb 7.0', async () => {
+      const spy = jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
+      const server = await MongoMemoryServer.create({
+        binary: { version: '7.0.0' },
+        instance: { storageEngine: 'ephemeralForTest' },
+      });
+
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(spy.mock.calls).toMatchSnapshot();
+
+      expect(server.instanceInfo?.storageEngine).toStrictEqual('wiredTiger');
+
+      await server.stop();
+    });
+  });
 });

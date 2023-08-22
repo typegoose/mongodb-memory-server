@@ -122,7 +122,7 @@ const mongod = new MongoMemoryServer({
     ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`,
     dbName?: string, // by default '' (empty string)
     dbPath?: string, // by default create in temp directory
-    storageEngine?: string, // by default `ephemeralForTest`, available engines: [ 'ephemeralForTest', 'wiredTiger' ]
+    storageEngine?: string, // by default `ephemeralForTest`(unless mongodb 7.0.0, where its `wiredTiger`), available engines: [ 'ephemeralForTest', 'wiredTiger' ]
     replSet?: string, // by default no replica set, replica set name
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },

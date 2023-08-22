@@ -109,3 +109,10 @@ This *should* help with non-closed instances not exiting the nodejs process.
 Previously MMS used `get-port`, but it caused some big memory-leakage across big projects, so it has been replaced with one that uses less maps.
 
 It also has been replaced because newer versions were ESM only, but we couldnt switch to ESM yet (and using ESM in CommonJS is not a great experience)
+
+## Mongodb version 7.0.0 is now supported
+
+Mongob version `7.0.0` removed storage engine `ephemeralForTest`, with mongodb-memory-server 9.0.0 storage engine `wiredTiger` is the default for binary versions `7.0.0` and higher.
+Older versions (before `7.0.0`) will still continue to use `ephemeralForTest` by default.
+
+It is recommended to run those instances with a db path which is equivalent to [`tmpfs`](https://wiki.archlinux.org/title/tmpfs).

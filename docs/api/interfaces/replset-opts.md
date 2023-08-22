@@ -66,7 +66,7 @@ Also see [`MongoMemoryInstanceOpts.spawn`](./mongo-memory-instance-opts.md#spawn
 ### storageEngine
 
 Typings: `storageEngine?: StorageEngine`  
-Default: `"ephemeralForTest"`
+Default: `"ephemeralForTest"` (unless mongodb version is `7.0.0`, where its `wiredTiger`)
 
 Set which Storage Engine to use, uses [`StorageEngine`](./mongo-memory-instance-opts.md#helper-type-storageengine).
 

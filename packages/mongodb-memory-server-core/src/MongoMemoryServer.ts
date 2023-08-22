@@ -20,6 +20,8 @@ import { promises as fspromises } from 'fs';
 import { AddUserOptions, MongoClient } from 'mongodb';
 import { InstanceInfoError, StateError } from './util/errors';
 import * as os from 'os';
+import { DryMongoBinary } from './util/DryMongoBinary';
+import * as semver from 'semver';
 
 const log = debug('MongoMS:MongoMemoryServer');
 
@@ -375,12 +377,33 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       port = await this.getNewPort(port);
     }
 
+    const opts = await DryMongoBinary.generateOptions(this.opts.binary);
+    let storageEngine = instOpts.storageEngine;
+
+    // warn when storage engine "ephemeralForTest" is explicitly used and switch to "wiredTiger"
+    if (storageEngine === 'ephemeralForTest' && semver.gte(opts.version, '7.0.0')) {
+      console.warn(
+        'Storage Engine "ephemeralForTest" is removed since mongodb 7.0.0, automatically using "wiredTiger"!\n' +
+          'This warning is because the mentioned storage engine is explicitly used and mongodb version is 7.0.0 or higher'
+      );
+
+      storageEngine = 'wiredTiger';
+    }
+
+    if (isNullOrUndefined(storageEngine)) {
+      if (semver.gte(opts.version, '7.0.0')) {
+        storageEngine = 'wiredTiger';
+      } else {
+        storageEngine = 'ephemeralForTest';
+      }
+    }
+
     // consider directly using "this.opts.instance", to pass through all options, even if not defined in "StartupInstanceData"
     const data: StartupInstanceData = {
       port: port,
       dbName: generateDbName(instOpts.dbName),
       ip: instOpts.ip ?? '127.0.0.1',
-      storageEngine: instOpts.storageEngine ?? 'ephemeralForTest',
+      storageEngine: storageEngine,
       replSet: instOpts.replSet,
       dbPath: instOpts.dbPath,
       tmpDir: undefined,

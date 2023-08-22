@@ -81,7 +81,7 @@ export interface ReplSetOpts {
   spawn?: SpawnOptions;
   /**
    *`mongod` storage engine type
-   * @default 'ephemeralForTest'
+   * @default 'ephemeralForTest' unless mongodb version is `7.0.0`, where its `wiredTiger`
    */
   storageEngine?: StorageEngine;
   /**
