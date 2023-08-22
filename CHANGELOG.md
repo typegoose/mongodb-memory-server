@@ -1,3 +1,29 @@
+## [9.0.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.0-beta.1...v9.0.0-beta.2) (2023-08-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* **resolveConfig:** Default binary version is now "6.0.9"
+
+### Features
+
+* **MongoMemoryServer:** use storage engine "wiredTiger" if version is 7.0.0 or higher ([952609b](https://github.com/nodkz/mongodb-memory-server/commit/952609bd4963b194b92ddd91e5a447899fa4ee57)), closes [#742](https://github.com/nodkz/mongodb-memory-server/issues/742)
+* **resolveConfig:** update default binary version to 6.x ([3f5d421](https://github.com/nodkz/mongodb-memory-server/commit/3f5d4218f6938e4a6b2163490083872a589b0b40))
+
+
+### Fixes
+
+* **DryMongoBinary::generateOptions:** actually use correct type for parameters ([f099597](https://github.com/nodkz/mongodb-memory-server/commit/f099597540be05db5e66ab036bf9b8d7b2dc8a4a))
+
+
+### Dependencies
+
+* **jest:** upgrade to version 29.6.3 ([738c715](https://github.com/nodkz/mongodb-memory-server/commit/738c715a258baddb900dcdc39e73873d88e2c1c3))
+* **mongodb:** upgrade to version 5.8.0 ([4bffe5a](https://github.com/nodkz/mongodb-memory-server/commit/4bffe5aae78b3571e2b86c4a17758a07e35c26f5))
+* **prettier:** upgrade to version 3.0.2 ([94f9841](https://github.com/nodkz/mongodb-memory-server/commit/94f9841c358e6d4cf0d5f0703e3aa625b9f65594))
+* **saslprep:** add dev-dependency ([db7455c](https://github.com/nodkz/mongodb-memory-server/commit/db7455cd2f8a976dc3ffc693093253be42ccea7d))
+* **tslib:** upgrade to version 2.6.2 ([ed17876](https://github.com/nodkz/mongodb-memory-server/commit/ed178764c75c2723162845092f5045bc162dfb22))
+
 ## [9.0.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.15.0...v9.0.0-beta.1) (2023-08-15)
 
 
