@@ -100,7 +100,7 @@ function main() {
   const versions = generateVersions();
   fs.writeFileSync('versions.json', JSON.stringify(versions));
 
-  console.log('\nCommiting Changes\n');
+  console.log('\nCommitting Changes\n');
 
   // add stage all changes
   execSync('git add -A', { stdio: 'inherit' });
