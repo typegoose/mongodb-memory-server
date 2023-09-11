@@ -105,6 +105,12 @@ function main() {
   // add stage all changes
   execSync('git add *', { stdio: 'inherit' });
 
+  if (!hasChanges()) {
+    console.log('No changes, exiting');
+
+    return;
+  }
+
   let commitmsg = commitMessage;
   const githubSHA = process.env['GITHUB_SHA'];
 
@@ -129,6 +135,26 @@ function main() {
 }
 
 main();
+
+/**
+ * Check if the current git repo has changes staged
+ * @returns {boolean} `true` if there are changes staged, `false` otherwise
+ */
+function hasChanges() {
+  try {
+    // the following command exists with "0" if there are no changes, otherwise "1"
+    execSync('git diff-index --quiet HEAD --');
+
+    return false;
+  } catch (err) {
+    // check if the error is a childprocess error, which will always have a "status" property
+    if (!!err.status) {
+      return true;
+    }
+
+    throw err;
+  }
+}
 
 /**
  * Generate the versions.json file
