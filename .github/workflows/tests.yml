@@ -19,11 +19,11 @@ jobs:
       matrix:
         node-version: [12.x, 14.x, 16.x, 18.x]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: github.event.inputs.git-ref == ''
         with:
           fetch-depth: 0 # always fetch everything to be sure for codecov
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: github.event.inputs.git-ref != ''
         with:
           ref: ${{ github.event.inputs.git-ref }}
@@ -57,7 +57,7 @@ jobs:
     needs: [tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js 12
         uses: actions/setup-node@v3
         with:
