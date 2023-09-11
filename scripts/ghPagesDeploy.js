@@ -103,7 +103,7 @@ function main() {
   console.log('\nCommiting Changes\n');
 
   // add stage all changes
-  execSync('git add *', { stdio: 'inherit' });
+  execSync('git add -A', { stdio: 'inherit' });
 
   if (!hasChanges()) {
     console.log('No changes, exiting');
