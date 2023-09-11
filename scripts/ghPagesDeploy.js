@@ -105,6 +105,9 @@ function main() {
   // add stage all changes
   execSync('git add -A', { stdio: 'inherit' });
 
+  // list all changes, this is just for logging purposes (like inspecting the CI run)
+  execSync('git status', { stdio: 'inherit' });
+
   if (!hasChanges()) {
     console.log('No changes, exiting');
 
