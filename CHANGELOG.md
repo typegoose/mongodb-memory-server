@@ -1,3 +1,10 @@
+## [8.16.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.15.1...v8.16.0) (2023-10-05)
+
+
+### Dependencies
+
+* **typedoc:** add dev-dependency ([f8c671c](https://github.com/nodkz/mongodb-memory-server/commit/f8c671c2663d3c2a67314392d5f18cb08933ebfb))
+
 ## [8.15.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.15.0...v8.15.1) (2023-08-17)
 
 
