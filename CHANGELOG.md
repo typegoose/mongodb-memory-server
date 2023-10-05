@@ -1,3 +1,11 @@
+## [9.0.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.0-beta.3...v9.0.0-beta.4) (2023-10-05)
+
+
+### Dependencies
+
+* **typedoc:** add dev-dependency ([f8c671c](https://github.com/nodkz/mongodb-memory-server/commit/f8c671c2663d3c2a67314392d5f18cb08933ebfb))
+* **typedoc:** upgrade to version 0.24.8 ([fefab38](https://github.com/nodkz/mongodb-memory-server/commit/fefab38d415ac82f3367923ea0de744d0d796e9e))
+
 ## [9.0.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.0-beta.2...v9.0.0-beta.3) (2023-10-05)
 
 
