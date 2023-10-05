@@ -31,8 +31,8 @@
     "semantic-release": "^19.0.5",
     "semantic-release-replace-plugin": "1.2.0",
     "ts-jest": "29.1.1",
-    "typescript": "5.0.4",
-    "typedoc": "^0.21.x"
+    "typedoc": "^0.24.8",
+    "typescript": "5.0.4"
   },
   "workspaces": {
     "packages": [
