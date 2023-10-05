@@ -1,3 +1,37 @@
+## [9.0.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.0-beta.2...v9.0.0-beta.3) (2023-10-05)
+
+
+### Fixes
+
+* fix binary download on debian testing/unstable ([#787](https://github.com/nodkz/mongodb-memory-server/issues/787)) ([1a8ac8a](https://github.com/nodkz/mongodb-memory-server/commit/1a8ac8a462d4d2cc2c9f99b5f8dc2e97ef224953))
+* **getport:** only run ".unref" if it exists ([73c0c2e](https://github.com/nodkz/mongodb-memory-server/commit/73c0c2e1b5e4ea4ca8a7bc2fa150215eb358089c)), closes [#801](https://github.com/nodkz/mongodb-memory-server/issues/801)
+* **MongoInstance::stop:** handle "stop" being called multiple times while running ([80e6cd8](https://github.com/nodkz/mongodb-memory-server/commit/80e6cd80a0ede010bf983832b8da1c3bd0992ee5)), closes [#802](https://github.com/nodkz/mongodb-memory-server/issues/802)
+
+
+### Style
+
+* **MongoBinaryDownloadUrl:** add comment explaining pr 787 ([1821135](https://github.com/nodkz/mongodb-memory-server/commit/1821135b7c59009455992e9a4f064ec46ba381f5))
+
+
+### Dependencies
+
+* **@types/debug:** upgrade to version 4.1.9 ([73f265a](https://github.com/nodkz/mongodb-memory-server/commit/73f265aba479f228c78469806e46b2ad9680d551))
+* **@types/follow-redirects:** upgrade to version ([27dd371](https://github.com/nodkz/mongodb-memory-server/commit/27dd371a0543a886df89cd6e82f8fbf576b0b67a))
+* **@types/jest:** upgrade to version 29.5.5 ([4f5d25d](https://github.com/nodkz/mongodb-memory-server/commit/4f5d25d924ca1d4881532a2c61585e37de2fe442))
+* **@types/node:** upgrade to version 14.18.63 ([9cf137c](https://github.com/nodkz/mongodb-memory-server/commit/9cf137c8f1a829f4953d2cd1812111ddecd1e0ae))
+* **@types/semver:** upgrade to version 7.5.3 ([3942290](https://github.com/nodkz/mongodb-memory-server/commit/3942290a62f7fb879ed47bf75e109bfc6a77dd1d))
+* **@types/tar-stream:** upgrade to version 3.1.1 ([b6ac2c9](https://github.com/nodkz/mongodb-memory-server/commit/b6ac2c967e6f002a9d7df5bed6920bb4b8bd0006))
+* **@types/yauzl:** upgrade to version 2.10.1 ([ce856ec](https://github.com/nodkz/mongodb-memory-server/commit/ce856ecba01b8b04ed4a5609aee7cb7d7de649de))
+* **@types/yazl:** upgrade to version 2.4.3 ([0191bb7](https://github.com/nodkz/mongodb-memory-server/commit/0191bb7cbea6e0c34c234447f239dabd80d3e735))
+* **commitlint:** upgrade to version 17.7.2 ([60a5a30](https://github.com/nodkz/mongodb-memory-server/commit/60a5a30bfdb9d6c08f787e643fef81a85247354f))
+* **eslint:** upgrade to version 8.50.0 ([8076a48](https://github.com/nodkz/mongodb-memory-server/commit/8076a483cd2068e01802058b270fc637718a7db0))
+* **follow-redirects:** upgrade to version 1.15.3 ([b5a4cc6](https://github.com/nodkz/mongodb-memory-server/commit/b5a4cc63c50401b69c2f7b881def94d0167bafc4))
+* **https-proxy-agent:** upgrade to version 7.0.2 ([3f5f457](https://github.com/nodkz/mongodb-memory-server/commit/3f5f457a1763711788d3c89b90a2d81f3054da86))
+* **jest:** upgrade to version 29.7.0 ([90af566](https://github.com/nodkz/mongodb-memory-server/commit/90af566416c9efdeda71945a6e84dc4f482fcc6f))
+* **mongodb:** upgrade to version 5.9.0 ([1e5deef](https://github.com/nodkz/mongodb-memory-server/commit/1e5deef633443643a58c9f7a18e354be79d31539))
+* **prettier:** upgrade to version 3.0.3 ([1145757](https://github.com/nodkz/mongodb-memory-server/commit/11457577c1abc683d76e71a3d9f2008cdb7c859e))
+* **rimraf:** upgrade to version 5.0.5 ([a331189](https://github.com/nodkz/mongodb-memory-server/commit/a331189624105fdf6b4b5555b5fede04cdb254b2))
+
 ## [9.0.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.0-beta.1...v9.0.0-beta.2) (2023-08-22)
 
 
