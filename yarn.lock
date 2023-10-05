@@ -1385,10 +1385,10 @@
   resolved "https://registry.yarnpkg.com/@types/find-cache-dir/-/find-cache-dir-3.2.1.tgz#7b959a4b9643a1e6a1a5fe49032693cc36773501"
   integrity sha512-frsJrz2t/CeGifcu/6uRo4b+SzAwT4NYCVPu1GN8IB9XTzrpPkGuV0tmh9mN+/L0PklAlsC3u5Fxt0ju00LXIw==
 
-"@types/follow-redirects@^1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@types/follow-redirects/-/follow-redirects-1.14.1.tgz#c08b173be7517ddc53725d0faf9648d4dc7a9cdb"
-  integrity sha512-THBEFwqsLuU/K62B5JRwab9NW97cFmL4Iy34NTMX0bMycQVzq2q7PKOkhfivIwxdpa/J72RppgC42vCHfwKJ0Q==
+"@types/follow-redirects@^1.14.2":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@types/follow-redirects/-/follow-redirects-1.14.2.tgz#c0f0b5fa3f2bc943fc60ea276b0e7d7b224d8ead"
+  integrity sha512-NfvpNEAyiTvM+Wq4iTrSCyuryLG+ZIrnhUbvgakBxMiTY4Q959jX9GHGXm0p/jQgry1hjd7c2eRjT2NJX1m5uQ==
   dependencies:
     "@types/node" "*"
 
