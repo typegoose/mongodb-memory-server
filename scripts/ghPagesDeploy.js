@@ -7,7 +7,7 @@ const path = require('node:path');
 /* Constants / Config */
 
 /** keep ".git", ".github", "website" and "scripts" */
-const keepRegex = /^(?:\.git|website|scripts|versions)/;
+const keepRegex = /^(?:\.git|website|scripts|versions|typedoc)/;
 /** Regex to filter and get versions output from git ls-tree */
 const versionsFilter = /^versions\/(\d+\.x|beta)\/?$/;
 /** Which branch to deploy to */
@@ -50,6 +50,9 @@ function main() {
   // build the website
   execSync('yarn --cwd ./website build', { stdio: 'inherit' });
 
+  // build the typedoc website
+  execSync('yarn run typedoc', { stdio: 'inherit' });
+
   console.log('\nSwitching Branches\n');
 
   // ensure there is nothing blocking from changing branches
@@ -89,6 +92,14 @@ function main() {
 
     const from = path.join(websiteDir, entry);
     const to = path.join(deployInfo.deployPath, entry);
+    console.log('rename', from, '->', to); // always log what is renamed
+    fs.renameSync(from, to);
+  }
+
+  // move typedoc to "deployAs"
+  {
+    const from = 'typedoc';
+    const to = path.join(deployInfo.deployPath, 'typedoc');
     console.log('rename', from, '->', to); // always log what is renamed
     fs.renameSync(from, to);
   }
