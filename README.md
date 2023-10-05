@@ -129,7 +129,7 @@ const mongod = new MongoMemoryServer({
   },
   binary: {
     version?: string, // by default '5.0.19'
-    downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
+    downloadDir?: string, // see the documentation on what is chosen by default https://nodkz.github.io/mongodb-memory-server/docs/api/config-options#download_dir
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
     checkMD5?: boolean, // by default false OR process.env.MONGOMS_MD5_CHECK
