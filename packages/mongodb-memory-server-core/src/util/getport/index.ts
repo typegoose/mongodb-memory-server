@@ -102,7 +102,11 @@ export function validPort(port: number): number {
 export function tryPort(port: number): Promise<boolean> {
   return new Promise((res, rej) => {
     const server = http.createServer();
-    server.unref(); // dont keep this server from exiting the application
+
+    // some engines dont support ".unref"(net / tcp.unref), like "deno" in the past and now "bun"
+    if (typeof server.unref === 'function') {
+      server.unref(); // dont keep this server from exiting the application
+    }
 
     server.on('error', (err) => {
       if ((err as any)?.code !== 'EADDRINUSE') {
