@@ -1539,10 +1539,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/yazl@^2.4.2":
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/@types/yazl/-/yazl-2.4.2.tgz#d5f8a4752261badbf1a36e8b49e042dc18ec84bc"
-  integrity sha512-T+9JH8O2guEjXNxqmybzQ92mJUh2oCwDDMSSimZSe1P+pceZiFROZLYmcbqkzV5EUwz6VwcKXCO2S2yUpra6XQ==
+"@types/yazl@^2.4.3":
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/@types/yazl/-/yazl-2.4.3.tgz#6e53419133902cb675c666105ca1e6399eaed066"
+  integrity sha512-pZtZPktPV+rN+6oje9Akz5kBwOhpjKlr7X74osNVtmYKcMdgoBtMFbNNPeS2+juE5aEVGZuIbHISqMCn2RupNw==
   dependencies:
     "@types/node" "*"
 
