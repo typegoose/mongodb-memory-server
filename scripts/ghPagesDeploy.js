@@ -42,6 +42,11 @@ function main() {
   execSync(`git config user.name "${commiterInfo.name}"`, { stdio: 'inherit' });
   execSync(`git config user.email "${commiterInfo.email}"`, { stdio: 'inherit' });
 
+  console.log('\nInstall of root\n');
+
+  // make sure everything is correctly installed
+  execSync('yarn install', { stdio: 'inherit' });
+
   console.log('\nInstall & Build of website\n');
 
   // make sure everything is correctly installed
