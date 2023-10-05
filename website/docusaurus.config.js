@@ -60,6 +60,12 @@ module.exports = {
           position: 'right',
         },
         {
+          href: 'typedoc/index.html',
+          prependBaseUrlToHref: true,
+          label: 'Typedoc',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md',
           label: 'Changelog',
           position: 'right',
