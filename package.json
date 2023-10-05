@@ -31,6 +31,7 @@
     "prettier": "2.8.8",
     "semantic-release": "17.4.7",
     "ts-jest": "28.0.8",
+    "typedoc": "^0.21.x",
     "typescript": "4.4.4"
   },
   "workspaces": {
