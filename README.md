@@ -117,7 +117,7 @@ All options are optional.
 
 ```js
 const mongod = new MongoMemoryServer({
-  instance: {
+  instance?: {
     port?: number, // by default choose any free port
     ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`,
     dbName?: string, // by default '' (empty string)
@@ -126,13 +126,35 @@ const mongod = new MongoMemoryServer({
     replSet?: string, // by default no replica set, replica set name
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },
-  binary: {
+  binary?: {
     version?: string, // by default '6.0.9'
-    downloadDir?: string, // by default node_modules/.cache/mongodb-memory-server/mongodb-binaries
+    downloadDir?: string, // see the documentation on what is chosen by default https://nodkz.github.io/mongodb-memory-server/docs/api/config-options#download_dir
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
     checkMD5?: boolean, // by default false OR process.env.MONGOMS_MD5_CHECK
     systemBinary?: string, // by default undefined or process.env.MONGOMS_SYSTEM_BINARY
+  },
+  // using "auth" will manage "instance.auth"
+  auth?: {
+    disable?: boolean, // disable automatic auth creation
+    customRootName?: string, // by default "mongodb-memory-server-root"
+    customRootPwd?: string, // by default "rootuser"
+    force?: boolean, // force creation of users
+    keyfileContent?: string, // by default "0123456789"
+    extraUsers?: [{
+      // see mongodb documentation https://docs.mongodb.com/manual/reference/method/db.createUser/#definition)
+      createUser: string, // user name
+      pwd: string, // user password
+      roles: UserRoles[], // user roles
+      database?: string, // which database the user is created on
+      customData?: Record<string, any>,
+      mechanisms?: ('SCRAM-SHA-1' | 'SCRAM-SHA-256')[],
+      authenticationRestrictions?: {
+        clientSource?: string;
+        serverAddress?: string;
+      }[],
+      digestPassword?: boolean,
+    }],
   },
 });
 ```
@@ -172,7 +194,7 @@ const replSet = new MongoMemoryReplSet({
   // unless otherwise noted below these values will be in common with all instances spawned:
   replSet: {
     name, // replica set name (default: 'testset')
-    auth, //  enable auth support? (default: undefined / disabled)
+    auth?: boolean | AutomaticAuth, // enable auth, for options see #available-options-for-mongomemoryserver
     args, // any args specified here will be combined with any per instance args from `instanceOpts`
     count, // number of additional `mongod` processes to start (will not start any extra if instanceOpts.length > replSet.count); (default: 1)
     dbName, // default database for db URI strings. (default: uuid.v4())

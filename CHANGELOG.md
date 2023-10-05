@@ -165,6 +165,18 @@ also "disable" has been removed
 * **typescript:** upgrade to version 5.0.4 ([d531dde](https://github.com/nodkz/mongodb-memory-server/commit/d531ddea767cef2c038e228597812507e0590c2a))
 * **uuid:** remove package ([41b2551](https://github.com/nodkz/mongodb-memory-server/commit/41b2551a89df0eb806511efb85d5bd5f6419664c))
 
+## [8.15.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.15.0...v8.15.1) (2023-08-17)
+
+
+### Fixes
+
+* fix binary download on debian testing/unstable ([#787](https://github.com/nodkz/mongodb-memory-server/issues/787)) ([1a8ac8a](https://github.com/nodkz/mongodb-memory-server/commit/1a8ac8a462d4d2cc2c9f99b5f8dc2e97ef224953))
+
+
+### Style
+
+* **MongoBinaryDownloadUrl:** add comment explaining pr 787 ([1821135](https://github.com/nodkz/mongodb-memory-server/commit/1821135b7c59009455992e9a4f064ec46ba381f5))
+
 ## [8.15.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.14.0...v8.15.0) (2023-08-15)
 
 

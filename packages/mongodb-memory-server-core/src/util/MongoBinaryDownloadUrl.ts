@@ -282,7 +282,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       throw new UnknownVersionError(this.version);
     }
 
-    if (release >= 11 || ['unstable', 'testing'].includes(os.release)) {
+    // without any "release"(empty string), fallback to testing
+    // see https://tracker.debian.org/news/1433360/accepted-base-files-13-source-into-unstable/
+    const isTesting = ['unstable', 'testing', ''].includes(os.release);
+
+    if (isTesting || release >= 11) {
       // Debian 11 is compatible with the binaries for debian 10
       // but does not have binaries for before 5.0.8
       // and only set to use "debian10" if the requested version is not a latest version
@@ -302,10 +306,10 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       name += '71';
     }
 
-    if (release >= 10) {
+    if (isTesting || release >= 10) {
       if (semver.lt(coercedVersion, '4.2.1') && !testVersionIsLatest(this.version)) {
         throw new KnownVersionIncompatibilityError(
-          `Debian ${release}`,
+          `Debian ${release || os.release || os.codename}`,
           this.version,
           '>=4.2.1',
           'Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release'

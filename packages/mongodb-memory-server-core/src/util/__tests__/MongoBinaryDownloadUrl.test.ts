@@ -555,6 +555,22 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('for debian testing/unstable', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '5.0.9',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-5.0.9.tgz'
+          );
+        });
+
         it('should throw a Error when the provided version could not be coerced [UnknownVersionError]', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -624,6 +640,29 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'debian',
               release: '11',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a KnownVersionIncompatibilityError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
+            expect(err.message).toMatchSnapshot();
+          }
+        });
+
+        it('should throw a Error when requesting a version below 4.2.1 for debian testing [KnownVersionIncompatibilityError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '4.0.25',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              codename: 'trixie',
+              release: '',
             },
           });
 
