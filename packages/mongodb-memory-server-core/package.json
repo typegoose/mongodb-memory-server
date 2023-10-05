@@ -36,7 +36,7 @@
     "@types/follow-redirects": "^1.14.2",
     "@types/semver": "^7.5.3",
     "@types/tar-stream": "^2.2.2",
-    "@types/yauzl": "^2.10.0",
+    "@types/yauzl": "^2.10.1",
     "@types/yazl": "^2.4.2",
     "rimraf": "^5.0.1",
     "saslprep": "^1.0.3",
