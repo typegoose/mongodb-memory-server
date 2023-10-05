@@ -7,7 +7,7 @@ const path = require('node:path');
 /* Constants / Config */
 
 /** keep ".git", ".github", "website" and "scripts" */
-const keepRegex = /^(?:\.git|website|scripts|versions|typedoc)/;
+const keepRegex = /^(?:\.git|website|scripts|versions|typedoc_out)/;
 /** Regex to filter and get versions output from git ls-tree */
 const versionsFilter = /^versions\/(\d+\.x|beta)\/?$/;
 /** Which branch to deploy to */
@@ -98,7 +98,7 @@ function main() {
 
   // move typedoc to "deployAs"
   {
-    const from = 'typedoc';
+    const from = 'typedoc_out';
     const to = path.join(deployInfo.deployPath, 'typedoc');
     console.log('rename', from, '->', to); // always log what is renamed
     fs.renameSync(from, to);

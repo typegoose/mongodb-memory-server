@@ -56,6 +56,6 @@
     "readme:toc": "doctoc ./README.md",
     "postinstall": "husky install",
     "website": "yarn --cwd website/ run start",
-    "typedoc": "typedoc packages/mongodb-memory-server-core/src/index.ts --out typedoc --tsconfig packages/mongodb-memory-server-core/tsconfig.build.json"
+    "typedoc": "typedoc packages/mongodb-memory-server-core/src/index.ts --out typedoc_out --tsconfig packages/mongodb-memory-server-core/tsconfig.build.json"
   }
 }
