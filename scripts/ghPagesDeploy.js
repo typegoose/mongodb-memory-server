@@ -7,7 +7,7 @@ const path = require('node:path');
 /* Constants / Config */
 
 /** keep ".git", ".github", "website" and "scripts" */
-const keepRegex = /^(?:\.git|website|scripts|versions)/;
+const keepRegex = /^(?:\.git|website|scripts|versions|typedoc_out)/;
 /** Regex to filter and get versions output from git ls-tree */
 const versionsFilter = /^versions\/(\d+\.x|beta)\/?$/;
 /** Which branch to deploy to */
@@ -42,6 +42,11 @@ function main() {
   execSync(`git config user.name "${commiterInfo.name}"`, { stdio: 'inherit' });
   execSync(`git config user.email "${commiterInfo.email}"`, { stdio: 'inherit' });
 
+  console.log('\nInstall of root\n');
+
+  // make sure everything is correctly installed
+  execSync('yarn install', { stdio: 'inherit' });
+
   console.log('\nInstall & Build of website\n');
 
   // make sure everything is correctly installed
@@ -49,6 +54,9 @@ function main() {
 
   // build the website
   execSync('yarn --cwd ./website build', { stdio: 'inherit' });
+
+  // build the typedoc website
+  execSync('yarn run typedoc', { stdio: 'inherit' });
 
   console.log('\nSwitching Branches\n');
 
@@ -89,6 +97,14 @@ function main() {
 
     const from = path.join(websiteDir, entry);
     const to = path.join(deployInfo.deployPath, entry);
+    console.log('rename', from, '->', to); // always log what is renamed
+    fs.renameSync(from, to);
+  }
+
+  // move typedoc to "deployAs"
+  {
+    const from = 'typedoc_out';
+    const to = path.join(deployInfo.deployPath, 'typedoc');
     console.log('rename', from, '->', to); // always log what is renamed
     fs.renameSync(from, to);
   }

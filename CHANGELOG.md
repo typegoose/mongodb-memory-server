@@ -199,6 +199,13 @@ also "disable" has been removed
 * **typescript:** upgrade to version 5.0.4 ([d531dde](https://github.com/nodkz/mongodb-memory-server/commit/d531ddea767cef2c038e228597812507e0590c2a))
 * **uuid:** remove package ([41b2551](https://github.com/nodkz/mongodb-memory-server/commit/41b2551a89df0eb806511efb85d5bd5f6419664c))
 
+## [8.16.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.15.1...v8.16.0) (2023-10-05)
+
+
+### Dependencies
+
+* **typedoc:** add dev-dependency ([f8c671c](https://github.com/nodkz/mongodb-memory-server/commit/f8c671c2663d3c2a67314392d5f18cb08933ebfb))
+
 ## [8.15.1](https://github.com/nodkz/mongodb-memory-server/compare/v8.15.0...v8.15.1) (2023-08-17)
 
 
