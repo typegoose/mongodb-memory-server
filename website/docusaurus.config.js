@@ -60,6 +60,7 @@ module.exports = {
           position: 'right',
         },
         {
+          type: 'custom-link',
           href: 'typedoc/index.html',
           prependBaseUrlToHref: true,
           label: 'Typedoc',
