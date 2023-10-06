@@ -17,6 +17,7 @@ module.exports = {
         'chore',
         'revert',
         'deps',
+        'devdeps',
         'release',
       ],
     ],
