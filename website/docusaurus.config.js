@@ -60,11 +60,12 @@ module.exports = {
           position: 'right',
         },
         {
-          type: 'custom-link',
-          href: 'typedoc/index.html',
-          prependBaseUrlToHref: true,
+          // triple "/", to always be relative to the base-url and not the current url
+          to: 'pathname:///typedoc/index.html',
           label: 'Typedoc',
           position: 'right',
+          // overwrite default target of "_blank"(new tab)
+          target: '_self',
         },
         {
           href: 'https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md',
