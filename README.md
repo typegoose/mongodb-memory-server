@@ -68,8 +68,8 @@ Choose any package, because they are the same. They differ only in the default c
 
 ### Requirements
 
-- NodeJS: 12.22+
-- Typescript: 4.4+ (if used)
+- NodeJS: 14.20.1+
+- Typescript: 5.0+ (if used)
 
 And one of those (on Linux):
 
@@ -86,7 +86,7 @@ On Linux, you will also need `libcurl4` (or `libcurl3` on some older distro vers
 
 ### Configuring which mongod binary to use
 
-The default behavior is that version `5.0.19` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
+The default behavior is that version `6.0.9` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
 
 ```sh
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
@@ -122,13 +122,12 @@ const mongod = new MongoMemoryServer({
     ip?: string, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`,
     dbName?: string, // by default '' (empty string)
     dbPath?: string, // by default create in temp directory
-    storageEngine?: string, // by default `ephemeralForTest`, available engines: [ 'ephemeralForTest', 'wiredTiger' ]
+    storageEngine?: string, // by default `ephemeralForTest`(unless mongodb 7.0.0, where its `wiredTiger`), available engines: [ 'ephemeralForTest', 'wiredTiger' ]
     replSet?: string, // by default no replica set, replica set name
-    auth?: boolean, // by default `mongod` is started with '--noauth', start `mongod` with '--auth'
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
   },
   binary?: {
-    version?: string, // by default '5.0.19'
+    version?: string, // by default '6.0.9'
     downloadDir?: string, // see the documentation on what is chosen by default https://nodkz.github.io/mongodb-memory-server/docs/api/config-options#download_dir
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()

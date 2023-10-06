@@ -40,6 +40,10 @@ module.exports = {
       'guides/mongodb-server-versions',
       'guides/common-issues',
     ],
-    Migration: ['guides/migration/migrate8', 'guides/migration/migrate7'],
+    Migration: [
+      'guides/migration/migrate9',
+      'guides/migration/migrate8',
+      'guides/migration/migrate7',
+    ],
   },
 };

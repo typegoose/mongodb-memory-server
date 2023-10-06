@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x, 18.x]
+        node-version: [14.x, 16.x, 18.x, 20.x]
     steps:
       - uses: actions/checkout@v4
         if: github.event.inputs.git-ref == ''
@@ -49,7 +49,7 @@ jobs:
         env:
           CI: true
       - name: Send codecov.io stats
-        if: matrix.node-version == '12.x'
+        if: matrix.node-version == '14.x'
         uses: codecov/codecov-action@v3
 
   publish:
@@ -58,10 +58,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 12
+      - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: 12.x
+          node-version: 18.x
       - name: Install node_modules
         run: yarn install
       - name: Build

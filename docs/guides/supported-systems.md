@@ -13,7 +13,6 @@ Officially Supported Architectures:
 <!--Platfrom taken from "MongoBinaryDownloadUrl.translateArch"-->
 - `x64` / `x86_64`
 - `arm64` / `aarch64` (only some linux distros have binaries)
-- ~~`ia32` / `i686` / `i386`~~ (There are only binaries up to ~3.2 and [will be removed with the next MMS version](https://github.com/nodkz/mongodb-memory-server/issues/638))
 
 :::note
 On systems that have native arch translation (like ARM MacOS), the architecture will need to be overwritten with `MONGOMS_ARCH=x64`.
@@ -55,7 +54,7 @@ Depends on the distribution, many common ones should just work right out of the 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `1404`<br/>
 Highest version is `2204`<br/>
-Default version is `1404`<br/>
+Default version is `2204`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 
 :::note

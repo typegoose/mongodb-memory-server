@@ -26,6 +26,8 @@ exports[`MongodbInstance test events closeHandler() should emit "instanceError" 
 
 exports[`MongodbInstance test events closeHandler() should emit "instanceError" with non-0 or signal 2`] = `"Instance closed unexpectedly with code \\"null\\" and signal \\"SIG\\""`;
 
+exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "aborting after" is found 1`] = `"Mongod internal error (invariant() failure)"`;
+
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "excepetion in initAndListen" is thrown DBException in initAndListen 1`] = `
 "Instance Failed to start with \\"DBException in initAndListen\\". Original Error:
 Location18656: Cannot start server with an unknown storage engine: ephemeralForTest"
@@ -33,22 +35,22 @@ Location18656: Cannot start server with an unknown storage engine: ephemeralForT
 
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "excepetion in initAndListen" is thrown DbPathInUse (Not a directory) 1`] = `
 "Instance Failed to start with \\"DBPathInUse\\". Original Error:
-Unable to create/open the lock file: /dev/null/mongod.lock (Not a directory). Ensure the user executing mongod is the owner of the lock file and has the appropriate permissions. Also make sure that another mongod instance is not already running on the /dev/null directory"
+Unable to create/open the lock file: /dev/null/mongod.lock (Not a directory). Ensure the user executing mongod is the owner of the lock file and has the appropriate permissions. Also make sure that another mongod instance is not already running on the /dev/null directory, terminating"
 `;
 
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "excepetion in initAndListen" is thrown DbPathInUse (already running) 1`] = `
 "Instance Failed to start with \\"DBPathInUse\\". Original Error:
-Unable to lock the lock file: /tmp/hellodb/mongod.lock (Resource temporarily unavailable). Another mongod instance is already running on the /tmp/hellodb directory"
+Unable to lock the lock file: /tmp/hellodb/mongod.lock (Resource temporarily unavailable). Another mongod instance is already running on the /tmp/hellodb directory, terminating"
 `;
 
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "excepetion in initAndListen" is thrown Location28596 1`] = `
 "Instance Failed to start with \\"Location28596\\". Original Error:
-Unable to determine status of lock file in the data directory /root: boost::filesystem::status: Permission denied: \\"/root/mongod.lock\\""
+Unable to determine status of lock file in the data directory /root: boost::filesystem::status: Permission denied: \\"/root/mongod.lock\\", terminating"
 `;
 
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when "excepetion in initAndListen" is thrown NonExistentPath 1`] = `
 "Instance Failed to start with \\"NonExistentPath\\". Original Error:
-Data directory /tmp/hello not found. Create the missing directory or specify another path using (1) the --dbpath command line option, or (2) by adding the 'storage.dbPath' option in the configuration file."
+Data directory /tmp/hello not found. Create the missing directory or specify another path using (1) the --dbpath command line option, or (2) by adding the 'storage.dbPath' option in the configuration file., terminating"
 `;
 
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when curl-open-ssl-3 is not found 1`] = `
@@ -60,7 +62,5 @@ exports[`MongodbInstance test events stdoutHandler() should emit "instanceError"
 "libcurl4 is not available on your system. Mongod requires it and cannot be started without it.
 You need to manually install libcurl4"
 `;
-
-exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when library is missing 1`] = `"Instance failed to start because a library is missing or cannot be opened: \\"libcrypto.so.10\\""`;
 
 exports[`MongodbInstance test events stdoutHandler() should emit "instanceError" when port is already in use 1`] = `"Port \\"1001\\" already in use"`;

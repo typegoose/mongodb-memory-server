@@ -32,7 +32,7 @@ export enum ResolveConfigVariables {
 /** The Prefix for Environmental values */
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 /** This Value exists here, because "defaultValues" can be changed with "setDefaultValue", but this property is constant */
-export const DEFAULT_VERSION = '5.0.19';
+export const DEFAULT_VERSION = '6.0.9';
 /** Default values for some config options that require explicit setting, it is constant so that the default values cannot be interfered with */
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
@@ -42,6 +42,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.USE_HTTP, 'false'],
   [ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK, 'true'],
   [ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME, 'false'],
+  [ResolveConfigVariables.MD5_CHECK, 'true'],
   [ResolveConfigVariables.MAX_REDIRECTS, '2'],
 ]);
 

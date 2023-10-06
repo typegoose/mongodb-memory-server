@@ -2,7 +2,7 @@
 import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
-import getPort from 'get-port';
+import { getFreePort } from '../getport';
 import {
   GenericMMSError,
   StartBinaryFailedError,
@@ -155,7 +155,7 @@ describe('MongodbInstance', () => {
   });
 
   it('should start instance on port specific port', async () => {
-    const gotPort = await getPort({ port: 27333 });
+    const gotPort = await getFreePort(27333);
     const mongod = await MongodbInstance.create({
       instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
@@ -167,7 +167,7 @@ describe('MongodbInstance', () => {
   });
 
   it('should throw error if port is busy', async () => {
-    const gotPort = await getPort({ port: 27444 });
+    const gotPort = await getFreePort(27444);
     const mongod = await MongodbInstance.create({
       instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
@@ -190,7 +190,7 @@ describe('MongodbInstance', () => {
   });
 
   it('should wait until childprocess and killerprocess are killed', async () => {
-    const gotPort = await getPort({ port: 27445 });
+    const gotPort = await getFreePort(27445);
     const mongod: MongodbInstance = await MongodbInstance.create({
       instance: { port: gotPort, dbPath: tmpDir },
       binary: { version },
@@ -209,7 +209,7 @@ describe('MongodbInstance', () => {
 
   describe('should work with mongodb LTS releases', () => {
     it('should work with mongodb 4.0', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.0.28' }, // explicit version instead of default to not mess it up later
@@ -219,7 +219,7 @@ describe('MongodbInstance', () => {
     });
 
     it('should work with mongodb 4.2', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.2.23' },
@@ -229,7 +229,7 @@ describe('MongodbInstance', () => {
     });
 
     it('should work with mongodb 4.4', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '4.4.22' },
@@ -239,7 +239,7 @@ describe('MongodbInstance', () => {
     });
 
     it('should work with mongodb 5.0', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
         binary: { version: '5.0.19' },
@@ -249,10 +249,21 @@ describe('MongodbInstance', () => {
     });
 
     it('should work with mongodb 6.0', async () => {
-      const gotPort = await getPort({ port: 27445 });
+      const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '6.0.6' },
+        binary: { version: '6.0.9' },
+      });
+      expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
+      await mongod.stop();
+    });
+
+    it('should work with mongodb 7.0', async () => {
+      const gotPort = await getFreePort(27445);
+      const mongod = await MongodbInstance.create({
+        // this works without problems, because no explicit storage-engine is given, so mongodb automatically chooses wiredTiger
+        instance: { port: gotPort, dbPath: tmpDir },
+        binary: { version: '7.0.0' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
@@ -434,7 +445,21 @@ describe('MongodbInstance', () => {
     describe('stdoutHandler()', () => {
       // All the lines used to test here should be sourced from actual mongod output!
 
-      // TODO: add test for "aborting after"
+      it('should emit "instanceError" when "aborting after" is found', () => {
+        // actual line copied from mongod 5.0.8 (from https://github.com/nodkz/mongodb-memory-server/issues/727)
+        const line =
+          '{"t":{"$date":"2023-01-05T13:55:59.493+00:00"},"s":"F",  "c":"-",        "id":23079,   "ctx":"conn13","msg":"Invariant failure","attr":{"expr":"readTs","file":"src/mongo/db/read_concern_mongod.cpp","line":529}}\n{"t":{"$date":"2023-01-05T13:55:59.493+00:00"},"s":"F",  "c":"-",        "id":23080,   "ctx":"conn13","msg":"\n\n***aborting after invariant() failure\n\n"}';
+
+        mongod.stdoutHandler(line);
+
+        expect(events.size).toEqual(2);
+        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
+
+        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
+        expect(event).toBeInstanceOf(StdoutInstanceError);
+        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+        expect(event.message).toMatchSnapshot();
+      });
 
       it('should emit "instanceReady" when waiting for connections', () => {
         // actual line copied from mongod 4.0.14
@@ -521,22 +546,6 @@ describe('MongodbInstance', () => {
         expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
         expect(events.get(MongoInstanceEvents.instanceReplState)).toEqual(['RECOVERING']);
         expect(mongod.isInstancePrimary).toEqual(false);
-      });
-
-      it('should emit "instanceError" when library is missing', () => {
-        // actual line copied from mongod 4.?.? (from https://github.com/nodkz/mongodb-memory-server/issues/408)
-        // TODO: when finding an actual line, please replace the one below
-        const line = 'libcrypto.so.10: cannot open shared object';
-
-        mongod.stdoutHandler(line);
-
-        expect(events.size).toEqual(2);
-        expect(events.get(MongoInstanceEvents.instanceSTDOUT)).toEqual([line]);
-
-        const event = events.get(MongoInstanceEvents.instanceError)?.[0];
-        expect(event).toBeInstanceOf(StdoutInstanceError);
-        assertIsError(event); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
-        expect(event.message).toMatchSnapshot();
       });
 
       describe('should emit "instanceError" when "excepetion in initAndListen" is thrown', () => {
@@ -681,5 +690,29 @@ describe('MongodbInstance', () => {
         expect(err).toBe(event); // reference compare, because these 2 values should be the same
       }
     });
+  });
+
+  it('should throw error if instance is already started (#662)', async () => {
+    const gotPort = await getFreePort();
+    const mongod = await MongodbInstance.create({
+      instance: { port: gotPort, dbPath: tmpDir },
+      binary: { version },
+    });
+
+    try {
+      await mongod.start();
+
+      fail('Expected to Fail');
+    } catch (err) {
+      expect(err).toBeInstanceOf(GenericMMSError);
+      assertIsError(err); // has to be used, because there is not typeguard from "expect(variable).toBeInstanceOf"
+      expect(
+        err.message.includes(
+          'Cannot run "MongoInstance.start" because "mongodProcess.pid" is still defined'
+        )
+      ).toBeTruthy();
+    } finally {
+      await mongod.stop();
+    }
   });
 });

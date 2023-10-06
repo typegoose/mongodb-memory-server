@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-global-4.0",
-  "version": "8.16.0",
+  "version": "9.0.0-beta.4",
   "mongodb_version": "4.0.28",
   "description": "MongoDB Server for testing (auto-download 4.0 version to ~/.cache/mongodb-binaries).",
   "main": "index.js",
@@ -12,7 +12,7 @@
     "directory": "packages/mongodb-memory-server-global-4.4"
   },
   "engines": {
-    "node": ">=12.22.0"
+    "node": ">=14.20.1"
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "keywords": [
@@ -25,8 +25,8 @@
     "mongomem"
   ],
   "dependencies": {
-    "mongodb-memory-server-core": "8.16.0",
-    "tslib": "^2.6.1"
+    "mongodb-memory-server-core": "9.0.0-beta.4",
+    "tslib": "^2.6.2"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js"

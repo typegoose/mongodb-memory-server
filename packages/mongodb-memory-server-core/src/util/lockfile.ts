@@ -4,7 +4,6 @@ import debug from 'debug';
 import * as path from 'path';
 import { promises as fspromises } from 'fs';
 import { Mutex } from 'async-mutex';
-import { v4 as uuidv4 } from 'uuid';
 import { UnableToUnlockLockfileError, UnknownLockfileStatusError } from './errors';
 
 const log = debug('MongoMS:LockFile');
@@ -197,7 +196,7 @@ export class LockFile {
   protected static async createLock(file: string): Promise<LockFile> {
     // this function only gets called by processed "file" input, so no re-checking
     log(`createLock: trying to create a lock file for "${file}"`);
-    const uuid = uuidv4();
+    const uuid = utils.uuidv4();
 
     // This is not an ".catch" because in an callback running "return" dosnt "return" the parent function
     try {

@@ -23,13 +23,13 @@ import {
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */
-if (lt(process.version, '12.22.0')) {
-  console.warn('Using NodeJS below 12.22.0');
+if (lt(process.version, '14.20.1')) {
+  console.warn('Using NodeJS below 14.20.1');
 }
 
 const log = debug('MongoMS:MongoInstance');
 
-export type StorageEngine = 'devnull' | 'ephemeralForTest' | 'mmapv1' | 'wiredTiger';
+export type StorageEngine = 'ephemeralForTest' | 'wiredTiger';
 
 /**
  * Overwrite replica member-specific configuration
@@ -244,6 +244,14 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    */
   isReplSet: boolean = false;
 
+  /**
+   * Extra promise to avoid multiple calls of `.stop` at the same time
+   *
+   * @see https://github.com/nodkz/mongodb-memory-server/issues/802
+   */
+  // NOTE: i am not sure how to properly test this
+  stopPromise?: Promise<boolean>;
+
   constructor(opts: Partial<MongodOpts>) {
     super();
     this.instanceOpts = { ...opts.instance };
@@ -339,6 +347,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    */
   async start(): Promise<void> {
     this.debug('start');
+
+    if (!isNullOrUndefined(this.mongodProcess?.pid)) {
+      throw new GenericMMSError(
+        `Cannot run "MongoInstance.start" because "mongodProcess.pid" is still defined (pid: ${this.mongodProcess?.pid})`
+      );
+    }
+
     this.isInstancePrimary = false;
     this.isInstanceReady = false;
     this.isReplSet = false;
@@ -399,69 +414,81 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       return false;
     }
 
-    if (!isNullOrUndefined(this.mongodProcess)) {
-      // try to run "shutdown" before running "killProcess" (gracefull "SIGINT")
-      // using this, otherwise on windows nodejs will handle "SIGINT" & "SIGTERM" & "SIGKILL" the same (instant exit)
-      if (this.isReplSet) {
-        let con: MongoClient | undefined;
-        try {
-          this.debug('stop: trying shutdownServer');
-          const port = this.instanceOpts.port;
-          const ip = this.instanceOpts.ip;
-          assertion(
-            !isNullOrUndefined(port),
-            new Error('Cannot shutdown replset gracefully, no "port" is provided')
-          );
-          assertion(
-            !isNullOrUndefined(ip),
-            new Error('Cannot shutdown replset gracefully, no "ip" is provided')
-          );
+    if (!isNullOrUndefined(this.stopPromise)) {
+      this.debug('stop: stopPromise is already set, using that');
 
-          con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
-            ...this.extraConnectionOptions,
-            directConnection: true,
-          });
+      return this.stopPromise;
+    }
 
-          const admin = con.db('admin'); // just to ensure it is actually the "admin" database
-          // "timeoutSecs" is set to "1" otherwise it will take at least "10" seconds to stop (very long tests)
-          await admin.command({ shutdown: 1, force: true, timeoutSecs: 1 });
-          this.debug('stop: after admin shutdown command');
-        } catch (err) {
-          // Quote from MongoDB Documentation (https://docs.mongodb.com/manual/reference/command/replSetStepDown/#client-connections):
-          // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.
-          // > In MongoDB 4.0 and earlier, replSetStepDown command closes all client connections during the step down.
-          // so error "MongoNetworkError: connection 1 to 127.0.0.1:41485 closed" will get thrown below 4.2
-          if (
-            !(
-              err instanceof MongoNetworkError &&
-              /^connection \d+ to [\d.]+:\d+ closed$/i.test(err.message)
-            )
-          ) {
-            console.warn(err);
-          }
-        } finally {
-          if (!isNullOrUndefined(con)) {
-            // even if it errors out, somehow the connection stays open
-            await con.close();
+    // wrap the actual stop in a promise, so it can be awaited in multiple calls
+    // for example a instanceError while stop is already running would cause another stop
+    this.stopPromise = (async () => {
+      if (!isNullOrUndefined(this.mongodProcess)) {
+        // try to run "shutdown" before running "killProcess" (gracefull "SIGINT")
+        // using this, otherwise on windows nodejs will handle "SIGINT" & "SIGTERM" & "SIGKILL" the same (instant exit)
+        if (this.isReplSet) {
+          let con: MongoClient | undefined;
+          try {
+            this.debug('stop: trying shutdownServer');
+            const port = this.instanceOpts.port;
+            const ip = this.instanceOpts.ip;
+            assertion(
+              !isNullOrUndefined(port),
+              new Error('Cannot shutdown replset gracefully, no "port" is provided')
+            );
+            assertion(
+              !isNullOrUndefined(ip),
+              new Error('Cannot shutdown replset gracefully, no "ip" is provided')
+            );
+
+            con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
+              ...this.extraConnectionOptions,
+              directConnection: true,
+            });
+
+            const admin = con.db('admin'); // just to ensure it is actually the "admin" database
+            // "timeoutSecs" is set to "1" otherwise it will take at least "10" seconds to stop (very long tests)
+            await admin.command({ shutdown: 1, force: true, timeoutSecs: 1 });
+            this.debug('stop: after admin shutdown command');
+          } catch (err) {
+            // Quote from MongoDB Documentation (https://docs.mongodb.com/manual/reference/command/replSetStepDown/#client-connections):
+            // > Starting in MongoDB 4.2, replSetStepDown command no longer closes all client connections.
+            // > In MongoDB 4.0 and earlier, replSetStepDown command closes all client connections during the step down.
+            // so error "MongoNetworkError: connection 1 to 127.0.0.1:41485 closed" will get thrown below 4.2
+            if (
+              !(
+                err instanceof MongoNetworkError &&
+                /^connection \d+ to [\d.]+:\d+ closed$/i.test(err.message)
+              )
+            ) {
+              console.warn(err);
+            }
+          } finally {
+            if (!isNullOrUndefined(con)) {
+              // even if it errors out, somehow the connection stays open
+              await con.close();
+            }
           }
         }
+
+        await killProcess(this.mongodProcess, 'mongodProcess', this.instanceOpts.port);
+        this.mongodProcess = undefined; // reset reference to the childProcess for "mongod"
+      } else {
+        this.debug('stop: mongodProcess: nothing to shutdown, skipping');
+      }
+      if (!isNullOrUndefined(this.killerProcess)) {
+        await killProcess(this.killerProcess, 'killerProcess', this.instanceOpts.port);
+        this.killerProcess = undefined; // reset reference to the childProcess for "mongo_killer"
+      } else {
+        this.debug('stop: killerProcess: nothing to shutdown, skipping');
       }
 
-      await killProcess(this.mongodProcess, 'mongodProcess', this.instanceOpts.port);
-      this.mongodProcess = undefined; // reset reference to the childProcess for "mongod"
-    } else {
-      this.debug('stop: mongodProcess: nothing to shutdown, skipping');
-    }
-    if (!isNullOrUndefined(this.killerProcess)) {
-      await killProcess(this.killerProcess, 'killerProcess', this.instanceOpts.port);
-      this.killerProcess = undefined; // reset reference to the childProcess for "mongo_killer"
-    } else {
-      this.debug('stop: killerProcess: nothing to shutdown, skipping');
-    }
+      this.debug('stop: Instance Finished Shutdown');
 
-    this.debug('stop: Instance Finished Shutdown');
+      return true;
+    })().finally(() => (this.stopPromise = undefined));
 
-    return true;
+    return this.stopPromise;
   }
 
   /**
@@ -483,6 +510,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     if (isNullOrUndefined(childProcess.pid)) {
       throw new StartBinaryFailedError(path.resolve(mongoBin));
     }
+
+    childProcess.unref();
 
     this.emit(MongoInstanceEvents.instanceLaunched);
 
@@ -622,9 +651,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           MongoInstanceEvents.instanceError,
           new StdoutInstanceError(
             `Instance Failed to start with "${execptionMatch[1] ?? 'unknown'}". Original Error:\n` +
-              line
-                .substring(execptionMatch.index + execptionMatch[0].length)
-                .replace(/, terminating$/gi, '')
+              line.substring(execptionMatch.index + execptionMatch[0].length)
           )
         );
       }
@@ -683,9 +710,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     }
 
     if (/\*\*\*aborting after/i.test(line)) {
+      const match = line.match(/\*\*\*aborting after ([^\n]+)/i);
+
+      const extra = match?.[1] ? ` (${match[1]})` : '';
+
       this.emit(
         MongoInstanceEvents.instanceError,
-        new StdoutInstanceError('Mongod internal error')
+        new StdoutInstanceError('Mongod internal error' + extra)
       );
     }
   }

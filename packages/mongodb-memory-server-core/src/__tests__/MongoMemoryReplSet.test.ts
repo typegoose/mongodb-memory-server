@@ -238,7 +238,7 @@ describe('single server replset', () => {
     jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
     jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
     const replSet = await MongoMemoryReplSet.create({
-      replSet: { auth: {}, count: 3, storageEngine: 'ephemeralForTest' },
+      replSet: { auth: { enable: true }, count: 3, storageEngine: 'ephemeralForTest' },
     });
 
     utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth));
@@ -309,7 +309,7 @@ describe('single server replset', () => {
     jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
     jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
     const replSet = await MongoMemoryReplSet.create({
-      replSet: { auth: {}, count: 3, storageEngine: 'wiredTiger' },
+      replSet: { auth: { enable: true }, count: 3, storageEngine: 'wiredTiger' },
     });
 
     async function testConnections() {
@@ -429,7 +429,7 @@ describe('MongoMemoryReplSet', () => {
       // @ts-expect-error because "_replSetOpts" is protected
       expect(replSet.replSetOpts).toEqual(replSet._replSetOpts);
       expect(replSet.replSetOpts).toEqual({
-        auth: { disable: true },
+        auth: { enable: false },
         args: [],
         name: 'testset',
         count: 1,
@@ -439,12 +439,12 @@ describe('MongoMemoryReplSet', () => {
         storageEngine: 'ephemeralForTest',
         configSettings: {},
       });
-      replSet.replSetOpts = { auth: true };
+      replSet.replSetOpts = { auth: { enable: true } };
       // @ts-expect-error because "_replSetOpts" is protected
       expect(replSet.replSetOpts).toEqual(replSet._replSetOpts);
       const authDefault = utils.authDefault(replSet.replSetOpts.auth as AutomaticAuth);
       expect(replSet.replSetOpts).toEqual({
-        auth: { ...authDefault, disable: false },
+        auth: { ...authDefault, enable: true },
         args: [],
         name: 'testset',
         count: 1,
@@ -568,7 +568,7 @@ describe('MongoMemoryReplSet', () => {
       const cleanupSpy = jest.spyOn(replSet, 'cleanup');
       const cleanupInstance0Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
-      await replSet.stop(false);
+      await replSet.stop({ doCleanup: false });
 
       expect(cleanupSpy).not.toHaveBeenCalled();
       expect(cleanupInstance0Spy).not.toHaveBeenCalled();
@@ -576,13 +576,28 @@ describe('MongoMemoryReplSet', () => {
       cleanupInstance0Spy.mockClear();
       cleanupSpy.mockClear();
 
-      await replSet.stop(true);
+      await replSet.stop({ doCleanup: true });
 
-      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: false } as utils.Cleanup);
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true } as utils.Cleanup);
       expect(cleanupInstance0Spy).toHaveBeenCalledWith({
         doCleanup: true,
-        force: false,
       } as utils.Cleanup);
+    });
+
+    it('should not support boolean arguments', async () => {
+      const replSet = new MongoMemoryReplSet();
+
+      try {
+        await replSet.stop(
+          // @ts-expect-error Testing a non-existing overload
+          true
+        );
+        fail('Expected to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+      }
     });
 
     it('should call cleanup and pass-through cleanup options', async () => {
@@ -633,9 +648,9 @@ describe('MongoMemoryReplSet', () => {
       const cleanupInstance0Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
       await replSet.stop({ doCleanup: false });
-      await replSet.cleanup(false);
+      await replSet.cleanup({ doCleanup: true, force: false });
 
-      expect(cleanupSpy).toHaveBeenCalledWith(false);
+      expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true, force: false });
       expect(cleanupInstance0Spy).toHaveBeenCalledWith({
         doCleanup: true,
         force: false,
@@ -648,11 +663,27 @@ describe('MongoMemoryReplSet', () => {
       const cleanupInstance1Spy = jest.spyOn(replSet.servers[0], 'cleanup');
 
       await replSet.stop({ doCleanup: false });
-      await replSet.cleanup(true);
+      await replSet.cleanup({ doCleanup: true, force: true });
       expect(cleanupInstance1Spy).toHaveBeenCalledWith({
         doCleanup: true,
         force: true,
       } as utils.Cleanup);
+    });
+
+    it('should not support boolean arguments', async () => {
+      const replSet = new MongoMemoryReplSet();
+
+      try {
+        await replSet.cleanup(
+          // @ts-expect-error Testing a non-existing overload
+          true
+        );
+        fail('Expected to fail');
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        assertIsError(err);
+        expect(err.message).toMatchSnapshot();
+      }
     });
 
     it('should run cleanup with cleanup options and pass-through options to lower', async () => {

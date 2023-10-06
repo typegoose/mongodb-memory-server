@@ -1,0 +1,13 @@
+{
+  "entryPoints": [
+    "src/",
+  ],
+  "exclude": [
+    "**/__tests__/**"
+  ],
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "tsconfig": "tsconfig.build.json",
+  "entryPointStrategy": "expand",
+  "out": "../../typedoc_out"
+}

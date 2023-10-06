@@ -2,6 +2,10 @@
 
 exports[`MongoMemoryReplSet "_waitForPrimary" should throw an error if timeout is reached 1`] = `"{\\"timeout\\":1}"`;
 
+exports[`MongoMemoryReplSet .cleanup() should not support boolean arguments 1`] = `"Unsupported argument type: boolean"`;
+
+exports[`MongoMemoryReplSet .stop() should not support boolean arguments 1`] = `"Unsupported argument type: boolean"`;
+
 exports[`MongoMemoryReplSet getters & setters setter of "replSetOpts" should throw an error if count is 1 or above 1`] = `"ReplSet Count needs to be 1 or higher! (specified count: \\"0\\")"`;
 
 exports[`MongoMemoryReplSet getters & setters state errors setter of "binaryOpts" should throw an error if state is not "stopped" 1`] = `

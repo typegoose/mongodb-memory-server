@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-core",
-  "version": "8.16.0",
+  "version": "9.0.0-beta.4",
   "description": "MongoDB Server for testing (core package, without autodownload). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "lib/index",
   "types": "lib/index.d.ts",
@@ -10,7 +10,7 @@
     "directory": "packages/mongodb-memory-server-core"
   },
   "engines": {
-    "node": ">=12.22.0"
+    "node": ">=14.20.1"
   },
   "files": [
     "lib",
@@ -31,32 +31,28 @@
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "devDependencies": {
-    "@types/debug": "^4.1.8",
+    "@types/debug": "^4.1.9",
     "@types/find-cache-dir": "^3.2.1",
-    "@types/follow-redirects": "^1.14.1",
-    "@types/semver": "^7.5.0",
-    "@types/tar-stream": "^2.2.2",
-    "@types/uuid": "^9.0.2",
-    "@types/yauzl": "^2.10.0",
-    "@types/yazl": "^2.4.2",
-    "rimraf": "^3.0.2",
+    "@types/follow-redirects": "^1.14.2",
+    "@types/semver": "^7.5.3",
+    "@types/tar-stream": "^3.1.1",
+    "@types/yauzl": "^2.10.1",
+    "@types/yazl": "^2.4.3",
+    "rimraf": "^5.0.5",
     "yazl": "^2.5.1"
   },
   "dependencies": {
-    "async-mutex": "^0.3.2",
+    "async-mutex": "^0.4.0",
     "camelcase": "^6.3.0",
     "debug": "^4.3.4",
     "find-cache-dir": "^3.3.2",
-    "follow-redirects": "^1.15.2",
-    "get-port": "^5.1.1",
-    "https-proxy-agent": "^5.0.1",
-    "md5-file": "^5.0.0",
-    "mongodb": "^4.16.0",
+    "follow-redirects": "^1.15.3",
+    "https-proxy-agent": "^7.0.2",
+    "mongodb": "^5.9.0",
     "new-find-package-json": "^2.0.0",
     "semver": "^7.5.4",
-    "tar-stream": "^2.1.4",
-    "tslib": "^2.6.1",
-    "uuid": "^9.0.0",
+    "tar-stream": "^3.0.0",
+    "tslib": "^2.6.2",
     "yauzl": "^2.10.0"
   },
   "scripts": {

@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server",
-  "version": "8.16.0",
+  "version": "9.0.0-beta.4",
   "description": "MongoDB Server for testing (auto-download latest version). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -11,7 +11,7 @@
     "directory": "packages/mongodb-memory-server"
   },
   "engines": {
-    "node": ">=12.22.0"
+    "node": ">=14.20.1"
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "keywords": [
@@ -24,8 +24,8 @@
     "mongomem"
   ],
   "dependencies": {
-    "mongodb-memory-server-core": "8.16.0",
-    "tslib": "^2.6.1"
+    "mongodb-memory-server-core": "9.0.0-beta.4",
+    "tslib": "^2.6.2"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js"

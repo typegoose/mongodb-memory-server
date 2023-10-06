@@ -8,10 +8,10 @@ import {
   GenericMMSError,
   KnownVersionIncompatibilityError,
   UnknownArchitectureError,
+  UnknownLinuxDistro,
   UnknownPlatformError,
   UnknownVersionError,
 } from './errors';
-import { deprecate } from 'util';
 
 const log = debug('MongoMS:MongoBinaryDownloadUrl');
 
@@ -21,6 +21,9 @@ export interface MongoBinaryDownloadUrlOpts {
   arch: string;
   os?: AnyOS;
 }
+
+/** Set the default ubuntu version number */
+export const DEFAULT_UBUNTU_YEAR = 22; // TODO: try to keep this up-to-date to the latest LTS
 
 /**
  * Download URL generator
@@ -34,7 +37,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   constructor(opts: MongoBinaryDownloadUrlOpts) {
     this.version = opts.version;
     this.platform = this.translatePlatform(opts.platform);
-    this.arch = MongoBinaryDownloadUrl.translateArch(opts.arch, this.platform);
+    this.arch = MongoBinaryDownloadUrl.translateArch(opts.arch);
     this.os = opts.os;
   }
 
@@ -158,24 +161,20 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * (from: https://www.mongodb.org/dl/linux)
    */
   async getArchiveNameLinux(): Promise<string> {
-    let osString: string | undefined;
-
-    // the highest version for "i686" seems to be 3.3
-    if (this.arch !== 'i686') {
-      if (!this.os && resolveConfig(ResolveConfigVariables.DISTRO)) {
-        this.os = await getOS();
-      }
-
-      if (resolveConfig(ResolveConfigVariables.DISTRO)) {
-        this.overwriteDistro();
-      }
-
-      osString = this.getLinuxOSVersionString(this.os as LinuxOS);
+    if (!this.os && resolveConfig(ResolveConfigVariables.DISTRO)) {
+      this.os = await getOS();
     }
+
+    if (resolveConfig(ResolveConfigVariables.DISTRO)) {
+      this.overwriteDistro();
+    }
+
+    const osString: string = this.getLinuxOSVersionString(this.os as LinuxOS);
 
     // this is below, to allow overwriting the arch (like arm64 to aarch64)
     let name = `mongodb-linux-${this.arch}`;
 
+    // guard against any falsy values
     if (!!osString) {
       name += `-${osString}`;
     }
@@ -266,14 +265,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       );
     }
 
-    // warn for the fallback
-    console.warn(
-      `Unknown/unsupported linux "${os.dist}(${os.id_like?.join(
-        ', '
-      )})". Falling back to legacy MongoDB build!`
-    );
-
-    return this.getLegacyVersionString();
+    // mongodb does not ship generic linux builds anymore
+    throw new UnknownLinuxDistro(os.dist, os.id_like ?? []);
   }
 
   /**
@@ -431,13 +424,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   }
 
   /**
-   * Linux Fallback
-   */
-  getLegacyVersionString(): string {
-    return '';
-  }
-
-  /**
    * Get the version string for Suse / OpenSuse
    * @param os LinuxOS Object
    */
@@ -509,14 +495,19 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         ubuntuOS = {
           os: 'linux',
           dist: 'ubuntu',
-          release: '20.04', // TODO: try to keep this up-to-date to the latest LTS
+          release: `${DEFAULT_UBUNTU_YEAR}.04`,
         };
       } else {
         ubuntuOS = os;
       }
     }
 
-    const ubuntuYear: number = parseInt(ubuntuOS.release.split('.')[0], 10);
+    let ubuntuYear: number = parseInt(ubuntuOS.release.split('.')[0], 10);
+
+    if (Number.isNaN(ubuntuYear)) {
+      console.warn(`Could not parse ubuntu year from "${ubuntuOS.release}", using default`);
+      ubuntuYear = DEFAULT_UBUNTU_YEAR;
+    }
 
     if (this.arch === 'aarch64') {
       // this is because, before version 4.1.10, everything for "arm64" / "aarch64" were just "arm64" and for "ubuntu1604"
@@ -560,9 +551,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu2004';
     }
 
-    // TODO: change or remove "14" default, since it no-longer is supported above 4.0
     // the "04" version always exists for ubuntu, use that as default
-    return `ubuntu${ubuntuYear || 14}04`;
+    return `ubuntu${ubuntuYear}04`;
   }
 
   /**
@@ -584,16 +574,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
         return semver.gte(version, '4.3.0') ? 'windows' : 'win32';
       case 'linux':
-      case 'elementary OS':
         return 'linux';
-      case 'sunos':
-        deprecate(
-          () => {},
-          'mongodb-memory-server will fully drop support for sunos in 9.0',
-          'MMS002'
-        )();
-
-        return 'sunos5';
       default:
         throw new UnknownPlatformError(platform);
     }
@@ -605,22 +586,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * @example
    * x64 -> x86_64
    */
-  static translateArch(arch: string, mongoPlatform: string): string {
+  static translateArch(arch: string): string {
     switch (arch) {
-      case 'ia32':
-        deprecate(
-          () => {},
-          'mongodb-memory-server will fully drop support for ia32 in 9.0',
-          'MMS001'
-        )();
-
-        if (mongoPlatform === 'linux') {
-          return 'i686';
-        } else if (mongoPlatform === 'win32') {
-          return 'i386';
-        }
-
-        throw new UnknownArchitectureError(arch, mongoPlatform);
       case 'x86_64':
       case 'x64':
         return 'x86_64';
