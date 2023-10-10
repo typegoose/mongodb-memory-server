@@ -194,7 +194,7 @@ export class UnexpectedCloseError extends Error {
  */
 export class UnknownVersionError extends Error {
   constructor(public version: string) {
-    super(`Could not corece VERSION to a semver version (version: "${version}")`);
+    super(`Could not coerce VERSION to a semver version (version: "${version}")`);
   }
 }
 

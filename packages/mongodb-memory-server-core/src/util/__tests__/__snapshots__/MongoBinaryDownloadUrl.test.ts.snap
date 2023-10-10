@@ -15,7 +15,7 @@ exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should thr
 Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release"
 `;
 
-exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not corece VERSION to a semver version (version: \\"vvv\\")"`;
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not coerce VERSION to a semver version (version: \\"vvv\\")"`;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should Error when ARM64 and rhel below 8 [KnownVersionIncompatibilityError] 1`] = `
 "Requested Version \\"4.4.2\\" is not available for \\"Rhel 7\\"! Available Versions: \\">=4.4.2\\"
@@ -27,9 +27,9 @@ exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should Error
 ARM64(aarch64) support for rhel is only for rhel82 or higher"
 `;
 
-exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not corece VERSION to a semver version (version: \\"vvv\\")"`;
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not coerce VERSION to a semver version (version: \\"vvv\\")"`;
 
-exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for ubuntu should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not corece VERSION to a semver version (version: \\"vvv\\")"`;
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for ubuntu should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not coerce VERSION to a semver version (version: \\"vvv\\")"`;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platform is unknown (getArchiveName) 1`] = `"Unknown Platform: \\"unknown\\""`;
 
