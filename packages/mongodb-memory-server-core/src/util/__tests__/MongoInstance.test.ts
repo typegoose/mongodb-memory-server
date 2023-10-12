@@ -10,6 +10,7 @@ import {
   UnexpectedCloseError,
 } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
+import { MongoClient } from 'mongodb';
 
 jest.setTimeout(100000); // 10s
 
@@ -276,6 +277,25 @@ describe('MongodbInstance', () => {
     await mongod.stop();
 
     expect(dbUtil.killProcess).not.toBeCalled();
+  });
+
+  it('"kill" should not try to open a connection to a not running ReplSet', async () => {
+    const gotPort = await getFreePort();
+    const mongod = new MongodbInstance({
+      instance: {
+        replSet: 'testset',
+        ip: '127.0.0.1',
+        port: gotPort,
+        dbPath: tmpDir,
+      },
+    });
+    await mongod.start();
+    jest.spyOn(MongoClient, 'connect');
+    process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
+    await new Promise<void>((resolve) => setTimeout(resolve, 100));
+    await mongod.stop();
+
+    expect(MongoClient.connect).not.toBeCalled();
   });
 
   it('"_launchMongod" should throw an error if "mongodProcess.pid" is undefined', () => {

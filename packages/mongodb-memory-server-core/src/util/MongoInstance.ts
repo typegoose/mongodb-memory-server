@@ -9,6 +9,7 @@ import {
   killProcess,
   ManagerBase,
   checkBinaryPermissions,
+  isAlive,
 } from './utils';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
@@ -423,7 +424,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     // wrap the actual stop in a promise, so it can be awaited in multiple calls
     // for example a instanceError while stop is already running would cause another stop
     this.stopPromise = (async () => {
-      if (!isNullOrUndefined(this.mongodProcess)) {
+      if (!isNullOrUndefined(this.mongodProcess) && isAlive(this.mongodProcess.pid)) {
         // try to run "shutdown" before running "killProcess" (gracefull "SIGINT")
         // using this, otherwise on windows nodejs will handle "SIGINT" & "SIGTERM" & "SIGKILL" the same (instant exit)
         if (this.isReplSet) {
