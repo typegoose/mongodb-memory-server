@@ -279,7 +279,7 @@ describe('MongodbInstance', () => {
     expect(dbUtil.killProcess).not.toBeCalled();
   });
 
-  it('"kill" should not try to open a connection to a not running ReplSet', async () => {
+  it('"kill" should not try to open a connection to a not running instance', async () => {
     const gotPort = await getFreePort();
     const mongod = new MongodbInstance({
       instance: {
@@ -300,7 +300,7 @@ describe('MongodbInstance', () => {
     expect(MongoClient.connect).not.toBeCalled();
   });
 
-  test('"kill" should not wait too much to open a connection to ReplSet', async () => {
+  test('"kill" should not wait too much to open a connection', async () => {
     const gotPort = await getFreePort();
     const mongod = new MongodbInstance({
       instance: {
@@ -314,6 +314,7 @@ describe('MongodbInstance', () => {
     jest.spyOn(MongoClient, 'connect');
     process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
     await mongod.stop();
+    expect(MongoClient.connect).toBeCalled();
   }, 8000); // the default serverSelectionTimeoutMS is 10s, so waiting for 8s seems ok to catch it
 
   it('"_launchMongod" should throw an error if "mongodProcess.pid" is undefined', () => {
