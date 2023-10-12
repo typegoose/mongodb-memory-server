@@ -1,3 +1,15 @@
+## [9.0.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.0...v9.0.1) (2023-10-12)
+
+
+### Fixes
+
+* **kill:** should not try to open a connection to a not running ReplSet ([#811](https://github.com/nodkz/mongodb-memory-server/issues/811)) ([fefa869](https://github.com/nodkz/mongodb-memory-server/commit/fefa86982d1c39f78bb992c22d3d8271f80615c8))
+
+
+### Style
+
+* **errors:** typo "Could not corece VERSION" ([#808](https://github.com/nodkz/mongodb-memory-server/issues/808)) ([c1f2333](https://github.com/nodkz/mongodb-memory-server/commit/c1f2333c8f667ff4fa21709f481f2cd2e0712372))
+
 ## [9.0.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.16.0...v9.0.0) (2023-10-06)
 
 
