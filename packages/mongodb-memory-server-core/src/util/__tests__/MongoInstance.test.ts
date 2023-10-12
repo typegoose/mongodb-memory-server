@@ -314,7 +314,7 @@ describe('MongodbInstance', () => {
     jest.spyOn(MongoClient, 'connect');
     process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
     await mongod.stop();
-  }, 1000);
+  }, 8000); // the default serverSelectionTimeoutMS is 10s, so waiting for 8s seems ok to catch it
 
   it('"_launchMongod" should throw an error if "mongodProcess.pid" is undefined', () => {
     const mongod = new MongodbInstance({ instance: { port: 0, dbPath: '' } }); // dummy values - they shouldnt matter
