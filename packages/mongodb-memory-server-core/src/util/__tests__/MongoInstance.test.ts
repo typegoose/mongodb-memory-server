@@ -292,11 +292,29 @@ describe('MongodbInstance', () => {
     await mongod.start();
     jest.spyOn(MongoClient, 'connect');
     process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
-    await new Promise<void>((resolve) => setTimeout(resolve, 100));
+    while (dbUtil.isAlive(mongod.mongodProcess!.pid)) {
+      await new Promise<void>((resolve) => setTimeout(resolve, 5));
+    }
     await mongod.stop();
 
     expect(MongoClient.connect).not.toBeCalled();
   });
+
+  test('"kill" should not wait too much to open a connection to ReplSet', async () => {
+    const gotPort = await getFreePort();
+    const mongod = new MongodbInstance({
+      instance: {
+        replSet: 'testset',
+        ip: '127.0.0.1',
+        port: gotPort,
+        dbPath: tmpDir,
+      },
+    });
+    await mongod.start();
+    jest.spyOn(MongoClient, 'connect');
+    process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
+    await mongod.stop();
+  }, 1000);
 
   it('"_launchMongod" should throw an error if "mongodProcess.pid" is undefined', () => {
     const mongod = new MongodbInstance({ instance: { port: 0, dbPath: '' } }); // dummy values - they shouldnt matter

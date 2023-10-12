@@ -13,7 +13,12 @@ import {
 } from './utils';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
-import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
+import {
+  MongoClient,
+  MongoClientOptions,
+  MongoNetworkError,
+  MongoServerSelectionError,
+} from 'mongodb';
 import {
   GenericMMSError,
   KeyFileMissingError,
@@ -445,6 +450,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
             con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
               ...this.extraConnectionOptions,
               directConnection: true,
+              serverSelectionTimeoutMS: 500,
             });
 
             const admin = con.db('admin'); // just to ensure it is actually the "admin" database
@@ -460,6 +466,10 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
               !(
                 err instanceof MongoNetworkError &&
                 /^connection \d+ to [\d.]+:\d+ closed$/i.test(err.message)
+              ) &&
+              !(
+                err instanceof MongoServerSelectionError &&
+                /^Server selection timed out after \d+ ms$/i.test(err.message)
               )
             ) {
               console.warn(err);
