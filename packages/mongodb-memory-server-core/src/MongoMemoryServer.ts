@@ -479,13 +479,15 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     this.debug(`_startUpInstance: Creating new MongoDB instance with options:`, mongodOptions);
 
     const instance = await MongoInstance.create(mongodOptions);
-    this.debug(`_startUpInstance: Instance Started, createAuth: "${createAuth}"`);
 
     this._instanceInfo = {
       ...data,
       dbPath: data.dbPath as string, // because otherwise the types would be incompatible
       instance,
     };
+
+    // log after "_instanceInfo" is set so that the port shows up in the message
+    this.debug(`_startUpInstance: Instance Started, createAuth: "${createAuth}"`);
 
     // always set the "extraConnectionOptions" when "auth" is enabled, regardless of if "createAuth" gets run
     if (
