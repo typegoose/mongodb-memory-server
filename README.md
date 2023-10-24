@@ -113,7 +113,7 @@ await mongod.stop();
 
 ### Available options for MongoMemoryServer
 
-All options are optional.
+All options with `?` are optional, some options upon specified are required.
 
 ```js
 const mongod = new MongoMemoryServer({
@@ -125,6 +125,7 @@ const mongod = new MongoMemoryServer({
     storageEngine?: string, // by default `ephemeralForTest`(unless mongodb 7.0.0, where its `wiredTiger`), available engines: [ 'ephemeralForTest', 'wiredTiger' ]
     replSet?: string, // by default no replica set, replica set name
     args?: string[], // by default no additional arguments, any additional command line arguments for `mongod` `mongod` (ex. ['--notablescan'])
+    auth?: boolean, // add "--auth" argument, dont use this directly use top-level "auth"
   },
   binary?: {
     version?: string, // by default '6.0.9'
@@ -136,18 +137,19 @@ const mongod = new MongoMemoryServer({
   },
   // using "auth" will manage "instance.auth"
   auth?: {
-    disable?: boolean, // disable automatic auth creation
+    // enable needs to be set to "true", otherwise automatic user creation is by default disabled
+    enable?: boolean, // enable automatic user creation
     customRootName?: string, // by default "mongodb-memory-server-root"
     customRootPwd?: string, // by default "rootuser"
     force?: boolean, // force creation of users
-    keyfileContent?: string, // by default "0123456789"
+    keyfileContent?: string, // by default "0123456789" (only useful for replsets)
     extraUsers?: [{
       // see mongodb documentation https://docs.mongodb.com/manual/reference/method/db.createUser/#definition)
       createUser: string, // user name
       pwd: string, // user password
       roles: UserRoles[], // user roles
       database?: string, // which database the user is created on
-      customData?: Record<string, any>,
+      customData?: Record<string, any>, // any arbitrary information, see mongodb documentation
       mechanisms?: ('SCRAM-SHA-1' | 'SCRAM-SHA-256')[],
       authenticationRestrictions?: {
         clientSource?: string;
@@ -189,7 +191,7 @@ const replSet = new MongoMemoryReplSet({
       dbPath, // path to database files for this instance
       storageEngine, // same storage engine options
     },
-    // each entry will result in a MongoMemoryServer (replSet.count will not count towards here)
+    // each entry will result in a MongoMemoryServer (replSet.count will not limit the amount spawned by "instanceOpts")
   ],
   // unless otherwise noted below these values will be in common with all instances spawned:
   replSet: {
@@ -197,13 +199,12 @@ const replSet = new MongoMemoryReplSet({
     auth?: boolean | AutomaticAuth, // enable auth, for options see #available-options-for-mongomemoryserver
     args, // any args specified here will be combined with any per instance args from `instanceOpts`
     count, // number of additional `mongod` processes to start (will not start any extra if instanceOpts.length > replSet.count); (default: 1)
-    dbName, // default database for db URI strings. (default: uuid.v4())
+    dbName, // default database for db URI strings
     ip, // by default '127.0.0.1', for binding to all IP addresses set it to `::,0.0.0.0`
-    oplogSize, // size (in MB) for the oplog; (default: 1)
     spawn, // spawn options when creating the child processes
     storageEngine, // default storage engine for instance. (Can be overridden per instance)
     configSettings: {
-      // Optional settings for replSetInitiate command. See https://docs.mongodb.com/manual/reference/command/replSetInitiate/
+      // Optional settings for 'replSetInitiate' command. See https://docs.mongodb.com/manual/reference/command/replSetInitiate/
       chainingAllowed: boolean, // When true it allows secondary members to replicate from other secondary members. When false, secondaries can replicate only from the primary.
       heartbeatTimeoutSecs: number, // Number of seconds that the replica set members wait for a successful heartbeat from each other. If a member does not respond in time, other members mark the delinquent member as inaccessible.
       heartbeatIntervalMillis: number, // The frequency in milliseconds of the heartbeats.
@@ -243,8 +244,6 @@ const mongoServer = await MongoMemoryServer.create();
   await mongoose.disconnect();
 })();
 ```
-
-For additional information it is recommended to read this article [Testing a GraphQL Server using Jest with Mongoose](https://medium.com/entria/testing-a-graphql-server-using-jest-4e00d0e4980e)
 
 ### Test Runner Examples
 
