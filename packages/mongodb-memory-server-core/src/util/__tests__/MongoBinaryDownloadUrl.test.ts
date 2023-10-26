@@ -1122,11 +1122,12 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 9 & 5.0.0 arm64', async () => {
+        it('rhel 9 & 6.0.4 x86_64', async () => {
+          // lowest rhel 9 x64 supported version is 6.0.4
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
-            arch: 'arm64',
-            version: '5.0.0',
+            arch: 'x64',
+            version: '6.0.4',
             os: {
               os: 'linux',
               dist: 'rhel',
@@ -1134,7 +1135,56 @@ describe('MongoBinaryDownloadUrl', () => {
             },
           });
           expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-5.0.0.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel90-6.0.4.tgz'
+          );
+        });
+
+        it('rhel 9 & 7.0.0 x86_64', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.0',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel90-7.0.0.tgz'
+          );
+        });
+
+        it('rhel 9 & 6.0.7 arm64', async () => {
+          // lowest rhel 9 arm64 supported version is 6.0.7
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'arm64',
+            version: '6.0.7',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel90-6.0.7.tgz'
+          );
+        });
+
+        it('rhel 9 & 7.0.0 arm64', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'arm64',
+            version: '7.0.0',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel90-7.0.0.tgz'
           );
         });
 
@@ -1146,7 +1196,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'rhel',
-              release: '9',
+              release: '8',
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -1163,6 +1213,28 @@ describe('MongoBinaryDownloadUrl', () => {
               os: 'linux',
               dist: 'rhel',
               release: '7',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a KnownVersionIncompatibilityError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
+            expect(err.message).toMatchSnapshot();
+          }
+        });
+
+        it('should Error when ARM64 rhel 9 and mongodb before 6.0.7 are requested [KnownVersionIncompatibilityError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'arm64',
+            version: '6.0.6',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9',
             },
           });
 

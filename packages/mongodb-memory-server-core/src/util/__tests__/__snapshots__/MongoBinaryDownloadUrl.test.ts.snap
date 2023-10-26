@@ -18,14 +18,16 @@ Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and a
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not coerce VERSION to a semver version (version: \\"vvv\\")"`;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should Error when ARM64 and rhel below 8 [KnownVersionIncompatibilityError] 1`] = `
-"Requested Version \\"4.4.2\\" is not available for \\"Rhel 7\\"! Available Versions: \\">=4.4.2\\"
+"Requested Version \\"4.4.2\\" is not available for \\"Rhel 7 arm64\\"! Available Versions: \\">=4.4.2\\"
 ARM64(aarch64) support for rhel is only for rhel82 or higher"
 `;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should Error when ARM64 and version below 4.4.2 is requested [KnownVersionIncompatibilityError] 1`] = `
-"Requested Version \\"4.4.0\\" is not available for \\"Rhel 8\\"! Available Versions: \\">=4.4.2\\"
+"Requested Version \\"4.4.0\\" is not available for \\"Rhel 8 arm64\\"! Available Versions: \\">=4.4.2\\"
 ARM64(aarch64) support for rhel is only for rhel82 or higher"
 `;
+
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should Error when ARM64 rhel 9 and mongodb before 6.0.7 are requested [KnownVersionIncompatibilityError] 1`] = `"Requested Version \\"6.0.6\\" is not available for \\"Rhel 9 arm64\\"! Available Versions: \\">=6.0.7\\""`;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not coerce VERSION to a semver version (version: \\"vvv\\")"`;
 

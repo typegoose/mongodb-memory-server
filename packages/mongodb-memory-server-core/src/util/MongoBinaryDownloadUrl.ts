@@ -361,11 +361,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     }
 
     if (releaseAsSemver) {
+      // extra checks for architecture aarch64 (arm64)
+      // should not assign "name" by itself
       if (this.arch === 'aarch64') {
         // there are no versions for aarch64 before rhel 8.2 (or currently after)
         if (semver.lt(releaseAsSemver, '8.2.0')) {
           throw new KnownVersionIncompatibilityError(
-            `Rhel ${release}`,
+            `Rhel ${release} arm64`,
             this.version,
             '>=4.4.2',
             'ARM64(aarch64) support for rhel is only for rhel82 or higher'
@@ -374,16 +376,29 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         // there are no versions for aarch64 before mongodb 4.4.2
         // Note: version 4.4.2 and 4.4.3 are NOT listed at the list, but are existing; list: https://www.mongodb.com/download-center/community/releases/archive
         if (semver.lt(coercedVersion, '4.4.2') && !testVersionIsLatest(this.version)) {
-          throw new KnownVersionIncompatibilityError(`Rhel ${release}`, this.version, '>=4.4.2');
+          throw new KnownVersionIncompatibilityError(
+            `Rhel ${release} arm64`,
+            this.version,
+            '>=4.4.2'
+          );
         }
 
-        if (!semver.eq(releaseAsSemver, '8.2.0')) {
-          log(`a different rhel version than 8.2 is used: "${release}", using 82 release`);
+        // rhel 9 does not provide openssl 1.1 anymore, making it incompatible with previous versions
+        // lowest rhel9 arm64 is 6.0.7
+        if (semver.satisfies(releaseAsSemver, '>=9.0.0') && semver.lt(coercedVersion, '6.0.7')) {
+          throw new KnownVersionIncompatibilityError(
+            `Rhel ${release} arm64`,
+            this.version,
+            '>=6.0.7'
+          );
         }
+      }
 
-        // rhel aarch64 support is only for rhel 8.2 (and no version after explicitly)
+      if (semver.satisfies(releaseAsSemver, '>=9.0.0')) {
+        name += '90';
+      } else if (semver.satisfies(releaseAsSemver, '8.2.0') && this.arch == 'aarch64') {
         name += '82';
-      } else if (semver.satisfies(releaseAsSemver, '>=8.0.0')) {
+      } else if (semver.satisfies(releaseAsSemver, '^8.0.0')) {
         name += '80';
       } else if (semver.satisfies(releaseAsSemver, '^7.0.0')) {
         name += '70';

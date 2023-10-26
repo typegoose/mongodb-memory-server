@@ -90,16 +90,16 @@ There are currently no newer mongodb builds that support the newer provided open
 
 ### Rhel
 
-<span class="badge badge--warning">Untested</span> <span class="badge badge--warning">Outdated</span>
+<span class="badge badge--warning">Untested</span>
 
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `5`<br/>
-Highest version is `8`<br/>
+Highest version is `9`<br/>
 Default version is `70`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 
 :::note
-`arm64`/`aarch64` support is only for Rhel 8(.2)
+`arm64`/`aarch64` support is only for Rhel 8.2 & mongodb 4.4.2 or Rhel 9 & mongodb 6.0.7
 :::
 
 ### Amazon
