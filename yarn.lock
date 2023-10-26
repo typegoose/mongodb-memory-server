@@ -1462,10 +1462,10 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.1.tgz#20f18294f797f2209b5f65c8e3b5c8e8261d127c"
   integrity sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==
 
-"@types/tar-stream@^3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@types/tar-stream/-/tar-stream-3.1.1.tgz#a0d936ec27c732e5287a84055b849637ee609974"
-  integrity sha512-/1E+a09mAFQwhlEHqiS3LuNWIBiyrn0HqUWZk2IyGzodu9zkXbaT5vl94iGlZGnG2IONVFZd84SFhns3MhhAQQ==
+"@types/tar-stream@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@types/tar-stream/-/tar-stream-3.1.2.tgz#11c11320b530cc14880aec46b6386cdf867815e7"
+  integrity sha512-qnIpUItVb5u8jl3kbrHofkM40ggO3YKSzc7TWqLYjDdwlrL7CiEAkDySaGfeUBLtC50RTfh2acdz51ItUbV7pQ==
   dependencies:
     "@types/node" "*"
 
