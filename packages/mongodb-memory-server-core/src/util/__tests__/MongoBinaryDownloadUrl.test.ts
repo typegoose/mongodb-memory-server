@@ -1236,6 +1236,42 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('rocky linux 9.2 & 6.0.4 x86_64', async () => {
+          // lowest rhel 9 x64 supported version is 6.0.4
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.4',
+            os: {
+              os: 'linux',
+              dist: 'rocky',
+              release: '9.2',
+              id_like: ['rhel', 'centos', 'fedora'],
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel90-6.0.4.tgz'
+          );
+        });
+
+        it('rocky linux 9.2 & 6.0.7 arm64', async () => {
+          // lowest rhel 9 arm64 supported version is 6.0.7
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'arm64',
+            version: '6.0.7',
+            os: {
+              os: 'linux',
+              dist: 'rocky',
+              release: '9.2',
+              id_like: ['rhel', 'centos', 'fedora'],
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel90-6.0.7.tgz'
+          );
+        });
+
         it('should Error when ARM64 and rhel below 8 [KnownVersionIncompatibilityError]', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
