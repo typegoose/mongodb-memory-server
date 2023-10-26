@@ -1,3 +1,33 @@
+## [9.1.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.1...v9.1.0-beta.1) (2023-10-26)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** re-work rhel to support 9.0 ([c582829](https://github.com/nodkz/mongodb-memory-server/commit/c5828298382da762e37e69c5d46c781c4b4e591e)), closes [#821](https://github.com/nodkz/mongodb-memory-server/issues/821)
+
+
+### Style
+
+* **MongoMemoryServer:** log instance started log after assigning port ([4a5eacc](https://github.com/nodkz/mongodb-memory-server/commit/4a5eacc86f8d6665636acda743d67f279266afcb))
+
+
+### Dependencies
+
+* **mongodb:** upgrade to version 5.9.1 ([d328d65](https://github.com/nodkz/mongodb-memory-server/commit/d328d65451d9ec1d17b043408ad1d3ccaa041ab5))
+
+
+### Dev-Dependencies
+
+* **@types/debug:** upgrade to version 4.1.10 ([7da745a](https://github.com/nodkz/mongodb-memory-server/commit/7da745a34dbff5aa360cae7c65a5bd3955593d53))
+* **@types/follow-redirects:** upgrade to version ([b65e643](https://github.com/nodkz/mongodb-memory-server/commit/b65e6432f7ee355dcd62208cb0a37b56a5dcb3a9))
+* **@types/jest:** upgrade to version 29.5.6 ([b8acbb3](https://github.com/nodkz/mongodb-memory-server/commit/b8acbb3a51732765a89d00ba9de886538880fe5b))
+* **@types/semver:** upgrade to version 7.5.4 ([9d430b9](https://github.com/nodkz/mongodb-memory-server/commit/9d430b9560c5c7628a4e9acd6e07445dadd76879))
+* **@types/tar-stream:** upgrade to version 3.1.2 ([5ca4ee3](https://github.com/nodkz/mongodb-memory-server/commit/5ca4ee3be02c8dcb8d168136353a4d0ffa82c792))
+* **@types/yauzl:** upgrade to version 2.10.2 ([31301dc](https://github.com/nodkz/mongodb-memory-server/commit/31301dc33505a999b119c9dfcb9374beb1d67d5f))
+* **@types/yazl:** upgrade to version 2.4.4 ([921aec1](https://github.com/nodkz/mongodb-memory-server/commit/921aec1c4a6b373902787b673566053dafb06ab0))
+* **eslint-plugin-prettier:** upgrade to version 5.0.1 ([0885a5f](https://github.com/nodkz/mongodb-memory-server/commit/0885a5f1a88abb4d38a96288d5367920b047a4e4))
+* **eslint:** upgrade to version 8.52.0 ([e2c267d](https://github.com/nodkz/mongodb-memory-server/commit/e2c267dae282046257b78c213570148f873aefa8))
+
 ## [9.0.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.0...v9.0.1) (2023-10-12)
 
 
