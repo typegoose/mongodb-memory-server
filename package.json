@@ -23,7 +23,7 @@
     "doctoc": "2.2.1",
     "eslint": "8.50.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "5.0.0",
+    "eslint-plugin-prettier": "5.0.1",
     "husky": "8.0.3",
     "jest": "29.7.0",
     "lint-staged": "13.2.3",
