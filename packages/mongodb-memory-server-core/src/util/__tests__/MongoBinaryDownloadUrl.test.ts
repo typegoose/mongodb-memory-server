@@ -1122,6 +1122,38 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('rhel 8.2 & 6.0.10 arm64', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'arm64',
+            version: '6.0.10',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '8.2',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-6.0.10.tgz'
+          );
+        });
+
+        it('rhel 8.2 & 7.0.0 arm64', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'arm64',
+            version: '7.0.0',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '8.2',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-7.0.0.tgz'
+          );
+        });
+
         it('rhel 9 & 6.0.4 x86_64', async () => {
           // lowest rhel 9 x64 supported version is 6.0.4
           const du = new MongoBinaryDownloadUrl({
