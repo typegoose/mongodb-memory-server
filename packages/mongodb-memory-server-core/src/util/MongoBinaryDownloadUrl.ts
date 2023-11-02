@@ -415,8 +415,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = 'amazon';
     const release: number = parseInt(os.release, 10);
 
-    if (release >= 2 && release <= 3) {
-      name += '2';
+    if (release >= 2) {
+      name += release.toString();
     }
     // dont add anthing as fallback, because for "amazon 1", mongodb just uses "amazon"
 
