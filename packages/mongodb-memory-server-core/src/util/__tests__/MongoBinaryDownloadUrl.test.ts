@@ -1054,6 +1054,24 @@ describe('MongoBinaryDownloadUrl', () => {
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon2-4.0.24.tgz'
           );
         });
+
+        it('should return a archive name for Amazon 2023', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.2',
+            os: {
+              os: 'linux',
+              dist: 'amzn',
+              release: '2023',
+              id_like: ['fedora'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon2023-7.0.2.tgz'
+          );
+        });
       });
 
       describe('for rhel', () => {
