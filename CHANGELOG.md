@@ -1,3 +1,10 @@
+## [9.1.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.0-beta.1...v9.1.0-beta.2) (2023-11-04)
+
+
+### Features
+
+* **MongoDownloadUrl:** add support for amazon linux 2023 ([#826](https://github.com/nodkz/mongodb-memory-server/issues/826)) ([ec1ea68](https://github.com/nodkz/mongodb-memory-server/commit/ec1ea6866cdc793c7168f5d7f004d2b6ce1535af))
+
 ## [9.1.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.1...v9.1.0-beta.1) (2023-10-26)
 
 
