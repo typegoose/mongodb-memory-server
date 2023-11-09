@@ -58,5 +58,23 @@ describe('getport', () => {
       const testPort = 23000;
       await expect(getPort.getFreePort(testPort)).resolves.toStrictEqual(testPort);
     });
+
+    it('port should be predictable', async () => {
+      const testPort = 23232;
+      await expect(getPort.getFreePort(testPort)).resolves.toStrictEqual(testPort);
+
+      const server = await new Promise<
+        http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
+      >((res) => {
+        const server = http.createServer();
+        server.unref();
+        server.listen(testPort, () => res(server));
+      });
+
+      const foundPort = await getPort.getFreePort(testPort);
+      expect(foundPort).toStrictEqual(testPort + 2); // predictable result
+
+      server.close();
+    });
   });
 });
