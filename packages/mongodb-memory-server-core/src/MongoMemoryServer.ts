@@ -369,14 +369,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
      */
     let isNew: boolean = true;
 
-    // use pre-defined port if available, otherwise generate a new port
-    let port = typeof instOpts.port === 'number' ? instOpts.port : undefined;
-
-    // if "forceSamePort" is not true, and get a available port
-    if (!forceSamePort || isNullOrUndefined(port)) {
-      port = await this.getNewPort(port);
-    }
-
     const opts = await DryMongoBinary.generateOptions(this.opts.binary);
     let storageEngine = instOpts.storageEngine;
 
@@ -396,6 +388,14 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       } else {
         storageEngine = 'ephemeralForTest';
       }
+    }
+
+    // use pre-defined port if available, otherwise generate a new port
+    let port = typeof instOpts.port === 'number' ? instOpts.port : undefined;
+
+    // if "forceSamePort" is not true, and get a available port
+    if (!forceSamePort || isNullOrUndefined(port)) {
+      port = await this.getNewPort(port);
     }
 
     // consider directly using "this.opts.instance", to pass through all options, even if not defined in "StartupInstanceData"
