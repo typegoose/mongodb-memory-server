@@ -1,3 +1,16 @@
+## [9.1.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.0-beta.2...v9.1.0-beta.3) (2023-11-09)
+
+
+### Features
+
+* **getport:** add experimental "EXP_NET0LISTEN" option ([631ec28](https://github.com/nodkz/mongodb-memory-server/commit/631ec28c57d533438c91cc608014cb05abdd5c61)), closes [#827](https://github.com/nodkz/mongodb-memory-server/issues/827)
+
+
+### Refactor
+
+* **getport:** use "node:net" over "node:http" ([c065147](https://github.com/nodkz/mongodb-memory-server/commit/c065147750c8c57dfb6be6fbcd55444d2cc7a16e))
+* **MongoMemoryServer:** try to acquire port later ([f0385d6](https://github.com/nodkz/mongodb-memory-server/commit/f0385d62a7f6e0808023887f8a041ad29d648254))
+
 ## [9.1.0-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.0-beta.1...v9.1.0-beta.2) (2023-11-04)
 
 
