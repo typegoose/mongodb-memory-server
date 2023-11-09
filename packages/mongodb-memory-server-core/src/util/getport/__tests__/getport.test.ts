@@ -1,5 +1,5 @@
 import * as getPort from '../index';
-import * as http from 'node:http';
+import * as net from 'node:net';
 
 // the following tests may fail on systems with actual ports being used in those ranges (20000 to 40000)
 
@@ -31,7 +31,7 @@ describe('getport', () => {
 
     it('should return "false" on used port', async () => {
       const testPort = 30000;
-      const blockingServer = http.createServer();
+      const blockingServer = net.createServer();
       blockingServer.unref();
       blockingServer.listen(testPort);
       await expect(getPort.tryPort(testPort)).resolves.toStrictEqual(false);
@@ -63,10 +63,8 @@ describe('getport', () => {
       const testPort = 23232;
       await expect(getPort.getFreePort(testPort)).resolves.toStrictEqual(testPort);
 
-      const server = await new Promise<
-        http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
-      >((res) => {
-        const server = http.createServer();
+      const server = await new Promise<net.Server>((res) => {
+        const server = net.createServer();
         server.unref();
         server.listen(testPort, () => res(server));
       });
