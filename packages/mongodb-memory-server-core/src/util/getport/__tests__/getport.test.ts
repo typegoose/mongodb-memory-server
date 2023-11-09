@@ -1,3 +1,9 @@
+import resolveConfig, {
+  ResolveConfigVariables,
+  defaultValues,
+  envToBool,
+  setDefaultValue,
+} from '../../resolveConfig';
 import * as getPort from '../index';
 import * as net from 'node:net';
 
@@ -26,22 +32,28 @@ describe('getport', () => {
 
   describe('tryPort', () => {
     it('should return "true" on unused port', async () => {
-      await expect(getPort.tryPort(20000)).resolves.toStrictEqual(true);
+      await expect(getPort.tryPort(20000)).resolves.toStrictEqual(20000);
     });
 
-    it('should return "false" on used port', async () => {
+    it('should return "-1" on used port', async () => {
       const testPort = 30000;
       const blockingServer = net.createServer();
       blockingServer.unref();
       blockingServer.listen(testPort);
-      await expect(getPort.tryPort(testPort)).resolves.toStrictEqual(false);
+      await expect(getPort.tryPort(testPort)).resolves.toStrictEqual(-1);
     });
   });
 
   describe('getFreePort', () => {
+    const originalResolve = new Map(defaultValues.entries());
     beforeEach(() => {
       // reset cache to be more consistent in tests
       getPort.resetPortsCache();
+      defaultValues.clear();
+
+      for (const [key, val] of originalResolve.entries()) {
+        defaultValues.set(key, val);
+      }
     });
 
     it('should give a free port from default', async () => {
@@ -60,6 +72,8 @@ describe('getport', () => {
     });
 
     it('port should be predictable', async () => {
+      expect(envToBool(resolveConfig(ResolveConfigVariables.EXP_NET0LISTEN))).toStrictEqual(false);
+
       const testPort = 23232;
       await expect(getPort.getFreePort(testPort)).resolves.toStrictEqual(testPort);
 
@@ -71,6 +85,25 @@ describe('getport', () => {
 
       const foundPort = await getPort.getFreePort(testPort);
       expect(foundPort).toStrictEqual(testPort + 2); // predictable result
+
+      server.close();
+    });
+
+    it('EXP_NET0LISTEN should not be predictable', async () => {
+      setDefaultValue(ResolveConfigVariables.EXP_NET0LISTEN, 'true');
+      expect(envToBool(resolveConfig(ResolveConfigVariables.EXP_NET0LISTEN))).toStrictEqual(true);
+
+      const testPort = 23232;
+      await expect(getPort.getFreePort(testPort)).resolves.toStrictEqual(testPort);
+
+      const server = await new Promise<net.Server>((res) => {
+        const server = net.createServer();
+        server.unref();
+        server.listen(testPort, () => res(server));
+      });
+
+      const foundPort = await getPort.getFreePort(testPort);
+      expect(foundPort).not.toStrictEqual(testPort); // not predictable port, so not testable to be a exact number
 
       server.close();
     });

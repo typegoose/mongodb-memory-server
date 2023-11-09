@@ -1,3 +1,4 @@
+import resolveConfig, { ResolveConfigVariables, envToBool } from '../resolveConfig';
 import * as net from 'node:net';
 
 /** Linux min port that does not require root permissions */
@@ -59,8 +60,15 @@ export async function getFreePort(
   while (tries <= max_tries) {
     tries += 1;
 
-    // use "startPort" at first try, otherwise increase from last number
-    const nextPort = tries === 1 ? firstPort : validPort(PORTS_CACHE.lastNumber + tries);
+    let nextPort: number;
+
+    if (envToBool(resolveConfig(ResolveConfigVariables.EXP_NET0LISTEN))) {
+      // "0" means to use ".listen" random port
+      nextPort = tries === 1 ? firstPort : 0;
+    } else {
+      // use "startPort" at first try, otherwise increase from last number
+      nextPort = tries === 1 ? firstPort : validPort(PORTS_CACHE.lastNumber + tries);
+    }
 
     // try next port, because it is already in the cache
     if (PORTS_CACHE.ports.has(nextPort)) {
@@ -71,8 +79,10 @@ export async function getFreePort(
     // only set "lastNumber" if the "nextPort" was not in the cache
     PORTS_CACHE.lastNumber = nextPort;
 
-    if (await tryPort(nextPort)) {
-      return nextPort;
+    const triedPort = await tryPort(nextPort);
+
+    if (triedPort > 0) {
+      return triedPort;
     }
   }
 
@@ -99,7 +109,7 @@ export function validPort(port: number): number {
  * @returns "true" if the port is not in use, "false" if in use
  * @throws The error given if the code is not "EADDRINUSE"
  */
-export function tryPort(port: number): Promise<boolean> {
+export function tryPort(port: number): Promise<number> {
   return new Promise((res, rej) => {
     const server = net.createServer();
 
@@ -113,12 +123,14 @@ export function tryPort(port: number): Promise<boolean> {
         rej(err);
       }
 
-      res(false);
+      res(-1);
     });
     server.listen(port, () => {
+      const address = server.address();
+      const port = (address as net.AddressInfo).port;
       server.close();
 
-      res(true);
+      res(port);
     });
   });
 }
