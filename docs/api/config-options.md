@@ -245,7 +245,9 @@ Keep in mind that downloaded binaries will never be automatically deleted.
 | :------------------: | :---------: |
 |  `MONGOMS_EXP_NET0LISTEN`  |  `expNet0Listen`  |
 
-Option `EXP_NET0LISTEN` is used to use the experimental (non-predictable) port generation of `net.listen`
+Option `EXP_NET0LISTEN` is used to use the experimental (non-predictable) port generation of `net.listen`.
+
+This option will use a random open port, which will lessen the "port is already in use" errors, but will not eliminate them.
 
 This is a experimental option, it maybe removed, renamed or have changed behavior in the future.
 
