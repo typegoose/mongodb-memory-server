@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmongodb_memory_server_website=self.webpackChunkmongodb_memory_server_website||[]).push([[8551],{1614:(e,r,s)=>{s.r(r),s.d(r,{default:()=>u});s(7294);var o=s(6550),t=s(4996),n=s(5893);const u=function(){return(0,n.jsx)(o.l_,{to:(0,t.Z)("/")})}}}]);
