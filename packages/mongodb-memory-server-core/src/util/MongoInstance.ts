@@ -450,7 +450,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
             con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
               ...this.extraConnectionOptions,
               directConnection: true,
-              serverSelectionTimeoutMS: 1000, // 1 second
+              // stopping a instance should not take long to connect to, default would be 30 seconds
+              serverSelectionTimeoutMS: 5000, // 5 seconds
             });
 
             const admin = con.db('admin'); // just to ensure it is actually the "admin" database
