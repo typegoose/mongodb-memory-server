@@ -1,3 +1,23 @@
+## [9.1.0-beta.5](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.0-beta.4...v9.1.0-beta.5) (2023-11-13)
+
+
+### Fixes
+
+* **getport:** ignore "ports.has()" if EXP_NET0LISTEN and port == 0 ([682dac6](https://github.com/nodkz/mongodb-memory-server/commit/682dac6ce3a45517fad393661972b47b1e0d5711))
+
+
+### Dev-Dependencies
+
+* **@types/debug:** upgrade to version 4.1.12 ([0aa128f](https://github.com/nodkz/mongodb-memory-server/commit/0aa128fbf13cf1849328a61cc481aabacc204c00))
+* **@types/follow-redirects:** upgrade to version 1.14.4 ([d651684](https://github.com/nodkz/mongodb-memory-server/commit/d6516848ed496d31ffe4368d400e0eebd0cfab51))
+* **@types/jest:** upgrade to version 29.5.8 ([f258247](https://github.com/nodkz/mongodb-memory-server/commit/f258247fde923b1647e60825297d4a89fa4c028e))
+* **@types/semver:** upgrade to version 7.5.5 ([c6e3953](https://github.com/nodkz/mongodb-memory-server/commit/c6e3953cfda50dd637ef6312cf9d395dedec6d0b))
+* **@types/tar-stream:** upgrade to version 3.1.3 ([ceff457](https://github.com/nodkz/mongodb-memory-server/commit/ceff457bc77cc36b0c5f5effff58266f9cf2bd43))
+* **@types/yauzl:** upgrade to version 2.10.3 ([6832d85](https://github.com/nodkz/mongodb-memory-server/commit/6832d85667da7f1e86a00d6e1bf746d3b48fddeb))
+* **@types/yazl:** upgrade to version 2.4.5 ([a3062ad](https://github.com/nodkz/mongodb-memory-server/commit/a3062ad7672a6b461816beae95f57ca747b27c40))
+* **eslint:** upgrade to version 8.53.0 ([5eb0bbe](https://github.com/nodkz/mongodb-memory-server/commit/5eb0bbecd281a29e25f52e6b6271ed24bfc74d60))
+* **prettier:** upgrade to version 3.1.0 ([3c53d48](https://github.com/nodkz/mongodb-memory-server/commit/3c53d48b368d4cdf8a69d5f4765d4dffc2b21641))
+
 ## [9.1.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.0-beta.3...v9.1.0-beta.4) (2023-11-13)
 
 
