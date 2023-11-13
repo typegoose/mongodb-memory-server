@@ -467,10 +467,6 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
               !(
                 err instanceof MongoNetworkError &&
                 /^connection \d+ to [\d.]+:\d+ closed$/i.test(err.message)
-              ) &&
-              !(
-                err instanceof MongoServerSelectionError &&
-                /^Server selection timed out after \d+ ms$/i.test(err.message)
               )
             ) {
               console.warn(err);
