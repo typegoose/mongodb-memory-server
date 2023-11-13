@@ -56,13 +56,15 @@ export async function getFreePort(
     PORTS_CACHE.timeSet = Date.now();
   }
 
+  const exp_net0listen = envToBool(resolveConfig(ResolveConfigVariables.EXP_NET0LISTEN));
+
   let tries = 0;
   while (tries <= max_tries) {
     tries += 1;
 
     let nextPort: number;
 
-    if (envToBool(resolveConfig(ResolveConfigVariables.EXP_NET0LISTEN))) {
+    if (exp_net0listen) {
       // "0" means to use ".listen" random port
       nextPort = tries === 1 ? firstPort : 0;
     } else {
@@ -71,7 +73,8 @@ export async function getFreePort(
     }
 
     // try next port, because it is already in the cache
-    if (PORTS_CACHE.ports.has(nextPort)) {
+    // unless port is "0" which will use "net.listen(0)"
+    if (PORTS_CACHE.ports.has(nextPort) && nextPort !== 0) {
       continue;
     }
 
@@ -80,6 +83,9 @@ export async function getFreePort(
     PORTS_CACHE.lastNumber = nextPort;
 
     const triedPort = await tryPort(nextPort);
+
+    // returned port can be different than the "nextPort" (if EXP_NET0LISTEN)
+    PORTS_CACHE.ports.add(nextPort);
 
     if (triedPort > 0) {
       return triedPort;
