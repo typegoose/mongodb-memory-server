@@ -443,6 +443,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
             );
 
             con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
+              // stopping a instance should not take long to connect to, default would be 30 seconds
+              serverSelectionTimeoutMS: 5000, // 5 seconds
               ...this.extraConnectionOptions,
               directConnection: true,
             });

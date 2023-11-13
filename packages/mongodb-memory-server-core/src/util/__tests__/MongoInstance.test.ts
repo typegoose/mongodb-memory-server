@@ -10,7 +10,7 @@ import {
   UnexpectedCloseError,
 } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
-import { MongoClient } from 'mongodb';
+import { MongoClient, MongoServerSelectionError } from 'mongodb';
 
 jest.setTimeout(100000); // 10s
 
@@ -279,7 +279,7 @@ describe('MongodbInstance', () => {
     expect(dbUtil.killProcess).not.toBeCalled();
   });
 
-  it('"kill" should not try to open a connection to a not running ReplSet', async () => {
+  it('"kill" should not try to open a connection to a not running ReplSet instance', async () => {
     const gotPort = await getFreePort();
     const mongod = new MongodbInstance({
       instance: {
@@ -292,11 +292,56 @@ describe('MongodbInstance', () => {
     await mongod.start();
     jest.spyOn(MongoClient, 'connect');
     process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
-    await new Promise<void>((resolve) => setTimeout(resolve, 100));
+    // loop until the mongod process actually exits
+    while (dbUtil.isAlive(mongod.mongodProcess!.pid)) {
+      await new Promise<void>((resolve) => setTimeout(resolve, 5));
+    }
     await mongod.stop();
 
     expect(MongoClient.connect).not.toBeCalled();
   });
+
+  test('"kill" should not wait too much to open a connection to a ReplSet instance', async () => {
+    const gotPort = await getFreePort();
+
+    // mock indicating some kind of server selection problem (undetected shutdown / unresponsive)
+    // so that the ".stop" function does not exit too early
+    jest.spyOn(MongodbInstance.prototype, 'closeHandler').mockImplementationOnce(() => void 0);
+
+    const mongod = new MongodbInstance({
+      instance: {
+        replSet: 'testset',
+        ip: '127.0.0.1',
+        port: gotPort,
+        dbPath: tmpDir,
+      },
+    });
+    await mongod.start();
+    mongod.extraConnectionOptions = {
+      // the following is set to 1s to speed-up the test, instead of the set default of 5s (or the 30s of mongodb default)
+      serverSelectionTimeoutMS: 1000, // 1 second
+    };
+    jest.spyOn(MongoClient, 'connect');
+    jest.spyOn(MongoClient.prototype, 'db');
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+    process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
+    // loop until the mongod process actually exits
+    while (dbUtil.isAlive(mongod.mongodProcess!.pid)) {
+      await new Promise<void>((resolve) => setTimeout(resolve, 5));
+    }
+
+    // mock indicating some kind of server selection problem (undetected shutdown / unresponsive)
+    // so that the ".stop" function does not exit too early
+    jest.spyOn(dbUtil, 'isAlive').mockImplementationOnce(() => true);
+
+    await mongod.stop();
+    // connect should be called, but never beyond that (con.db is called next)
+    expect(MongoClient.connect).toHaveBeenCalledTimes(1);
+    expect(MongoClient.prototype.db).not.toHaveBeenCalled();
+    // should print a warning about "ECONREFUSED" or "Server selection timed-out"
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(expect.any(MongoServerSelectionError));
+  }, 8000); // the default serverSelectionTimeoutMS is 30s, the overwritten config is 5s, so waiting 8s should be fine
 
   it('"_launchMongod" should throw an error if "mongodProcess.pid" is undefined', () => {
     const mongod = new MongodbInstance({ instance: { port: 0, dbPath: '' } }); // dummy values - they shouldnt matter
