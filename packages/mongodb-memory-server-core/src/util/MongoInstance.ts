@@ -13,12 +13,7 @@ import {
 } from './utils';
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
-import {
-  MongoClient,
-  MongoClientOptions,
-  MongoNetworkError,
-  MongoServerSelectionError,
-} from 'mongodb';
+import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
 import {
   GenericMMSError,
   KeyFileMissingError,
