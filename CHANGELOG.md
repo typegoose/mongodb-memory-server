@@ -1,3 +1,10 @@
+## [9.1.0-beta.4](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.0-beta.3...v9.1.0-beta.4) (2023-11-13)
+
+
+### Fixes
+
+* **MongoInstance::stop:** should not wait too long to open a connection to ReplSet ([#813](https://github.com/nodkz/mongodb-memory-server/issues/813)) ([668b42a](https://github.com/nodkz/mongodb-memory-server/commit/668b42a1d80ce1f282dea0a8971a0a349e23dc98))
+
 ## [9.1.0-beta.3](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.0-beta.2...v9.1.0-beta.3) (2023-11-09)
 
 
