@@ -1515,10 +1515,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/yazl@^2.4.4":
-  version "2.4.4"
-  resolved "https://registry.yarnpkg.com/@types/yazl/-/yazl-2.4.4.tgz#33a7c48e5e308902c8195bfa01c0e0d40cd015e6"
-  integrity sha512-oIm9eKVrxukZgW05COfMzX9Zcz+cJmywKAULOVMr2ji9Bjly701zgjNDtFsVQsVlXsRMLwnIfUNqSpC1Uz+iaw==
+"@types/yazl@^2.4.5":
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/@types/yazl/-/yazl-2.4.5.tgz#0e21674799c7690afa23aeaff59806be5fe7494d"
+  integrity sha512-qpmPfx32HS7vlGJf7EsoM9qJnLZhXJBf1KH0hzfdc+D794rljQWh4H0I/UrZy+6Nhqn0l2jdBZXBGZtR1vnHqw==
   dependencies:
     "@types/node" "*"
 
