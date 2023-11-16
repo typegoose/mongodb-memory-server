@@ -64,7 +64,8 @@ describe('LockFile', () => {
     expect(lockFile.LockFile.files.has(lockPath)).toBeTruthy();
     // ensure that "lock2" gets executed as far as possible, which still may be inconsistent
     await new Promise(async (res) => {
-      setTimeout(res, 30);
+      // give some time for the lock promise to work, but return before it finished (because it never will)
+      setTimeout(res, 100);
       await lock2;
     });
     // @ts-expect-error because "waitForLock" is protected
