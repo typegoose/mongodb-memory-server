@@ -1,3 +1,11 @@
+## [9.1.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.0...v9.1.1) (2023-11-16)
+
+
+### Reverts
+
+* Revert "chore(website): upgrade docusaurus version to 3.0.0" ([c8f628f](https://github.com/nodkz/mongodb-memory-server/commit/c8f628f2f035e09c73bcc498296a9ef66abd717a))
+* Revert "chore(website/yarn.lock): lockfile maintenance" ([96ede53](https://github.com/nodkz/mongodb-memory-server/commit/96ede53ad3fb10dfc277ac8fb2fe2f9285cbc238))
+
 ## [9.1.0](https://github.com/nodkz/mongodb-memory-server/compare/v9.0.1...v9.1.0) (2023-11-16)
 
 
