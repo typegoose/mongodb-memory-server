@@ -1,5 +1,8 @@
 import resolveConfig, { ResolveConfigVariables, envToBool } from '../resolveConfig';
 import * as net from 'node:net';
+import debug from 'debug';
+
+const log = debug('MongoMS:GetPort');
 
 /** Linux min port that does not require root permissions */
 export const MIN_PORT = 1024;
@@ -57,6 +60,7 @@ export async function getFreePort(
   }
 
   const exp_net0listen = envToBool(resolveConfig(ResolveConfigVariables.EXP_NET0LISTEN));
+  log('EXP_NET0LISTEN', exp_net0listen);
 
   let tries = 0;
   while (tries <= max_tries) {
