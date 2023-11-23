@@ -46,7 +46,7 @@ import * as mongoose from 'mongoose';
 import { config } from './utils/config';
 
 export = async function globalSetup() {
-  if (config.Memory) { // Config to decided if an mongodb-memory-server instance should be used
+  if (config.Memory) { // Config to decide if an mongodb-memory-server instance should be used
     // it's needed in global space, because we don't want to create a new instance every test-suite
     const instance = await MongoMemoryServer.create();
     const uri = instance.getUri();
@@ -71,7 +71,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { config } from './utils/config';
 
 export = async function globalTeardown() {
-  if (config.Memory) { // Config to decided if an mongodb-memory-server instance should be used
+  if (config.Memory) { // Config to decide if an mongodb-memory-server instance should be used
     const instance: MongoMemoryServer = (global as any).__MONGOINSTANCE;
     await instance.stop();
   }
