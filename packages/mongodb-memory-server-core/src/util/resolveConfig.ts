@@ -165,17 +165,25 @@ export function envToBool(env: string = ''): boolean {
   return ['1', 'on', 'yes', 'true'].indexOf(env.toLowerCase()) !== -1;
 }
 
+/**
+ * This exists because "debug.enabled('MongoMS:*')" will always return "true"
+ * This is used to not double-enable / double-print the enablement message
+ */
+let debug_enabled = false;
+
 // enable debug if "MONGOMS_DEBUG" is true
 if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG))) {
   debug.enable('MongoMS:*');
   log('Debug Mode Enabled, through Environment Variable');
+  debug_enabled = true;
 }
 
 // run this after env debug enable to be able to debug this function too
 findPackageJson();
 
 // enable debug if "config.mongodbMemoryServer.debug" is true
-if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug.enabled('MongoMS:*')) {
+if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug_enabled) {
   debug.enable('MongoMS:*');
   log('Debug Mode Enabled, through package.json');
+  debug_enabled = true;
 }
