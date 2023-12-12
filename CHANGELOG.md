@@ -1,3 +1,10 @@
+## [9.1.3](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.2...v9.1.3) (2023-12-12)
+
+
+### Fixes
+
+* **resolveConfig:** let debug mode be enabled through package.json again ([8ba83c7](https://github.com/nodkz/mongodb-memory-server/commit/8ba83c737e693dda4d4e51c073817ff871a899ac)), closes [#834](https://github.com/nodkz/mongodb-memory-server/issues/834)
+
 ## [9.1.2](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.1...v9.1.2) (2023-12-12)
 
 
