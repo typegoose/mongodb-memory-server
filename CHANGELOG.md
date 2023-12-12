@@ -1,3 +1,10 @@
+## [9.1.2](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.1...v9.1.2) (2023-12-12)
+
+
+### Fixes
+
+* **postinstallHelper:** set "PREFER_GLOBAL_PATH" if "local" ([9f523de](https://github.com/nodkz/mongodb-memory-server/commit/9f523de82a326a5fd57d170934206540fd17e17e)), closes [#833](https://github.com/nodkz/mongodb-memory-server/issues/833)
+
 ## [9.1.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.0...v9.1.1) (2023-11-16)
 
 
