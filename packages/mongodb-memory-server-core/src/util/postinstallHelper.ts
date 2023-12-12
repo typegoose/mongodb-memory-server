@@ -40,6 +40,8 @@ export async function postInstallEnsureBinary(
       ResolveConfigVariables.DOWNLOAD_DIR,
       resolve(homedir(), '.cache', 'mongodb-binaries')
     );
+  } else {
+    setDefaultValue(ResolveConfigVariables.PREFER_GLOBAL_PATH, 'false');
   }
 
   if (version) {
