@@ -18,7 +18,7 @@ import debug from 'debug';
 import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
 import { AddUserOptions, MongoClient } from 'mongodb';
-import { InstanceInfoError, StateError } from './util/errors';
+import { InstanceInfoError, StateError, UnknownVersionError } from './util/errors';
 import * as os from 'os';
 import { DryMongoBinary } from './util/DryMongoBinary';
 import * as semver from 'semver';
@@ -372,8 +372,17 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     const opts = await DryMongoBinary.generateOptions(this.opts.binary);
     let storageEngine = instOpts.storageEngine;
 
+    // try to convert a string to a valid semver, like "v6.0-latest" (compiles to "6.0.0")
+    // use "0.0.0" as a fallback to have a valid semver for later checks, but warn on invalid
+    const coercedVersion = semver.coerce(opts.version) ?? new semver.SemVer('0.0.0');
+
+    // warn on invalid version here, a invalid version will be thrown in MongoBinaryDownloadUrl if downloading
+    if (semver.eq(coercedVersion, '0.0.0')) {
+      console.warn(new UnknownVersionError(opts.version));
+    }
+
     // warn when storage engine "ephemeralForTest" is explicitly used and switch to "wiredTiger"
-    if (storageEngine === 'ephemeralForTest' && semver.gte(opts.version, '7.0.0')) {
+    if (storageEngine === 'ephemeralForTest' && semver.gte(coercedVersion, '7.0.0')) {
       console.warn(
         'Storage Engine "ephemeralForTest" is removed since mongodb 7.0.0, automatically using "wiredTiger"!\n' +
           'This warning is because the mentioned storage engine is explicitly used and mongodb version is 7.0.0 or higher'
@@ -383,7 +392,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     }
 
     if (isNullOrUndefined(storageEngine)) {
-      if (semver.gte(opts.version, '7.0.0')) {
+      if (semver.gte(coercedVersion, '7.0.0')) {
         storageEngine = 'wiredTiger';
       } else {
         storageEngine = 'ephemeralForTest';

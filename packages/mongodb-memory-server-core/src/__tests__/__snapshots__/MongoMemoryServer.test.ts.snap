@@ -24,6 +24,14 @@ This may be because of using a v6.x way of calling functions, look at the follow
 https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
 
+exports[`MongoMemoryServer getStartOptions() should work with -latest versions [#841] 1`] = `
+Array [
+  Array [
+    [Error: Could not coerce VERSION to a semver version (version: "junk")],
+  ],
+]
+`;
+
 exports[`MongoMemoryServer getUri() should throw an state error, if not starting or running 1`] = `
 "Incorrect State for operation: \\"new\\", allowed States: \\"[running,starting]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:

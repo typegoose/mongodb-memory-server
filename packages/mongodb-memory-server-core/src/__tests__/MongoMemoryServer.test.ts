@@ -1001,6 +1001,24 @@ describe('MongoMemoryServer', () => {
 
       await utils.removeDir(options.data.tmpDir!); // manual cleanup
     });
+
+    it('should work with -latest versions [#841]', async () => {
+      const mongoServer = new MongoMemoryServer({ binary: { version: 'v6.0-latest' } });
+
+      // @ts-expect-error "getStartOptions" is protected
+      await mongoServer.getStartOptions();
+    });
+
+    it('should work with -latest versions [#841]', async () => {
+      const spy = jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
+      const mongoServer = new MongoMemoryServer({ binary: { version: 'junk' } });
+
+      // @ts-expect-error "getStartOptions" is protected
+      await mongoServer.getStartOptions();
+
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(spy.mock.calls).toMatchSnapshot();
+    });
   });
 
   it('"getDbPath" should return the dbPath', async () => {
