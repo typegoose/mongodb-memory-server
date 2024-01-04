@@ -1,3 +1,10 @@
+## [9.1.4](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.3...v9.1.4) (2024-01-04)
+
+
+### Fixes
+
+* **MongoMemoryServer::getStartOptions:** coerce version to semver before semver checks ([427531e](https://github.com/nodkz/mongodb-memory-server/commit/427531e1e05c038e457593a89c42c0b0dac02f76)), closes [#841](https://github.com/nodkz/mongodb-memory-server/issues/841)
+
 ## [9.1.3](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.2...v9.1.3) (2023-12-12)
 
 
