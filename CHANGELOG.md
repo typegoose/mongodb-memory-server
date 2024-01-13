@@ -1,3 +1,10 @@
+## [9.1.5](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.4...v9.1.5) (2024-01-13)
+
+
+### Fixes
+
+* **getport:** randomize first port using crypto.randomInt ([#844](https://github.com/nodkz/mongodb-memory-server/issues/844)) ([4132dbf](https://github.com/nodkz/mongodb-memory-server/commit/4132dbfc1c0d648d48b6fe0fa7c0f1f77195731a)), closes [#827](https://github.com/nodkz/mongodb-memory-server/issues/827)
+
 ## [9.1.4](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.3...v9.1.4) (2024-01-04)
 
 
