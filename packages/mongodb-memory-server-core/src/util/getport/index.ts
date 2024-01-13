@@ -1,4 +1,5 @@
 import resolveConfig, { ResolveConfigVariables, envToBool } from '../resolveConfig';
+import * as crypto from 'node:crypto';
 import * as net from 'node:net';
 import debug from 'debug';
 
@@ -48,10 +49,10 @@ export async function getFreePort(
   firstPort?: number,
   max_tries: number = MAX_DEFAULT_TRIES
 ): Promise<number> {
-  // use "Date" as a semi-random value to lessen conflicts between simultaneous tests
-  firstPort = firstPort || validPort(Date.now());
+  // Get a random value from crypto to use as first port if none is given
+  firstPort = firstPort || validPort(crypto.randomInt(MIN_PORT, MAX_PORT + 1));
 
-  // clear ports cache after some time, but not on a interval
+  // clear ports cache after some time, but not on an interval
   if (PORTS_CACHE.timeSet && Date.now() - PORTS_CACHE.timeSet > PORTS_CACHE_CLEAN_TIME) {
     PORTS_CACHE.ports.clear();
     PORTS_CACHE.timeSet = Date.now();
