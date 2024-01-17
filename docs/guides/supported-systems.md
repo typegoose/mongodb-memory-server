@@ -53,7 +53,7 @@ Depends on the distribution, many common ones should just work right out of the 
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `1404`<br/>
-Highest version is `2204`<br/>
+Highest version is `2204` (higher versions will be clamped to this value)<br/>
 Default version is `2204`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 
@@ -61,7 +61,7 @@ Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an lower version of mongodb for an higher version of ubuntu
 :::
 :::note
-Since Mongodb `6.0.4` there are binaries for `2204`, any version before is mapped to `2204` (or earlier) and will require `libssl1.1` to be installed.  
+Since Mongodb `6.0.4` there are binaries for `2204`, any version before is mapped to `2004` (or earlier) and will require `libssl1.1` to be installed.  
 See [this mongodb issue](https://jira.mongodb.org/browse/SERVER-62300).
 :::
 
@@ -71,7 +71,7 @@ See [this mongodb issue](https://jira.mongodb.org/browse/SERVER-62300).
 
 (uses mongodb's `debian` release)<br/>
 Lowest supported Distribution version is `71`<br/>
-Highest version is `11`<br/>
+Highest version is `11` (higher versions will be clamped to this value)<br/>
 Default version is `10` (when in `unstable` or `testing`, otherwise none)
 
 ### Fedora
@@ -80,7 +80,7 @@ Default version is `10` (when in `unstable` or `testing`, otherwise none)
 
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `6`<br/>
-Highest version is `36` (see note)<br/>
+Highest version is `36` (see note) (higher versions will be clamped to this value)<br/>
 Default version is `34` (when above or equal to `34`, otherwise none)
 
 :::note
@@ -94,7 +94,7 @@ There are currently no newer mongodb builds that support the newer provided open
 
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `5`<br/>
-Highest version is `9`<br/>
+Highest version is `9` (higher versions will be clamped to this value)<br/>
 Default version is `70`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 

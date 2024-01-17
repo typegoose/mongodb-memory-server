@@ -327,6 +327,23 @@ describe('MongoBinaryDownloadUrl', () => {
           }
         });
 
+        it('should clamp to highest supported ubuntu year', async () => {
+          // TODO: try to keep this up-to-date to the latest mongodb supported ubuntu version
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.4', // highest released mongodb version
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '23.04', // highest released ubuntu version
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz'
+          );
+        });
+
         describe('arm64', () => {
           it('for ubuntu arm64 4.0.25 (below 4.1.10)', async () => {
             const du = new MongoBinaryDownloadUrl({

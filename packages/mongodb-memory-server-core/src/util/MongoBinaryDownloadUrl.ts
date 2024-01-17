@@ -566,6 +566,24 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu2004';
     }
 
+    // base case for higher than mongodb supported ubuntu versions
+    {
+      // TODO: try to keep this up-to-date to the latest mongodb supported ubuntu version
+      /**
+       * Highest ubuntu year supported by mongodb binaries
+       * @see https://www.mongodb.com/download-center/community/releases/archive
+       */
+      const highestUbuntuYear = 22; // 22 is the highest supported as of mongodb 7.0.4
+
+      if (ubuntuYear > highestUbuntuYear) {
+        log(
+          `getUbuntuVersionString: ubuntuYear "${ubuntuYear}" is higher than the currently supported mongodb year of "${highestUbuntuYear}", using highest known`
+        );
+
+        return 'ubuntu2204';
+      }
+    }
+
     // the "04" version always exists for ubuntu, use that as default
     return `ubuntu${ubuntuYear}04`;
   }
