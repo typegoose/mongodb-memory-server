@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkmongodb_memory_server_website=self.webpackChunkmongodb_memory_server_website||[]).push([[4708],{2998:(e,s,r)=>{r.r(s),r.d(s,{default:()=>i});r(7294);var o=r(6550),n=r(4996),t=r(5893);const i=function(){return(0,t.jsx)(o.l_,{to:(0,n.Z)("docs/api/index-api")})}}}]);
