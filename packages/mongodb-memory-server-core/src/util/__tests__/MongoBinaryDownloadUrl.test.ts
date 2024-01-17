@@ -901,7 +901,7 @@ describe('MongoBinaryDownloadUrl', () => {
           downloadUrl = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
-            version: '4.0.25',
+            version: '0.0.0',
             os: {
               os: 'linux',
               dist: 'Linux Mint',
@@ -912,14 +912,16 @@ describe('MongoBinaryDownloadUrl', () => {
         });
 
         it('should default to Mint Version 20, if version cannot be found in lookup table', async () => {
-          (downloadUrl.os as LinuxOS).release = '16';
+          (downloadUrl.os as LinuxOS).release = '16'; // out-of-range version
+          downloadUrl.version = '6.0.4';
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.25.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.4.tgz'
           );
         });
 
         it('should return a archive name for Linux Mint 17', async () => {
           (downloadUrl.os as LinuxOS).release = '17';
+          downloadUrl.version = '4.0.25';
           expect(await downloadUrl.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-4.0.25.tgz'
           );
@@ -927,6 +929,7 @@ describe('MongoBinaryDownloadUrl', () => {
 
         it('should return a archive name for Linux Mint 18', async () => {
           (downloadUrl.os as LinuxOS).release = '18';
+          downloadUrl.version = '4.0.25';
           expect(await downloadUrl.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.25.tgz'
           );
@@ -934,6 +937,7 @@ describe('MongoBinaryDownloadUrl', () => {
 
         it('should return a archive name for Linux Mint 19', async () => {
           (downloadUrl.os as LinuxOS).release = '19';
+          downloadUrl.version = '4.0.25';
           expect(await downloadUrl.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.25.tgz'
           );
@@ -941,8 +945,17 @@ describe('MongoBinaryDownloadUrl', () => {
 
         it('should return a archive name for Linux Mint 20', async () => {
           (downloadUrl.os as LinuxOS).release = '20';
+          downloadUrl.version = '6.0.4';
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.0.25.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.4.tgz'
+          );
+        });
+
+        it('should return a archive name for Linux Mint 21', async () => {
+          (downloadUrl.os as LinuxOS).release = '21';
+          downloadUrl.version = '6.0.4';
+          expect(await downloadUrl.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
           );
         });
       });
