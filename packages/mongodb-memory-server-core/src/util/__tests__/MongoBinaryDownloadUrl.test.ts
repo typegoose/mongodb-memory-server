@@ -879,7 +879,7 @@ describe('MongoBinaryDownloadUrl', () => {
             platform: 'linux',
             arch: 'x64',
             version: '5.0.0',
-            // from "elementary/docker:fe08f970723a"
+            // from "elementary/docker:odin-stable" (id: 1a8a0700e015)
             os: {
               os: 'linux',
               dist: 'elementary',
@@ -891,6 +891,26 @@ describe('MongoBinaryDownloadUrl', () => {
 
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.0.tgz'
+          );
+        });
+
+        it('should return a archive name for elementary 7.0', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.4',
+            // from "elementary/docker:horus-stable" (id: a43c2a2e2cf2)
+            os: {
+              os: 'linux',
+              dist: 'elementary',
+              codename: 'horus',
+              release: '7',
+              id_like: ['ubuntu'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
           );
         });
       });

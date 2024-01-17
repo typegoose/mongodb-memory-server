@@ -487,6 +487,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           4: '16.04',
           5: '18.04',
           6: '20.04',
+          7: '22.04',
         };
 
         // untangle elemenatary versioning from hell https://en.wikipedia.org/wiki/Elementary_OS#Development
@@ -496,6 +497,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         ubuntuOS = {
           os: 'linux',
           dist: 'ubuntu',
+          // TODO: next-minor: change default elemenatry release to 7
           release: elementaryToUbuntuRelease[realMajor] || elementaryToUbuntuRelease[6],
         };
       }
