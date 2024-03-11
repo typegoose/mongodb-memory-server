@@ -1,3 +1,10 @@
+## [9.1.7](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.6...v9.1.7) (2024-03-11)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** spelling mistake ([#854](https://github.com/nodkz/mongodb-memory-server/issues/854)) ([31ae840](https://github.com/nodkz/mongodb-memory-server/commit/31ae8403dddd2ac0bd82cffdde5a95aa74fa2e31))
+
 ## [9.1.6](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.5...v9.1.6) (2024-01-17)
 
 
