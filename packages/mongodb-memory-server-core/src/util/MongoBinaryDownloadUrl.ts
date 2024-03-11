@@ -235,7 +235,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     } else if (regexHelper(/debian/i, os)) {
       return this.getDebianVersionString(os);
     } else if (regexHelper(/alpine/i, os)) {
-      console.warn('There is no offical build of MongoDB for Alpine!');
+      console.warn('There is no official build of MongoDB for Alpine!');
       // Match "arch", "archlinux", "manjaro", "manjarolinux", "arco", "arcolinux"
     } else if (regexHelper(/(arch|manjaro|arco)(?:linux)?$/i, os)) {
       console.warn(
