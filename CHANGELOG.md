@@ -1,3 +1,10 @@
+## [9.1.8](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.7...v9.1.8) (2024-03-28)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** support Debian 12 (Bookworm) ([#858](https://github.com/nodkz/mongodb-memory-server/issues/858)) ([48dbf43](https://github.com/nodkz/mongodb-memory-server/commit/48dbf434d93f1d184401529d2de6cf7943c13cd5))
+
 ## [9.1.7](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.6...v9.1.7) (2024-03-11)
 
 
