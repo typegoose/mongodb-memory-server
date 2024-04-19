@@ -235,7 +235,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     } else if (regexHelper(/debian/i, os)) {
       return this.getDebianVersionString(os);
     } else if (regexHelper(/alpine/i, os)) {
-      console.warn('There is no offical build of MongoDB for Alpine!');
+      console.warn('There is no official build of MongoDB for Alpine!');
       // Match "arch", "archlinux", "manjaro", "manjarolinux", "arco", "arcolinux"
     } else if (regexHelper(/(arch|manjaro|arco)(?:linux)?$/i, os)) {
       console.warn(
@@ -286,7 +286,9 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     // see https://tracker.debian.org/news/1433360/accepted-base-files-13-source-into-unstable/
     const isTesting = ['unstable', 'testing', ''].includes(os.release);
 
-    if (isTesting || release >= 11) {
+    if (isTesting || release >= 12) {
+      name += '12';
+    } else if (release >= 11) {
       // Debian 11 is compatible with the binaries for debian 10
       // but does not have binaries for before 5.0.8
       // and only set to use "debian10" if the requested version is not a latest version
@@ -306,7 +308,16 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       name += '71';
     }
 
-    if (isTesting || release >= 10) {
+    if (isTesting || release >= 12) {
+      if (semver.lt(coercedVersion, '7.0.3') && !testVersionIsLatest(this.version)) {
+        throw new KnownVersionIncompatibilityError(
+          `Debian ${release || os.release || os.codename}`,
+          this.version,
+          '>=7.0.3',
+          'Mongodb does not provide binaries for versions before 7.0.3 for Debian 12+ and also cannot be mapped to a previous Debian release'
+        );
+      }
+    } else if (release >= 10) {
       if (semver.lt(coercedVersion, '4.2.1') && !testVersionIsLatest(this.version)) {
         throw new KnownVersionIncompatibilityError(
           `Debian ${release || os.release || os.codename}`,

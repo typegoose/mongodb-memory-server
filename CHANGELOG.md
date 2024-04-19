@@ -1,3 +1,26 @@
+## [9.1.8](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.7...v9.1.8) (2024-03-28)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** support Debian 12 (Bookworm) ([#858](https://github.com/nodkz/mongodb-memory-server/issues/858)) ([48dbf43](https://github.com/nodkz/mongodb-memory-server/commit/48dbf434d93f1d184401529d2de6cf7943c13cd5))
+
+## [9.1.7](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.6...v9.1.7) (2024-03-11)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** spelling mistake ([#854](https://github.com/nodkz/mongodb-memory-server/issues/854)) ([31ae840](https://github.com/nodkz/mongodb-memory-server/commit/31ae8403dddd2ac0bd82cffdde5a95aa74fa2e31))
+
+## [9.1.6](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.5...v9.1.6) (2024-01-17)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** clamp ubuntu-year to highest supported year ([9a29af9](https://github.com/nodkz/mongodb-memory-server/commit/9a29af9032931d5105b0189bcddd4fc09c55048c)), closes [#846](https://github.com/nodkz/mongodb-memory-server/issues/846)
+* **MongoBinaryDownloadUrl:** support elementaryos 7 ([064c69e](https://github.com/nodkz/mongodb-memory-server/commit/064c69e860514047fe0a6a12648a00648362d51a))
+* **MongoBinaryDownloadUrl:** support linux-mint 21 ([e756164](https://github.com/nodkz/mongodb-memory-server/commit/e7561647bef9fa0fe490e797134d003e03b9d362))
+
 ## [9.1.6-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.5...v9.1.6-beta.1) (2024-01-17)
 
 

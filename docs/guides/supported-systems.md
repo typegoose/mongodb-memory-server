@@ -71,8 +71,8 @@ See [this mongodb issue](https://jira.mongodb.org/browse/SERVER-62300).
 
 (uses mongodb's `debian` release)<br/>
 Lowest supported Distribution version is `71`<br/>
-Highest version is `11` (higher versions will be clamped to this value)<br/>
-Default version is `10` (when in `unstable` or `testing`, otherwise none)
+Highest version is `12` (higher versions will be clamped to this value)<br/>
+Default version is `12` (when in `unstable` or `testing`, otherwise none)
 
 ### Fedora
 

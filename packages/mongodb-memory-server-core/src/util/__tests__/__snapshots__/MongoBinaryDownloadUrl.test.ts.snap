@@ -10,12 +10,17 @@ exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should thr
 Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release"
 `;
 
-exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when requesting a version below 4.2.1 for debian testing [KnownVersionIncompatibilityError] 1`] = `
-"Requested Version \\"4.0.25\\" is not available for \\"Debian trixie\\"! Available Versions: \\">=4.2.1\\"
-Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release"
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when requesting a version below 7.0.3 for debian testing [KnownVersionIncompatibilityError] 1`] = `
+"Requested Version \\"7.0.2\\" is not available for \\"Debian trixie\\"! Available Versions: \\">=7.0.3\\"
+Mongodb does not provide binaries for versions before 7.0.3 for Debian 12+ and also cannot be mapped to a previous Debian release"
 `;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not coerce VERSION to a semver version (version: \\"vvv\\")"`;
+
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw an error when requesting a version below 7.0.3 for debian 12+ [#797] [KnownVersionIncompatibilityError] 1`] = `
+"Requested Version \\"7.0.2\\" is not available for \\"Debian 12\\"! Available Versions: \\">=7.0.3\\"
+Mongodb does not provide binaries for versions before 7.0.3 for Debian 12+ and also cannot be mapped to a previous Debian release"
+`;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should Error when ARM64 and rhel below 8 [KnownVersionIncompatibilityError] 1`] = `
 "Requested Version \\"4.4.2\\" is not available for \\"Rhel 7 arm64\\"! Available Versions: \\">=4.4.2\\"

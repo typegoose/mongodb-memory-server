@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-core",
-  "version": "9.1.6-beta.1",
+  "version": "9.1.8",
   "description": "MongoDB Server for testing (core package, without autodownload). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "lib/index",
   "types": "lib/index.d.ts",
@@ -46,7 +46,7 @@
     "camelcase": "^6.3.0",
     "debug": "^4.3.4",
     "find-cache-dir": "^3.3.2",
-    "follow-redirects": "^1.15.3",
+    "follow-redirects": "^1.15.6",
     "https-proxy-agent": "^7.0.2",
     "mongodb": "^5.9.1",
     "new-find-package-json": "^2.0.0",

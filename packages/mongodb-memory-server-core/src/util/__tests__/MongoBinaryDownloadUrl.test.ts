@@ -556,6 +556,22 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('for debian 12 for 7.0.3', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.3',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '12',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian12-7.0.3.tgz'
+          );
+        });
+
         it('should allow v5.0-latest', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -576,7 +592,7 @@ describe('MongoBinaryDownloadUrl', () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
-            version: '5.0.9',
+            version: '7.0.3',
             os: {
               os: 'linux',
               dist: 'debian',
@@ -584,7 +600,7 @@ describe('MongoBinaryDownloadUrl', () => {
             },
           });
           expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-5.0.9.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian12-7.0.3.tgz'
           );
         });
 
@@ -670,11 +686,49 @@ describe('MongoBinaryDownloadUrl', () => {
           }
         });
 
-        it('should throw a Error when requesting a version below 4.2.1 for debian testing [KnownVersionIncompatibilityError]', async () => {
+        it('should throw an error when requesting a version below 7.0.3 for debian 12+ [#797] [KnownVersionIncompatibilityError]', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
-            version: '4.0.25',
+            version: '7.0.2',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '12',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a KnownVersionIncompatibilityError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
+            expect(err.message).toMatchSnapshot();
+          }
+        });
+
+        it('should not throw an error for v7.0-latest for debian 12', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: 'v7.0-latest',
+            os: {
+              os: 'linux',
+              dist: 'debian',
+              release: '12',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian12-v7.0-latest.tgz'
+          );
+        });
+
+        it('should throw a Error when requesting a version below 7.0.3 for debian testing [KnownVersionIncompatibilityError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.2',
             os: {
               os: 'linux',
               dist: 'debian',
