@@ -66,8 +66,19 @@ jobs:
         run: yarn install
       - name: Build
         run: yarn build
-      - name: Semantic Release (publish to npm)
-        run: yarn semantic-release
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@cb425203a562475bca039ba4dbf90c7f9ac790f4 # v4.1.0
+        with:
+          # dry_run: true
+          extra_plugins: |
+            @semantic-release/git
+            @semantic-release/changelog
+            @semantic-release/commit-analyzer
+            @semantic-release/release-notes-generator
+            @semantic-release/github
+            @semantic-release/npm
+            @commitlint/config-conventional
+            semantic-release-replace-plugin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
