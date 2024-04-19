@@ -13,7 +13,7 @@
     "@semantic-release/github": "^8.0.7",
     "@semantic-release/npm": "^9.0.2",
     "@semantic-release/release-notes-generator": "^10.0.3",
-    "@types/jest": "^29.5.8",
+    "@types/jest": "^29.5.12",
     "@types/node": "~14.18.63",
     "@typescript-eslint/eslint-plugin": "5.59.9",
     "@typescript-eslint/parser": "5.59.9",
