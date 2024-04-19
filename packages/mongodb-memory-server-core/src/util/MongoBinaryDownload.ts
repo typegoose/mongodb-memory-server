@@ -399,14 +399,41 @@ export class MongoBinaryDownload {
 
             return;
           }
+
+          // content-length, otherwise 0
+          let contentLength: number;
+
           if (typeof response.headers['content-length'] != 'string') {
-            reject(new DownloadError(downloadUrl, 'Response header "content-length" is empty!'));
+            log('Response header "content-lenght" is empty!');
+
+            contentLength = 0;
+          } else {
+            contentLength = parseInt(response.headers['content-length'], 10);
+
+            if (Number.isNaN(contentLength)) {
+              log('Response header "content-lenght" resolved to NaN!');
+
+              contentLength = 0;
+            }
+          }
+
+          // error if the content-length header is missing or is 0 if config option "DOWNLOAD_IGNORE_MISSING_HEADER" is not set to "true"
+          if (
+            !envToBool(resolveConfig(ResolveConfigVariables.DOWNLOAD_IGNORE_MISSING_HEADER)) &&
+            contentLength <= 0
+          ) {
+            reject(
+              new DownloadError(
+                downloadUrl,
+                'Response header "content-length" does not exist or resolved to NaN'
+              )
+            );
 
             return;
           }
 
           this.dlProgress.current = 0;
-          this.dlProgress.length = parseInt(response.headers['content-length'], 10);
+          this.dlProgress.length = contentLength;
           this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
 
           const fileStream = createWriteStream(tempDownloadLocation);

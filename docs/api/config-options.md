@@ -124,6 +124,16 @@ Option `DOWNLOAD_URL` is used to overwrite the ***complete*** URL (including [`D
 
 Format: `https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
 
+### DOWNLOAD_IGNORE_MISSING_HEADER
+
+|  Environment Variable  |  PackageJson  |
+| :--------------------: | :-----------: |
+| `DOWNLOAD_IGNORE_MISSING_HEADER` | `downloadIgnoreMissingHeader` |
+
+Option `DOWNLOAD_IGNORE_MISSING_HEADER` can be set to `true` to ignore missing response headers like `content-length`.
+
+Default: `false`
+
 ### PREFER_GLOBAL_PATH
 
 |     Environment Variable     |    PackageJson     |
