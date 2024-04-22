@@ -1,3 +1,32 @@
+## [9.2.0](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.8...v9.2.0) (2024-04-22)
+
+
+### Features
+
+* add option "DOWNLOAD_IGNORE_MISSING_HEADER" to ignore missing response-headers ([f3f7764](https://github.com/nodkz/mongodb-memory-server/commit/f3f7764dc2c61bb7897cc340f2a1544d87937461)), closes [#865](https://github.com/nodkz/mongodb-memory-server/issues/865)
+* update default-4.2-binary to 4.2.24 ([63fcfc2](https://github.com/nodkz/mongodb-memory-server/commit/63fcfc2d6807c87c160971838e7cde057b6da18a))
+* update default-4.4-binary to 4.4.28 ([df5eec0](https://github.com/nodkz/mongodb-memory-server/commit/df5eec0b90f71f56e50df04ef2813576b44f94f2))
+* update default-binary to 6.0.14 ([47f2bb3](https://github.com/nodkz/mongodb-memory-server/commit/47f2bb3ba0031a879430872f2f01a08be3a0581c))
+
+
+### Dependencies
+
+* **https-proxy-agent:** upgrade to version 7.0.4 ([d9dedc4](https://github.com/nodkz/mongodb-memory-server/commit/d9dedc4cdc3896ecf83dcf197f3eac61ad86076d))
+* **semver:** upgrade to version 7.6.0 ([d0b50aa](https://github.com/nodkz/mongodb-memory-server/commit/d0b50aa285330d95ba134a328be8ccce7b3be216))
+* **tar-stream:** upgrade to version 3.1.7 ([abcebd4](https://github.com/nodkz/mongodb-memory-server/commit/abcebd48c5b4ce8112e51bc5ef832fecf984d4ca))
+* **yauzl:** upgrade to version 3.1.3 ([ba90289](https://github.com/nodkz/mongodb-memory-server/commit/ba90289c739c31e80b60b472069682afbdeab898))
+
+
+### Dev-Dependencies
+
+* **@types/jest:** upgrade to version 29.5.12 ([61ce778](https://github.com/nodkz/mongodb-memory-server/commit/61ce778e35c6baa5a7a8384e7afb21bc3a5826a1))
+* **@types/semver:** upgrade to version 7.5.8 ([c042b9a](https://github.com/nodkz/mongodb-memory-server/commit/c042b9a7344c5fa9191c3f420276a2397e5d126b))
+* **commitlint*:** upgrade to version 17.8.1 ([08141c8](https://github.com/nodkz/mongodb-memory-server/commit/08141c857c699d1f35687bc3aa2daf08276b4c8f))
+* **eslint-config-prettier:** upgrade to version 9.1.0 ([dc3dd4f](https://github.com/nodkz/mongodb-memory-server/commit/dc3dd4f417640453c5f3444b49cd68201d2ba689))
+* **eslint-plugin-prettier:** upgrade to version 5.1.3 ([dc49e9c](https://github.com/nodkz/mongodb-memory-server/commit/dc49e9c5acd8c5e22f40037319120086972fd03c))
+* **eslint:** upgrade to version 8.57.0 ([cfe19a8](https://github.com/nodkz/mongodb-memory-server/commit/cfe19a8297d4088ae62cd2b6de3cc3676bf419d7))
+* **prettier:** upgrade to version 3.2.5 ([b13b13c](https://github.com/nodkz/mongodb-memory-server/commit/b13b13c8e0c1eaca8643dfbaae6387bc5f9706bb))
+
 ## [9.2.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.8...v9.2.0-beta.1) (2024-04-19)
 
 
