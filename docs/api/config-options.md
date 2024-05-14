@@ -73,7 +73,7 @@ Example: `ubuntu-18.04`
 
 Option `VERSION` is used to set what mongodb version should be downloaded
 
-Default: `5.0.19`
+Default: `6.0.14` (see [Mongodb Server Versions](../guides/mongodb-server-versions.md) for a complete list and policy)
 
 This Option does not have a effect when [`ARCHIVE_NAME`](#archive_name) or [`DOWNLOAD_URL`](#download_url) is defined.
 
