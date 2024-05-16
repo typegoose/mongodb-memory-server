@@ -1,10 +1,9 @@
 import os from 'os';
-import path from 'path';
 import MongoBinaryDownload from './MongoBinaryDownload';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
 import * as semver from 'semver';
-import { assertion, isNullOrUndefined, mkdir } from './utils';
+import { assertion, isNullOrUndefined, lockfilePath, mkdir } from './utils';
 import { spawnSync } from 'child_process';
 import { LockFile } from './lockfile';
 import { DryMongoBinary, BaseDryMongoBinaryOptions } from './DryMongoBinary';
@@ -31,7 +30,7 @@ export class MongoBinary {
     await mkdir(downloadDir);
 
     /** Lockfile path */
-    const lockfile = path.resolve(downloadDir, `${version}.lock`);
+    const lockfile = lockfilePath(downloadDir, version);
     log(`download: Waiting to acquire Download lock for file "${lockfile}"`);
     // wait to get a lock
     // downloading of binaries may be quite long procedure

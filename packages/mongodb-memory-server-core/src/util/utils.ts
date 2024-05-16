@@ -379,3 +379,13 @@ export function md5(content: BinaryLike): string {
 export async function md5FromFile(file: string): Promise<string> {
   return md5(await fspromises.readFile(file));
 }
+
+/**
+ * Helper function to get the lockfile for the provided `version` in `downloadDir`
+ * @param downloadDir The Download directory of the binary
+ * @param version The version to be downlaoded
+ * @returns The lockfile path
+ */
+export function lockfilePath(downloadDir: string, version: string): string {
+  return path.resolve(downloadDir, `${version}.lock`);
+}
