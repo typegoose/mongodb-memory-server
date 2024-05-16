@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>isAlive | mongodb-memory-server-core</title><meta name="description" content="Documentation for mongodb-memory-server-core"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>lockfilePath | mongodb-memory-server-core</title><meta name="description" content="Documentation for mongodb-memory-server-core"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container">
 <div class="table-cell" id="tsd-search" data-base="..">
 <div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
@@ -14,26 +14,32 @@
 <ul class="tsd-breadcrumb">
 <li><a href="../index.html">mongodb-memory-server-core</a></li>
 <li><a href="../modules/util_utils.html">util/utils</a></li>
-<li><a href="util_utils.isAlive.html">isAlive</a></li></ul>
-<h1>Function isAlive</h1></div>
+<li><a href="util_utils.lockfilePath.html">lockfilePath</a></li></ul>
+<h1>Function lockfilePath</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="isAlive"><span class="tsd-kind-call-signature">is<wbr/>Alive</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">pid</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#isAlive" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="lockfilePath"><span class="tsd-kind-call-signature">lockfile<wbr/>Path</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">downloadDir</span>, <span class="tsd-kind-parameter">version</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><a href="#lockfilePath" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Check if the given Process is still alive</p>
+<div class="tsd-comment tsd-typography"><p>Helper function to get the lockfile for the provided <code>version</code> in <code>downloadDir</code></p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">pid</span>: <span class="tsd-signature-type">number</span></h5>
-<div class="tsd-comment tsd-typography"><p>The Process PID</p>
+<h5><span class="tsd-kind-parameter">downloadDir</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The Download directory of the binary</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">version</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The version to be downlaoded</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><p>The lockfile path</p>
+
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nodkz/mongodb-memory-server/blob/c600609/packages/mongodb-memory-server-core/src/util/utils.ts#L154">packages/mongodb-memory-server-core/src/util/utils.ts:154</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/nodkz/mongodb-memory-server/blob/c600609/packages/mongodb-memory-server-core/src/util/utils.ts#L389">packages/mongodb-memory-server-core/src/util/utils.ts:389</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -80,10 +86,10 @@
 <li><a href="util_utils.errorWithCode.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>error<wbr/>With<wbr/>Code</span></a></li>
 <li><a href="util_utils.generateDbName.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>generate<wbr/>Db<wbr/>Name</span></a></li>
 <li><a href="util_utils.getHost.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>get<wbr/>Host</span></a></li>
-<li><a href="util_utils.isAlive.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>is<wbr/>Alive</span></a></li>
+<li><a href="util_utils.isAlive.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>is<wbr/>Alive</span></a></li>
 <li><a href="util_utils.isNullOrUndefined.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>is<wbr/>Null<wbr/>Or<wbr/>Undefined</span></a></li>
 <li><a href="util_utils.killProcess.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>kill<wbr/>Process</span></a></li>
-<li><a href="util_utils.lockfilePath.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>lockfile<wbr/>Path</span></a></li>
+<li><a href="util_utils.lockfilePath.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>lockfile<wbr/>Path</span></a></li>
 <li><a href="util_utils.md5.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>md5</span></a></li>
 <li><a href="util_utils.md5FromFile.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>md5<wbr/>From<wbr/>File</span></a></li>
 <li><a href="util_utils.mkdir.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>mkdir</span></a></li>
