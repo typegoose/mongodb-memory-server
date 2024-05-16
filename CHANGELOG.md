@@ -1,3 +1,15 @@
+## [9.2.1-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.2.0...v9.2.1-beta.1) (2024-05-16)
+
+
+### Fixes
+
+* **DryMongoBinary::locateBinary:** check if download-lock still exists ([c600609](https://github.com/nodkz/mongodb-memory-server/commit/c60060977e91cd2c235d86d5ac27d194a7a9e3e3)), closes [#872](https://github.com/nodkz/mongodb-memory-server/issues/872)
+
+
+### Refactor
+
+* **utils:** add function "lockfilePath" ([9db479f](https://github.com/nodkz/mongodb-memory-server/commit/9db479f6a90ccb84d278ef8c1465e95455d0999c))
+
 ## [9.2.0](https://github.com/nodkz/mongodb-memory-server/compare/v9.1.8...v9.2.0) (2024-04-22)
 
 
