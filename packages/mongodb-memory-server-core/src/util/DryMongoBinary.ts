@@ -1,6 +1,12 @@
 import debug from 'debug';
 import { DEFAULT_VERSION, envToBool, resolveConfig, ResolveConfigVariables } from './resolveConfig';
-import { assertion, checkBinaryPermissions, isNullOrUndefined, pathExists } from './utils';
+import {
+  assertion,
+  checkBinaryPermissions,
+  isNullOrUndefined,
+  lockfilePath,
+  pathExists,
+} from './utils';
 import * as path from 'path';
 import { arch, homedir, platform } from 'os';
 import findCacheDir from 'find-cache-dir';
@@ -96,6 +102,18 @@ export class DryMongoBinary {
 
     if (!returnValue[0]) {
       log('locateBinary: could not find a existing binary');
+
+      return undefined;
+    }
+
+    // check for the race-condition of "extraction started, but not finished"
+    // or said differently, the file "exists" but is not fully extracted yet
+    // see https://github.com/nodkz/mongodb-memory-server/issues/872
+    if (
+      returnValue[0] &&
+      (await pathExists(lockfilePath(path.dirname(returnValue[1]), useOpts.version)))
+    ) {
+      log('locateBinary: binary found, but also a download-lock, trying to resolve lock');
 
       return undefined;
     }

@@ -428,6 +428,28 @@ describe('DryBinary', () => {
       expect(binary.DryMongoBinary.generateDownloadPath).toHaveBeenCalled();
     });
 
+    it('should return "undefined" if binary can be found but also a download-lock', async () => {
+      jest
+        .spyOn(binary.DryMongoBinary, 'generateDownloadPath')
+        .mockResolvedValue([true, '/tmp/1.1.1']);
+
+      const originalPathExists = utils.pathExists;
+
+      const utilsSpy = jest.spyOn(utils, 'pathExists').mockImplementation((path) => {
+        if (path === '/tmp/1.1.1.lock' || path === '/tmp/1.1.1') {
+          return Promise.resolve(true);
+        }
+
+        return originalPathExists(path);
+      });
+
+      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
+      expect(returnValue).toBeUndefined();
+      expect(binary.DryMongoBinary.binaryCache.size).toBe(0);
+      expect(binary.DryMongoBinary.generateDownloadPath).toHaveBeenCalled();
+      expect(utilsSpy).toHaveBeenCalledWith('/tmp/1.1.1.lock');
+    });
+
     it('should return cached version if exists', async () => {
       const mockBinary = '/custom/path';
       binary.DryMongoBinary.binaryCache.set('1.1.1', mockBinary);
