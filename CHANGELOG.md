@@ -1,3 +1,10 @@
+## [9.2.1-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v9.2.1-beta.1...v9.2.1-beta.2) (2024-05-17)
+
+
+### Fixes
+
+* **DryMongoBinary:** resolve modulesCache relative to config options package.json ([be934a0](https://github.com/nodkz/mongodb-memory-server/commit/be934a025d9ae3a02ba617a3a478fd6ed23bca24))
+
 ## [9.2.1-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.2.0...v9.2.1-beta.1) (2024-05-16)
 
 
