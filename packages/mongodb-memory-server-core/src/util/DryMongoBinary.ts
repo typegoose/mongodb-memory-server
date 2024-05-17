@@ -1,5 +1,11 @@
 import debug from 'debug';
-import { DEFAULT_VERSION, envToBool, resolveConfig, ResolveConfigVariables } from './resolveConfig';
+import {
+  DEFAULT_VERSION,
+  envToBool,
+  packageJsonPath,
+  resolveConfig,
+  ResolveConfigVariables,
+} from './resolveConfig';
 import {
   assertion,
   checkBinaryPermissions,
@@ -306,6 +312,13 @@ export class DryMongoBinary {
     // as long as "node_modules/mongodb-memory-server*" is included in the path, go the paths up
     while (nodeModulesDLDir.includes(`node_modules${path.sep}mongodb-memory-server`)) {
       nodeModulesDLDir = path.resolve(nodeModulesDLDir, '..', '..');
+    }
+
+    const configPackagePath = packageJsonPath();
+
+    // use the same "node_modules/.cache" as the package.json that was found for config options, if available
+    if (configPackagePath && (await pathExists(path.resolve(configPackagePath, 'node_modules')))) {
+      nodeModulesDLDir = configPackagePath;
     }
 
     const tmpModulesCache = findCacheDir({

@@ -143,6 +143,14 @@ export function resolveConfig(variableName: ResolveConfigVariables): string | un
   )?.toString();
 }
 
+/**
+ * Get the directory path of the `package.json` with config options, if available
+ * @returns The directory of the `package.json`, otherwise `undefined`
+ */
+export function packageJsonPath(): string | undefined {
+  return packagejson?.filePath;
+}
+
 export default resolveConfig;
 
 /**

@@ -3,6 +3,7 @@ import { DryMongoBinary } from '../DryMongoBinary';
 import * as path from 'path';
 import { constants, promises as fspromises } from 'fs';
 import { DEFAULT_VERSION, envName, ResolveConfigVariables } from '../resolveConfig';
+import * as resConfig from '../resolveConfig';
 import * as utils from '../utils';
 import * as getOs from '../getos';
 import { LinuxOS, OtherOS } from '../getos';
@@ -138,6 +139,102 @@ describe('DryBinary', () => {
         relative: path.resolve(tmpDir2, 'mongodb-binaries', binaryName),
         homeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
         modulesCache: '', // because not being in an project
+      } as binary.DryMongoBinaryPaths);
+    });
+
+    it('should resolve modulesCache relative to the package json that has config options', async () => {
+      const workspacePackagePath = path.resolve(tmpDir, 'package.json');
+      const packagePackagePath = path.resolve(tmpDir, 'packages/testy/package.json');
+      await utils.mkdir(path.dirname(packagePackagePath));
+
+      // create the shared workspace package.json
+      await fspromises.writeFile(
+        workspacePackagePath,
+        JSON.stringify({
+          name: 'testw',
+          private: true,
+          devDependencies: {
+            'mongodb-memory-server': '0.0.0',
+          },
+          config: {
+            mongodbMemoryServer: {
+              test: 1,
+            },
+          },
+        })
+      );
+      // emulate having resolved the package.json files and found the above file
+      jest.spyOn(resConfig, 'packageJsonPath').mockReturnValue(path.dirname(workspacePackagePath));
+      // emulate having run "npm i" / "yarn install"
+      await utils.mkdir(path.resolve(path.dirname(workspacePackagePath), 'node_modules'));
+
+      // create the package's package.json
+      await fspromises.writeFile(
+        packagePackagePath,
+        JSON.stringify({
+          name: 'testp',
+          // no custom configuration
+        })
+      );
+
+      process.chdir(path.dirname(packagePackagePath));
+
+      const returnValue = await binary.DryMongoBinary.generatePaths(opts);
+      expect(returnValue).toStrictEqual({
+        resolveConfig: '', // empty because not having an extra config value
+        relative: path.resolve(path.dirname(packagePackagePath), 'mongodb-binaries', binaryName),
+        homeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
+        modulesCache: path.resolve(
+          path.dirname(workspacePackagePath),
+          'node_modules/.cache/mongodb-memory-server',
+          binaryName
+        ),
+      } as binary.DryMongoBinaryPaths);
+    });
+
+    it('should resolve modulesCache relative to cwd if no package.json with config options are found', async () => {
+      const workspacePackagePath = path.resolve(tmpDir, 'package.json');
+      const packagePackagePath = path.resolve(tmpDir, 'packages/testy/package.json');
+      await utils.mkdir(path.dirname(packagePackagePath));
+
+      // create the shared workspace package.json
+      await fspromises.writeFile(
+        workspacePackagePath,
+        JSON.stringify({
+          name: 'testw',
+          private: true,
+          devDependencies: {
+            'mongodb-memory-server': '0.0.0',
+          },
+          // no custom configuration
+        })
+      );
+      // emulate having resolved the package.json files and found the above file
+      jest.spyOn(resConfig, 'packageJsonPath').mockReturnValue(undefined);
+      // emulate having run "npm i" / "yarn install"
+      await utils.mkdir(path.resolve(path.dirname(workspacePackagePath), 'node_modules'));
+
+      // create the package's package.json
+      await fspromises.writeFile(
+        packagePackagePath,
+        JSON.stringify({
+          name: 'testp',
+          // no custom configuration
+        })
+      );
+
+      process.chdir(path.dirname(packagePackagePath));
+
+      const returnValue = await binary.DryMongoBinary.generatePaths(opts);
+      expect(returnValue).toStrictEqual({
+        resolveConfig: '', // empty because not having an extra config value
+        relative: path.resolve(path.dirname(packagePackagePath), 'mongodb-binaries', binaryName),
+        homeCache: path.resolve(tmpDir, 'homedir/.cache/mongodb-binaries', binaryName),
+        modulesCache: path.resolve(
+          path.dirname(packagePackagePath),
+          'node_modules/.cache/mongodb-memory-server',
+          binaryName
+        ),
       } as binary.DryMongoBinaryPaths);
     });
   });

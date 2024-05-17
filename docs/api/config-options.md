@@ -22,6 +22,26 @@ Directory Priority:
 3. `projectRoot/node_modules/.cache/mongodb-binaries` (node-modules cache)
 4. `./mongodb-binaries` (relative to `process.cwd()`)
 
+:::note
+Resolving the `node_modules/.cache` can be rather inconsistent depending on what package manager is used and from where the script is started.
+
+A way to force a more specific `node_modules/.cache` to be used (like a workspace's) is to set the package.json config for mongodb-memory-server (there needs to be at least one key, it does not matter if it is a actual config option or not), see [How to use them in the package.json](#how-to-use-them-in-the-packagejson).
+Example:
+
+```json
+{
+  "name": "workspace",
+  // along with your other workspace keys
+  "config": {
+    "mongodbMemoryServer": {
+      "_": 0
+    }
+  }
+}
+```
+
+:::
+
 Format:
 
 - `/path/to/binary/` (POSIX)
