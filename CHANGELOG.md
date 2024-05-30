@@ -1,3 +1,16 @@
+## [9.3.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.2.1-beta.2...v9.3.0-beta.1) (2024-05-30)
+
+
+### Dependencies
+
+* **semver:** upgrade to version 7.6.2 ([e101c06](https://github.com/nodkz/mongodb-memory-server/commit/e101c060eebc9d8a4750008d4c5e26c78aa9285a))
+
+
+### Dev-Dependencies
+
+* **rimraf:** upgrade to version 5.0.7 ([4334a5f](https://github.com/nodkz/mongodb-memory-server/commit/4334a5fd319474474699da6eacfe55776c6e8c11))
+* **ts-jest:** upgrade to version 29.1.4 ([f2cf51a](https://github.com/nodkz/mongodb-memory-server/commit/f2cf51ae083ccfba64ac15d000820de9cdd8a976))
+
 ## [9.2.1-beta.2](https://github.com/nodkz/mongodb-memory-server/compare/v9.2.1-beta.1...v9.2.1-beta.2) (2024-05-17)
 
 
