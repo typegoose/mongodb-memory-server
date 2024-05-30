@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nodkz/mongodb-memory-server.git",
+    "url": "git+https://github.com/nodkz/mongodb-memory-server.git",
     "directory": "packages/mongodb-memory-server-global-4.4"
   },
   "engines": {
