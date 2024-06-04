@@ -11,11 +11,11 @@ This Guide is written for migration from version `9.4.0` to `10.0.0`, for versio
 
 ## Breaking Changes
 
-<!-- ### Minimal NodeJS version is now `14`
+### Minimal NodeJS version is now `16`
 
-With 9.0.0 the minimal nodejs required is `14.20.1`.
+With 10.0.0 the minimal nodejs required is `16.20.1`.
 
-### Mongodb Driver Version upgraded to 5.x
+<!-- ### Mongodb Driver Version upgraded to 5.x
 
 The used MongoDB Driver version is now `5.9.0`.
 

@@ -11,7 +11,7 @@
     "directory": "packages/mongodb-memory-server-core"
   },
   "engines": {
-    "node": ">=14.20.1"
+    "node": ">=16.20.1"
   },
   "files": [
     "lib",
