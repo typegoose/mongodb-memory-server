@@ -15,9 +15,9 @@ This Guide is written for migration from version `9.4.0` to `10.0.0`, for versio
 
 With 10.0.0 the minimal nodejs required is `16.20.1`.
 
-<!-- ### Mongodb Driver Version upgraded to 5.x
+### Mongodb Driver Version upgraded to 6.x
 
-The used MongoDB Driver version is now `5.9.0`. -->
+The used MongoDB Driver version is now `6.7.0`.
 
 ### Default binary version is now 7.x
 

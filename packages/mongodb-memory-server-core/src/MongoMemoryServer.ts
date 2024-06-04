@@ -18,7 +18,7 @@ import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
-import { AddUserOptions, MongoClient } from 'mongodb';
+import { MongoClient } from 'mongodb';
 import { InstanceInfoError, StateError, UnknownVersionError } from './util/errors';
 import * as os from 'os';
 import { DryMongoBinary } from './util/DryMongoBinary';
@@ -143,11 +143,22 @@ export type UserRoles =
   | 'root'
   | string;
 
+// copied from mongodb 5.9.1 as it has been removed for 6.0.0
+export interface RoleSpecification {
+  /**
+   * A role grants privileges to perform sets of actions on defined resources.
+   * A given role applies to the database on which it is defined and can grant access down to a collection level of granularity.
+   */
+  role: string;
+  /** The database this user's role should effect. */
+  db: string;
+}
+
 /**
  * Interface options for "db.createUser" (used for this package)
  * This interface is WITHOUT the custom options from this package
  * (Some text copied from https://docs.mongodb.com/manual/reference/method/db.createUser/#definition)
- * This interface only exists, because mongodb dosnt provide such an interface for "createUser" (or as just very basic types)
+ * This interface only exists, because mongodb dosnt provide such an interface for "createUser" (or as just very basic types) as of 6.7.0
  */
 export interface CreateUserMongoDB {
   /**
@@ -169,7 +180,7 @@ export interface CreateUserMongoDB {
   /**
    * The Roles for the user, can be an empty array
    */
-  roles: AddUserOptions['roles'];
+  roles: string | string[] | RoleSpecification | RoleSpecification[];
   /**
    * Specify the specific SCRAM mechanism or mechanisms for creating SCRAM user credentials.
    */
