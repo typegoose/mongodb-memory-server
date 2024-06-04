@@ -291,7 +291,7 @@ describe('MongodbInstance', () => {
     });
     await mongod.start();
     jest.spyOn(MongoClient, 'connect');
-    process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
+    process.kill(mongod.mongodProcess!.pid!, 'SIGKILL');
     // loop until the mongod process actually exits
     while (dbUtil.isAlive(mongod.mongodProcess!.pid)) {
       await new Promise<void>((resolve) => setTimeout(resolve, 5));
@@ -324,7 +324,7 @@ describe('MongodbInstance', () => {
     jest.spyOn(MongoClient, 'connect');
     jest.spyOn(MongoClient.prototype, 'db');
     jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
-    process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
+    process.kill(mongod.mongodProcess!.pid!, 'SIGKILL');
     // loop until the mongod process actually exits
     while (dbUtil.isAlive(mongod.mongodProcess!.pid)) {
       await new Promise<void>((resolve) => setTimeout(resolve, 5));
