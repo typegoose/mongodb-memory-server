@@ -25,7 +25,7 @@ The default binary version has been upgraded from `5.0.x` to `6.0.x`. For more s
 
 ## Non-Breaking changes / Additions
 
-<!-- ### Compiler target is now `es2019`
+### Compiler target is now `es2021`
 
-The tsconfig `target` option has been updated to `es2019`, which will result in less polyfills.
-This should be a non-breaking change -->
+The tsconfig `target` option has been updated to `es2021`, which will result in less polyfills.
+This should be a non-breaking change.
