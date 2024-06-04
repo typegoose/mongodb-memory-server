@@ -200,6 +200,7 @@ export interface MongodOpts {
   spawn: SpawnOptions;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface MongoInstance extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
   emit(event: MongoInstanceEvents, ...args: any[]): boolean;
@@ -211,6 +212,7 @@ export interface MongoInstance extends EventEmitter {
  * MongoDB Instance Handler Class
  * This Class starts & stops the "mongod" process directly and handles stdout, sterr and close events
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class MongoInstance extends EventEmitter implements ManagerBase {
   // Mark these values as "readonly" & "Readonly" because modifying them after starting will have no effect
   // readonly is required otherwise the property can still be changed on the root level

@@ -140,6 +140,7 @@ export enum MongoMemoryReplSetEvents {
   stateChange = 'stateChange',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface MongoMemoryReplSet extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
   emit(event: MongoMemoryReplSetEvents, ...args: any[]): boolean;
@@ -150,6 +151,7 @@ export interface MongoMemoryReplSet extends EventEmitter {
 /**
  * Class for managing an replSet
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced {
   /**
    * All servers this ReplSet instance manages

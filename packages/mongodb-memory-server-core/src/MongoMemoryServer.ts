@@ -221,6 +221,7 @@ export interface MongoMemoryServerGetStartOptions {
   mongodOptions: Partial<MongodOpts>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface MongoMemoryServer extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
   emit(event: MongoMemoryServerEvents, ...args: any[]): boolean;
@@ -228,6 +229,7 @@ export interface MongoMemoryServer extends EventEmitter {
   once(event: MongoMemoryServerEvents, listener: (...args: any[]) => void): this;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   /**
    * Information about the started instance
