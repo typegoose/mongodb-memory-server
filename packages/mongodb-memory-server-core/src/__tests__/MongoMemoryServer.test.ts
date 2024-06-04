@@ -1140,6 +1140,34 @@ describe('MongoMemoryServer', () => {
       await server.stop();
     });
 
+    it('should not warn if "ephemeralForTest" is used explicitly in mongodb 6.0', async () => {
+      jest.spyOn(console, 'warn');
+      const server = await MongoMemoryServer.create({
+        binary: { version: '6.0.14' },
+        instance: { storageEngine: 'ephemeralForTest' },
+      });
+
+      expect(console.warn).toHaveBeenCalledTimes(0);
+
+      expect(server.instanceInfo?.storageEngine).toStrictEqual('ephemeralForTest');
+
+      await server.stop();
+    });
+
+    it('should not warn if no explicit storage engine is set in 7.0', async () => {
+      jest.spyOn(console, 'warn');
+      const server = await MongoMemoryServer.create({
+        binary: { version: '7.0.7' },
+        // instance: { storageEngine: 'ephemeralForTest' },
+      });
+
+      expect(console.warn).toHaveBeenCalledTimes(0);
+
+      expect(server.instanceInfo?.storageEngine).toStrictEqual('wiredTiger');
+
+      await server.stop();
+    });
+
     it('should warn if "ephemeralForTest" is used explicitly in mongodb 7.0', async () => {
       const spy = jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
       const server = await MongoMemoryServer.create({

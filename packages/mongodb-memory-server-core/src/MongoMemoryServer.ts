@@ -11,6 +11,7 @@ import {
   Cleanup,
   createTmpDir,
   removeDir,
+  getStorageEngine,
 } from './util/utils';
 import { MongoInstance, MongodOpts, MongoMemoryInstanceOpts } from './util/MongoInstance';
 import { MongoBinaryOpts } from './util/MongoBinary';
@@ -381,23 +382,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       console.warn(new UnknownVersionError(opts.version));
     }
 
-    // warn when storage engine "ephemeralForTest" is explicitly used and switch to "wiredTiger"
-    if (storageEngine === 'ephemeralForTest' && semver.gte(coercedVersion, '7.0.0')) {
-      console.warn(
-        'Storage Engine "ephemeralForTest" is removed since mongodb 7.0.0, automatically using "wiredTiger"!\n' +
-          'This warning is because the mentioned storage engine is explicitly used and mongodb version is 7.0.0 or higher'
-      );
-
-      storageEngine = 'wiredTiger';
-    }
-
-    if (isNullOrUndefined(storageEngine)) {
-      if (semver.gte(coercedVersion, '7.0.0')) {
-        storageEngine = 'wiredTiger';
-      } else {
-        storageEngine = 'ephemeralForTest';
-      }
-    }
+    storageEngine = getStorageEngine(storageEngine, coercedVersion);
 
     // use pre-defined port if available, otherwise generate a new port
     let port = typeof instOpts.port === 'number' ? instOpts.port : undefined;

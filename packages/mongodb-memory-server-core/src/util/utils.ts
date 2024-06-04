@@ -11,6 +11,8 @@ import {
 import { tmpdir } from 'os';
 import * as path from 'path';
 import { BinaryLike, createHash, randomUUID } from 'crypto';
+import { StorageEngine } from './MongoInstance';
+import * as semver from 'semver';
 
 const log = debug('MongoMS:utils');
 
@@ -371,4 +373,35 @@ export async function md5FromFile(file: string): Promise<string> {
  */
 export function lockfilePath(downloadDir: string, version: string): string {
   return path.resolve(downloadDir, `${version}.lock`);
+}
+
+/**
+ * Get the storage engine for the given given binary version, and issue a warning if it needs to be changed
+ * @param storageEngine The engine that is configured
+ * @param coercedVersion The binary version as semver
+ * @returns The engine that actually will run in the given binary version
+ */
+export function getStorageEngine(
+  storageEngine: StorageEngine | undefined,
+  coercedVersion: semver.SemVer
+): StorageEngine {
+  // warn when storage engine "ephemeralForTest" is explicitly used and switch to "wiredTiger"
+  if (storageEngine === 'ephemeralForTest' && semver.gte(coercedVersion, '7.0.0')) {
+    console.warn(
+      'Storage Engine "ephemeralForTest" is removed since mongodb 7.0.0, automatically using "wiredTiger"!\n' +
+        'This warning is because the mentioned storage engine is explicitly used and mongodb version is 7.0.0 or higher'
+    );
+
+    return 'wiredTiger';
+  }
+
+  if (isNullOrUndefined(storageEngine)) {
+    if (semver.gte(coercedVersion, '7.0.0')) {
+      return 'wiredTiger';
+    }
+
+    return 'ephemeralForTest';
+  }
+
+  return storageEngine;
 }
