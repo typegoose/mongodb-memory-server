@@ -45,7 +45,7 @@
   "dependencies": {
     "async-mutex": "^0.4.0",
     "camelcase": "^6.3.0",
-    "debug": "^4.3.4",
+    "debug": "^4.3.5",
     "find-cache-dir": "^3.3.2",
     "follow-redirects": "^1.15.6",
     "https-proxy-agent": "^7.0.4",
