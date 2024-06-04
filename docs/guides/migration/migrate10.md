@@ -17,11 +17,17 @@ With 10.0.0 the minimal nodejs required is `16.20.1`.
 
 <!-- ### Mongodb Driver Version upgraded to 5.x
 
-The used MongoDB Driver version is now `5.9.0`.
+The used MongoDB Driver version is now `5.9.0`. -->
 
-### Default binary version is now 6.x
+### Default binary version is now 7.x
 
-The default binary version has been upgraded from `5.0.x` to `6.0.x`. For more specifics see [mongodb-server-versions](../mongodb-server-versions.md). -->
+The default binary version has been upgraded from `6.0.x` to `7.0.x`. For more specifics see [mongodb-server-versions](../mongodb-server-versions.md).
+
+:::note
+In mongodb `7.0.0` storage engine `ephemeralForTest` has been removed, mongodb-memory-server will automatically translate any occurrence to `wiredTiger` with a warning.
+
+It is recommended to run the tests against a tmpfs or equivalent (default `/tmp` on linux / macos).
+:::
 
 ## Non-Breaking changes / Additions
 

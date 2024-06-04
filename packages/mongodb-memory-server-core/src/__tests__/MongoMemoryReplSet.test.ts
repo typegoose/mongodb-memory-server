@@ -239,6 +239,10 @@ describe('single server replset', () => {
     jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
     const replSet = await MongoMemoryReplSet.create({
       replSet: { auth: { enable: true }, count: 3, storageEngine: 'ephemeralForTest' },
+      binary: {
+        // 7.0 removed "ephemeralForTest", this test is explicitly for that engine
+        version: '6.0.14',
+      },
     });
 
     utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth));
@@ -436,7 +440,7 @@ describe('MongoMemoryReplSet', () => {
         dbName: replSet.replSetOpts.dbName, // not testing this value, because its generated "randomly"
         ip: '127.0.0.1',
         spawn: {},
-        storageEngine: 'ephemeralForTest',
+        storageEngine: 'wiredTiger',
         configSettings: {},
       });
       replSet.replSetOpts = { auth: { enable: true } };
@@ -451,7 +455,7 @@ describe('MongoMemoryReplSet', () => {
         dbName: replSet.replSetOpts.dbName, // not testing this value, because its generated "randomly"
         ip: '127.0.0.1',
         spawn: {},
-        storageEngine: 'ephemeralForTest',
+        storageEngine: 'wiredTiger',
         configSettings: {},
       });
     });

@@ -77,6 +77,10 @@ describe('MongoMemoryServer', () => {
         instance: {
           storageEngine: 'ephemeralForTest',
         },
+        binary: {
+          // 7.0 removed "ephemeralForTest", this test is explicitly for that engine
+          version: '6.0.14',
+        },
       });
 
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
@@ -259,6 +263,10 @@ describe('MongoMemoryServer', () => {
         instance: {
           storageEngine: 'ephemeralForTest',
         },
+        binary: {
+          // 7.0 removed "ephemeralForTest", this test is explicitly for that engine
+          version: '6.0.14',
+        },
       });
 
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
@@ -367,9 +375,6 @@ describe('MongoMemoryServer', () => {
       const mongoServer = await MongoMemoryServer.create({
         auth: {
           enable: false,
-        },
-        instance: {
-          storageEngine: 'ephemeralForTest',
         },
       });
 
