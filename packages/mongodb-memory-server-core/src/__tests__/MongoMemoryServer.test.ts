@@ -1188,4 +1188,73 @@ describe('MongoMemoryServer', () => {
       await server.stop();
     });
   });
+
+  describe('asyncDispose', () => {
+    it('should work by default', async () => {
+      jest.spyOn(MongoMemoryServer.prototype, 'start');
+      jest.spyOn(MongoMemoryServer.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryServer.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryServer.create();
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.new);
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryServer.prototype.stop).toHaveBeenCalledTimes(1);
+      // expect(MongoMemoryServer.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+    });
+
+    it('should be able to be disabled', async () => {
+      jest.spyOn(MongoMemoryServer.prototype, 'start');
+      jest.spyOn(MongoMemoryServer.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryServer.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryServer.create({ dispose: { enabled: false } });
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.running);
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryServer.prototype.stop).toHaveBeenCalledTimes(0);
+      // expect(MongoMemoryServer.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+      await outer.stop();
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.new);
+    });
+
+    it('should be able to set custom cleanup', async () => {
+      jest.spyOn(MongoMemoryServer.prototype, 'start');
+      jest.spyOn(MongoMemoryServer.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryServer.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryServer.create({
+          dispose: { cleanup: { doCleanup: false } },
+        });
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.stopped);
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryServer.prototype.stop).toHaveBeenCalledTimes(1);
+      // expect(MongoMemoryServer.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+      await outer.cleanup({ doCleanup: true });
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.new);
+    });
+  });
 });

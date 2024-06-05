@@ -725,6 +725,11 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       );
     }
   }
+
+  /// Symbol for "Explicit Resource Management"
+  async [Symbol.asyncDispose]() {
+    await this.stop();
+  }
 }
 
 export default MongoInstance;

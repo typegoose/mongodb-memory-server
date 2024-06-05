@@ -442,6 +442,7 @@ describe('MongoMemoryReplSet', () => {
         spawn: {},
         storageEngine: 'wiredTiger',
         configSettings: {},
+        dispose: {},
       });
       replSet.replSetOpts = { auth: { enable: true } };
       // @ts-expect-error because "_replSetOpts" is protected
@@ -457,6 +458,7 @@ describe('MongoMemoryReplSet', () => {
         spawn: {},
         storageEngine: 'wiredTiger',
         configSettings: {},
+        dispose: {},
       });
     });
 
@@ -800,6 +802,83 @@ describe('MongoMemoryReplSet', () => {
       expect(server.replSetOpts?.storageEngine).toStrictEqual('wiredTiger');
 
       await server.stop();
+    });
+  });
+
+  describe('asyncDispose', () => {
+    it('should work by default', async () => {
+      jest.spyOn(MongoMemoryReplSet.prototype, 'start');
+      jest.spyOn(MongoMemoryReplSet.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryReplSet.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryReplSet.create();
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.stopped);
+      expect(outer.servers.length).toStrictEqual(0);
+      expect(MongoMemoryReplSet.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryReplSet.prototype.stop).toHaveBeenCalledTimes(1);
+      // expect(MongoMemoryReplSet.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+    });
+
+    it('should be able to be disabled', async () => {
+      jest.spyOn(MongoMemoryReplSet.prototype, 'start');
+      jest.spyOn(MongoMemoryReplSet.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryReplSet.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryReplSet.create({
+          replSet: { dispose: { enabled: false } },
+        });
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.running);
+      expect(outer.servers.length).toStrictEqual(1);
+      expect(MongoMemoryReplSet.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryReplSet.prototype.stop).toHaveBeenCalledTimes(0);
+      // expect(MongoMemoryReplSet.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+      await outer.stop();
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.stopped);
+    });
+
+    it('should be able to set custom cleanup', async () => {
+      jest.spyOn(MongoMemoryReplSet.prototype, 'start');
+      jest.spyOn(MongoMemoryReplSet.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryReplSet.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryReplSet.create({
+          replSet: {
+            dispose: { cleanup: { doCleanup: false } },
+          },
+        });
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.stopped);
+      expect(outer.servers.length).toStrictEqual(1);
+      expect(MongoMemoryReplSet.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryReplSet.prototype.stop).toHaveBeenCalledTimes(1);
+      // expect(MongoMemoryReplSet.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+      await outer.cleanup({ doCleanup: true });
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.stopped);
+      expect(outer.servers.length).toStrictEqual(0);
     });
   });
 });

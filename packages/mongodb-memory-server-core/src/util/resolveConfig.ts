@@ -5,6 +5,12 @@ import * as path from 'path';
 import { readFileSync } from 'fs';
 import { isNullOrUndefined } from './utils';
 
+// polyfills
+// @ts-expect-error they are marked "read-only", but are set-able if not implemented by the runtime
+Symbol.dispose ??= Symbol('Symbol.dispose');
+// @ts-expect-error they are marked "read-only", but are set-able if not implemented by the runtime
+Symbol.asyncDispose ??= Symbol('Symbol.asyncDispose');
+
 const log = debug('MongoMS:ResolveConfig');
 
 /** Enum of all possible config options */

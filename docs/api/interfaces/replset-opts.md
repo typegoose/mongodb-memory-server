@@ -91,3 +91,9 @@ Set how many ReplSet members to spawn, this number will be deducted from length 
 :::tip
 It is recommended to set this number to a **odd** number, and try to never have it be **even**, see [MongoDB Deploy an Odd Number of Members](https://www.mongodb.com/docs/v5.2/core/replica-set-architectures/#deploy-an-odd-number-of-members).
 :::
+
+### dispose
+
+Typings: `dispose?: DisposeOptions`
+
+Set custom behavior for when `[Symbol.asyncDispose]` is called, uses [`DisposeOptions`](./mongo-dispose-opts.md).

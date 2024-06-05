@@ -43,6 +43,27 @@ export interface MongoMemoryServerOpts {
    * Defining this enables automatic user creation
    */
   auth?: AutomaticAuth;
+  /**
+   * Options for automatic dispose for "Explicit Resource Management"
+   */
+  dispose?: DisposeOptions;
+}
+
+/**
+ * Options to configure `Symbol.asyncDispose` behavior
+ */
+export interface DisposeOptions {
+  /**
+   * Set whether to run the dispose hook or not.
+   * Note that this only applies when `Symbol.asyncDispose` is actually called
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Pass custom options for cleanup
+   * @default { doCleanup: true, force: false }
+   */
+  cleanup?: Cleanup;
 }
 
 export interface AutomaticAuth {
@@ -837,6 +858,13 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     return typeof this.auth.enable === 'boolean' // if "this._replSetOpts.auth.enable" is defined, use that
       ? this.auth.enable
       : false; // if "this._replSetOpts.auth.enable" is not defined, default to false
+  }
+
+  // Symbol for "Explicit Resource Management"
+  async [Symbol.asyncDispose]() {
+    if (this.opts.dispose?.enabled ?? true) {
+      await this.stop(this.opts.dispose?.cleanup);
+    }
   }
 }
 

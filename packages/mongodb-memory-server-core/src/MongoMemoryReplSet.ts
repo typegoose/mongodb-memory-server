@@ -1,5 +1,10 @@
 import { EventEmitter } from 'events';
-import { MongoMemoryServer, AutomaticAuth, MongoMemoryServerOpts } from './MongoMemoryServer';
+import {
+  MongoMemoryServer,
+  AutomaticAuth,
+  MongoMemoryServerOpts,
+  DisposeOptions,
+} from './MongoMemoryServer';
 import {
   assertion,
   authDefault,
@@ -92,6 +97,10 @@ export interface ReplSetOpts {
    * @default {}
    */
   configSettings?: MongoMemoryReplSetConfigSettings;
+  /**
+   * Options for automatic dispose for "Explicit Resource Management"
+   */
+  dispose?: DisposeOptions;
 }
 
 /**
@@ -264,6 +273,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       spawn: {},
       storageEngine,
       configSettings: {},
+      dispose: {},
     };
     // force overwrite "storageEngine" because it is transformed already
     this._replSetOpts = { ...defaults, ...val, storageEngine };
@@ -798,6 +808,13 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     }
 
     log('_waitForPrimary: detected one primary instance ');
+  }
+
+  // Symbol for "Explicit Resource Management"
+  async [Symbol.asyncDispose]() {
+    if (this.replSetOpts.dispose?.enabled ?? true) {
+      await this.stop(this.replSetOpts.dispose?.cleanup);
+    }
   }
 }
 
