@@ -1,3 +1,22 @@
+## [9.4.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.3.0...v9.4.0-beta.1) (2024-06-05)
+
+
+### Fixes
+
+* **MongoMemoryReplSet:** dont warn unless storage engine is set explicitly ([582bf0a](https://github.com/nodkz/mongodb-memory-server/commit/582bf0ae88ffa7ca66258a96344ed2ce6d5abd18))
+
+
+### Refactor
+
+* **utils::removeDir:** remove nodejs 12 workaround ([a852513](https://github.com/nodkz/mongodb-memory-server/commit/a852513b615b17179837af76f94aafabe1ea7ab7))
+
+
+### Dependencies
+
+* **async-mutex:** upgrade to version 0.4.1 ([b67c783](https://github.com/nodkz/mongodb-memory-server/commit/b67c7830b3bfce6e23c03ce36fd4a6fea5112933))
+* **debug:** upgrade to version 4.3.5 ([72a0b76](https://github.com/nodkz/mongodb-memory-server/commit/72a0b7665d9d63ff99a052220b89c00b909502f8))
+* **tslib:** upgrade to version 2.6.3 ([a49993b](https://github.com/nodkz/mongodb-memory-server/commit/a49993b85bb23ecdf90f10f2e73b0a64b096878d))
+
 ## [9.3.0](https://github.com/nodkz/mongodb-memory-server/compare/v9.2.0...v9.3.0) (2024-05-30)
 
 
