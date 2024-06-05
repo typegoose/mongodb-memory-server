@@ -43,7 +43,7 @@
     "yazl": "^2.5.1"
   },
   "dependencies": {
-    "async-mutex": "^0.4.0",
+    "async-mutex": "^0.4.1",
     "camelcase": "^6.3.0",
     "debug": "^4.3.5",
     "find-cache-dir": "^3.3.2",
