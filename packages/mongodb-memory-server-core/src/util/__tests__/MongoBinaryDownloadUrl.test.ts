@@ -356,7 +356,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '23.04', // highest released ubuntu version
+              release: '24.04', // highest released ubuntu version
             },
           });
           expect(await du.getDownloadUrl()).toBe(
