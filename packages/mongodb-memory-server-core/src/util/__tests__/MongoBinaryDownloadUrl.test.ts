@@ -985,11 +985,11 @@ describe('MongoBinaryDownloadUrl', () => {
           });
         });
 
-        it('should default to Mint Version 20, if version cannot be found in lookup table', async () => {
+        it('should default to Mint Version 21, if version cannot be found in lookup table', async () => {
           (downloadUrl.os as LinuxOS).release = '16'; // out-of-range version
           downloadUrl.version = '6.0.4';
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.4.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
           );
         });
 

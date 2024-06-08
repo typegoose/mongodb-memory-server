@@ -487,8 +487,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           os: 'linux',
           dist: 'ubuntu',
           release:
-            // TODO: next-minor: change default mint release to 21
-            mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[20],
+            mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[21],
         };
       }
 
