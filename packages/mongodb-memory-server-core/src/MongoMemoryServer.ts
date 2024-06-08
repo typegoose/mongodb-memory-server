@@ -550,11 +550,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     /** Default to cleanup temporary, but not custom dbpaths */
     let cleanup: Cleanup = { doCleanup: true, force: false };
 
-    // TODO: for next major release (10.0), this should be removed
-    if (typeof cleanupOptions === 'boolean') {
-      throw new Error('Unsupported argument type: boolean');
-    }
-
     // handle the new way of setting what and how to cleanup
     if (typeof cleanupOptions === 'object') {
       cleanup = cleanupOptions;
@@ -597,11 +592,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     /** Default to doing cleanup, but not forcing it */
     let cleanup: Cleanup = { doCleanup: true, force: false };
-
-    // TODO: for next major release (10.0), this should be removed
-    if (typeof options === 'boolean') {
-      throw new Error('Unsupported argument type: boolean');
-    }
 
     // handle the new way of setting what and how to cleanup
     if (typeof options === 'object') {

@@ -590,22 +590,6 @@ describe('MongoMemoryReplSet', () => {
       } as utils.Cleanup);
     });
 
-    it('should not support boolean arguments', async () => {
-      const replSet = new MongoMemoryReplSet();
-
-      try {
-        await replSet.stop(
-          // @ts-expect-error Testing a non-existing overload
-          true
-        );
-        fail('Expected to fail');
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        assertIsError(err);
-        expect(err.message).toMatchSnapshot();
-      }
-    });
-
     it('should call cleanup and pass-through cleanup options', async () => {
       const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
 
@@ -674,22 +658,6 @@ describe('MongoMemoryReplSet', () => {
         doCleanup: true,
         force: true,
       } as utils.Cleanup);
-    });
-
-    it('should not support boolean arguments', async () => {
-      const replSet = new MongoMemoryReplSet();
-
-      try {
-        await replSet.cleanup(
-          // @ts-expect-error Testing a non-existing overload
-          true
-        );
-        fail('Expected to fail');
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        assertIsError(err);
-        expect(err.message).toMatchSnapshot();
-      }
     });
 
     it('should run cleanup with cleanup options and pass-through options to lower', async () => {
