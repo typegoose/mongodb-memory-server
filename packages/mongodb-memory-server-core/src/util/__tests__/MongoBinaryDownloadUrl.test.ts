@@ -145,6 +145,26 @@ describe('MongoBinaryDownloadUrl', () => {
 
     describe('for linux', () => {
       describe('for ubuntu', () => {
+        it('should default to Ubuntu 22.04, if version cannot be parsed', async () => {
+          const spy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+          // TODO: try to keep this up-to-date to the latest mongodb supported ubuntu version
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.4',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz'
+          );
+          expect(console.warn).toHaveBeenCalledTimes(1);
+          expect(spy.mock.calls).toMatchSnapshot();
+        });
+
         it('for ubuntu 14.04 for 3.6', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',

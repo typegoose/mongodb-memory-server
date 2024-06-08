@@ -36,6 +36,14 @@ exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should Error
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for rhel should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not coerce VERSION to a semver version (version: \\"vvv\\")"`;
 
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for ubuntu should default to Ubuntu 22.04, if version cannot be parsed 1`] = `
+Array [
+  Array [
+    "Could not parse ubuntu year from \\"\\", using default",
+  ],
+]
+`;
+
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for ubuntu should throw a Error when the provided version could not be coerced [UnknownVersionError] 1`] = `"Could not coerce VERSION to a semver version (version: \\"vvv\\")"`;
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() should throw an error if platform is unknown (getArchiveName) 1`] = `"Unknown Platform: \\"unknown\\""`;
