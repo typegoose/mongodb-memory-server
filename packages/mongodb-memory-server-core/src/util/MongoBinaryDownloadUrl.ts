@@ -588,7 +588,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
        * Highest ubuntu year supported by mongodb binaries
        * @see https://www.mongodb.com/download-center/community/releases/archive
        */
-      const highestUbuntuYear = 22; // 22 is the highest supported as of mongodb 7.0.4
+      const highestUbuntuYear = 22; // 22 is the highest supported as of mongodb 7.0.9
 
       if (ubuntuYear > highestUbuntuYear) {
         log(
