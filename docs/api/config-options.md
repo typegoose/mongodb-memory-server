@@ -269,20 +269,6 @@ Also see [ARCHIVE_NAME](#archive_name).
 Keep in mind that downloaded binaries will never be automatically deleted.
 :::
 
-### EXP_NET0LISTEN
-
-| Environment Variable | PackageJson |
-| :------------------: | :---------: |
-|  `MONGOMS_EXP_NET0LISTEN`  |  `expNet0Listen`  |
-
-Option `EXP_NET0LISTEN` is used to use the experimental (non-predictable) port generation of `net.listen`.
-
-This option will use a random open port, which will lessen the "port is already in use" errors, but will not eliminate them.
-
-This is a experimental option, it maybe removed, renamed or have changed behavior in the future.
-
-Default: `false`
-
 ## How to use them in the package.json
 
 To use the config options in the `package.json`, they need to be camelCased (and without `_`), and need to be in the property `config.mongodbMemoryServer`

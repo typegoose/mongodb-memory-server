@@ -34,7 +34,6 @@ export enum ResolveConfigVariables {
   USE_ARCHIVE_NAME_FOR_BINARY_NAME = 'USE_ARCHIVE_NAME_FOR_BINARY_NAME',
   MAX_REDIRECTS = 'MAX_REDIRECTS',
   DISTRO = 'DISTRO',
-  EXP_NET0LISTEN = 'EXP_NET0LISTEN',
 }
 
 /** The Prefix for Environmental values */
