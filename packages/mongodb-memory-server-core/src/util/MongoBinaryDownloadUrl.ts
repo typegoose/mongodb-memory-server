@@ -502,13 +502,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
         // untangle elemenatary versioning from hell https://en.wikipedia.org/wiki/Elementary_OS#Development
         const [elementaryMajor, elementaryMinor] = os.release.split('.').map((el) => parseInt(el));
+        // versions below 5.0 were named 0.X, and so use the minor version if major is 0
         const realMajor = elementaryMajor || elementaryMinor;
 
         ubuntuOS = {
           os: 'linux',
           dist: 'ubuntu',
-          // TODO: next-minor: change default elemenatry release to 7
-          release: elementaryToUbuntuRelease[realMajor] || elementaryToUbuntuRelease[6],
+          release: elementaryToUbuntuRelease[realMajor] || elementaryToUbuntuRelease[7],
         };
       }
     }

@@ -892,6 +892,25 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for elementary', () => {
+        it('should default to Elementary 7, if version cannot be found in lookup table', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.4',
+            os: {
+              os: 'linux',
+              dist: 'elementary',
+              codename: 'horus',
+              release: '0',
+              id_like: ['ubuntu'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
+          );
+        });
+
         it('should return a archive name for elementary 0.3', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
