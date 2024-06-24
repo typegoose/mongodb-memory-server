@@ -118,7 +118,7 @@ Default version is `1`
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `3` (or `0.3`)<br/>
 Highest version is `7`<br/>
-Default version is `6`
+Default version is `7`
 
 ### Linux Mint
 
@@ -127,7 +127,7 @@ Default version is `6`
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `17`<br/>
 Highest version is `21`<br/>
-Default version is `20`
+Default version is `21`
 
 ### Suse
 

@@ -19,8 +19,8 @@ If Top-Level async-await is not available for your case, the code can in most ca
 
 ## Requirements
 
-- NodeJS: 14.20.1+
-- Typescript: 5.0+ (if used)
+- NodeJS: 16.20.1+
+- Typescript: 5.3+ (if used)
 
 When on Linux, one of the following are required:
 

@@ -487,8 +487,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           os: 'linux',
           dist: 'ubuntu',
           release:
-            // TODO: next-minor: change default mint release to 21
-            mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[20],
+            mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[21],
         };
       }
 
@@ -503,13 +502,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
         // untangle elemenatary versioning from hell https://en.wikipedia.org/wiki/Elementary_OS#Development
         const [elementaryMajor, elementaryMinor] = os.release.split('.').map((el) => parseInt(el));
+        // versions below 5.0 were named 0.X, and so use the minor version if major is 0
         const realMajor = elementaryMajor || elementaryMinor;
 
         ubuntuOS = {
           os: 'linux',
           dist: 'ubuntu',
-          // TODO: next-minor: change default elemenatry release to 7
-          release: elementaryToUbuntuRelease[realMajor] || elementaryToUbuntuRelease[6],
+          release: elementaryToUbuntuRelease[realMajor] || elementaryToUbuntuRelease[7],
         };
       }
     }
@@ -588,7 +587,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
        * Highest ubuntu year supported by mongodb binaries
        * @see https://www.mongodb.com/download-center/community/releases/archive
        */
-      const highestUbuntuYear = 22; // 22 is the highest supported as of mongodb 7.0.4
+      const highestUbuntuYear = 22; // 22 is the highest supported as of mongodb 7.0.9
 
       if (ubuntuYear > highestUbuntuYear) {
         log(

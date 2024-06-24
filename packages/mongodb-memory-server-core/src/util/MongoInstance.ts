@@ -24,8 +24,8 @@ import {
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */
-if (lt(process.version, '14.20.1')) {
-  console.warn('Using NodeJS below 14.20.1');
+if (lt(process.version, '16.20.1')) {
+  console.warn('Using NodeJS below 16.20.1');
 }
 
 const log = debug('MongoMS:MongoInstance');
@@ -200,6 +200,7 @@ export interface MongodOpts {
   spawn: SpawnOptions;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface MongoInstance extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
   emit(event: MongoInstanceEvents, ...args: any[]): boolean;
@@ -211,6 +212,7 @@ export interface MongoInstance extends EventEmitter {
  * MongoDB Instance Handler Class
  * This Class starts & stops the "mongod" process directly and handles stdout, sterr and close events
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class MongoInstance extends EventEmitter implements ManagerBase {
   // Mark these values as "readonly" & "Readonly" because modifying them after starting will have no effect
   // readonly is required otherwise the property can still be changed on the root level
@@ -722,6 +724,11 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         new StdoutInstanceError('Mongod internal error' + extra)
       );
     }
+  }
+
+  /// Symbol for "Explicit Resource Management"
+  async [Symbol.asyncDispose]() {
+    await this.stop();
   }
 }
 

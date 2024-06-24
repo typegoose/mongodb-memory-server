@@ -21,3 +21,14 @@ Since `8.4.0` objects can also be used instead of just booleans for parameter in
 
 For Example `.stop({ doCleanup: false })` can be used instead of `.stop(false)`.
 :::
+
+### Does this package support Explicit Resource Management?
+
+Yes, `[Symbol.asyncDispose]` is implemented for all manager classes, behavior can be configured via `dispose` options:
+
+- [`MongoMemoryServerOpts.dispose`](../api/interfaces/mongo-memory-server-opts.md#dispose)
+- [`ReplSetOpts.dispose`](../api/interfaces/replset-opts.md#dispose)
+
+:::note
+Note that when using `await using server =` that `[Symbol.asyncDispose]` is called at the end of the scope even if the value is reassigned to something out of the current scope.
+:::

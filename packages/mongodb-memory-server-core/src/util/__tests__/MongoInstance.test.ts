@@ -291,7 +291,7 @@ describe('MongodbInstance', () => {
     });
     await mongod.start();
     jest.spyOn(MongoClient, 'connect');
-    process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
+    process.kill(mongod.mongodProcess!.pid!, 'SIGKILL');
     // loop until the mongod process actually exits
     while (dbUtil.isAlive(mongod.mongodProcess!.pid)) {
       await new Promise<void>((resolve) => setTimeout(resolve, 5));
@@ -324,7 +324,7 @@ describe('MongodbInstance', () => {
     jest.spyOn(MongoClient, 'connect');
     jest.spyOn(MongoClient.prototype, 'db');
     jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
-    process.kill(mongod.mongodProcess!.pid, 'SIGKILL');
+    process.kill(mongod.mongodProcess!.pid!, 'SIGKILL');
     // loop until the mongod process actually exits
     while (dbUtil.isAlive(mongod.mongodProcess!.pid)) {
       await new Promise<void>((resolve) => setTimeout(resolve, 5));
@@ -779,5 +779,29 @@ describe('MongodbInstance', () => {
     } finally {
       await mongod.stop();
     }
+  });
+
+  describe('asyncDispose', () => {
+    it('should work', async () => {
+      jest.spyOn(MongodbInstance.prototype, 'start');
+      jest.spyOn(MongodbInstance.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongodbInstance.prototype, Symbol.asyncDispose);
+      {
+        const gotPort = await getFreePort(27333);
+        await using server = await MongodbInstance.create({
+          instance: { port: gotPort, dbPath: tmpDir },
+          binary: { version },
+        });
+        expect(server.mongodProcess).toBeTruthy();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      expect(outer.mongodProcess).not.toBeTruthy();
+      expect(MongodbInstance.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongodbInstance.prototype.stop).toHaveBeenCalledTimes(1);
+      // expect(MongodbInstance.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+    });
   });
 });

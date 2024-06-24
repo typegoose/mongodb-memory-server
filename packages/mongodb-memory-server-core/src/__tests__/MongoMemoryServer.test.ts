@@ -77,6 +77,10 @@ describe('MongoMemoryServer', () => {
         instance: {
           storageEngine: 'ephemeralForTest',
         },
+        binary: {
+          // 7.0 removed "ephemeralForTest", this test is explicitly for that engine
+          version: '6.0.14',
+        },
       });
 
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
@@ -259,6 +263,10 @@ describe('MongoMemoryServer', () => {
         instance: {
           storageEngine: 'ephemeralForTest',
         },
+        binary: {
+          // 7.0 removed "ephemeralForTest", this test is explicitly for that engine
+          version: '6.0.14',
+        },
       });
 
       utils.assertion(!utils.isNullOrUndefined(mongoServer.instanceInfo));
@@ -367,9 +375,6 @@ describe('MongoMemoryServer', () => {
       const mongoServer = await MongoMemoryServer.create({
         auth: {
           enable: false,
-        },
-        instance: {
-          storageEngine: 'ephemeralForTest',
         },
       });
 
@@ -623,22 +628,6 @@ describe('MongoMemoryServer', () => {
       expect(cleanupSpy).toHaveBeenCalledWith({ doCleanup: true } as utils.Cleanup);
     });
 
-    it('should not support boolean arguments', async () => {
-      const mongoServer = new MongoMemoryServer();
-
-      try {
-        await mongoServer.stop(
-          // @ts-expect-error Testing a non-existing overload
-          true
-        );
-        fail('Expected to fail');
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        assertIsError(err);
-        expect(err.message).toMatchSnapshot();
-      }
-    });
-
     it('should call cleanup and pass-through cleanup options', async () => {
       const mongoServer = new MongoMemoryServer();
 
@@ -789,22 +778,6 @@ describe('MongoMemoryServer', () => {
       expect(await utils.statPath(dbPath)).toBeUndefined();
       expect(mongoServer.state).toEqual(MongoMemoryServerStates.new);
       expect(mongoServer.instanceInfo).toBeUndefined();
-    });
-
-    it('should not support boolean arguments', async () => {
-      const mongoServer = new MongoMemoryServer();
-
-      try {
-        await mongoServer.cleanup(
-          // @ts-expect-error Testing a non-existing overload
-          true
-        );
-        fail('Expected to fail');
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        assertIsError(err);
-        expect(err.message).toMatchSnapshot();
-      }
     });
 
     it('should properly cleanup with tmpDir with default no force (new)', async () => {
@@ -1181,6 +1154,75 @@ describe('MongoMemoryServer', () => {
       expect(server.instanceInfo?.storageEngine).toStrictEqual('wiredTiger');
 
       await server.stop();
+    });
+  });
+
+  describe('asyncDispose', () => {
+    it('should work by default', async () => {
+      jest.spyOn(MongoMemoryServer.prototype, 'start');
+      jest.spyOn(MongoMemoryServer.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryServer.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryServer.create();
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.new);
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryServer.prototype.stop).toHaveBeenCalledTimes(1);
+      // expect(MongoMemoryServer.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+    });
+
+    it('should be able to be disabled', async () => {
+      jest.spyOn(MongoMemoryServer.prototype, 'start');
+      jest.spyOn(MongoMemoryServer.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryServer.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryServer.create({ dispose: { enabled: false } });
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.running);
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryServer.prototype.stop).toHaveBeenCalledTimes(0);
+      // expect(MongoMemoryServer.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+      await outer.stop();
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.new);
+    });
+
+    it('should be able to set custom cleanup', async () => {
+      jest.spyOn(MongoMemoryServer.prototype, 'start');
+      jest.spyOn(MongoMemoryServer.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryServer.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryServer.create({
+          dispose: { cleanup: { doCleanup: false } },
+        });
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.stopped);
+      expect(MongoMemoryServer.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryServer.prototype.stop).toHaveBeenCalledTimes(1);
+      // expect(MongoMemoryServer.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+      await outer.cleanup({ doCleanup: true });
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryServerStates.new);
     });
   });
 });

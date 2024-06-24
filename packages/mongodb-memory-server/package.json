@@ -11,7 +11,7 @@
     "directory": "packages/mongodb-memory-server"
   },
   "engines": {
-    "node": ">=14.20.1"
+    "node": ">=16.20.1"
   },
   "homepage": "https://github.com/nodkz/mongodb-memory-server",
   "keywords": [

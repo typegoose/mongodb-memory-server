@@ -145,6 +145,26 @@ describe('MongoBinaryDownloadUrl', () => {
 
     describe('for linux', () => {
       describe('for ubuntu', () => {
+        it('should default to Ubuntu 22.04, if version cannot be parsed', async () => {
+          const spy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+          // TODO: try to keep this up-to-date to the latest mongodb supported ubuntu version
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.4',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz'
+          );
+          expect(console.warn).toHaveBeenCalledTimes(1);
+          expect(spy.mock.calls).toMatchSnapshot();
+        });
+
         it('for ubuntu 14.04 for 3.6', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -336,7 +356,7 @@ describe('MongoBinaryDownloadUrl', () => {
             os: {
               os: 'linux',
               dist: 'ubuntu',
-              release: '23.04', // highest released ubuntu version
+              release: '24.04', // highest released ubuntu version
             },
           });
           expect(await du.getDownloadUrl()).toBe(
@@ -892,6 +912,25 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for elementary', () => {
+        it('should default to Elementary 7, if version cannot be found in lookup table', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.4',
+            os: {
+              os: 'linux',
+              dist: 'elementary',
+              codename: 'horus',
+              release: '0',
+              id_like: ['ubuntu'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
+          );
+        });
+
         it('should return a archive name for elementary 0.3', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -985,11 +1024,11 @@ describe('MongoBinaryDownloadUrl', () => {
           });
         });
 
-        it('should default to Mint Version 20, if version cannot be found in lookup table', async () => {
+        it('should default to Mint Version 21, if version cannot be found in lookup table', async () => {
           (downloadUrl.os as LinuxOS).release = '16'; // out-of-range version
           downloadUrl.version = '6.0.4';
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.4.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
           );
         });
 

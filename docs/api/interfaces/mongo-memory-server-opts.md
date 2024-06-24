@@ -32,3 +32,9 @@ Set custom spawn options for spawning processes, uses [`SpawnOptions`](https://n
 Typings: `auth?: AutomaticAuth`
 
 Set custom Authentication options for the instance, uses [`AutomaticAuth`](./mongo-memory-server-automaticauth.md).
+
+### dispose
+
+Typings: `dispose?: DisposeOptions`
+
+Set custom behavior for when `[Symbol.asyncDispose]` is called, uses [`DisposeOptions`](./mongo-dispose-opts.md).

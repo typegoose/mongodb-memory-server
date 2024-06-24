@@ -17,6 +17,7 @@ module.exports = {
       'api/interfaces/mongo-memory-instance-replicamemberconfig',
       'api/interfaces/mongo-memory-binary-opts',
       'api/interfaces/mongo-memory-replset-opts',
+      'api/interfaces/mongo-memory-dispose-opts',
       'api/interfaces/replset-opts',
     ],
   },
@@ -41,6 +42,7 @@ module.exports = {
       'guides/common-issues',
     ],
     Migration: [
+      'guides/migration/migrate10',
       'guides/migration/migrate9',
       'guides/migration/migrate8',
       'guides/migration/migrate7',

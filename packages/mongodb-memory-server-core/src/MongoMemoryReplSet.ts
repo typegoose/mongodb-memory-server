@@ -1,5 +1,10 @@
 import { EventEmitter } from 'events';
-import { MongoMemoryServer, AutomaticAuth, MongoMemoryServerOpts } from './MongoMemoryServer';
+import {
+  MongoMemoryServer,
+  AutomaticAuth,
+  MongoMemoryServerOpts,
+  DisposeOptions,
+} from './MongoMemoryServer';
 import {
   assertion,
   authDefault,
@@ -92,6 +97,10 @@ export interface ReplSetOpts {
    * @default {}
    */
   configSettings?: MongoMemoryReplSetConfigSettings;
+  /**
+   * Options for automatic dispose for "Explicit Resource Management"
+   */
+  dispose?: DisposeOptions;
 }
 
 /**
@@ -140,6 +149,7 @@ export enum MongoMemoryReplSetEvents {
   stateChange = 'stateChange',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface MongoMemoryReplSet extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
   emit(event: MongoMemoryReplSetEvents, ...args: any[]): boolean;
@@ -150,6 +160,7 @@ export interface MongoMemoryReplSet extends EventEmitter {
 /**
  * Class for managing an replSet
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced {
   /**
    * All servers this ReplSet instance manages
@@ -262,6 +273,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       spawn: {},
       storageEngine,
       configSettings: {},
+      dispose: {},
     };
     // force overwrite "storageEngine" because it is transformed already
     this._replSetOpts = { ...defaults, ...val, storageEngine };
@@ -522,11 +534,6 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     /** Default to cleanup temporary, but not custom dbpaths */
     let cleanup: Cleanup = { doCleanup: true, force: false };
 
-    // TODO: for next major release (10.0), this should be removed
-    if (typeof cleanupOptions === 'boolean') {
-      throw new Error('Unsupported argument type: boolean');
-    }
-
     // handle the new way of setting what and how to cleanup
     if (typeof cleanupOptions === 'object') {
       cleanup = cleanupOptions;
@@ -576,11 +583,6 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
     /** Default to doing cleanup, but not forcing it */
     let cleanup: Cleanup = { doCleanup: true, force: false };
-
-    // TODO: for next major release (10.0), this should be removed
-    if (typeof options === 'boolean') {
-      throw new Error('Unsupported argument type: boolean');
-    }
 
     // handle the new way of setting what and how to cleanup
     if (typeof options === 'object') {
@@ -796,6 +798,13 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     }
 
     log('_waitForPrimary: detected one primary instance ');
+  }
+
+  // Symbol for "Explicit Resource Management"
+  async [Symbol.asyncDispose]() {
+    if (this.replSetOpts.dispose?.enabled ?? true) {
+      await this.stop(this.replSetOpts.dispose?.cleanup);
+    }
   }
 }
 
