@@ -1,3 +1,45 @@
+## [10.0.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.4.0...v10.0.0-beta.1) (2024-06-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **resolveConfig:** Default binary version is now "7.0.9"
+* **tsconfig:** potentially breaking change upgrading "target" to "es2021" in tsconfig
+* Lowest supported NodeJS version is now 16.20.1
+
+* **tsconfig:** update "target" to "es2021" ([abde8ca](https://github.com/nodkz/mongodb-memory-server/commit/abde8ca2ff2ebc077666d496520b3ce0f684ef99))
+
+
+### Features
+
+* add support for "Explicit Resource Management" ([ab7a73c](https://github.com/nodkz/mongodb-memory-server/commit/ab7a73c14fa80e51ec407d08b120b4ae6ee77ece)), closes [#794](https://github.com/nodkz/mongodb-memory-server/issues/794)
+* **getport:** use net0listen by default ([887f1a1](https://github.com/nodkz/mongodb-memory-server/commit/887f1a1e932a8993ef3fd69cf1f65b700c89a77b)), closes [#827](https://github.com/nodkz/mongodb-memory-server/issues/827)
+* **resolveConfig:** update default binary version to 7.x ([2436d63](https://github.com/nodkz/mongodb-memory-server/commit/2436d6300bd863efa3300103a3223d3849d0bda3))
+* set lowest supported nodejs version to 16.20.1 ([30b302e](https://github.com/nodkz/mongodb-memory-server/commit/30b302e5518c3df92c4b229035b2b229639dfb3c)), closes [#805](https://github.com/nodkz/mongodb-memory-server/issues/805)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** change default elementary version to 7 ([ecc4ffe](https://github.com/nodkz/mongodb-memory-server/commit/ecc4ffe2bbf47f3a2cd196d2ffa9a0e22aa4c94d))
+* **MongoBinaryDownloadUrl:** change default mint version to 21 ([df97ea8](https://github.com/nodkz/mongodb-memory-server/commit/df97ea8f9edfb97c24a53f9bc6638697df70d85e))
+* remove deprecated boolean cleanup argument (stop / cleanup) ([eef706f](https://github.com/nodkz/mongodb-memory-server/commit/eef706f7fef6ffe5caa0f0f8b3b99b168d8d7d2a))
+
+
+### Dependencies
+
+* **@types/node:** upgrade to version 16.11.7 ([c8a008a](https://github.com/nodkz/mongodb-memory-server/commit/c8a008aacff628ac0e8e7c77683987659411c8a1))
+* **async-mutex:** upgrade to version 0.5.0 ([c9f45c9](https://github.com/nodkz/mongodb-memory-server/commit/c9f45c9f032918cbdc73c0953ecc95936c246bac))
+* **mongodb:** upgrade to version 6.7.0 ([57e575c](https://github.com/nodkz/mongodb-memory-server/commit/57e575ce49344c79f2ae337da6aa43ada6738746)), closes [#804](https://github.com/nodkz/mongodb-memory-server/issues/804)
+* **typescript:** upgrade to version 5.3.3 ([329d79e](https://github.com/nodkz/mongodb-memory-server/commit/329d79e484bf2f7da9e3d0ccf991bdd2cb4282a8))
+
+
+### Dev-Dependencies
+
+* **@typescript-eslint/*:** upgrade to version 6.21.0 ([b4055a7](https://github.com/nodkz/mongodb-memory-server/commit/b4055a715ee369f675a15059fb88cef38c1aec39))
+* **lint-staged:** upgrade to version 14.0.1 ([0f54d29](https://github.com/nodkz/mongodb-memory-server/commit/0f54d29fe8ab51a806bb103609a7e34346c2b220))
+* **prettier:** upgrade to version 3.3.0 ([fe1d62d](https://github.com/nodkz/mongodb-memory-server/commit/fe1d62d4fff1849e3fd76d0db745337e6fb693d7))
+* **typedoc:** upgrade to version 0.25.13 ([0775c60](https://github.com/nodkz/mongodb-memory-server/commit/0775c60f14ec3026849ed70d24535c013b1d3aa7))
+
 ## [9.4.0](https://github.com/nodkz/mongodb-memory-server/compare/v9.3.0...v9.4.0) (2024-06-24)
 
 
