@@ -746,4 +746,56 @@ describe('MongoMemoryReplSet', () => {
       replSet.servers[0]._instanceInfo.tmpDir!
     ); // manual cleanup
   });
+
+  describe('server version specific', () => {
+    // should use default options that are supported for 7.0 (like not using "ephemeralForTest" by default)
+    it('should allow mongodb by default 7.0', async () => {
+      const server = await MongoMemoryReplSet.create({ binary: { version: '7.0.7' } });
+
+      await server.stop();
+    });
+
+    it('should not warn if "ephemeralForTest" is used explicitly in mongodb 6.0', async () => {
+      jest.spyOn(console, 'warn');
+      const server = await MongoMemoryReplSet.create({
+        binary: { version: '6.0.14' },
+        replSet: { storageEngine: 'ephemeralForTest' },
+      });
+
+      expect(console.warn).toHaveBeenCalledTimes(0);
+
+      expect(server.replSetOpts?.storageEngine).toStrictEqual('ephemeralForTest');
+
+      await server.stop();
+    });
+
+    it('should not warn if no explicit storage engine is set in 7.0', async () => {
+      jest.spyOn(console, 'warn');
+      const server = await MongoMemoryReplSet.create({
+        binary: { version: '7.0.7' },
+        // replSet: { storageEngine: 'ephemeralForTest' },
+      });
+
+      expect(console.warn).toHaveBeenCalledTimes(0);
+
+      expect(server.replSetOpts?.storageEngine).toStrictEqual('wiredTiger');
+
+      await server.stop();
+    });
+
+    it('should warn if "ephemeralForTest" is used explicitly in mongodb 7.0', async () => {
+      const spy = jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
+      const server = await MongoMemoryReplSet.create({
+        binary: { version: '7.0.7' },
+        replSet: { storageEngine: 'ephemeralForTest' },
+      });
+
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(spy.mock.calls).toMatchSnapshot();
+
+      expect(server.replSetOpts?.storageEngine).toStrictEqual('wiredTiger');
+
+      await server.stop();
+    });
+  });
 });

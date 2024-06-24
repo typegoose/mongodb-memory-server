@@ -26,6 +26,15 @@ This may be because of using a v6.x way of calling functions, look at the follow
 https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
 
+exports[`MongoMemoryReplSet server version specific should warn if "ephemeralForTest" is used explicitly in mongodb 7.0 1`] = `
+Array [
+  Array [
+    "Storage Engine \\"ephemeralForTest\\" is removed since mongodb 7.0.0, automatically using \\"wiredTiger\\"!
+This warning is because the mentioned storage engine is explicitly used and mongodb version is 7.0.0 or higher",
+  ],
+]
+`;
+
 exports[`single server replset "_initReplSet" should throw an error if _state is not "init" 1`] = `
 "Incorrect State for operation: \\"running\\", allowed States: \\"[init]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:

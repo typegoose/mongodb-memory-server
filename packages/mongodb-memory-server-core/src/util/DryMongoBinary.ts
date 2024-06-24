@@ -131,19 +131,29 @@ export class DryMongoBinary {
   }
 
   /**
+   * Ensure the given options fulfill {@link DryMongoBinaryOptions} by defaulting them
+   * @param opts The options to ensure
+   * @returns The ensured options
+   */
+  static getEnsuredOptions(opts?: BaseDryMongoBinaryOptions): DryMongoBinaryOptions {
+    const defaultVersion = resolveConfig(ResolveConfigVariables.VERSION) ?? DEFAULT_VERSION;
+
+    return isNullOrUndefined(opts)
+      ? { version: defaultVersion }
+      : { ...opts, version: opts.version || defaultVersion };
+  }
+
+  /**
    * Generate All required options for the binary name / path generation
    */
   static async generateOptions(
     opts?: BaseDryMongoBinaryOptions
   ): Promise<Required<DryMongoBinaryOptions>> {
     log('generateOptions');
-    const defaultVersion = resolveConfig(ResolveConfigVariables.VERSION) ?? DEFAULT_VERSION;
-    const ensuredOpts: BaseDryMongoBinaryOptions = isNullOrUndefined(opts)
-      ? { version: defaultVersion }
-      : opts;
+    const ensuredOpts = DryMongoBinary.getEnsuredOptions(opts);
 
     const final: Required<DryMongoBinaryOptions> = {
-      version: ensuredOpts.version || defaultVersion,
+      version: ensuredOpts.version,
       downloadDir:
         resolveConfig(ResolveConfigVariables.DOWNLOAD_DIR) || ensuredOpts.downloadDir || '',
       os: ensuredOpts.os ?? (await getOS()),

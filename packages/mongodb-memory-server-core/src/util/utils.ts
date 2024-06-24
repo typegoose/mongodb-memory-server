@@ -11,6 +11,8 @@ import {
 import { tmpdir } from 'os';
 import * as path from 'path';
 import { BinaryLike, createHash, randomUUID } from 'crypto';
+import { StorageEngine } from './MongoInstance';
+import * as semver from 'semver';
 
 const log = debug('MongoMS:utils');
 
@@ -318,14 +320,6 @@ export async function createTmpDir(prefix: string, atPath?: string): Promise<str
   return fspromises.mkdtemp(path.join(tmpPath, prefix));
 }
 
-// outsourced instead of () or without, because prettier cant decide which it wants
-type tfsPromises = typeof fspromises;
-
-// workaround for already using @types/node 14 (instead of 12)
-interface RmDir {
-  rmdir: tfsPromises['rmdir'];
-}
-
 /**
  * Removes the given "path", if it is a directory, and does not throw a error if not existing
  * @param dirPath The Directory Path to delete
@@ -342,16 +336,7 @@ export async function removeDir(dirPath: string): Promise<void> {
     throw new Error(`Given Path is not a directory! (Path: "${dirPath}")`);
   }
 
-  if ('rm' in fspromises) {
-    // only since NodeJS 14
-    await fspromises.rm(dirPath, { force: true, recursive: true });
-  } else {
-    // before NodeJS 14
-    // needs the bridge via the interface, because we are using @types/node 14, where this if evaluates to a always "true" in typescript's eyes
-    await (fspromises as RmDir).rmdir(dirPath, {
-      recursive: true,
-    });
-  }
+  await fspromises.rm(dirPath, { force: true, recursive: true });
 }
 
 /**
@@ -388,4 +373,35 @@ export async function md5FromFile(file: string): Promise<string> {
  */
 export function lockfilePath(downloadDir: string, version: string): string {
   return path.resolve(downloadDir, `${version}.lock`);
+}
+
+/**
+ * Get the storage engine for the given given binary version, and issue a warning if it needs to be changed
+ * @param storageEngine The engine that is configured
+ * @param coercedVersion The binary version as semver
+ * @returns The engine that actually will run in the given binary version
+ */
+export function getStorageEngine(
+  storageEngine: StorageEngine | undefined,
+  coercedVersion: semver.SemVer
+): StorageEngine {
+  // warn when storage engine "ephemeralForTest" is explicitly used and switch to "wiredTiger"
+  if (storageEngine === 'ephemeralForTest' && semver.gte(coercedVersion, '7.0.0')) {
+    console.warn(
+      'Storage Engine "ephemeralForTest" is removed since mongodb 7.0.0, automatically using "wiredTiger"!\n' +
+        'This warning is because the mentioned storage engine is explicitly used and mongodb version is 7.0.0 or higher'
+    );
+
+    return 'wiredTiger';
+  }
+
+  if (isNullOrUndefined(storageEngine)) {
+    if (semver.gte(coercedVersion, '7.0.0')) {
+      return 'wiredTiger';
+    }
+
+    return 'ephemeralForTest';
+  }
+
+  return storageEngine;
 }

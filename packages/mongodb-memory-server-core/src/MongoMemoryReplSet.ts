@@ -8,6 +8,7 @@ import {
   ensureAsync,
   generateDbName,
   getHost,
+  getStorageEngine,
   isNullOrUndefined,
   ManagerAdvanced,
   removeDir,
@@ -33,6 +34,8 @@ import {
 } from './util/errors';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
+import * as semver from 'semver';
+import { DryMongoBinary } from './util/DryMongoBinary';
 
 const log = debug('MongoMS:MongoMemoryReplSet');
 
@@ -239,6 +242,16 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
 
   set replSetOpts(val: ReplSetOpts) {
     assertionIsMMSRSState(MongoMemoryReplSetStates.stopped, this._state);
+
+    // the following needs to be done because we set the default "storageEngine" here
+    // which means the default is seen as set "explicitly" by the instance and would warn
+    // in binary versions >=7.0.0
+    const opts = DryMongoBinary.getEnsuredOptions(this.binaryOpts);
+    // try to convert a string to a valid semver, like "v6.0-latest" (compiles to "6.0.0")
+    // use "0.0.0" as a fallback to have a valid semver for later checks, but warn on invalid
+    const coercedVersion = semver.coerce(opts.version) ?? new semver.SemVer('0.0.0');
+    const storageEngine = getStorageEngine(val.storageEngine, coercedVersion);
+
     const defaults: Required<ReplSetOpts> = {
       auth: { enable: false },
       args: [],
@@ -247,10 +260,11 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
       dbName: generateDbName(),
       ip: '127.0.0.1',
       spawn: {},
-      storageEngine: 'ephemeralForTest',
+      storageEngine,
       configSettings: {},
     };
-    this._replSetOpts = { ...defaults, ...val };
+    // force overwrite "storageEngine" because it is transformed already
+    this._replSetOpts = { ...defaults, ...val, storageEngine };
 
     assertion(this._replSetOpts.count > 0, new ReplsetCountLowError(this._replSetOpts.count));
 

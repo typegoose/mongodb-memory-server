@@ -8,6 +8,7 @@ import {
   InsufficientPermissionsError,
 } from '../errors';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
+import { SemVer } from 'semver';
 
 describe('utils', () => {
   describe('uriTemplate', () => {
@@ -222,6 +223,38 @@ describe('utils', () => {
       }
 
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getStorageEngine', () => {
+    it('should get default without warning for versions', () => {
+      jest.spyOn(console, 'warn');
+      expect(utils.getStorageEngine(undefined, new SemVer('6.0.0'))).toStrictEqual(
+        'ephemeralForTest'
+      );
+      expect(utils.getStorageEngine(undefined, new SemVer('7.0.0'))).toStrictEqual('wiredTiger');
+
+      expect(console.warn).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not warn for versions below 7.0.0', () => {
+      jest.spyOn(console, 'warn');
+      expect(utils.getStorageEngine('ephemeralForTest', new SemVer('6.0.0'))).toStrictEqual(
+        'ephemeralForTest'
+      );
+      expect(utils.getStorageEngine('wiredTiger', new SemVer('6.0.0'))).toStrictEqual('wiredTiger');
+
+      expect(console.warn).toHaveBeenCalledTimes(0);
+    });
+
+    it('should warn for versions above 7.0.0 for ephemeralForTest', () => {
+      jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+      expect(utils.getStorageEngine('ephemeralForTest', new SemVer('7.0.0'))).toStrictEqual(
+        'wiredTiger'
+      );
+      expect(utils.getStorageEngine('wiredTiger', new SemVer('7.0.0'))).toStrictEqual('wiredTiger');
+
+      expect(console.warn).toHaveBeenCalledTimes(1);
     });
   });
 });

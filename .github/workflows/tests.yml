@@ -37,7 +37,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/mongodb-binaries
-          key: ${{ matrix.node-version }}
+          key: ${{ matrix.node-version }}-${{ hashFiles('**/globalSetup.ts') }}
+          restore-keys: |
+            ${{ matrix.node-version }}-
+            ${{ matrix.node-version }}
       - name: Install node_modules
         run: yarn
       - name: TSCheck
