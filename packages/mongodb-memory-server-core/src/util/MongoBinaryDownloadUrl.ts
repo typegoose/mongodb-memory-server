@@ -481,6 +481,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           19: '18.04',
           20: '20.04',
           21: '22.04',
+          22: '24.04',
         };
 
         ubuntuOS = {
@@ -587,7 +588,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
        * Highest ubuntu year supported by mongodb binaries
        * @see https://www.mongodb.com/download-center/community/releases/archive
        */
-      const highestUbuntuYear = 22; // 22 is the highest supported as of mongodb 7.0.9
+      const highestUbuntuYear = 22; // 22 is the highest supported as of mongodb 7.0.11
 
       if (ubuntuYear > highestUbuntuYear) {
         log(

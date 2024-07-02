@@ -126,7 +126,7 @@ Default version is `7`
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `17`<br/>
-Highest version is `21`<br/>
+Highest version is `22`<br/>
 Default version is `21`
 
 ### Suse
