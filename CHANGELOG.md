@@ -1,3 +1,10 @@
+## [9.4.1](https://github.com/typegoose/mongodb-memory-server/compare/v9.4.0...v9.4.1) (2024-07-13)
+
+
+### Fixes
+
+* trigger release ([8c48020](https://github.com/typegoose/mongodb-memory-server/commit/8c48020816fe19fbcc4f886fcfb96302eaff8714))
+
 ## [9.4.0](https://github.com/nodkz/mongodb-memory-server/compare/v9.3.0...v9.4.0) (2024-06-24)
 
 
