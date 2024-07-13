@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nodkz/mongodb-memory-server.git",
+    "url": "https://github.com/typegoose/mongodb-memory-server.git",
     "directory": "packages/mongodb-memory-server-core"
   },
   "engines": {
@@ -27,9 +27,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nodkz/mongodb-memory-server/issues"
+    "url": "https://github.com/typegoose/mongodb-memory-server/issues"
   },
-  "homepage": "https://github.com/nodkz/mongodb-memory-server",
+  "homepage": "https://github.com/typegoose/mongodb-memory-server",
   "devDependencies": {
     "@types/debug": "^4.1.8",
     "@types/find-cache-dir": "^3.2.1",

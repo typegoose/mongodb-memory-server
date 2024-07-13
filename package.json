@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "description": "In-memory MongoDB Server. Designed with testing in mind, the server will allow you to connect your favourite ODM or client library to the MongoDB Server and run integration tests isolated from each other.",
-  "repository": "https://github.com/nodkz/mongodb-memory-server",
+  "repository": "https://github.com/typegoose/mongodb-memory-server",
   "devDependencies": {
     "@commitlint/cli": "16.2.4",
     "@commitlint/config-conventional": "16.2.4",

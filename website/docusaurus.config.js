@@ -18,7 +18,7 @@ module.exports = {
   url: 'https://typegoose.github.io',
   baseUrl: baseUrl,
   favicon: 'img/favicon.ico',
-  organizationName: 'nodkz',
+  organizationName: 'typegoose',
   projectName: 'mongodb-memory-server',
   themeConfig: {
     algolia: {
@@ -67,12 +67,12 @@ module.exports = {
           position: 'right',
         },
         {
-          href: 'https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md',
+          href: 'https://github.com/typegoose/mongodb-memory-server/blob/master/CHANGELOG.md',
           label: 'Changelog',
           position: 'right',
         },
         {
-          href: 'https://github.com/nodkz/mongodb-memory-server',
+          href: 'https://github.com/typegoose/mongodb-memory-server',
           label: 'GitHub',
           position: 'right',
         },
@@ -99,7 +99,7 @@ module.exports = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/nodkz/mongodb-memory-server',
+              href: 'https://github.com/typegoose/mongodb-memory-server',
             },
           ],
         },
@@ -114,7 +114,7 @@ module.exports = {
           path: '../docs',
           routeBasePath: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/nodkz/mongodb-memory-server/edit/master/docs',
+          editUrl: 'https://github.com/typegoose/mongodb-memory-server/edit/master/docs',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

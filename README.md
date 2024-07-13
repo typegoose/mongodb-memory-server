@@ -1,11 +1,11 @@
 # MongoDB In-Memory Server
 
-[![Node.js CI](https://github.com/nodkz/mongodb-memory-server/workflows/Node.js%20CI/badge.svg)](https://github.com/nodkz/mongodb-memory-server/actions/workflows/tests.yml?query=workflow%3A%22Node.js+CI%22)
+[![Node.js CI](https://github.com/typegoose/mongodb-memory-server/workflows/Node.js%20CI/badge.svg)](https://github.com/typegoose/mongodb-memory-server/actions/workflows/tests.yml?query=workflow%3A%22Node.js+CI%22)
 [![NPM version](https://img.shields.io/npm/v/mongodb-memory-server.svg)](https://www.npmjs.com/package/mongodb-memory-server)
 [![Downloads stat](https://img.shields.io/npm/dt/mongodb-memory-server.svg)](http://www.npmtrends.com/mongodb-memory-server)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![TypeScript compatible](https://img.shields.io/badge/typescript-compatible-brightgreen.svg)](https://www.typescriptlang.org)
-[![codecov.io](https://codecov.io/github/nodkz/mongodb-memory-server/coverage.svg?branch=master)](https://codecov.io/github/nodkz/mongodb-memory-server?branch=master)
+[![codecov.io](https://codecov.io/github/typegoose/mongodb-memory-server/coverage.svg?branch=master)](https://codecov.io/github/typegoose/mongodb-memory-server?branch=master)
 [![Backers on Open Collective](https://opencollective.com/mongodb-memory-server/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/mongodb-memory-server/sponsors/badge.svg)](#sponsors)
 [![mongodb-memory-server-core](https://snyk.io/advisor/npm-package/mongodb-memory-server-core/badge.svg)](https://snyk.io/advisor/npm-package/mongodb-memory-server-core)
@@ -221,11 +221,11 @@ const replSet = new MongoMemoryReplSet({
 
 ### Simple test with MongoClient in Jest
 
-A example test file for a *single* [MongoMemoryServer](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB.test.ts) within jest.
+A example test file for a *single* [MongoMemoryServer](https://github.com/typegoose/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB.test.ts) within jest.
 
-A example test file for *multiple* [MongoMemoryServer](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/multipleDB.test.ts) within jest.
+A example test file for *multiple* [MongoMemoryServer](https://github.com/typegoose/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/multipleDB.test.ts) within jest.
 
-A example test file for a *single* [MongoMemoryReplSet](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/replset-multi.test.ts) within jest.
+A example test file for a *single* [MongoMemoryReplSet](https://github.com/typegoose/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/replset-multi.test.ts) within jest.
 
 ### Provide connection string to mongoose
 
