@@ -186,11 +186,11 @@ The Linux distro in use does not have a mapping for a mongodb version, please re
 Code: `MMS001`  
 Message: `mongodb-memory-server will fully drop support for ia32 in 9.0`
 
-In the major version `9.0` MMS will fully drop support for the architecture `ia32` (`i386` / `i686`), because MongoDB stopped supporting the architecture past 3.x, and MMS never full supported 3.6 or lower anyway, see [#638 for tracking](https://github.com/nodkz/mongodb-memory-server/issues/638).
+In the major version `9.0` MMS will fully drop support for the architecture `ia32` (`i386` / `i686`), because MongoDB stopped supporting the architecture past 3.x, and MMS never full supported 3.6 or lower anyway, see [#638 for tracking](https://github.com/typegoose/mongodb-memory-server/issues/638).
 
 ### MMS002
 
 Code: `MMS002`  
 Message: `mongodb-memory-server will fully drop support for sunos in 9.0`
 
-In the major version `9.0` MMS will fully drop support for the platfrom `sunos`, because MMS never actually supported `sunos` in the first place and Mongodb has stopped providing builds after ~3.4, see [#661 for tracking](https://github.com/nodkz/mongodb-memory-server/issues/661).
+In the major version `9.0` MMS will fully drop support for the platfrom `sunos`, because MMS never actually supported `sunos` in the first place and Mongodb has stopped providing builds after ~3.4, see [#661 for tracking](https://github.com/typegoose/mongodb-memory-server/issues/661).

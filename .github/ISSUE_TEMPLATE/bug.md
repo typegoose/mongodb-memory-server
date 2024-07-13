@@ -40,7 +40,7 @@ code here
 ## Debug Output
 
 <!--
-In most cases the [Debug Output](https://github.com/nodkz/mongodb-memory-server#enable-debug-mode) would be helpful
+In most cases the [Debug Output](https://github.com/typegoose/mongodb-memory-server#enable-debug-mode) would be helpful
 Please provide the debug output in one of the following ways (the higher the more its preferred):
 (replace the `<details>` section with the url, if a URL is needed)
 

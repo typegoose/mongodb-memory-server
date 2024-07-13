@@ -114,7 +114,7 @@ export class DryMongoBinary {
 
     // check for the race-condition of "extraction started, but not finished"
     // or said differently, the file "exists" but is not fully extracted yet
-    // see https://github.com/nodkz/mongodb-memory-server/issues/872
+    // see https://github.com/typegoose/mongodb-memory-server/issues/872
     if (
       returnValue[0] &&
       (await pathExists(lockfilePath(path.dirname(returnValue[1]), useOpts.version)))

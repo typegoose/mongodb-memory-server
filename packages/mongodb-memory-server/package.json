@@ -7,13 +7,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nodkz/mongodb-memory-server.git",
+    "url": "git+https://github.com/typegoose/mongodb-memory-server.git",
     "directory": "packages/mongodb-memory-server"
   },
   "engines": {
     "node": ">=14.20.1"
   },
-  "homepage": "https://github.com/nodkz/mongodb-memory-server",
+  "homepage": "https://github.com/typegoose/mongodb-memory-server",
   "keywords": [
     "mongodb",
     "mongoose",
