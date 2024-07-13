@@ -21,15 +21,15 @@ module.exports = {
   organizationName: 'typegoose',
   projectName: 'mongodb-memory-server',
   themeConfig: {
-    algolia: {
-      apiKey: '8fe2db2c68a589011ca177c3f6098a76',
-      appId: '3KTVP2YGJO',
-      indexName: 'docusaurus',
-      contextualSearch: false, // since docusaurus v2.beta-15, it is defaulted to "true", but somehow breaks current search
-      searchParameters: {
-        facetFilters: [`version:${deployInfo.searchName}`],
-      },
-    },
+    // algolia: {
+    //   apiKey: '8fe2db2c68a589011ca177c3f6098a76',
+    //   appId: '3KTVP2YGJO',
+    //   indexName: 'docusaurus',
+    //   contextualSearch: false, // since docusaurus v2.beta-15, it is defaulted to "true", but somehow breaks current search
+    //   searchParameters: {
+    //     facetFilters: [`version:${deployInfo.searchName}`],
+    //   },
+    // },
     navbar: {
       title: 'mongodb-memory-server',
       // logo: {
