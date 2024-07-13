@@ -1,13 +1,16 @@
 import { isNullOrUndefined } from './utils';
 
 export class StateError extends Error {
-  constructor(public wantedStates: string[], public gotState: string) {
+  constructor(
+    public wantedStates: string[],
+    public gotState: string
+  ) {
     super(
       `Incorrect State for operation: "${gotState}", allowed States: "[${wantedStates.join(
         ','
       )}]"\n` +
         'This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:\n' +
-        'https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything'
+        'https://typegoose.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything'
     );
   }
 }
@@ -19,7 +22,10 @@ export class UnknownLockfileStatusError extends Error {
 }
 
 export class UnableToUnlockLockfileError extends Error {
-  constructor(public thisInstance: boolean, public file: string) {
+  constructor(
+    public thisInstance: boolean,
+    public file: string
+  ) {
     super(
       `Cannot unlock file "${file}", because it is not locked by this ${
         thisInstance ? 'instance' : 'process'
@@ -35,7 +41,10 @@ export class UnknownPlatformError extends Error {
 }
 
 export class UnknownArchitectureError extends Error {
-  constructor(public arch: string, public platform?: string) {
+  constructor(
+    public arch: string,
+    public platform?: string
+  ) {
     super();
 
     if (!isNullOrUndefined(platform)) {
@@ -47,7 +56,10 @@ export class UnknownArchitectureError extends Error {
 }
 
 export class WaitForPrimaryTimeoutError extends Error {
-  constructor(public timeout: number, public where?: string) {
+  constructor(
+    public timeout: number,
+    public where?: string
+  ) {
     super(`Timed out after ${timeout}ms while waiting for a Primary (where: "${where}")`);
   }
 }
@@ -76,7 +88,10 @@ export class NoSystemBinaryFoundError extends Error {
 }
 
 export class Md5CheckFailedError extends Error {
-  constructor(public binarymd5: string, public checkfilemd5: string) {
+  constructor(
+    public binarymd5: string,
+    public checkfilemd5: string
+  ) {
     super(`MD5 check failed! Binary MD5 is "${binarymd5}", Checkfile MD5 is "${checkfilemd5}"`);
   }
 }
@@ -139,7 +154,10 @@ export class ParseArchiveRegexError extends Error {
 }
 
 export class NoRegexMatchError extends Error {
-  constructor(public name: string, public extra?: string) {
+  constructor(
+    public name: string,
+    public extra?: string
+  ) {
     super();
     const addExtra = !!extra ? `(${extra})` : '';
     this.message = `Expected "${name}" to have Regex Matches${addExtra}`;
@@ -204,7 +222,10 @@ export class UnknownVersionError extends Error {
  * Error for when downloading fails
  */
 export class DownloadError extends Error {
-  constructor(public url: string, public msg: string) {
+  constructor(
+    public url: string,
+    public msg: string
+  ) {
     super(`Download failed for url \"${url}\", Details:\n${msg}`);
   }
 }
