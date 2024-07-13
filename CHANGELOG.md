@@ -1,3 +1,11 @@
+## [10.0.0-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.0-beta.1...v10.0.0-beta.2) (2024-07-13)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** add mapping for Linux Mint 22 ([2ffc024](https://github.com/typegoose/mongodb-memory-server/commit/2ffc024ab6608d2f2d7da230f5ddf7dc4bbf4065))
+* trigger release ([8c48020](https://github.com/typegoose/mongodb-memory-server/commit/8c48020816fe19fbcc4f886fcfb96302eaff8714))
+
 ## [10.0.0-beta.1](https://github.com/nodkz/mongodb-memory-server/compare/v9.4.0...v10.0.0-beta.1) (2024-06-24)
 
 
