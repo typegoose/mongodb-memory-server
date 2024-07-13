@@ -511,7 +511,7 @@ describe('MongodbInstance', () => {
       // All the lines used to test here should be sourced from actual mongod output!
 
       it('should emit "instanceError" when "aborting after" is found', () => {
-        // actual line copied from mongod 5.0.8 (from https://github.com/nodkz/mongodb-memory-server/issues/727)
+        // actual line copied from mongod 5.0.8 (from https://github.com/typegoose/mongodb-memory-server/issues/727)
         const line =
           '{"t":{"$date":"2023-01-05T13:55:59.493+00:00"},"s":"F",  "c":"-",        "id":23079,   "ctx":"conn13","msg":"Invariant failure","attr":{"expr":"readTs","file":"src/mongo/db/read_concern_mongod.cpp","line":529}}\n{"t":{"$date":"2023-01-05T13:55:59.493+00:00"},"s":"F",  "c":"-",        "id":23080,   "ctx":"conn13","msg":"\n\n***aborting after invariant() failure\n\n"}';
 
@@ -555,7 +555,7 @@ describe('MongodbInstance', () => {
       });
 
       it('should emit "instanceError" when curl-open-ssl-3 is not found', () => {
-        // actual line copied from mongod 4.0.3 (from https://github.com/nodkz/mongodb-memory-server/issues/204#issuecomment-514492136)
+        // actual line copied from mongod 4.0.3 (from https://github.com/typegoose/mongodb-memory-server/issues/204#issuecomment-514492136)
         const line =
           "/fm/fm-api/node_modules/.cache/mongodb-memory-server/mongodb-binaries/4.0.3/mongod: /usr/lib/x86_64-linux-gnu/libcurl.so.4: version 'CURL_OPENSSL_3' not found (required by /fm/fm-api/node_modules/.cache/mongodb-memory-server/mongodb-binaries/4.0.3/mongod)";
 
@@ -571,7 +571,7 @@ describe('MongodbInstance', () => {
       });
 
       it('should emit "instanceError" when curl-open-ssl-4 is not found', () => {
-        // actual line copied from mongod 4.0.14 (from https://github.com/nodkz/mongodb-memory-server/issues/313#issue-631429207)
+        // actual line copied from mongod 4.0.14 (from https://github.com/typegoose/mongodb-memory-server/issues/313#issue-631429207)
         const line =
           "/usr/src/app/packages/backend/node_modules/.cache/mongodb-memory-server/mongodb-binaries/4.0.14/mongod: /usr/lib/x86_64-linux-gnu/libcurl.so.4: version `CURL_OPENSSL_4' not found (required by /usr/src/app/packages/backend/node_modules/.cache/mongodb-memory-server/mongodb-binaries/4.0.14/mongod)";
 

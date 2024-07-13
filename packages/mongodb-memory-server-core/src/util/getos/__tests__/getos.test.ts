@@ -105,7 +105,7 @@ UBUNTU_CODENAME=focal`;
     });
 
     it('should parse multiple "id_like"', () => {
-      // output taken from https://github.com/nodkz/mongodb-memory-server/issues/525#issuecomment-894279720
+      // output taken from https://github.com/typegoose/mongodb-memory-server/issues/525#issuecomment-894279720
       const example = `NAME="Amazon Linux"
 VERSION="2"
 ID="amzn"

@@ -5,7 +5,7 @@ exports[`MongoMemoryServer "createAuth" should throw an error if called without 
 exports[`MongoMemoryServer cleanup() should throw an error if state is not "stopped" 1`] = `
 "Incorrect State for operation: \\"new\\", allowed States: \\"[stopped]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
-https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
+https://typegoose.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
 
 exports[`MongoMemoryServer ensureInstance() should throw an error if "instanceInfo" is undefined but "_state" is "running" 1`] = `"\\"instanceInfo\\" was undefined when expected to be defined! (where: \\"MongoMemoryServer.ensureInstance (state: running)\\")"`;
@@ -15,7 +15,7 @@ exports[`MongoMemoryServer ensureInstance() should throw an error if no "instanc
 exports[`MongoMemoryServer ensureInstance() should throw an error if the given "_state" has no case 1`] = `
 "Incorrect State for operation: \\"not Existing\\", allowed States: \\"[running,new,stopped,starting]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
-https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
+https://typegoose.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
 
 exports[`MongoMemoryServer getStartOptions() should work with -latest versions [#841] 1`] = `
@@ -29,13 +29,13 @@ Array [
 exports[`MongoMemoryServer getUri() should throw an state error, if not starting or running 1`] = `
 "Incorrect State for operation: \\"new\\", allowed States: \\"[running,starting]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
-https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
+https://typegoose.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
 
 exports[`MongoMemoryServer getUri() should throw an state error, if not starting or running 2`] = `
 "Incorrect State for operation: \\"new\\", allowed States: \\"[running,starting]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
-https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
+https://typegoose.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
 
 exports[`MongoMemoryServer server version specific should warn if "ephemeralForTest" is used explicitly in mongodb 7.0 1`] = `
@@ -50,11 +50,11 @@ This warning is because the mentioned storage engine is explicitly used and mong
 exports[`MongoMemoryServer start() should throw an error if state is not "new" or "stopped" 1`] = `
 "Incorrect State for operation: \\"starting\\", allowed States: \\"[new,stopped]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
-https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
+https://typegoose.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;
 
 exports[`MongoMemoryServer start() should throw an error if state is not "new" or "stopped" 2`] = `
 "Incorrect State for operation: \\"running\\", allowed States: \\"[new,stopped]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:
-https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
+https://typegoose.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything"
 `;

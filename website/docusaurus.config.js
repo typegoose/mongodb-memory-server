@@ -15,21 +15,21 @@ module.exports = {
   title: 'mongodb-memory-server',
   tagline:
     'Spinning up mongod in memory for fast tests. If you run tests in parallel this lib helps to spin up dedicated mongodb servers for every test file in MacOS, *nix, Windows or CI environments (in most cases with zero-config).',
-  url: 'https://nodkz.github.io',
+  url: 'https://typegoose.github.io',
   baseUrl: baseUrl,
   favicon: 'img/favicon.ico',
-  organizationName: 'nodkz',
+  organizationName: 'typegoose',
   projectName: 'mongodb-memory-server',
   themeConfig: {
-    algolia: {
-      apiKey: '8fe2db2c68a589011ca177c3f6098a76',
-      appId: '3KTVP2YGJO',
-      indexName: 'docusaurus',
-      contextualSearch: false, // since docusaurus v2.beta-15, it is defaulted to "true", but somehow breaks current search
-      searchParameters: {
-        facetFilters: [`version:${deployInfo.searchName}`],
-      },
-    },
+    // algolia: {
+    //   apiKey: '8fe2db2c68a589011ca177c3f6098a76',
+    //   appId: '3KTVP2YGJO',
+    //   indexName: 'docusaurus',
+    //   contextualSearch: false, // since docusaurus v2.beta-15, it is defaulted to "true", but somehow breaks current search
+    //   searchParameters: {
+    //     facetFilters: [`version:${deployInfo.searchName}`],
+    //   },
+    // },
     navbar: {
       title: 'mongodb-memory-server',
       // logo: {
@@ -68,12 +68,12 @@ module.exports = {
           target: '_self',
         },
         {
-          href: 'https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md',
+          href: 'https://github.com/typegoose/mongodb-memory-server/blob/master/CHANGELOG.md',
           label: 'Changelog',
           position: 'right',
         },
         {
-          href: 'https://github.com/nodkz/mongodb-memory-server',
+          href: 'https://github.com/typegoose/mongodb-memory-server',
           label: 'GitHub',
           position: 'right',
         },
@@ -100,7 +100,7 @@ module.exports = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/nodkz/mongodb-memory-server',
+              href: 'https://github.com/typegoose/mongodb-memory-server',
             },
           ],
         },
@@ -115,7 +115,7 @@ module.exports = {
           path: '../docs',
           routeBasePath: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/nodkz/mongodb-memory-server/edit/master/docs',
+          editUrl: 'https://github.com/typegoose/mongodb-memory-server/edit/master/docs',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

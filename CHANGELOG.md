@@ -40,6 +40,13 @@
 * **prettier:** upgrade to version 3.3.0 ([fe1d62d](https://github.com/nodkz/mongodb-memory-server/commit/fe1d62d4fff1849e3fd76d0db745337e6fb693d7))
 * **typedoc:** upgrade to version 0.25.13 ([0775c60](https://github.com/nodkz/mongodb-memory-server/commit/0775c60f14ec3026849ed70d24535c013b1d3aa7))
 
+## [9.4.1](https://github.com/typegoose/mongodb-memory-server/compare/v9.4.0...v9.4.1) (2024-07-13)
+
+
+### Fixes
+
+* trigger release ([8c48020](https://github.com/typegoose/mongodb-memory-server/commit/8c48020816fe19fbcc4f886fcfb96302eaff8714))
+
 ## [9.4.0](https://github.com/nodkz/mongodb-memory-server/compare/v9.3.0...v9.4.0) (2024-06-24)
 
 
@@ -786,6 +793,18 @@ also "disable" has been removed
 * **typescript:** upgrade to version 4.9 ([6a27dee](https://github.com/nodkz/mongodb-memory-server/commit/6a27dee9965ae760707bf7442483ecc81596cc68))
 * **typescript:** upgrade to version 5.0.4 ([d531dde](https://github.com/nodkz/mongodb-memory-server/commit/d531ddea767cef2c038e228597812507e0590c2a))
 * **uuid:** remove package ([41b2551](https://github.com/nodkz/mongodb-memory-server/commit/41b2551a89df0eb806511efb85d5bd5f6419664c))
+
+## [8.16.1](https://github.com/typegoose/mongodb-memory-server/compare/v8.16.0...v8.16.1) (2024-07-13)
+
+
+### Fixes
+
+* trigger release ([62f43e7](https://github.com/typegoose/mongodb-memory-server/commit/62f43e7c9801ab3541157093b73de158bae48558))
+
+
+### Style
+
+* **errors:** fix lint ([4137d32](https://github.com/typegoose/mongodb-memory-server/commit/4137d32f1c30ec65bec03191d1ab39679719533d))
 
 ## [8.16.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.15.1...v8.16.0) (2023-10-05)
 

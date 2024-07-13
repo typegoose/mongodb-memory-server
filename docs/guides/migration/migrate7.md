@@ -6,7 +6,7 @@ title: 'Migrate to version 7.0.0'
 Here are the Important changes made for 7.0.0
 
 :::caution Important, Read this first
-This Guide is written for migration from version `6.9.6` to `7.0.0`, for versions `>7.0.0 <8.0.0`, please consult the [CHANGELOG](https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md)
+This Guide is written for migration from version `6.9.6` to `7.0.0`, for versions `>7.0.0 <8.0.0`, please consult the [CHANGELOG](https://github.com/typegoose/mongodb-memory-server/blob/master/CHANGELOG.md)
 :::
 
 ## Requirement Changes
@@ -84,7 +84,7 @@ This also includes function renames:
 
 This was changed to allow mongodb and mongoose URI's to work at the same time (they slightly differ).
 
-[See the code comment for more information](https://github.com/nodkz/mongodb-memory-server/blob/3624253f509a54cff04997943894b9eb7e7e64fe/packages/mongodb-memory-server-core/src/util/utils.ts#L13-L17)
+[See the code comment for more information](https://github.com/typegoose/mongodb-memory-server/blob/3624253f509a54cff04997943894b9eb7e7e64fe/packages/mongodb-memory-server-core/src/util/utils.ts#L13-L17)
 
 ## Non-Breaking changes / Additions
 

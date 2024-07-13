@@ -9,7 +9,7 @@ assignees: 'hasezoey'
 <!--
 Make sure you read [Mastering-Markdown](https://guides.github.com/features/mastering-markdown/)
 
-List of currently [Supported Systems](https://nodkz.github.io/mongodb-memory-server/docs/guides/supported-systems)
+List of currently [Supported Systems](https://typegoose.github.io/mongodb-memory-server/docs/guides/supported-systems)
 -->
 
 ## Versions
@@ -72,7 +72,7 @@ console.log("Arch", os.arch());
 ## Current Error
 
 <!--Please include the current error you are having, if any-->
-<!--Also if you see any "Falling back to legacy MongoDB build!" please include Debug Output, see https://nodkz.github.io/mongodb-memory-server/docs/guides/enable-debug-mode -->
+<!--Also if you see any "Falling back to legacy MongoDB build!" please include Debug Output, see https://typegoose.github.io/mongodb-memory-server/docs/guides/enable-debug-mode -->
 
 ```txt
 Paste Error in Here

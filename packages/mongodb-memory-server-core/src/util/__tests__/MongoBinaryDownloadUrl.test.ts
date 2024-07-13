@@ -1169,7 +1169,7 @@ describe('MongoBinaryDownloadUrl', () => {
         });
       });
 
-      // see https://github.com/nodkz/mongodb-memory-server/issues/527
+      // see https://github.com/typegoose/mongodb-memory-server/issues/527
       describe('for amazon', () => {
         it('should return a archive name for Amazon 1', async () => {
           const du = new MongoBinaryDownloadUrl({
@@ -1915,7 +1915,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     it('should return default version with warning when using ID_LIKE but not being ubuntu', () => {
-      // Test for https://github.com/nodkz/mongodb-memory-server/issues/616
+      // Test for https://github.com/typegoose/mongodb-memory-server/issues/616
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
 
       downloadUrl.version = '6.0.4';

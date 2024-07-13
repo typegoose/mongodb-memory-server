@@ -14,7 +14,7 @@ Make sure you read [Mastering-Markdown](https://guides.github.com/features/maste
 
 - NodeJS: 0.0.0
 - mongodb-memory-server-*: 0.0.0 <!--"latest" is not a version-->
-- mongodb(the binary version): 0.0.0 <!--Let this stay at "0", when assuming default, also see https://nodkz.github.io/mongodb-memory-server/docs/guides/mongodb-server-versions#mongodb-memory-server-core-version-table -->
+- mongodb(the binary version): 0.0.0 <!--Let this stay at "0", when assuming default, also see https://typegoose.github.io/mongodb-memory-server/docs/guides/mongodb-server-versions#mongodb-memory-server-core-version-table -->
 - mongodb(the js package): 0.0.0 <!--Not required when having "mongoose" set-->
 - mongoose: 0.0.0 <!--Remove this if not used-->
 - system: <!--One of: Windows, MacOS, Linux (with distro and distro version)-->
@@ -40,7 +40,7 @@ code here
 ## Debug Output
 
 <!--
-In most cases the [Debug Output](https://github.com/nodkz/mongodb-memory-server#enable-debug-mode) would be helpful
+In most cases the [Debug Output](https://github.com/typegoose/mongodb-memory-server#enable-debug-mode) would be helpful
 Please provide the debug output in one of the following ways (the higher the more its preferred):
 (replace the `<details>` section with the url, if a URL is needed)
 

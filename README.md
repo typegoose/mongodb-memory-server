@@ -1,11 +1,11 @@
 # MongoDB In-Memory Server
 
-[![Node.js CI](https://github.com/nodkz/mongodb-memory-server/workflows/Node.js%20CI/badge.svg)](https://github.com/nodkz/mongodb-memory-server/actions/workflows/tests.yml?query=workflow%3A%22Node.js+CI%22)
+[![Node.js CI](https://github.com/typegoose/mongodb-memory-server/workflows/Node.js%20CI/badge.svg)](https://github.com/typegoose/mongodb-memory-server/actions/workflows/tests.yml?query=workflow%3A%22Node.js+CI%22)
 [![NPM version](https://img.shields.io/npm/v/mongodb-memory-server.svg)](https://www.npmjs.com/package/mongodb-memory-server)
 [![Downloads stat](https://img.shields.io/npm/dt/mongodb-memory-server.svg)](http://www.npmtrends.com/mongodb-memory-server)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![TypeScript compatible](https://img.shields.io/badge/typescript-compatible-brightgreen.svg)](https://www.typescriptlang.org)
-[![codecov.io](https://codecov.io/github/nodkz/mongodb-memory-server/coverage.svg?branch=master)](https://codecov.io/github/nodkz/mongodb-memory-server?branch=master)
+[![codecov.io](https://codecov.io/github/typegoose/mongodb-memory-server/coverage.svg?branch=master)](https://codecov.io/github/typegoose/mongodb-memory-server?branch=master)
 [![Backers on Open Collective](https://opencollective.com/mongodb-memory-server/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/mongodb-memory-server/sponsors/badge.svg)](#sponsors)
 [![mongodb-memory-server-core](https://snyk.io/advisor/npm-package/mongodb-memory-server-core/badge.svg)](https://snyk.io/advisor/npm-package/mongodb-memory-server-core)
@@ -14,7 +14,7 @@ This package spins up an actual/real MongoDB server programmatically from within
 
 On install, this [package downloads](#configuring-which-mongod-binary-to-use) the latest MongoDB binaries and saves them to a cache folder. (only `mongodb-memory-server-core` does not download on `postinstall`)
 
-On starting a new instance of the memory server, if the binary cannot be found, it will be auto-downloaded (if [`RUNTIME_DOWNLOAD`](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options#runtime_download) option is truthy), thus the first run may take some time. All further runs will be fast, because they will use the downloaded binaries.
+On starting a new instance of the memory server, if the binary cannot be found, it will be auto-downloaded (if [`RUNTIME_DOWNLOAD`](https://typegoose.github.io/mongodb-memory-server/docs/api/config-options#runtime_download) option is truthy), thus the first run may take some time. All further runs will be fast, because they will use the downloaded binaries.
 
 This package automatically downloads binaries from [https://fastdl.mongodb.org/](https://fastdl.mongodb.org/) according to your operating system. You can see all available versions for [Linux](https://www.mongodb.org/dl/linux) (Ubuntu, RHEL, Debian, SUSE, Amazon), [OSX](https://www.mongodb.org/dl/osx), and [Windows](https://www.mongodb.org/dl/win32).
 
@@ -82,11 +82,11 @@ On Linux, you will also need `libcurl4` (or `libcurl3` on some older distro vers
 
 ### Choose the Correct Package
 
-[Choose the right package for the task](https://nodkz.github.io/mongodb-memory-server/docs/guides/quick-start-guide#choose-the-right-package)
+[Choose the right package for the task](https://typegoose.github.io/mongodb-memory-server/docs/guides/quick-start-guide#choose-the-right-package)
 
 ### Configuring which mongod binary to use
 
-The default behavior is that version `7.0.9` for your OS will be downloaded. By setting [Environment variables](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
+The default behavior is that version `7.0.9` for your OS will be downloaded. By setting [Environment variables](https://typegoose.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
 
 ```sh
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
@@ -129,7 +129,7 @@ const mongod = new MongoMemoryServer({
   },
   binary?: {
     version?: string, // by default '7.0.9'
-    downloadDir?: string, // see the documentation on what is chosen by default https://nodkz.github.io/mongodb-memory-server/docs/api/config-options#download_dir
+    downloadDir?: string, // see the documentation on what is chosen by default https://typegoose.github.io/mongodb-memory-server/docs/api/config-options#download_dir
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()
     checkMD5?: boolean, // by default false OR process.env.MONGOMS_MD5_CHECK
@@ -217,15 +217,15 @@ const replSet = new MongoMemoryReplSet({
 
 ### Config Options
 
-[Documentation of Config Options](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options)
+[Documentation of Config Options](https://typegoose.github.io/mongodb-memory-server/docs/api/config-options)
 
 ### Simple test with MongoClient in Jest
 
-A example test file for a *single* [MongoMemoryServer](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB.test.ts) within jest.
+A example test file for a *single* [MongoMemoryServer](https://github.com/typegoose/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/singleDB.test.ts) within jest.
 
-A example test file for *multiple* [MongoMemoryServer](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/multipleDB.test.ts) within jest.
+A example test file for *multiple* [MongoMemoryServer](https://github.com/typegoose/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/multipleDB.test.ts) within jest.
 
-A example test file for a *single* [MongoMemoryReplSet](https://github.com/nodkz/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/replset-multi.test.ts) within jest.
+A example test file for a *single* [MongoMemoryReplSet](https://github.com/typegoose/mongodb-memory-server/blob/master/packages/mongodb-memory-server-core/src/__tests__/replset-multi.test.ts) within jest.
 
 ### Provide connection string to mongoose
 
@@ -247,13 +247,13 @@ const mongoServer = await MongoMemoryServer.create();
 
 ### Test Runner Examples
 
-[Documentation for Test Runner Integration Examples](https://nodkz.github.io/mongodb-memory-server/docs/guides/integration-examples/test-runners)
+[Documentation for Test Runner Integration Examples](https://typegoose.github.io/mongodb-memory-server/docs/guides/integration-examples/test-runners)
 
 ### Docker Alpine
 
 There isn't currently an official MongoDB release for alpine linux. This means that we can't pull binaries for Alpine
 (or any other platform that isn't officially supported by MongoDB), but you can use a Docker image that already has mongod
-built in and then set the [`MONGOMS_SYSTEM_BINARY`](https://nodkz.github.io/mongodb-memory-server/docs/api/config-options#system_binary) variable to point at that binary. This should allow you to use `mongodb-memory-server` on any system on which you can install mongod manually.
+built in and then set the [`MONGOMS_SYSTEM_BINARY`](https://typegoose.github.io/mongodb-memory-server/docs/api/config-options#system_binary) variable to point at that binary. This should allow you to use `mongodb-memory-server` on any system on which you can install mongod manually.
 
 ### Enable Debug Mode
 
@@ -275,7 +275,7 @@ or
 }
 ```
 
-Also see the [Enable Debug Mode](https://nodkz.github.io/mongodb-memory-server/docs/guides/enable-debug-mode) Guide.
+Also see the [Enable Debug Mode](https://typegoose.github.io/mongodb-memory-server/docs/guides/enable-debug-mode) Guide.
 
 ## Contributing
 
@@ -287,9 +287,9 @@ To ask questions or just talk with us, [join our Discord Server](https://discord
 
 ## Documentation
 
-- [Documentation](https://nodkz.github.io/mongodb-memory-server/docs/api/index-api)
-- [Quick start guide](https://nodkz.github.io/mongodb-memory-server/docs/guides/quick-start-guide/)
-- [Known Issues](https://nodkz.github.io/mongodb-memory-server/docs/guides/known-issues)
+- [Documentation](https://typegoose.github.io/mongodb-memory-server/docs/api/index-api)
+- [Quick start guide](https://typegoose.github.io/mongodb-memory-server/docs/guides/quick-start-guide/)
+- [Known Issues](https://typegoose.github.io/mongodb-memory-server/docs/guides/known-issues)
 
 ## Credits
 

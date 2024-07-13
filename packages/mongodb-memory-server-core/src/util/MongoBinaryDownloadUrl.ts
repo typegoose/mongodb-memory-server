@@ -248,7 +248,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         release: '22.04',
       });
     } else if (regexHelper(/gentoo/i, os)) {
-      // it seems like debian binaries work for gentoo too (at least most), see https://github.com/nodkz/mongodb-memory-server/issues/639
+      // it seems like debian binaries work for gentoo too (at least most), see https://github.com/typegoose/mongodb-memory-server/issues/639
       console.warn(
         `There is no official build of MongoDB for Gentoo (${os.dist}). Falling back to Debian.`
       );
@@ -261,7 +261,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     } else if (regexHelper(/unknown/i, os)) {
       // "unknown" is likely to happen if no release file / command could be found
       console.warn(
-        'Couldnt parse dist information, please report this to https://github.com/nodkz/mongodb-memory-server/issues'
+        'Couldnt parse dist information, please report this to https://github.com/typegoose/mongodb-memory-server/issues'
       );
     }
 

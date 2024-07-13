@@ -250,7 +250,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
   /**
    * Extra promise to avoid multiple calls of `.stop` at the same time
    *
-   * @see https://github.com/nodkz/mongodb-memory-server/issues/802
+   * @see https://github.com/typegoose/mongodb-memory-server/issues/802
    */
   // NOTE: i am not sure how to properly test this
   stopPromise?: Promise<boolean>;

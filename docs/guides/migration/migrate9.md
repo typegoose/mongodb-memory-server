@@ -6,7 +6,7 @@ title: 'Migrate to version 9.0.0'
 Here are the Important changes made for 9.0.0
 
 :::caution Important, Read this first
-This Guide is written for migration from version `8.16.0` to `9.0.0`, for versions `>9.0.0 <10.0.0`, please consult the [CHANGELOG](https://github.com/nodkz/mongodb-memory-server/blob/master/CHANGELOG.md)
+This Guide is written for migration from version `8.16.0` to `9.0.0`, for versions `>9.0.0 <10.0.0`, please consult the [CHANGELOG](https://github.com/typegoose/mongodb-memory-server/blob/master/CHANGELOG.md)
 :::
 
 ## Breaking Changes
