@@ -10,7 +10,7 @@ export class StateError extends Error {
         ','
       )}]"\n` +
         'This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:\n' +
-        'https://nodkz.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything'
+        'https://typegoose.github.io/mongodb-memory-server/docs/guides/migration/migrate7#no-function-other-than-start-create-ensureinstance-will-be-starting-anything'
     );
   }
 }
