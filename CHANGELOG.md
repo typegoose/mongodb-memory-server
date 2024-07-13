@@ -1,3 +1,15 @@
+## [8.16.1](https://github.com/typegoose/mongodb-memory-server/compare/v8.16.0...v8.16.1) (2024-07-13)
+
+
+### Fixes
+
+* trigger release ([62f43e7](https://github.com/typegoose/mongodb-memory-server/commit/62f43e7c9801ab3541157093b73de158bae48558))
+
+
+### Style
+
+* **errors:** fix lint ([4137d32](https://github.com/typegoose/mongodb-memory-server/commit/4137d32f1c30ec65bec03191d1ab39679719533d))
+
 ## [8.16.0](https://github.com/nodkz/mongodb-memory-server/compare/v8.15.1...v8.16.0) (2023-10-05)
 
 
