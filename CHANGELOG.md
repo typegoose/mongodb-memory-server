@@ -1,3 +1,27 @@
+## [10.0.0-beta.3](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.0-beta.2...v10.0.0-beta.3) (2024-07-15)
+
+
+### Features
+
+* **MongoMemoryServer:** allow setting if port generation is enabeld or not ([6c4daed](https://github.com/typegoose/mongodb-memory-server/commit/6c4daedf82ab86920037c5bb1dd2a15ba4031bbe)), closes [#816](https://github.com/typegoose/mongodb-memory-server/issues/816)
+
+
+### Style
+
+* **MongoMemoryReplSet:** fix lint ([bd8941b](https://github.com/typegoose/mongodb-memory-server/commit/bd8941b331eec9f4317ef8456142db69917528a3))
+
+
+### Dependencies
+
+* **https-proxy-agent:** upgrade to version 7.0.5 ([4d5be4d](https://github.com/typegoose/mongodb-memory-server/commit/4d5be4d5aa8330ab73dff8d0c1f5d0090b20e39b))
+
+
+### Dev-Dependencies
+
+* **prettier:** upgrade to version 3.3.3 ([5aba25a](https://github.com/typegoose/mongodb-memory-server/commit/5aba25a865f08184b1db1f433c35f35242d91b55))
+* **rimraf:** upgrade to version 5.0.9 ([a6d706a](https://github.com/typegoose/mongodb-memory-server/commit/a6d706a75ab9560beb8c8053ddb7fabf42c453ca))
+* **ts-jest:** upgrade to version 29.2.2 ([839e432](https://github.com/typegoose/mongodb-memory-server/commit/839e432c19d878cc4260114604274a439d0be626))
+
 ## [10.0.0-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.0-beta.1...v10.0.0-beta.2) (2024-07-13)
 
 
