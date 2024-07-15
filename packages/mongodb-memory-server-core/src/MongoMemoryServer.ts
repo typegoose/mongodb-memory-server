@@ -30,7 +30,25 @@ const log = debug('MongoMS:MongoMemoryServer');
  * Type with automatic options removed
  * "auth" is automatically handled and set via {@link AutomaticAuth}
  */
-export type MemoryServerInstanceOpts = Omit<MongoMemoryInstanceOpts, 'auth'>;
+export type MemoryServerInstanceOpts = Omit<MongoMemoryInstanceOpts, 'auth'> & ExtraInstanceOpts;
+
+/**
+ * Extra Instance options specifically for {@link MongoMemoryServer}
+ */
+export interface ExtraInstanceOpts {
+  /**
+   * Change if port generation is enabled or not.
+   *
+   * If enabled and a port is set, that port is tried, if locked a new one will be generated.
+   * If disabled and a port is set, only that port is tried, if locked a error will be thrown.
+   * If disabled and no port is set, will act as if enabled.
+   *
+   * This setting will get overwritten by `start`'s `forceSamePort` parameter if set
+   *
+   * @default true
+   */
+  portGeneration?: boolean;
+}
 
 /**
  * MongoMemoryServer Stored Options
@@ -303,10 +321,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Start the Mongod Instance
-   * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
+   * @param forceSamePort Force to use the port defined in `options.instance` (disabled port generation)
    * @throws if state is not "new" or "stopped"
    */
-  async start(forceSamePort: boolean = false): Promise<void> {
+  async start(forceSamePort?: boolean): Promise<void> {
     this.debug('start: Called .start() method');
 
     switch (this._state) {
@@ -392,6 +410,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Construct Instance Starting Options
+   * @param forceSamePort Force to use the port defined in `options.instance` (disabled port generation)
    */
   protected async getStartOptions(
     forceSamePort: boolean = false
@@ -483,16 +502,18 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Internal Function to start an instance
-   * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
+   * @param forceSamePort Force to use the port defined in `options.instance` (disabled port generation)
    * @private
    */
-  async _startUpInstance(forceSamePort: boolean = false): Promise<void> {
+  async _startUpInstance(forceSamePort?: boolean): Promise<void> {
     this.debug('_startUpInstance: Called MongoMemoryServer._startUpInstance() method');
+
+    const useSamePort = forceSamePort ?? !(this.opts.instance?.portGeneration ?? true);
 
     if (!isNullOrUndefined(this._instanceInfo)) {
       this.debug('_startUpInstance: "instanceInfo" already defined, reusing instance');
 
-      if (!forceSamePort) {
+      if (!useSamePort) {
         const newPort = await this.getNewPort(this._instanceInfo.port);
         this._instanceInfo.instance.instanceOpts.port = newPort;
         this._instanceInfo.port = newPort;
@@ -503,7 +524,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       return;
     }
 
-    const { mongodOptions, createAuth, data } = await this.getStartOptions(forceSamePort);
+    const { mongodOptions, createAuth, data } = await this.getStartOptions(useSamePort);
     this.debug(`_startUpInstance: Creating new MongoDB instance with options:`, mongodOptions);
 
     const instance = await MongoInstance.create(mongodOptions);

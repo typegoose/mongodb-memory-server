@@ -47,6 +47,10 @@ This warning is because the mentioned storage engine is explicitly used and mong
 ]
 `;
 
+exports[`MongoMemoryServer start() instance.portGeneration should Error if a predefined port is already in use if "opts.instance.portGeneration" is "false" 1`] = `[Error: Port "30002" already in use]`;
+
+exports[`MongoMemoryServer start() instance.portGeneration should overwrite "opts.instance.portGeneration" if "forceSamePort" is set ("forceSamePort true" case) 1`] = `[Error: Port "30004" already in use]`;
+
 exports[`MongoMemoryServer start() should throw an error if state is not "new" or "stopped" 1`] = `
 "Incorrect State for operation: \\"starting\\", allowed States: \\"[new,stopped]\\"
 This may be because of using a v6.x way of calling functions, look at the following guide if anything applies:

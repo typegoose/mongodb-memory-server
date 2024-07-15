@@ -458,6 +458,142 @@ describe('MongoMemoryServer', () => {
         'Cannot start because "instance.mongodProcess" is already defined!'
       );
     });
+
+    describe('instance.portGeneration', () => {
+      it('should use a predefined port if "opts.instance.portGeneration" is "false"', async () => {
+        const predefinedPort = 30001;
+
+        const mongoServer = new MongoMemoryServer({
+          instance: { port: predefinedPort, portGeneration: false },
+        });
+        const newPortSpy = jest
+          // @ts-expect-error "getNewPort" is protected
+          .spyOn(mongoServer, 'getNewPort')
+          .mockImplementation(() => fail('Expected this function to not be called'));
+
+        await mongoServer.start();
+
+        expect(newPortSpy).not.toHaveBeenCalled();
+        // @ts-expect-error "_instanceInfo" is protected
+        expect(mongoServer._instanceInfo!.port).toStrictEqual(predefinedPort);
+
+        await mongoServer.stop();
+      });
+
+      it('should Error if a predefined port is already in use if "opts.instance.portGeneration" is "false"', async () => {
+        const predefinedPort = 30002;
+
+        const newPortSpy = jest
+          // @ts-expect-error "getNewPort" is protected
+          .spyOn(MongoMemoryServer.prototype, 'getNewPort')
+          .mockImplementation(() => fail('Expected this function to not be called'));
+
+        jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+
+        const mongoServer1 = new MongoMemoryServer({
+          instance: { port: predefinedPort, portGeneration: false },
+        });
+
+        const mongoServer2 = new MongoMemoryServer({
+          instance: { port: predefinedPort, portGeneration: false },
+        });
+
+        await mongoServer1.start();
+
+        await expect(() => mongoServer2.start()).rejects.toMatchSnapshot();
+
+        expect(newPortSpy).not.toHaveBeenCalled();
+        // @ts-expect-error "_instanceInfo" is protected
+        expect(mongoServer1._instanceInfo!.port).toStrictEqual(predefinedPort);
+        expect(console.warn).toHaveBeenCalledTimes(1);
+
+        await mongoServer1.stop();
+      });
+
+      it('should generate a new port if the predefined port is already in use and "opts.instance.portGeneration" is "true"', async () => {
+        const predefinedPort = 30003;
+
+        const newPortSpy = jest
+          // @ts-expect-error "getNewPort" is protected
+          .spyOn(MongoMemoryServer.prototype, 'getNewPort');
+
+        const mongoServer1 = new MongoMemoryServer({
+          instance: { port: predefinedPort, portGeneration: false },
+        });
+
+        const mongoServer2 = new MongoMemoryServer({
+          instance: { port: predefinedPort, portGeneration: true },
+        });
+
+        await mongoServer1.start();
+
+        expect(newPortSpy).not.toHaveBeenCalled();
+
+        await mongoServer2.start();
+
+        expect(newPortSpy).toHaveBeenCalledTimes(1);
+
+        await mongoServer1.stop();
+        await mongoServer2.stop();
+      });
+
+      it('should overwrite "opts.instance.portGeneration" if "forceSamePort" is set ("forceSamePort true" case)', async () => {
+        const predefinedPort = 30004;
+
+        const newPortSpy = jest
+          // @ts-expect-error "getNewPort" is protected
+          .spyOn(MongoMemoryServer.prototype, 'getNewPort')
+          .mockImplementation(() => fail('Expected this function to not be called'));
+
+        jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+
+        const mongoServer1 = new MongoMemoryServer({
+          instance: { port: predefinedPort, portGeneration: false },
+        });
+
+        const mongoServer2 = new MongoMemoryServer({
+          instance: { port: predefinedPort, portGeneration: true },
+        });
+
+        await mongoServer1.start();
+
+        await expect(() => mongoServer2.start(true)).rejects.toMatchSnapshot();
+
+        expect(newPortSpy).not.toHaveBeenCalled();
+        // @ts-expect-error "_instanceInfo" is protected
+        expect(mongoServer1._instanceInfo!.port).toStrictEqual(predefinedPort);
+        expect(console.warn).toHaveBeenCalledTimes(1);
+
+        await mongoServer1.stop();
+      });
+
+      it('should overwrite "opts.instance.portGeneration" if "forceSamePort" is set ("forceSamePort false" case)', async () => {
+        const predefinedPort = 30005;
+
+        const newPortSpy = jest
+          // @ts-expect-error "getNewPort" is protected
+          .spyOn(MongoMemoryServer.prototype, 'getNewPort');
+
+        const mongoServer1 = new MongoMemoryServer({
+          instance: { port: predefinedPort, portGeneration: false },
+        });
+
+        const mongoServer2 = new MongoMemoryServer({
+          instance: { port: predefinedPort, portGeneration: false },
+        });
+
+        await mongoServer1.start();
+
+        expect(newPortSpy).not.toHaveBeenCalled();
+
+        await mongoServer2.start(false);
+
+        expect(newPortSpy).toHaveBeenCalledTimes(1);
+
+        await mongoServer1.stop();
+        await mongoServer2.stop();
+      });
+    });
   });
 
   describe('ensureInstance()', () => {
