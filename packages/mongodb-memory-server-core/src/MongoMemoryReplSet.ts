@@ -663,7 +663,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     const isInMemory = this.servers[0].instanceInfo?.storageEngine === 'ephemeralForTest';
 
     const extraOptions = this._ranCreateAuth
-      ? this.servers[0].instanceInfo?.instance.extraConnectionOptions ?? {}
+      ? (this.servers[0].instanceInfo?.instance.extraConnectionOptions ?? {})
       : {};
 
     const con: MongoClient = await MongoClient.connect(uris[0], {
