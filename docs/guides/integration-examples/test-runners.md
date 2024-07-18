@@ -137,8 +137,8 @@ describe('...', () => {
 
 ## AVA test runner
 
-For AVA written [detailed tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) how to test mongoose models by @zellwk.
+For AVA there is a [detailed written tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) on how to test mongoose models with mongodb-memory-server by [@zellwk](https://github.com/zellwk).
 
 :::note
-Note that this mentioned tutorial is pre 7.x
+Note that this tutorial is pre mongodb-memory-server 7.x.
 :::
