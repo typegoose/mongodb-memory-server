@@ -9,11 +9,15 @@ API Documentation of `MongoMemoryServerOpts`-Interface
 
 ### instance
 
-Typings: `instance?: MemoryServerInstanceOpts`
+Typings: `instance?: MemoryServerInstanceOpts & ExtraOptions`
 
 Set custom options based on [`MongoMemoryInstanceOpts`](./mongo-memory-instance-opts.md), but ignores some properties:
 
 - `auth` is ignored because it is set via [auth](#auth) property.
+
+Extra options specific to [`MongoMemoryServer` class](../classes/mongo-memory-server.md):
+
+- `portGeneration`: enable / disable port generation, enabled by default.
 
 ### binary
 
@@ -32,3 +36,9 @@ Set custom spawn options for spawning processes, uses [`SpawnOptions`](https://n
 Typings: `auth?: AutomaticAuth`
 
 Set custom Authentication options for the instance, uses [`AutomaticAuth`](./mongo-memory-server-automaticauth.md).
+
+### dispose
+
+Typings: `dispose?: DisposeOptions`
+
+Set custom behavior for when `[Symbol.asyncDispose]` is called, uses [`DisposeOptions`](./mongo-dispose-opts.md).

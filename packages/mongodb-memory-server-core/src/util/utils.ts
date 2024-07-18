@@ -268,6 +268,8 @@ export abstract class ManagerBase {
   abstract start(forceSamePort: boolean): Promise<void>;
   abstract start(): Promise<void>;
   abstract stop(cleanup: Cleanup): Promise<boolean>;
+  // Symbol for "Explicit Resource Management"
+  abstract [Symbol.asyncDispose](): Promise<void>;
 }
 
 /**

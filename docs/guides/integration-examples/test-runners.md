@@ -56,7 +56,7 @@ export = async function globalSetup() {
     process.env.MONGO_URI = `mongodb://${config.IP}:${config.Port}`;
   }
 
-  // The following is to make sure the database is clean before an test starts
+  // The following is to make sure the database is clean before a test suite starts
   const conn = await mongoose.connect(`${process.env.MONGO_URI}/${config.Database}`);
   await conn.connection.db.dropDatabase();
   await mongoose.disconnect();
@@ -89,7 +89,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  // put your client disconnection code here, example with mongodb:
+  // put your client disconnection code here, example with mongoose:
   await mongoose.disconnect();
 });
 ```
@@ -109,17 +109,16 @@ Keep in mind that jest's global-setup and global-teardown do **not** share a env
 
 Start Mocha with `--timeout 60000` cause first download of MongoDB binaries may take a time.
 
-```js
+```ts
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 let mongoServer;
-const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 
 before(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri, opts);
+  await mongoose.connect(mongoUri);
 });
 
 after(async () => {
@@ -130,7 +129,7 @@ after(async () => {
 describe('...', () => {
   it('...', async () => {
     const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-    const cnt = await User.count();
+    const cnt = await User.countDocuments();
     expect(cnt).to.equal(0);
   });
 });
@@ -138,8 +137,8 @@ describe('...', () => {
 
 ## AVA test runner
 
-For AVA written [detailed tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) how to test mongoose models by @zellwk.
+For AVA there is a [detailed written tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) on how to test mongoose models with mongodb-memory-server by [@zellwk](https://github.com/zellwk).
 
 :::note
-Note that this mentioned tutorial is pre 7.x
+Note that this tutorial is pre mongodb-memory-server 7.x.
 :::

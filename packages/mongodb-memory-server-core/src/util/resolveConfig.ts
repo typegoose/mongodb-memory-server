@@ -5,6 +5,12 @@ import * as path from 'path';
 import { readFileSync } from 'fs';
 import { isNullOrUndefined } from './utils';
 
+// polyfills
+// @ts-expect-error they are marked "read-only", but are set-able if not implemented by the runtime
+Symbol.dispose ??= Symbol('Symbol.dispose');
+// @ts-expect-error they are marked "read-only", but are set-able if not implemented by the runtime
+Symbol.asyncDispose ??= Symbol('Symbol.asyncDispose');
+
 const log = debug('MongoMS:ResolveConfig');
 
 /** Enum of all possible config options */
@@ -28,13 +34,12 @@ export enum ResolveConfigVariables {
   USE_ARCHIVE_NAME_FOR_BINARY_NAME = 'USE_ARCHIVE_NAME_FOR_BINARY_NAME',
   MAX_REDIRECTS = 'MAX_REDIRECTS',
   DISTRO = 'DISTRO',
-  EXP_NET0LISTEN = 'EXP_NET0LISTEN',
 }
 
 /** The Prefix for Environmental values */
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 /** This Value exists here, because "defaultValues" can be changed with "setDefaultValue", but this property is constant */
-export const DEFAULT_VERSION = '6.0.14';
+export const DEFAULT_VERSION = '7.0.11';
 /** Default values for some config options that require explicit setting, it is constant so that the default values cannot be interfered with */
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here

@@ -239,6 +239,10 @@ describe('single server replset', () => {
     jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
     const replSet = await MongoMemoryReplSet.create({
       replSet: { auth: { enable: true }, count: 3, storageEngine: 'ephemeralForTest' },
+      binary: {
+        // 7.0 removed "ephemeralForTest", this test is explicitly for that engine
+        version: '6.0.14',
+      },
     });
 
     utils.assertion(!utils.isNullOrUndefined(replSet.replSetOpts.auth));
@@ -436,8 +440,9 @@ describe('MongoMemoryReplSet', () => {
         dbName: replSet.replSetOpts.dbName, // not testing this value, because its generated "randomly"
         ip: '127.0.0.1',
         spawn: {},
-        storageEngine: 'ephemeralForTest',
+        storageEngine: 'wiredTiger',
         configSettings: {},
+        dispose: {},
       });
       replSet.replSetOpts = { auth: { enable: true } };
       // @ts-expect-error because "_replSetOpts" is protected
@@ -451,8 +456,9 @@ describe('MongoMemoryReplSet', () => {
         dbName: replSet.replSetOpts.dbName, // not testing this value, because its generated "randomly"
         ip: '127.0.0.1',
         spawn: {},
-        storageEngine: 'ephemeralForTest',
+        storageEngine: 'wiredTiger',
         configSettings: {},
+        dispose: {},
       });
     });
 
@@ -584,22 +590,6 @@ describe('MongoMemoryReplSet', () => {
       } as utils.Cleanup);
     });
 
-    it('should not support boolean arguments', async () => {
-      const replSet = new MongoMemoryReplSet();
-
-      try {
-        await replSet.stop(
-          // @ts-expect-error Testing a non-existing overload
-          true
-        );
-        fail('Expected to fail');
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        assertIsError(err);
-        expect(err.message).toMatchSnapshot();
-      }
-    });
-
     it('should call cleanup and pass-through cleanup options', async () => {
       const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
 
@@ -668,22 +658,6 @@ describe('MongoMemoryReplSet', () => {
         doCleanup: true,
         force: true,
       } as utils.Cleanup);
-    });
-
-    it('should not support boolean arguments', async () => {
-      const replSet = new MongoMemoryReplSet();
-
-      try {
-        await replSet.cleanup(
-          // @ts-expect-error Testing a non-existing overload
-          true
-        );
-        fail('Expected to fail');
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        assertIsError(err);
-        expect(err.message).toMatchSnapshot();
-      }
     });
 
     it('should run cleanup with cleanup options and pass-through options to lower', async () => {
@@ -796,6 +770,83 @@ describe('MongoMemoryReplSet', () => {
       expect(server.replSetOpts?.storageEngine).toStrictEqual('wiredTiger');
 
       await server.stop();
+    });
+  });
+
+  describe('asyncDispose', () => {
+    it('should work by default', async () => {
+      jest.spyOn(MongoMemoryReplSet.prototype, 'start');
+      jest.spyOn(MongoMemoryReplSet.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryReplSet.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryReplSet.create();
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.stopped);
+      expect(outer.servers.length).toStrictEqual(0);
+      expect(MongoMemoryReplSet.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryReplSet.prototype.stop).toHaveBeenCalledTimes(1);
+      // expect(MongoMemoryReplSet.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+    });
+
+    it('should be able to be disabled', async () => {
+      jest.spyOn(MongoMemoryReplSet.prototype, 'start');
+      jest.spyOn(MongoMemoryReplSet.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryReplSet.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryReplSet.create({
+          replSet: { dispose: { enabled: false } },
+        });
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.running);
+      expect(outer.servers.length).toStrictEqual(1);
+      expect(MongoMemoryReplSet.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryReplSet.prototype.stop).toHaveBeenCalledTimes(0);
+      // expect(MongoMemoryReplSet.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+      await outer.stop();
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.stopped);
+    });
+
+    it('should be able to set custom cleanup', async () => {
+      jest.spyOn(MongoMemoryReplSet.prototype, 'start');
+      jest.spyOn(MongoMemoryReplSet.prototype, 'stop');
+      let outer;
+      // would like to test this, but jest seemingly does not support spying on symbols
+      // jest.spyOn(MongoMemoryReplSet.prototype, Symbol.asyncDispose);
+      {
+        await using server = await MongoMemoryReplSet.create({
+          replSet: {
+            dispose: { cleanup: { doCleanup: false } },
+          },
+        });
+        // use the value and test that it actually runs, as "getUri" will throw is not in "running" state
+        server.getUri();
+        // reassignment still calls dispose at the *current* scope
+        outer = server;
+      }
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.stopped);
+      expect(outer.servers.length).toStrictEqual(1);
+      expect(MongoMemoryReplSet.prototype.start).toHaveBeenCalledTimes(1);
+      expect(MongoMemoryReplSet.prototype.stop).toHaveBeenCalledTimes(1);
+      // expect(MongoMemoryReplSet.prototype[Symbol.asyncDispose]).toHaveBeenCalledTimes(1);
+      await outer.cleanup({ doCleanup: true });
+      // not "stopped" because of cleanup
+      expect(outer.state).toStrictEqual(MongoMemoryReplSetStates.stopped);
+      expect(outer.servers.length).toStrictEqual(0);
     });
   });
 });

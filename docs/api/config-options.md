@@ -93,7 +93,7 @@ Example: `ubuntu-18.04`
 
 Option `VERSION` is used to set what mongodb version should be downloaded
 
-Default: `6.0.14` (see [Mongodb Server Versions](../guides/mongodb-server-versions.md) for a complete list and policy)
+Default: `7.0.11` (see [Mongodb Server Versions](../guides/mongodb-server-versions.md) for a complete list and policy)
 
 This Option does not have a effect when [`ARCHIVE_NAME`](#archive_name) or [`DOWNLOAD_URL`](#download_url) is defined.
 
@@ -268,20 +268,6 @@ Also see [ARCHIVE_NAME](#archive_name).
 :::note
 Keep in mind that downloaded binaries will never be automatically deleted.
 :::
-
-### EXP_NET0LISTEN
-
-| Environment Variable | PackageJson |
-| :------------------: | :---------: |
-|  `MONGOMS_EXP_NET0LISTEN`  |  `expNet0Listen`  |
-
-Option `EXP_NET0LISTEN` is used to use the experimental (non-predictable) port generation of `net.listen`.
-
-This option will use a random open port, which will lessen the "port is already in use" errors, but will not eliminate them.
-
-This is a experimental option, it maybe removed, renamed or have changed behavior in the future.
-
-Default: `false`
 
 ## How to use them in the package.json
 

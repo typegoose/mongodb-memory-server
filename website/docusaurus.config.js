@@ -13,8 +13,7 @@ if (!baseUrl.endsWith('/')) {
 
 module.exports = {
   title: 'mongodb-memory-server',
-  tagline:
-    'Spinning up mongod in memory for fast tests. If you run tests in parallel this lib helps to spin up dedicated mongodb servers for every test file in MacOS, *nix, Windows or CI environments (in most cases with zero-config).',
+  tagline: 'Manage & spin up mongodb server binaries with zero(or slight) configuration for tests.',
   url: 'https://typegoose.github.io',
   baseUrl: baseUrl,
   favicon: 'img/favicon.ico',

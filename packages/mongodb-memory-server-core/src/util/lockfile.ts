@@ -41,6 +41,7 @@ export enum LockFileEvents {
   unlock = 'unlock',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 interface LockFileEventsClass extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
   emit(event: LockFileEvents, ...args: any[]): boolean;
@@ -49,6 +50,7 @@ interface LockFileEventsClass extends EventEmitter {
 }
 
 /** Dummy class for types */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 class LockFileEventsClass extends EventEmitter {}
 
 export class LockFile {

@@ -18,7 +18,7 @@ import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { EventEmitter } from 'events';
 import { promises as fspromises } from 'fs';
-import { AddUserOptions, MongoClient } from 'mongodb';
+import { MongoClient } from 'mongodb';
 import { InstanceInfoError, StateError, UnknownVersionError } from './util/errors';
 import * as os from 'os';
 import { DryMongoBinary } from './util/DryMongoBinary';
@@ -30,7 +30,25 @@ const log = debug('MongoMS:MongoMemoryServer');
  * Type with automatic options removed
  * "auth" is automatically handled and set via {@link AutomaticAuth}
  */
-export type MemoryServerInstanceOpts = Omit<MongoMemoryInstanceOpts, 'auth'>;
+export type MemoryServerInstanceOpts = Omit<MongoMemoryInstanceOpts, 'auth'> & ExtraInstanceOpts;
+
+/**
+ * Extra Instance options specifically for {@link MongoMemoryServer}
+ */
+export interface ExtraInstanceOpts {
+  /**
+   * Change if port generation is enabled or not.
+   *
+   * If enabled and a port is set, that port is tried, if locked a new one will be generated.
+   * If disabled and a port is set, only that port is tried, if locked a error will be thrown.
+   * If disabled and no port is set, will act as if enabled.
+   *
+   * This setting will get overwritten by `start`'s `forceSamePort` parameter if set
+   *
+   * @default true
+   */
+  portGeneration?: boolean;
+}
 
 /**
  * MongoMemoryServer Stored Options
@@ -43,6 +61,27 @@ export interface MongoMemoryServerOpts {
    * Defining this enables automatic user creation
    */
   auth?: AutomaticAuth;
+  /**
+   * Options for automatic dispose for "Explicit Resource Management"
+   */
+  dispose?: DisposeOptions;
+}
+
+/**
+ * Options to configure `Symbol.asyncDispose` behavior
+ */
+export interface DisposeOptions {
+  /**
+   * Set whether to run the dispose hook or not.
+   * Note that this only applies when `Symbol.asyncDispose` is actually called
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Pass custom options for cleanup
+   * @default { doCleanup: true, force: false }
+   */
+  cleanup?: Cleanup;
 }
 
 export interface AutomaticAuth {
@@ -143,11 +182,22 @@ export type UserRoles =
   | 'root'
   | string;
 
+// copied from mongodb 5.9.1 as it has been removed for 6.0.0
+export interface RoleSpecification {
+  /**
+   * A role grants privileges to perform sets of actions on defined resources.
+   * A given role applies to the database on which it is defined and can grant access down to a collection level of granularity.
+   */
+  role: string;
+  /** The database this user's role should effect. */
+  db: string;
+}
+
 /**
  * Interface options for "db.createUser" (used for this package)
  * This interface is WITHOUT the custom options from this package
  * (Some text copied from https://docs.mongodb.com/manual/reference/method/db.createUser/#definition)
- * This interface only exists, because mongodb dosnt provide such an interface for "createUser" (or as just very basic types)
+ * This interface only exists, because mongodb dosnt provide such an interface for "createUser" (or as just very basic types) as of 6.7.0
  */
 export interface CreateUserMongoDB {
   /**
@@ -169,7 +219,7 @@ export interface CreateUserMongoDB {
   /**
    * The Roles for the user, can be an empty array
    */
-  roles: AddUserOptions['roles'];
+  roles: string | string[] | RoleSpecification | RoleSpecification[];
   /**
    * Specify the specific SCRAM mechanism or mechanisms for creating SCRAM user credentials.
    */
@@ -210,6 +260,7 @@ export interface MongoMemoryServerGetStartOptions {
   mongodOptions: Partial<MongodOpts>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface MongoMemoryServer extends EventEmitter {
   // Overwrite EventEmitter's definitions (to provide at least the event names)
   emit(event: MongoMemoryServerEvents, ...args: any[]): boolean;
@@ -217,6 +268,7 @@ export interface MongoMemoryServer extends EventEmitter {
   once(event: MongoMemoryServerEvents, listener: (...args: any[]) => void): this;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
   /**
    * Information about the started instance
@@ -269,10 +321,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Start the Mongod Instance
-   * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
+   * @param forceSamePort Force to use the port defined in `options.instance` (disabled port generation)
    * @throws if state is not "new" or "stopped"
    */
-  async start(forceSamePort: boolean = false): Promise<void> {
+  async start(forceSamePort?: boolean): Promise<void> {
     this.debug('start: Called .start() method');
 
     switch (this._state) {
@@ -358,6 +410,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Construct Instance Starting Options
+   * @param forceSamePort Force to use the port defined in `options.instance` (disabled port generation)
    */
   protected async getStartOptions(
     forceSamePort: boolean = false
@@ -449,16 +502,18 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
   /**
    * Internal Function to start an instance
-   * @param forceSamePort Force to use the Same Port, if already an "instanceInfo" exists
+   * @param forceSamePort Force to use the port defined in `options.instance` (disabled port generation)
    * @private
    */
-  async _startUpInstance(forceSamePort: boolean = false): Promise<void> {
+  async _startUpInstance(forceSamePort?: boolean): Promise<void> {
     this.debug('_startUpInstance: Called MongoMemoryServer._startUpInstance() method');
+
+    const useSamePort = forceSamePort ?? !(this.opts.instance?.portGeneration ?? true);
 
     if (!isNullOrUndefined(this._instanceInfo)) {
       this.debug('_startUpInstance: "instanceInfo" already defined, reusing instance');
 
-      if (!forceSamePort) {
+      if (!useSamePort) {
         const newPort = await this.getNewPort(this._instanceInfo.port);
         this._instanceInfo.instance.instanceOpts.port = newPort;
         this._instanceInfo.port = newPort;
@@ -469,7 +524,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
       return;
     }
 
-    const { mongodOptions, createAuth, data } = await this.getStartOptions(forceSamePort);
+    const { mongodOptions, createAuth, data } = await this.getStartOptions(useSamePort);
     this.debug(`_startUpInstance: Creating new MongoDB instance with options:`, mongodOptions);
 
     const instance = await MongoInstance.create(mongodOptions);
@@ -516,11 +571,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     /** Default to cleanup temporary, but not custom dbpaths */
     let cleanup: Cleanup = { doCleanup: true, force: false };
 
-    // TODO: for next major release (10.0), this should be removed
-    if (typeof cleanupOptions === 'boolean') {
-      throw new Error('Unsupported argument type: boolean');
-    }
-
     // handle the new way of setting what and how to cleanup
     if (typeof cleanupOptions === 'object') {
       cleanup = cleanupOptions;
@@ -563,11 +613,6 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
     /** Default to doing cleanup, but not forcing it */
     let cleanup: Cleanup = { doCleanup: true, force: false };
-
-    // TODO: for next major release (10.0), this should be removed
-    if (typeof options === 'boolean') {
-      throw new Error('Unsupported argument type: boolean');
-    }
 
     // handle the new way of setting what and how to cleanup
     if (typeof options === 'object') {
@@ -824,6 +869,13 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     return typeof this.auth.enable === 'boolean' // if "this._replSetOpts.auth.enable" is defined, use that
       ? this.auth.enable
       : false; // if "this._replSetOpts.auth.enable" is not defined, default to false
+  }
+
+  // Symbol for "Explicit Resource Management"
+  async [Symbol.asyncDispose]() {
+    if (this.opts.dispose?.enabled ?? true) {
+      await this.stop(this.opts.dispose?.cleanup);
+    }
   }
 }
 
