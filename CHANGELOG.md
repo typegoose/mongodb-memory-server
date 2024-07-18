@@ -1,3 +1,14 @@
+## [10.0.0-beta.5](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.0-beta.4...v10.0.0-beta.5) (2024-07-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **resolveConfig:** Default binary version is now "7.0.11"
+
+### Features
+
+* **resolveConfig:** update default binary version to 7.x ([9d569ac](https://github.com/typegoose/mongodb-memory-server/commit/9d569ac63e7f6bd729e0d98254226f4ed18acb0a))
+
 ## [10.0.0-beta.4](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.0-beta.3...v10.0.0-beta.4) (2024-07-18)
 
 
