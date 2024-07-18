@@ -1,3 +1,20 @@
+## [10.0.0-beta.4](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.0-beta.3...v10.0.0-beta.4) (2024-07-18)
+
+
+### Features
+
+* **index:** also top-level export "DryMongoBinary" and all errors ([d11abaa](https://github.com/typegoose/mongodb-memory-server/commit/d11abaaa9e7207756bd6d599b2455e7d5761f638))
+
+
+### Dependencies
+
+* **semver:** upgrade to version 7.6.3 ([100e571](https://github.com/typegoose/mongodb-memory-server/commit/100e57100c1c334c29a38ab8efaed0f7942e3235))
+
+
+### Dev-Dependencies
+
+* **eslint-plugin-prettier:** upgrade to version 5.2.1 ([15990b9](https://github.com/typegoose/mongodb-memory-server/commit/15990b97549a6a8632bab303d4a10204d91d90fe))
+
 ## [10.0.0-beta.3](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.0-beta.2...v10.0.0-beta.3) (2024-07-15)
 
 
