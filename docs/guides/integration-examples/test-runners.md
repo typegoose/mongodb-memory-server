@@ -114,12 +114,11 @@ import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 let mongoServer;
-const opts = { useMongoClient: true }; // remove this option if you use mongoose 5 and above
 
 before(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri, opts);
+  await mongoose.connect(mongoUri);
 });
 
 after(async () => {
@@ -130,7 +129,7 @@ after(async () => {
 describe('...', () => {
   it('...', async () => {
     const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-    const cnt = await User.count();
+    const cnt = await User.countDocuments();
     expect(cnt).to.equal(0);
   });
 });
