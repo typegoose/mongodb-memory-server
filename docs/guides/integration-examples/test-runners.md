@@ -56,7 +56,7 @@ export = async function globalSetup() {
     process.env.MONGO_URI = `mongodb://${config.IP}:${config.Port}`;
   }
 
-  // The following is to make sure the database is clean before an test starts
+  // The following is to make sure the database is clean before a test suite starts
   const conn = await mongoose.connect(`${process.env.MONGO_URI}/${config.Database}`);
   await conn.connection.db.dropDatabase();
   await mongoose.disconnect();
@@ -89,7 +89,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  // put your client disconnection code here, example with mongodb:
+  // put your client disconnection code here, example with mongoose:
   await mongoose.disconnect();
 });
 ```
@@ -109,7 +109,7 @@ Keep in mind that jest's global-setup and global-teardown do **not** share a env
 
 Start Mocha with `--timeout 60000` cause first download of MongoDB binaries may take a time.
 
-```js
+```ts
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
