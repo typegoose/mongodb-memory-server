@@ -88,6 +88,9 @@ export async function getFreePort(
         continue;
       }
 
+      // reset the cache time as we now have just added new ports
+      PORTS_CACHE.timeSet = Date.now();
+
       return triedPort;
     }
   }
