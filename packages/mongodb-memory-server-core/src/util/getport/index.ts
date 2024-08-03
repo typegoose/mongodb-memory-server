@@ -73,10 +73,20 @@ export async function getFreePort(
     const triedPort = await tryPort(nextPort);
 
     if (triedPort > 0) {
-      log('getFreePort: found free port', triedPort);
+      // check if triedPort is already in the cache (ie the vm executed another instance's getport before binary startup)
+      // and that the triedPort is not a custom port
+      const inCacheAndNotSame = PORTS_CACHE.ports.has(triedPort) && nextPort !== triedPort;
+      log(
+        `getFreePort: found free port ${triedPort}, in cache and not custom: ${inCacheAndNotSame}`
+      );
 
       // returned port can be different than the "nextPort" (if net0listen)
       PORTS_CACHE.ports.add(nextPort);
+
+      // ensure that no other instance can get the same port if the vm decides to run the other instance's getport before starting the last one
+      if (inCacheAndNotSame) {
+        continue;
+      }
 
       return triedPort;
     }
