@@ -1,3 +1,11 @@
+## [10.0.1-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.0...v10.0.1-beta.1) (2024-08-03)
+
+
+### Fixes
+
+* **getport:** check new port against cache ([b70d868](https://github.com/typegoose/mongodb-memory-server/commit/b70d868cf5b6766e751ef6fec53e8e4ccccd1de6)), closes [#883](https://github.com/typegoose/mongodb-memory-server/issues/883)
+* **getport:** update cache time when last used ([a332b49](https://github.com/typegoose/mongodb-memory-server/commit/a332b491b173d9d3b03578c9f6bcd46fecbaa6d7)), closes [#883](https://github.com/typegoose/mongodb-memory-server/issues/883)
+
 ## [10.0.0](https://github.com/typegoose/mongodb-memory-server/compare/v9.4.1...v10.0.0) (2024-07-18)
 
 
