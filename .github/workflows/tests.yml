@@ -75,15 +75,16 @@ jobs:
         uses: cycjimmy/semantic-release-action@cb425203a562475bca039ba4dbf90c7f9ac790f4 # v4.1.0
         with:
           # dry_run: true
+          # using semantic-release 23.x because of https://github.com/semantic-release/release-notes-generator/issues/675
           extra_plugins: |
-            @semantic-release/git
-            @semantic-release/changelog
-            @semantic-release/commit-analyzer
-            @semantic-release/release-notes-generator
-            @semantic-release/github
-            @semantic-release/npm
-            @commitlint/config-conventional
-            semantic-release-replace-plugin
+            @semantic-release/git@10.x
+            @semantic-release/changelog@6.x
+            @semantic-release/commit-analyzer@13.x
+            @semantic-release/release-notes-generator@14.x
+            @semantic-release/github@10.x
+            @semantic-release/npm@12.x
+            @commitlint/config-conventional@19.x
+            semantic-release-replace-plugin@1.2.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
