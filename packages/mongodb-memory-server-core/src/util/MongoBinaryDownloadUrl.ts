@@ -581,6 +581,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu2004';
     }
 
+    // there are only binaries for 2404 since 8.0.0, not in 7.x
+    if (ubuntuYear >= 22 && semver.satisfies(coercedVersion, '<8.0.0')) {
+      return 'ubuntu2204';
+    }
+
     // base case for higher than mongodb supported ubuntu versions
     {
       // TODO: try to keep this up-to-date to the latest mongodb supported ubuntu version
@@ -588,14 +593,14 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
        * Highest ubuntu year supported by mongodb binaries
        * @see https://www.mongodb.com/download-center/community/releases/archive
        */
-      const highestUbuntuYear = 22; // 22 is the highest supported as of mongodb 7.0.11
+      const highestUbuntuYear = 24; // 24 is the highest supported as of mongodb 8.0.1
 
       if (ubuntuYear > highestUbuntuYear) {
         log(
           `getUbuntuVersionString: ubuntuYear "${ubuntuYear}" is higher than the currently supported mongodb year of "${highestUbuntuYear}", using highest known`
         );
 
-        return 'ubuntu2204';
+        return 'ubuntu2404';
       }
     }
 

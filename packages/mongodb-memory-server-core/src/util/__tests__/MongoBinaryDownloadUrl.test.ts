@@ -309,6 +309,70 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('for ubuntu 22.04 for 7.0.11', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.11',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '22.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.11.tgz'
+          );
+        });
+
+        it('for ubuntu 24.04 for 7.0.11', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.11',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '24.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.11.tgz'
+          );
+        });
+
+        it('for ubuntu 22.04 for 8.0.1', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '8.0.1',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '22.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-8.0.1.tgz'
+          );
+        });
+
+        it('for ubuntu 24.04 for 8.0.1', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '8.0.1',
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '24.04',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-8.0.1.tgz'
+          );
+        });
+
         it('should allow v5.0-latest', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -352,7 +416,7 @@ describe('MongoBinaryDownloadUrl', () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
-            version: '7.0.4', // highest released mongodb version
+            version: '8.0.1', // highest released mongodb version
             os: {
               os: 'linux',
               dist: 'ubuntu',
@@ -360,7 +424,7 @@ describe('MongoBinaryDownloadUrl', () => {
             },
           });
           expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-8.0.1.tgz'
           );
         });
 
