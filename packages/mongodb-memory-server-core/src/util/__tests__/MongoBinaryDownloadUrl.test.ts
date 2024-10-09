@@ -120,6 +120,30 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
+      it('should work with mongodb 7.0 (x86_64)', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'x64',
+          version: '7.0.11',
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-7.0.11.tgz'
+        );
+      });
+
+      it('should work with mongodb 7.0 (arm64)', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'darwin',
+          arch: 'arm64',
+          version: '7.0.11',
+        });
+
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-7.0.11.tgz'
+        );
+      });
+
       it('should allow v5.0-latest x64', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
