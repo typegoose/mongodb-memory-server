@@ -124,11 +124,11 @@ describe('MongoBinaryDownloadUrl', () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
-          version: '7.0.11',
+          version: '7.0.14',
         });
 
         expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-7.0.11.tgz'
+          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-7.0.14.tgz'
         );
       });
 
@@ -136,11 +136,11 @@ describe('MongoBinaryDownloadUrl', () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'arm64',
-          version: '7.0.11',
+          version: '7.0.14',
         });
 
         expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-7.0.11.tgz'
+          'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-7.0.14.tgz'
         );
       });
 
@@ -333,11 +333,11 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 7.0.11', async () => {
+        it('for ubuntu 22.04 for 7.0.14', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
-            version: '7.0.11',
+            version: '7.0.14',
             os: {
               os: 'linux',
               dist: 'ubuntu',
@@ -345,15 +345,15 @@ describe('MongoBinaryDownloadUrl', () => {
             },
           });
           expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.11.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.14.tgz'
           );
         });
 
-        it('for ubuntu 24.04 for 7.0.11', async () => {
+        it('for ubuntu 24.04 for 7.0.14', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
-            version: '7.0.11',
+            version: '7.0.14',
             os: {
               os: 'linux',
               dist: 'ubuntu',
@@ -361,7 +361,7 @@ describe('MongoBinaryDownloadUrl', () => {
             },
           });
           expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.11.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.14.tgz'
           );
         });
 
@@ -1162,10 +1162,10 @@ describe('MongoBinaryDownloadUrl', () => {
 
         it('should return a archive name for Linux Mint 21', async () => {
           (downloadUrl.os as LinuxOS).release = '22';
-          downloadUrl.version = '7.0.11';
+          downloadUrl.version = '7.0.14';
           // NOTE: there are currently no binaries for ubuntu 24.04, but 22.04 still work
           expect(await downloadUrl.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.11.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.14.tgz'
           );
         });
       });
@@ -1759,14 +1759,14 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('7.0.11 (windows)', async () => {
+      it('7.0.14 (windows)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
           arch: 'x64',
-          version: '7.0.11',
+          version: '7.0.14',
         });
         expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.11.zip'
+          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.14.zip'
         );
       });
 
