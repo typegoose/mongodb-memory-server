@@ -1676,6 +1676,17 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
+      it('7.0.11 (windows)', async () => {
+        const du = new MongoBinaryDownloadUrl({
+          platform: 'win32',
+          arch: 'x64',
+          version: '7.0.11',
+        });
+        expect(await du.getDownloadUrl()).toBe(
+          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.11.zip'
+        );
+      });
+
       it('latest (windows)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
