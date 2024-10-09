@@ -1,3 +1,26 @@
+## [10.1.0](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.1...v10.1.0) (2024-10-09)
+
+
+### Features
+
+* **MongoBinaryDownloadUrl:** support ubuntu 2404 & 8.0.0 ([1a88c37](https://github.com/typegoose/mongodb-memory-server/commit/1a88c37e7b0a019e152dc493d25256d0b2f3e536))
+* **resolveConfig:** update default binary version to 7.0.14 ([946e78e](https://github.com/typegoose/mongodb-memory-server/commit/946e78e761c5b10952a5c35c87fa477fdf83a825))
+
+
+### Dependencies
+
+* **debug:** upgrade to version 4.3.7 ([d537118](https://github.com/typegoose/mongodb-memory-server/commit/d5371181390518e2ad87a3312556ffc183c542cc))
+* **follow-redirects:** upgrade to version 1.15.9 ([a762dd4](https://github.com/typegoose/mongodb-memory-server/commit/a762dd4dbbf9ea922f2726151ff2d77e02582c6d))
+* **mongodb:** upgrade to version 6.9.0 ([3d4f898](https://github.com/typegoose/mongodb-memory-server/commit/3d4f89876cc43eab6c7ed96c97f3b224f2e78e10))
+* **tslib:** upgrade to version 2.7.0 ([2b702d1](https://github.com/typegoose/mongodb-memory-server/commit/2b702d120ef626a53f730f7cfe26f03d925c2657))
+
+
+### Dev-Dependencies
+
+* **@types/jest:** upgrade to version 29.5.13 ([4395d50](https://github.com/typegoose/mongodb-memory-server/commit/4395d50f3e15845546240c1b9ce433a9493f948b))
+* **rimraf:** upgrade to version 5.0.10 ([52420ba](https://github.com/typegoose/mongodb-memory-server/commit/52420ba2f629eb62bf0bfa336867a88584d287fe))
+* **test-jest:** upgrade to version 29.2.5 ([8fa6918](https://github.com/typegoose/mongodb-memory-server/commit/8fa69188579bb4de24b4ffdec00451e9016385a1))
+
 ## [10.0.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.0...v10.0.1) (2024-09-21)
 
 
