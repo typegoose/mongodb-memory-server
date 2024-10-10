@@ -1,3 +1,10 @@
+## [10.1.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.0...v10.1.1) (2024-10-10)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** fix rhel8 handling for newer versions ([8c20624](https://github.com/typegoose/mongodb-memory-server/commit/8c20624e08244a98213b75198785b33041f2df57)), closes [#893](https://github.com/typegoose/mongodb-memory-server/issues/893)
+
 ## [10.1.0](https://github.com/typegoose/mongodb-memory-server/compare/v10.0.1...v10.1.0) (2024-10-09)
 
 
