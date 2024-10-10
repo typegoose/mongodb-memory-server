@@ -408,9 +408,21 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       if (semver.satisfies(releaseAsSemver, '>=9.0.0')) {
         name += '90';
       } else if (semver.satisfies(releaseAsSemver, '8.2.0') && this.arch == 'aarch64') {
-        name += '82';
+        // Mongodb changed its naming for rhel8 only https://jira.mongodb.org/browse/SERVER-92375
+        // NOTE: as of 10.10.2024 `(rhel8|rhel80)-7.0.13` is not downloadable but `7.0.14` is
+        if (semver.satisfies(coercedVersion, '^5.0.29 || ^6.0.17 || ^7.0.13 || ^8.0.0')) {
+          name += '8';
+        } else {
+          name += '82';
+        }
       } else if (semver.satisfies(releaseAsSemver, '^8.0.0')) {
-        name += '80';
+        // Mongodb changed its naming for rhel8 only https://jira.mongodb.org/browse/SERVER-92375
+        // NOTE: as of 10.10.2024 `(rhel8|rhel80)-7.0.13` is not downloadable but `7.0.14` is
+        if (semver.satisfies(coercedVersion, '^5.0.29 || ^6.0.17 || ^7.0.13 || ^8.0.0')) {
+          name += '8';
+        } else {
+          name += '80';
+        }
       } else if (semver.satisfies(releaseAsSemver, '^7.0.0')) {
         name += '70';
       } else if (semver.satisfies(releaseAsSemver, '^6.0.0')) {
