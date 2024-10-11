@@ -858,7 +858,7 @@ describe('MongoBinaryDownloadUrl', () => {
 
       // for arch and arch based systems (no specific extra mapping)
       describe('for arch', () => {
-        it('for arch for 4.4.2', async () => {
+        it('arch (x86_64) & 4.4.2 (using ubuntu2004)', async () => {
           jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
           const du = new MongoBinaryDownloadUrl({
@@ -878,7 +878,7 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(console.warn).toHaveBeenCalledTimes(1);
         });
 
-        it('for arch for 5.0.0', async () => {
+        it('arch (x86_64) & 5.0.0 (using ubuntu2004)', async () => {
           jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
           const du = new MongoBinaryDownloadUrl({
@@ -898,7 +898,7 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(console.warn).toHaveBeenCalledTimes(1);
         });
 
-        it('for arch for 6.0.4', async () => {
+        it('arch (x86_64) & 6.0.4 (using ubuntu2204)', async () => {
           jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
           const du = new MongoBinaryDownloadUrl({
@@ -918,7 +918,7 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(console.warn).toHaveBeenCalledTimes(1);
         });
 
-        it('for manjaro for 4.4.2', async () => {
+        it('manjaro (x86_64) & 4.4.2 (using ubuntu2004)', async () => {
           jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
           const du = new MongoBinaryDownloadUrl({
@@ -938,7 +938,7 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(console.warn).toHaveBeenCalledTimes(1);
         });
 
-        it('for archstrike for 4.4.2', async () => {
+        it('archstrike (x86_64) & 4.4.2 (using ubuntu2004)', async () => {
           jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
           const du = new MongoBinaryDownloadUrl({
