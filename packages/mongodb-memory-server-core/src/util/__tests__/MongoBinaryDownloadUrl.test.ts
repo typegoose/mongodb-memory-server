@@ -41,8 +41,8 @@ describe('MongoBinaryDownloadUrl', () => {
   });
 
   describe('getDownloadUrl()', () => {
-    describe('for mac', () => {
-      it('latest', async () => {
+    describe('macos', () => {
+      it('macos (x86_64) & latest (using macos)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
@@ -53,7 +53,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('4.4', async () => {
+      it('macos (x86_64) & 4.4.0 (using macos)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
@@ -64,7 +64,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('above 3.0', async () => {
+      it('macos (x86_64) & 3.6.3 (using osx)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
@@ -75,7 +75,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('below and include 3.0', async () => {
+      it('macos (x86_64) & 3.0.0 (using osx)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
@@ -86,7 +86,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('should work with mongodb 6.0', async () => {
+      it('macos (x86_64) & 6.0.0 (using macos)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
@@ -98,7 +98,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('arm64 should use the x64 binary for versions below 6.0.0', async () => {
+      it('macos (arm64) & 4.4.0 (arm64 should use the x64 binary for versions below 6.0.0)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'arm64',
@@ -109,7 +109,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('arm64 should use the arm64 binary for versions above and equal to 6.0.0', async () => {
+      it('macos (arm64) & 6.0.0 (arm64 should use the arm64 binary for versions above and equal to 6.0.0)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'arm64',
@@ -120,7 +120,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('should work with mongodb 7.0 (x86_64)', async () => {
+      it('macos (x86_64) & 7.0.14', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
@@ -132,7 +132,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('should work with mongodb 7.0 (arm64)', async () => {
+      it('macos (arm64) & 7.0.14', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'arm64',
@@ -144,7 +144,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('should allow v5.0-latest x64', async () => {
+      it('macos (x86_64) & v5.0-latest', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'x64',
@@ -155,7 +155,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('should allow v5.0-latest arm64', async () => {
+      it('macos (arm64) & v5.0-latest', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'darwin',
           arch: 'arm64',
