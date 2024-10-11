@@ -1149,6 +1149,24 @@ describe('MongoBinaryDownloadUrl', () => {
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.14.tgz'
           );
         });
+
+        it('linuxmint 22 (x86_64) & 7.0.14 (using ubuntu2204)', async () => {
+          (downloadUrl.os as LinuxOS).release = '22';
+          downloadUrl.version = '7.0.14';
+          // NOTE: there are currently no binaries for ubuntu 24.04, but 22.04 still work
+          expect(await downloadUrl.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.14.tgz'
+          );
+        });
+
+        it('linuxmint 22 (x86_64) & 8.0.0 (using ubuntu2404)', async () => {
+          (downloadUrl.os as LinuxOS).release = '22';
+          downloadUrl.version = '8.0.0';
+          // NOTE: there are currently no binaries for ubuntu 24.04, but 22.04 still work
+          expect(await downloadUrl.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-8.0.0.tgz'
+          );
+        });
       });
 
       describe('for fedora', () => {
