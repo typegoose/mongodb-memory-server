@@ -548,6 +548,39 @@ describe('MongoBinaryDownloadUrl', () => {
               'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2004-5.0.0.tgz'
             );
           });
+
+          it('ubuntu 24.04 (arm64) & 7.0.14', async () => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch: 'arm64',
+              version: '7.0.14',
+              os: {
+                os: 'linux',
+                dist: 'Ubuntu Linux',
+                release: '24.04',
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2204-7.0.14.tgz'
+            );
+          });
+
+          it('ubuntu 24.04 (arm64) & 8.0.0', async () => {
+            // there are only 24.04 arm64 binaries since 8.0.0
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch: 'arm64',
+              version: '8.0.0',
+              os: {
+                os: 'linux',
+                dist: 'Ubuntu Linux',
+                release: '24.04',
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2404-8.0.0.tgz'
+            );
+          });
         });
       });
 
