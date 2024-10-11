@@ -1928,7 +1928,7 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     describe('for win32 & windows', () => {
-      it('3.6 (win32)', async () => {
+      it('windows (x86_64) & 3.6 (using win32)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
           arch: 'x64',
@@ -1939,7 +1939,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('4.0.14 (win32)', async () => {
+      it('windows (x86_64) & 4.0.14 (using win32)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
           arch: 'x64',
@@ -1950,7 +1950,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('4.2 (win32)', async () => {
+      it('windows (x86_64) & 4.2.0 (using win32)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
           arch: 'x64',
@@ -1961,7 +1961,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('4.4 (windows)', async () => {
+      it('windows (x86_64) & 4.4.0 (using windows)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
           arch: 'x64',
@@ -1972,7 +1972,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('7.0.14 (windows)', async () => {
+      it('windows (x86_64) & 7.0.14 (using windows)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
           arch: 'x64',
@@ -1983,7 +1983,7 @@ describe('MongoBinaryDownloadUrl', () => {
         );
       });
 
-      it('latest (windows)', async () => {
+      it('windows (x86_64) & latest (using windows)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
           arch: 'x64',
