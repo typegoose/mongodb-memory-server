@@ -349,14 +349,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     // 34 onward dosnt have "compat-openssl10" anymore, and only build from 4.0.24 are available for "rhel80"
     if (fedoraVer >= 34) {
       rhelOS.release = '8.0';
-    }
-    if (fedoraVer < 34 && fedoraVer >= 19) {
+    } else if (fedoraVer >= 19) {
       rhelOS.release = '7.0';
-    }
-    if (fedoraVer < 19 && fedoraVer >= 12) {
+    } else if (fedoraVer >= 12) {
       rhelOS.release = '6.2';
-    }
-    if (fedoraVer < 12 && fedoraVer >= 6) {
+    } else if (fedoraVer >= 6) {
       rhelOS.release = '5.5';
     }
 
@@ -412,6 +409,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       }
 
       if (semver.satisfies(releaseAsSemver, '>=9.0.0')) {
+        // there are only binaries for rhel90 since 6.0.4
         name += '90';
       } else if (semver.satisfies(releaseAsSemver, '8.2.0') && this.arch == 'aarch64') {
         // Mongodb changed its naming for rhel8 only https://jira.mongodb.org/browse/SERVER-92375
