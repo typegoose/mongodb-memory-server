@@ -14,11 +14,27 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         node-version: [16.x, 18.x, 20.x, 22.x]
     steps:
+      # Install libssl1.1 for libcrypto.so.1.1, which is required for binaries before 22.04 is available (4.0, 4.2, 4.4, 5.0)
+      # currently 5.0 is still in LTS
+      - name: Load libssl chache
+        # cache the package so that we dont need to hit the debian server so often
+        id: cache-libssl
+        uses: actions/cache@v4
+        with:
+          path: ~/ssl
+          key: libssl1.1
+      - name: install libssl1.1
+        # ubuntu seemingly does not have that package anymore, but the one from debian still works
+        run: |
+          mkdir -p ~/ssl && cd ~/ssl
+          wget -nc https://ftp.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
+          sudo dpkg -i libssl1.1_1.1.1w-0+deb11u1_amd64.deb
+      # end libssl1.1 install
       - uses: actions/checkout@v4
         if: github.event.inputs.git-ref == ''
         with:
