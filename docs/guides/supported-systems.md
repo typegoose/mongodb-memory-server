@@ -53,7 +53,7 @@ Depends on the distribution, many common ones should just work right out of the 
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `1404`<br/>
-Highest version is `2204` (higher versions will be clamped to this value)<br/>
+Highest version is `2404` (higher versions will be clamped to this value)<br/>
 Default version is `2204`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 
