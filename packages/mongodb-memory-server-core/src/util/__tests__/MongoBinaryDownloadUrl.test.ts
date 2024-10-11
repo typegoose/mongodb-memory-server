@@ -1366,7 +1366,7 @@ describe('MongoBinaryDownloadUrl', () => {
 
       describe('for rhel', () => {
         // These tests are made based on how the current implementation is, no actual rhel testing was done, so the data might be inaccurate
-        it('rhel 8 & 4.2.0 x86_64', async () => {
+        it('rhel 8.2 (x86_64) & 4.2.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1382,7 +1382,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 8 & 5.0.0 x86_64', async () => {
+        it('rhel 8.2 (x86_64) & 5.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1399,7 +1399,7 @@ describe('MongoBinaryDownloadUrl', () => {
         });
 
         describe('rhel 8 download name change (JIRA SERVER-92375)', () => {
-          it('rhel 8 & 5.0.29 x86_64', async () => {
+          it('rhel 8.2 (x86_64) & 5.0.29', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'x64',
@@ -1415,7 +1415,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('rhel 8 & 6.0.17 x86_64', async () => {
+          it('rhel 8.2 (x86_64) & 6.0.17', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'x64',
@@ -1431,7 +1431,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('rhel 8 & 7.0.13 x86_64', async () => {
+          it('rhel 8.2 (x86_64) & 7.0.13', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'x64',
@@ -1447,7 +1447,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('rhel 8 & 8.0.0 x86_64', async () => {
+          it('rhel 8.2 (x86_64) & 8.0.0', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'x64',
@@ -1463,7 +1463,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('rhel 8.2 & 5.0.29 arm64', async () => {
+          it('rhel 8.2 (arm64) & 5.0.29', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -1479,7 +1479,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('rhel 8.2 & 6.0.17 arm64', async () => {
+          it('rhel 8.2 (arm64) & 6.0.17', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -1495,7 +1495,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('rhel 8.2 & 7.0.13 arm64', async () => {
+          it('rhel 8.2 (arm64) & 7.0.13', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -1511,7 +1511,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('rhel 8.2 & 8.0.0 arm64', async () => {
+          it('rhel 8.2 (arm64) & 8.0.0', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -1528,7 +1528,7 @@ describe('MongoBinaryDownloadUrl', () => {
           });
         });
 
-        it('rhel 8.2 & 4.4.2 arm64', async () => {
+        it('rhel 8.2 (arm64) & 4.4.2', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'arm64',
@@ -1544,7 +1544,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 8.2 & 5.0.0 arm64', async () => {
+        it('rhel 8.2 (arm64) & 5.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'arm64',
@@ -1560,7 +1560,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 8.2 & 6.0.10 arm64', async () => {
+        it('rhel 8.2 (arm64) & 6.0.10', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'arm64',
@@ -1576,7 +1576,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 8.2 & 7.0.0 arm64', async () => {
+        it('rhel 8.2 (arm64) & 7.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'arm64',
@@ -1592,7 +1592,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 9 & 6.0.4 x86_64', async () => {
+        it('rhel 9 (x86_64) & 6.0.4', async () => {
           // lowest rhel 9 x64 supported version is 6.0.4
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -1609,7 +1609,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 9 & 7.0.0 x86_64', async () => {
+        it('rhel 9 (x86_64) & 7.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1625,7 +1625,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 9 & 6.0.7 arm64', async () => {
+        it('rhel 9 (arm64) & 6.0.7', async () => {
           // lowest rhel 9 arm64 supported version is 6.0.7
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -1642,7 +1642,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rhel 9 & 7.0.0 arm64', async () => {
+        it('rhel 9 (arm64) & 7.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'arm64',
@@ -1658,7 +1658,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should allow v5.0-latest', async () => {
+        it('rhel 8 (x86_64) & v5.0-latest', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1674,7 +1674,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rocky linux 9.2 & 6.0.4 x86_64', async () => {
+        it('rocky linux 9.2 (x86_64) & 6.0.4 (using rhel90)', async () => {
           // lowest rhel 9 x64 supported version is 6.0.4
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -1692,7 +1692,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('rocky linux 9.2 & 6.0.7 arm64', async () => {
+        it('rocky linux 9.2 (arm64) & 6.0.7 (using rhel90)', async () => {
           // lowest rhel 9 arm64 supported version is 6.0.7
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
