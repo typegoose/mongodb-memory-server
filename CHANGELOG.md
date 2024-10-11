@@ -1,3 +1,15 @@
+## [10.1.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.1...v10.1.2) (2024-10-11)
+
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** refactor fedora handling to pass through to rhel ([31b4696](https://github.com/typegoose/mongodb-memory-server/commit/31b469642a8decf7d818da78ab89e5c0745a0b48)), closes [#893](https://github.com/typegoose/mongodb-memory-server/issues/893)
+
+
+### Refactor
+
+* **MongoBinaryDownloadUrl::getFedoraVersionString:** change to use "else if" chain ([194df6f](https://github.com/typegoose/mongodb-memory-server/commit/194df6f7ed5a3f3d9f031a7d0526f71c460a533c))
+
 ## [10.1.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.0...v10.1.1) (2024-10-10)
 
 
