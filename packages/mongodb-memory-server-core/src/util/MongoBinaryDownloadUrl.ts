@@ -336,25 +336,31 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * @param os LinuxOS Object
    */
   getFedoraVersionString(os: LinuxOS): string {
-    let name = 'rhel';
     const fedoraVer: number = parseInt(os.release, 10);
+
+    const rhelOS: LinuxOS = {
+      os: 'linux',
+      dist: 'rhel',
+      // fallback to 8.0
+      release: '8.0',
+    };
 
     // 36 and onwards dont ship with libcrypto.so.1.1 anymore and need to be manually installed ("openssl1.1")
     // 34 onward dosnt have "compat-openssl10" anymore, and only build from 4.0.24 are available for "rhel80"
     if (fedoraVer >= 34) {
-      name += '80';
+      rhelOS.release = '8.0';
     }
     if (fedoraVer < 34 && fedoraVer >= 19) {
-      name += '70';
+      rhelOS.release = '7.0';
     }
     if (fedoraVer < 19 && fedoraVer >= 12) {
-      name += '62';
+      rhelOS.release = '6.2';
     }
     if (fedoraVer < 12 && fedoraVer >= 6) {
-      name += '55';
+      rhelOS.release = '5.5';
     }
 
-    return name;
+    return this.getRhelVersionString(rhelOS);
   }
 
   /**
