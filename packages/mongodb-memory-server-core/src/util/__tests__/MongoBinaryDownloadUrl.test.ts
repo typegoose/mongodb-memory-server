@@ -1237,6 +1237,23 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('should return a archive name for Fedora 40', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.14',
+            os: {
+              os: 'linux',
+              dist: 'fedora',
+              release: '40',
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-7.0.14.tgz'
+          );
+        });
+
         it('fedora 36 & 7.0.13 x86_64', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
