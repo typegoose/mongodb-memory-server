@@ -189,7 +189,7 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(spy.mock.calls).toMatchSnapshot();
         });
 
-        it('for ubuntu 14.04 for 3.6', async () => {
+        it('ubuntu 14.04 (x86_64) & 3.6.3', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -205,7 +205,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 20.04 for 4.0', async () => {
+        it('ubuntu 20.04 (x86_64) & 4.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -221,7 +221,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 4.0 (using 1804)', async () => {
+        it('ubuntu 22.04 (x86_64) & 4.0.0 (using ubuntu1804)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -237,7 +237,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 4.4 (using 2004)', async () => {
+        it('ubuntu 22.04 (x86_64) & 4.4.0 (using ubuntu2004)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -253,7 +253,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 20.04 for 5.0', async () => {
+        it('ubuntu 20.04 (x86_64) & 5.0.8', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -269,7 +269,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 5.0 (using 2004)', async () => {
+        it('ubuntu 22.04 (x86_64) & 5.0.8 (using ubuntu2004)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -285,7 +285,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 20.04 for 6.0', async () => {
+        it('ubuntu 20.04 (x86_64) & 6.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -301,7 +301,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 6.0 (using 2004)', async () => {
+        it('ubuntu 22.04 (x86_64) & 6.0.0 (using ubuntu2004)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -317,7 +317,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 6.0.4', async () => {
+        it('ubuntu 22.04 (x86_64) & 6.0.4', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -333,7 +333,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 7.0.14', async () => {
+        it('ubuntu 22.04 (x86_64) & 7.0.14', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -349,7 +349,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 24.04 for 7.0.14', async () => {
+        it('ubuntu 24.04 (x86_64) & 7.0.14 (using ubuntu2204)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -365,7 +365,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 22.04 for 8.0.1', async () => {
+        it('ubuntu 22.04 (x86_64) & 8.0.1', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -381,7 +381,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('for ubuntu 24.04 for 8.0.1', async () => {
+        it('ubuntu 24.04 (x86_64) & 8.0.1', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -397,7 +397,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should allow v5.0-latest', async () => {
+        it('ubuntu 20.04 (x86_64) & v5.0-latest', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -410,6 +410,23 @@ describe('MongoBinaryDownloadUrl', () => {
           });
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-v5.0-latest.tgz'
+          );
+        });
+
+        it('should clamp to highest supported ubuntu year', async () => {
+          // TODO: try to keep this up-to-date to the latest mongodb supported ubuntu version
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '8.0.1', // highest released mongodb version
+            os: {
+              os: 'linux',
+              dist: 'ubuntu',
+              release: '24.04', // highest released ubuntu version
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-8.0.1.tgz'
           );
         });
 
@@ -435,25 +452,8 @@ describe('MongoBinaryDownloadUrl', () => {
           }
         });
 
-        it('should clamp to highest supported ubuntu year', async () => {
-          // TODO: try to keep this up-to-date to the latest mongodb supported ubuntu version
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '8.0.1', // highest released mongodb version
-            os: {
-              os: 'linux',
-              dist: 'ubuntu',
-              release: '24.04', // highest released ubuntu version
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-8.0.1.tgz'
-          );
-        });
-
         describe('arm64', () => {
-          it('for ubuntu arm64 4.0.25 (below 4.1.10)', async () => {
+          it('ubuntu 20.04 (arm64) & 4.0.25 (below 4.1.10)', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -469,7 +469,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('for ubuntu arm64 4.2.14 (above 4.1.10, below 4.4.0)', async () => {
+          it('ubuntu 20.04 (arm64) & 4.2.14 (above 4.1.10, below 4.4.0)', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -485,7 +485,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('for ubuntu arm64 4.4.6 & ubuntu1804 (above 4.1.10, above 4.4.0)', async () => {
+          it('ubuntu 18.04 (arm64) & 4.4.6 (above 4.4.0)', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -501,7 +501,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('for ubuntu arm64 4.4.6 & ubuntu2004 (above 4.1.10, above 4.4.0)', async () => {
+          it('ubuntu 20.04 (arm64) & 4.4.6 (above 4.4.0)', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -517,7 +517,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('for ubuntu arm64 5.0.0 & ubuntu2004 (above 4.4.0)', async () => {
+          it('ubuntu 20.04 (arm64) & 5.0.0', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -533,7 +533,7 @@ describe('MongoBinaryDownloadUrl', () => {
             );
           });
 
-          it('for ubuntu arm64 5.0.0 & ubuntu2204 (above 4.4.0)', async () => {
+          it('ubuntu 22.04 (arm64) & 5.0.0', async () => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
               arch: 'arm64',
@@ -1163,7 +1163,7 @@ describe('MongoBinaryDownloadUrl', () => {
         it('linuxmint 21 (x86_64) & 7.0.14 (using ubuntu2204)', async () => {
           (downloadUrl.os as LinuxOS).release = '22';
           downloadUrl.version = '7.0.14';
-          // NOTE: there are currently no binaries for ubuntu 24.04, but 22.04 still work
+          // NOTE: there are currently no binaries ubuntu 24.04, but 22.04 still work
           expect(await downloadUrl.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.14.tgz'
           );
