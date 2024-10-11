@@ -1152,7 +1152,7 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for fedora', () => {
-        it('should return a archive name for Fedora 32', async () => {
+        it('fedora 32 (x86_64) & 4.0.24 (using rhel70)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1169,7 +1169,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Fedora 34', async () => {
+        it('fedora 34 (x86_64) & 4.0.24 (using rhel80)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1186,7 +1186,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Fedora 35', async () => {
+        it('fedora 35 (x86_64) & 5.0.8 (using rhel80)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1203,7 +1203,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Fedora 36', async () => {
+        it('fedora 36 (x86_64) & 5.0.8 (using rhel80)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1220,7 +1220,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Fedora 36', async () => {
+        it('fedora 36 (x86_64) & 6.0.0 (using rhel80)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1237,7 +1237,23 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Fedora 40', async () => {
+        it('fedora 36 (x86_64) & 7.0.13 (using rhel8)', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.13',
+            os: {
+              os: 'linux',
+              dist: 'fedora',
+              release: '36',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-7.0.13.tgz'
+          );
+        });
+
+        it('fedora 40 (x86_64) & 7.0.14 (using rhel8)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1251,22 +1267,6 @@ describe('MongoBinaryDownloadUrl', () => {
 
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-7.0.14.tgz'
-          );
-        });
-
-        it('fedora 36 & 7.0.13 x86_64', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '7.0.13',
-            os: {
-              os: 'linux',
-              dist: 'fedora',
-              release: '36',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-7.0.13.tgz'
           );
         });
       });
