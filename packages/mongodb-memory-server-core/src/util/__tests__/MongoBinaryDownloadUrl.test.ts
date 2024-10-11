@@ -960,7 +960,7 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for gentoo', () => {
-        it('for gentoo 5.0.8', async () => {
+        it('gentoo (x86_64) & 5.0.8 (using debian11)', async () => {
           jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
           const du = new MongoBinaryDownloadUrl({
@@ -979,7 +979,7 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(console.warn).toHaveBeenCalledTimes(1);
         });
 
-        it('for gentoo 4.4', async () => {
+        it('gentoo (x86_64) & 4.4.0 (using debian10)', async () => {
           jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
           const du = new MongoBinaryDownloadUrl({
