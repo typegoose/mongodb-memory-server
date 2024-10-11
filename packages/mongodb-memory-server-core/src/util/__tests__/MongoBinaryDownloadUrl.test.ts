@@ -1858,7 +1858,7 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('Oracle Linux', () => {
-        it('ol 8.7 & 5.0.0 x86_64', async () => {
+        it('ol 8.7 (x86_64) & 5.0.0 (using rhel80)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1875,7 +1875,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('ol 8.7 & 4.4.17 x86_64', async () => {
+        it('ol 8.7 (x86_64) & 4.4.17 (using rhel80)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
