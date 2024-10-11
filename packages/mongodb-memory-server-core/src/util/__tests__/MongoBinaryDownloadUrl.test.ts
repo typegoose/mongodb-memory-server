@@ -1000,7 +1000,26 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for elementary', () => {
-        it('should return a archive name for elementary 0.3', async () => {
+        it('should default to Elementary 7, if version cannot be found in lookup table', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '6.0.4',
+            os: {
+              os: 'linux',
+              dist: 'elementary',
+              codename: 'horus',
+              release: '0',
+              id_like: ['ubuntu'],
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.4.tgz'
+          );
+        });
+
+        it('elementaryos 0.3 (x86_64) & 4.4.1 (using ubuntu1404)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1018,7 +1037,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for elementary 5', async () => {
+        it('elementaryos 5 (x86_64) & 4.4.1 (using ubuntu1804)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1036,7 +1055,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for elementary 6.1', async () => {
+        it('elementaryos 6.1 (x86_64) & 5.0.0 (using ubuntu2004)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1056,7 +1075,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for elementary 7.0', async () => {
+        it('elementaryos 7.0 (x86_64) & 6.0.4 (using ubuntu2204)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
