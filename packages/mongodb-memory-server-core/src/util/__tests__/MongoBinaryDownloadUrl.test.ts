@@ -1308,9 +1308,8 @@ describe('MongoBinaryDownloadUrl', () => {
         });
       });
 
-      // see https://github.com/typegoose/mongodb-memory-server/issues/527
       describe('for amazon', () => {
-        it('should return a archive name for Amazon 1', async () => {
+        it('amzn 1 (x86_64) & 4.0.24', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1328,7 +1327,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Amazon 2', async () => {
+        it('amzn 2 (x86_64) & 4.0.24', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
@@ -1346,7 +1345,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Amazon 2023', async () => {
+        it('amzn 2023 (x86_64) & 7.0.2', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
             arch: 'x64',
