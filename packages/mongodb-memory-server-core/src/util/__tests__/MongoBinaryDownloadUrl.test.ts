@@ -1120,7 +1120,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Linux Mint 17', async () => {
+        it('linuxmint 17 (x86_64) & 4.0.25 (using ubuntu1404)', async () => {
           (downloadUrl.os as LinuxOS).release = '17';
           downloadUrl.version = '4.0.25';
           expect(await downloadUrl.getDownloadUrl()).toBe(
@@ -1128,7 +1128,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Linux Mint 18', async () => {
+        it('linuxmint 18 (x86_64) & 4.0.25 (using ubuntu1604)', async () => {
           (downloadUrl.os as LinuxOS).release = '18';
           downloadUrl.version = '4.0.25';
           expect(await downloadUrl.getDownloadUrl()).toBe(
@@ -1136,7 +1136,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Linux Mint 19', async () => {
+        it('linuxmint 19 (x86_64) & 4.0.25 (using ubuntu1804)', async () => {
           (downloadUrl.os as LinuxOS).release = '19';
           downloadUrl.version = '4.0.25';
           expect(await downloadUrl.getDownloadUrl()).toBe(
@@ -1144,7 +1144,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Linux Mint 20', async () => {
+        it('linuxmint 20 (x86_64) & 6.0.4 (using ubuntu2004)', async () => {
           (downloadUrl.os as LinuxOS).release = '20';
           downloadUrl.version = '6.0.4';
           expect(await downloadUrl.getDownloadUrl()).toBe(
@@ -1152,7 +1152,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Linux Mint 21', async () => {
+        it('linuxmint 21 (x86_64) & 6.0.4 (using ubuntu2204)', async () => {
           (downloadUrl.os as LinuxOS).release = '21';
           downloadUrl.version = '6.0.4';
           expect(await downloadUrl.getDownloadUrl()).toBe(
@@ -1160,7 +1160,7 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('should return a archive name for Linux Mint 21', async () => {
+        it('linuxmint 21 (x86_64) & 7.0.14 (using ubuntu2204)', async () => {
           (downloadUrl.os as LinuxOS).release = '22';
           downloadUrl.version = '7.0.14';
           // NOTE: there are currently no binaries for ubuntu 24.04, but 22.04 still work
