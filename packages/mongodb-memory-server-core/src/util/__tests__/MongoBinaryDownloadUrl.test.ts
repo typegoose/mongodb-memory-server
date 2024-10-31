@@ -1213,6 +1213,23 @@ describe('MongoBinaryDownloadUrl', () => {
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-7.0.14.tgz'
           );
         });
+
+        it('fedora 40 (x86_64) & 8.0.1 (using rhel8)', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '8.0.1',
+            os: {
+              os: 'linux',
+              dist: 'fedora',
+              release: '40',
+            },
+          });
+
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-8.0.1.tgz'
+          );
+        });
       });
 
       describe('for amazon', () => {
