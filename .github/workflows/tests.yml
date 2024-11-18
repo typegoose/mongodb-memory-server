@@ -71,7 +71,7 @@ jobs:
           CI: true
       - name: Send codecov.io stats
         if: matrix.node-version == '16.x'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
