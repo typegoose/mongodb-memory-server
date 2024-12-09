@@ -1244,7 +1244,7 @@ describe('MongoMemoryServer', () => {
   describe('server version specific', () => {
     // should use default options that are supported for 7.0 (like not using "ephemeralForTest" by default)
     it('should allow mongodb by default 7.0', async () => {
-      const server = await MongoMemoryServer.create({ binary: { version: '7.0.11' } });
+      const server = await MongoMemoryServer.create({ binary: { version: '7.0.14' } });
 
       await server.stop();
     });
@@ -1266,7 +1266,7 @@ describe('MongoMemoryServer', () => {
     it('should not warn if no explicit storage engine is set in 7.0', async () => {
       jest.spyOn(console, 'warn');
       const server = await MongoMemoryServer.create({
-        binary: { version: '7.0.11' },
+        binary: { version: '7.0.14' },
         // instance: { storageEngine: 'ephemeralForTest' },
       });
 
@@ -1280,7 +1280,7 @@ describe('MongoMemoryServer', () => {
     it('should warn if "ephemeralForTest" is used explicitly in mongodb 7.0', async () => {
       const spy = jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
       const server = await MongoMemoryServer.create({
-        binary: { version: '7.0.11' },
+        binary: { version: '7.0.14' },
         instance: { storageEngine: 'ephemeralForTest' },
       });
 

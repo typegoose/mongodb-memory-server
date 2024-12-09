@@ -14,11 +14,29 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.distro }}
     strategy:
       matrix:
+        # this is a hack as there is currently no (public) way to access "runs-on" with version
+        distro: [ubuntu-24.04]
         node-version: [16.x, 18.x, 20.x, 22.x]
     steps:
+      # Install libssl1.1 for libcrypto.so.1.1, which is required for binaries before 22.04 is available (4.0, 4.2, 4.4, 5.0)
+      # currently 5.0 is still in LTS
+      - name: Load libssl chache
+        # cache the package so that we dont need to hit the debian server so often
+        id: cache-libssl
+        uses: actions/cache@v4
+        with:
+          path: ~/ssl
+          key: libssl1.1
+      - name: install libssl1.1
+        # ubuntu seemingly does not have that package anymore, but the one from debian still works
+        run: |
+          mkdir -p ~/ssl && cd ~/ssl
+          wget -nc https://ftp.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
+          sudo dpkg -i libssl1.1_1.1.1w-0+deb11u1_amd64.deb
+      # end libssl1.1 install
       - uses: actions/checkout@v4
         if: github.event.inputs.git-ref == ''
         with:
@@ -37,10 +55,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/mongodb-binaries
-          key: ${{ matrix.node-version }}-${{ hashFiles('**/globalSetup.ts') }}
+          key: ${{ matrix.distro }}-${{ hashFiles('**/globalSetup.ts') }}
           restore-keys: |
-            ${{ matrix.node-version }}-
-            ${{ matrix.node-version }}
+            ${{ matrix.distro }}-
+            ${{ matrix.distro }}
       - name: Install node_modules
         run: yarn
       - name: TSCheck
@@ -53,7 +71,7 @@ jobs:
           CI: true
       - name: Send codecov.io stats
         if: matrix.node-version == '16.x'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -75,15 +93,16 @@ jobs:
         uses: cycjimmy/semantic-release-action@cb425203a562475bca039ba4dbf90c7f9ac790f4 # v4.1.0
         with:
           # dry_run: true
+          # using semantic-release 23.x because of https://github.com/semantic-release/release-notes-generator/issues/675
           extra_plugins: |
-            @semantic-release/git
-            @semantic-release/changelog
-            @semantic-release/commit-analyzer
-            @semantic-release/release-notes-generator
-            @semantic-release/github
-            @semantic-release/npm
-            @commitlint/config-conventional
-            semantic-release-replace-plugin
+            @semantic-release/git@10.x
+            @semantic-release/changelog@6.x
+            @semantic-release/commit-analyzer@13.x
+            @semantic-release/release-notes-generator@14.x
+            @semantic-release/github@10.x
+            @semantic-release/npm@12.x
+            @commitlint/config-conventional@19.x
+            semantic-release-replace-plugin@1.2.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

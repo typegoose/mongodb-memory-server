@@ -336,25 +336,28 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * @param os LinuxOS Object
    */
   getFedoraVersionString(os: LinuxOS): string {
-    let name = 'rhel';
     const fedoraVer: number = parseInt(os.release, 10);
+
+    const rhelOS: LinuxOS = {
+      os: 'linux',
+      dist: 'rhel',
+      // fallback to 8.0
+      release: '8.0',
+    };
 
     // 36 and onwards dont ship with libcrypto.so.1.1 anymore and need to be manually installed ("openssl1.1")
     // 34 onward dosnt have "compat-openssl10" anymore, and only build from 4.0.24 are available for "rhel80"
     if (fedoraVer >= 34) {
-      name += '80';
-    }
-    if (fedoraVer < 34 && fedoraVer >= 19) {
-      name += '70';
-    }
-    if (fedoraVer < 19 && fedoraVer >= 12) {
-      name += '62';
-    }
-    if (fedoraVer < 12 && fedoraVer >= 6) {
-      name += '55';
+      rhelOS.release = '8.0';
+    } else if (fedoraVer >= 19) {
+      rhelOS.release = '7.0';
+    } else if (fedoraVer >= 12) {
+      rhelOS.release = '6.2';
+    } else if (fedoraVer >= 6) {
+      rhelOS.release = '5.5';
     }
 
-    return name;
+    return this.getRhelVersionString(rhelOS);
   }
 
   /**
@@ -406,11 +409,24 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       }
 
       if (semver.satisfies(releaseAsSemver, '>=9.0.0')) {
+        // there are only binaries for rhel90 since 6.0.4
         name += '90';
       } else if (semver.satisfies(releaseAsSemver, '8.2.0') && this.arch == 'aarch64') {
-        name += '82';
+        // Mongodb changed its naming for rhel8 only https://jira.mongodb.org/browse/SERVER-92375
+        // NOTE: as of 10.10.2024 `(rhel8|rhel80)-7.0.13` is not downloadable but `7.0.14` is
+        if (semver.satisfies(coercedVersion, '^5.0.29 || ^6.0.17 || ^7.0.13 || ^8.0.0')) {
+          name += '8';
+        } else {
+          name += '82';
+        }
       } else if (semver.satisfies(releaseAsSemver, '^8.0.0')) {
-        name += '80';
+        // Mongodb changed its naming for rhel8 only https://jira.mongodb.org/browse/SERVER-92375
+        // NOTE: as of 10.10.2024 `(rhel8|rhel80)-7.0.13` is not downloadable but `7.0.14` is
+        if (semver.satisfies(coercedVersion, '^5.0.29 || ^6.0.17 || ^7.0.13 || ^8.0.0')) {
+          name += '8';
+        } else {
+          name += '80';
+        }
       } else if (semver.satisfies(releaseAsSemver, '^7.0.0')) {
         name += '70';
       } else if (semver.satisfies(releaseAsSemver, '^6.0.0')) {
@@ -581,6 +597,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu2004';
     }
 
+    // there are only binaries for 2404 since 8.0.0, not in 7.x
+    if (ubuntuYear >= 22 && semver.satisfies(coercedVersion, '<8.0.0')) {
+      return 'ubuntu2204';
+    }
+
     // base case for higher than mongodb supported ubuntu versions
     {
       // TODO: try to keep this up-to-date to the latest mongodb supported ubuntu version
@@ -588,14 +609,14 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
        * Highest ubuntu year supported by mongodb binaries
        * @see https://www.mongodb.com/download-center/community/releases/archive
        */
-      const highestUbuntuYear = 22; // 22 is the highest supported as of mongodb 7.0.11
+      const highestUbuntuYear = 24; // 24 is the highest supported as of mongodb 8.0.1
 
       if (ubuntuYear > highestUbuntuYear) {
         log(
           `getUbuntuVersionString: ubuntuYear "${ubuntuYear}" is higher than the currently supported mongodb year of "${highestUbuntuYear}", using highest known`
         );
 
-        return 'ubuntu2204';
+        return 'ubuntu2404';
       }
     }
 
