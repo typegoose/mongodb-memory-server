@@ -192,7 +192,7 @@ build environment:
         expect(console.warn).toHaveBeenCalledTimes(1);
       });
 
-      it('should return and check an SYSTEM_BINARY and dont warn version conflict if SYSTEM_BINARY_VERSION_CHECK is false', async () => {
+      it('should return and check a SYSTEM_BINARY and dont warn version conflict if SYSTEM_BINARY_VERSION_CHECK is false', async () => {
         jest.spyOn(console, 'warn');
         // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
         // DO NOT INDENT THE TEXT
@@ -218,7 +218,7 @@ build environment:
         process.env[envName(ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK)] = 'false';
 
         const output = await MongoBinary.getPath();
-        expect(childProcess.spawnSync).toHaveBeenCalledTimes(1);
+        expect(childProcess.spawnSync).toHaveBeenCalledTimes(0);
         expect(MongoBinary.download).not.toHaveBeenCalled();
         expect(console.warn).not.toHaveBeenCalled();
         expect(output).toBe(sysBinaryPath);

@@ -87,20 +87,20 @@ export class MongoBinary {
     if (!!options.systemBinary) {
       // this case should actually never be false, because if "SYSTEM_BINARY" is set, "locateBinary" will run "getSystemPath" which tests the path for permissions
       if (!isNullOrUndefined(binaryPath)) {
-        log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
-        const spawnOutput = spawnSync(binaryPath, ['--version'])
-          // NOTE: "stdout" seemingly can be "undefined", see https://github.com/typegoose/mongodb-memory-server/issues/742#issuecomment-2528284865
-          .stdout?.toString()
-          // this regex is to match the first line of the "mongod --version" output "db version v4.0.25" OR "db version v4.2.19-11-ge2f2736"
-          .match(/^\s*db\s+version\s+v?(\d+\.\d+\.\d+)(-\d*)?(-[a-zA-Z0-9].*)?\s*$/im);
-
-        assertion(
-          !isNullOrUndefined(spawnOutput),
-          new Error('Couldnt find an version from system binary output!')
-        );
-
         // dont warn if the versions dont match if "SYSTEM_BINARY_VERSION_CHECK" is false, but still test the binary if it is available to be executed
         if (envToBool(resolveConfig(ResolveConfigVariables.SYSTEM_BINARY_VERSION_CHECK))) {
+          log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
+          const spawnOutput = spawnSync(binaryPath, ['--version'])
+            // NOTE: "stdout" seemingly can be "undefined", see https://github.com/typegoose/mongodb-memory-server/issues/742#issuecomment-2528284865
+            .stdout?.toString()
+            // this regex is to match the first line of the "mongod --version" output "db version v4.0.25" OR "db version v4.2.19-11-ge2f2736"
+            .match(/^\s*db\s+version\s+v?(\d+\.\d+\.\d+)(-\d*)?(-[a-zA-Z0-9].*)?\s*$/im);
+
+          assertion(
+            !isNullOrUndefined(spawnOutput),
+            new Error('Couldnt find an version from system binary output!')
+          );
+
           log('getPath: Checking & Warning about version conflicts');
           const binaryVersion = spawnOutput[1];
 
