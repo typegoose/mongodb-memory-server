@@ -89,7 +89,8 @@ export class MongoBinary {
       if (!isNullOrUndefined(binaryPath)) {
         log(`getPath: Spawning binaryPath "${binaryPath}" to get version`);
         const spawnOutput = spawnSync(binaryPath, ['--version'])
-          .stdout.toString()
+          // NOTE: "stdout" seemingly can be "undefined", see https://github.com/typegoose/mongodb-memory-server/issues/742#issuecomment-2528284865
+          .stdout?.toString()
           // this regex is to match the first line of the "mongod --version" output "db version v4.0.25" OR "db version v4.2.19-11-ge2f2736"
           .match(/^\s*db\s+version\s+v?(\d+\.\d+\.\d+)(-\d*)?(-[a-zA-Z0-9].*)?\s*$/im);
 
