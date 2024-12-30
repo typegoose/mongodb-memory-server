@@ -499,6 +499,18 @@ describe('DryBinary', () => {
       expect(fspromises.access).toHaveBeenCalled();
     });
 
+    it('should return SystemBinary with absolute path', async () => {
+      const mockBinary = 'bin/mongod';
+      process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = mockBinary;
+      jest.spyOn(fspromises, 'access').mockResolvedValue(void 0);
+
+      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
+      expect(returnValue).not.toEqual(mockBinary);
+      expect(returnValue).toEqual(path.resolve(mockBinary));
+      expect(binary.DryMongoBinary.binaryCache.size).toBe(0); // system binaries dont get added to the cache
+      expect(fspromises.access).toHaveBeenCalled();
+    });
+
     it('should throw an error if SystemBinary was provided, but not found', async () => {
       const mockBinary = '/usr/local/bin/mongod';
       process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = mockBinary;

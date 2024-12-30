@@ -1,3 +1,12 @@
+## [10.1.3-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.2...v10.1.3-beta.1) (2024-12-09)
+
+
+### Fixes
+
+* **DryMongoBinary::getPath:** always absoluteize System_Binary path ([c0975c3](https://github.com/typegoose/mongodb-memory-server/commit/c0975c32a273c452c7e4353096f48e1addec8460))
+* **MongoBinary::getPath:** check that "stdout" actually exists ([613e670](https://github.com/typegoose/mongodb-memory-server/commit/613e6704db78c423afbafc3b88301f6f4ea34d8d)), closes [#742](https://github.com/typegoose/mongodb-memory-server/issues/742) [#issuecomment-2528284865](https://github.com/typegoose/mongodb-memory-server/issues/issuecomment-2528284865)
+* **MongoBinary:** dont execute systembinary "--version" cmd if version check is false ([03c8412](https://github.com/typegoose/mongodb-memory-server/commit/03c84129a9a58c9d7325d127eea6fb18b18de461))
+
 ## [10.1.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.1...v10.1.2) (2024-10-11)
 
 
