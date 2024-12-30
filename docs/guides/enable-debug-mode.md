@@ -20,7 +20,7 @@ MONGOMS_DEBUG=1 npm run test
 {
   "config": {
     "mongodbMemoryServer": {
-      "debug": "1", // also available case-insensitive values: "on" "yes" "true"
+      "debug": "1" // also available case-insensitive values: "on" "yes" "true"
     }
   }
 }
