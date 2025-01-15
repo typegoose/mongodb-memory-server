@@ -168,3 +168,9 @@ Because Gentoo dosnt base on debian, there is no specific debian version associa
 <span class="badge badge--danger">Unsupported</span>
 
 There are no official mongodb builds alpine, though there are some unoffical build of mongodb build for it which can be used
+
+### NixOS
+
+<span class="badge badge--danger">Unsupported</span>
+
+There are no official mongodb builds for NixOS, however some users report the ubuntu binaries work with some extra configuration on NixOS, see https://github.com/typegoose/mongodb-memory-server/issues/782
