@@ -173,4 +173,4 @@ There are no official mongodb builds alpine, though there are some unoffical bui
 
 <span class="badge badge--danger">Unsupported</span>
 
-There are no official mongodb builds for NixOS, however some users report the ubuntu binaries work with some extra configuration on NixOS, see https://github.com/typegoose/mongodb-memory-server/issues/782
+There are no official mongodb builds for NixOS, however some users report the ubuntu binaries work with some extra configuration on NixOS, see [Issue #782](https://github.com/typegoose/mongodb-memory-server/issues/782)
