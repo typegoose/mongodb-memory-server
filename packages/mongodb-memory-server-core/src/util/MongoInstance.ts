@@ -538,6 +538,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
       path.resolve(__dirname, '../../scripts/mongo_killer.js'),
       [parentPid.toString(), childPid.toString()],
       {
+        execArgv: [],
         detached: true,
         stdio: 'ignore', // stdio cannot be done with an detached process cross-systems and without killing the fork on parent termination
       }

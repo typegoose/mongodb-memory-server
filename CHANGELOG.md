@@ -1,3 +1,10 @@
+## [10.1.4-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.3...v10.1.4-beta.1) (2025-02-04)
+
+
+### Fixes
+
+* **MongoInstance::_launchKiller:** set "execArgv" to a empty array ([af01d86](https://github.com/typegoose/mongodb-memory-server/commit/af01d86d043a19d362e88be23a96f85d79e4450a)), closes [#912](https://github.com/typegoose/mongodb-memory-server/issues/912)
+
 ## [10.1.3](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.2...v10.1.3) (2024-12-30)
 
 
