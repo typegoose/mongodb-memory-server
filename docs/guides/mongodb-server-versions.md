@@ -40,7 +40,7 @@ Starting with MongoDB version 5.0, the default versions for `mongodb-memory-serv
 |           8.11.x - 8.12.x            |         5.0.13          |
 |            8.6.x - 8.10.x            |          5.0.8          |
 |            8.0.x - 8.5.x             |          5.0.3          |
-|            7.5.x - 7.5.x             |         4.0.27          |
+|            7.5.x - 7.6.x             |         4.0.27          |
 |            7.0.x - 7.4.x             |         4.0.25          |
 |            6.4.x - 6.9.x             |         4.0.14          |
 |            6.0.x - 6.4.x             |          4.0.3          |
