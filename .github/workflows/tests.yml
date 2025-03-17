@@ -90,7 +90,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@cb425203a562475bca039ba4dbf90c7f9ac790f4 # v4.1.0
+        uses: cycjimmy/semantic-release-action@0a51e81a6baff2acad3ee88f4121c589c73d0f0e # v4.2.0
         with:
           # dry_run: true
           # using semantic-release 23.x because of https://github.com/semantic-release/release-notes-generator/issues/675
