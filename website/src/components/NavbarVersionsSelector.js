@@ -45,9 +45,11 @@ function getVersions(props) {
   const baseUrl = '/mongodb-memory-server/';
   const [versions, setVersions] = useState([]);
 
-  useEffect(async () => {
+  useEffect(() => {
+    let ignore = false;
     const current_version = props.label;
-    const versions = await fetch('/mongodb-memory-server/versions.json')
+
+    fetch('/mongodb-memory-server/versions.json')
       .then((v) => v.json())
       .catch((err) => {
         console.log('json fetch errored, using default', err);
@@ -66,9 +68,16 @@ function getVersions(props) {
         return {
           [current_version]: '',
         };
+      })
+      .then((versions) => {
+        if (!ignore) {
+          setVersions(Object.entries(versions).map(([key, path]) => [key, baseUrl + path]));
+        }
       });
 
-    setVersions(Object.entries(versions).map(([key, path]) => [key, baseUrl + path]));
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   return versions;
