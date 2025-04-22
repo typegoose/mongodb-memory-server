@@ -61,7 +61,9 @@ Default: `{}`
 
 Set extra spawn options to pass to `childProcess.spawn`.
 
-Also see [`MongoMemoryInstanceOpts.spawn`](./mongo-memory-instance-opts.md#spawn).
+Also see [`MongoInstance`'s `spawn`](../classes/mongo-instance.md#spawnopts).
+
+See NodeJS [`child_process.spawn` options](https://nodejs.org/api/child_process.html#child_processspawncommand-args-options) for details.
 
 ### storageEngine
 

@@ -10,16 +10,16 @@ It is known that ArchLinux on Docker does not have an `/etc/os-release` or `/etc
 Workaround:
 
 - Create one of these files (either manually, or install `lsb-release`)
-- Use a SystemBinary with [`SYSTEM_BINARY`](../api/config-options.md#SYSTEM_BINARY)
-- Use an pre-set Archive Name to be used with [`ARCHIVE_NAME`](../api/config-options.md#ARCHIVE_NAME)
+- Use a SystemBinary with [`SYSTEM_BINARY`](../api/config-options.md#system_binary)
+- Use an pre-set Archive Name to be used with [`ARCHIVE_NAME`](../api/config-options.md#archive_name)
 
 ## No Build available for Alpine Linux
 
-It is known that [AlpineLinux](./supported-systems.md#Alpine) does not have an official build (and no build like the ubuntu build works).
+It is known that [AlpineLinux](./supported-systems.md#alpine) does not have an official build (and no build like the ubuntu build works).
 
 Workaround:
 
-- Use a SystemBinary with [`SYSTEM_BINARY`](../api/config-options.md#SYSTEM_BINARY)
+- Use a SystemBinary with [`SYSTEM_BINARY`](../api/config-options.md#system_binary)
 - Do not use AlpineLinux
 
 ## libcurl on older or custom Docker images

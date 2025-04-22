@@ -14,7 +14,7 @@ Typings: `constructor(opts: Partial<MongodOpts>)`
 Create an new Instance without starting it
 
 :::tip
-When directly starting the instance, [`run`](#static-run) should be used
+When directly starting the instance, [`create`](#create) should be used
 :::
 
 ### debug
@@ -61,7 +61,7 @@ Will not Error if instance is not running
 
 Typings: `_launchMongod(mongoBin: string): ChildProcess`
 
-Actually spawn the `mongod` process with `ChildProcess`, used by [`run`](#run)
+Actually spawn the `mongod` process with `ChildProcess`, used by [`start`](#start)
 
 ### _launchKiller
 
@@ -110,11 +110,15 @@ Matches process output against known formats and raise events
 
 Typings: `instanceOpts: MongoInstanceOpts`
 
+Also known as `instance` for [`new`](#new) & [`create`](#create).
+
 Stores the Instance Options
 
 ### binaryOpts
 
 Typings: `readonly binaryOpts: Readonly<MongoBinaryOpts>`
+
+Also known as `binary` for [`new`](#new) & [`create`](#create).
 
 Stores the Binary Options
 
@@ -122,7 +126,11 @@ Stores the Binary Options
 
 Typings: `readonly spawnOpts: Readonly<SpawnOptions>`
 
+Also known as `spawn` for [`new`](#new) & [`create`](#create).
+
 Stores the Spawn Options
+
+See NodeJS [`child_process.spawn` options](https://nodejs.org/api/child_process.html#child_processspawncommand-args-options) for details.
 
 ### extraConnectionOptions
 

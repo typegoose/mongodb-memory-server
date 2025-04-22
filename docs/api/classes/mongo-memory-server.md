@@ -132,7 +132,7 @@ It is still usefull if an user is always required in connection logic and mongod
 
 Typings: `get instanceInfo(): MongoInstanceData | undefined`
 
-Getter for [`_instanceInfo`](#_instanceInfo)
+Getter for [`_instanceInfo`](#_instanceinfo)
 
 ### _instanceInfo
 
