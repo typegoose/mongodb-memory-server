@@ -1,0 +1,23 @@
+name: Test Github Pages for PR
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  website:
+    permissions:
+      contents: read # for actions/checkout to fetch code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      - name: Install Dependencies
+        run: yarn --cwd=website install --frozen-lockfile
+      - name: Build the Website
+        run: yarn --cwd=website run build
