@@ -40,7 +40,7 @@ Used to start an new Instance or to Re-Start an stopped instance
 with `forceSamePort` set to `true` and having `instance.port` set, it will use that port and not generate a new port.  
 with `forceSamePort` set to `true` and not having `instance.port` set, it will generate a new free port.  
 
-:::caution
+:::warning
 Will Error if instance is already running
 :::
 
@@ -79,7 +79,7 @@ Stop an running instance, this function will by default call [`.cleanup`](#clean
 
 With `cleanupOptions` options for cleanup can be manually set.
 
-:::caution
+:::warning
 Will not Error if instance is not running
 :::
 
@@ -99,7 +99,7 @@ Ensure that the instance is running, will run [`start`](#start) if stopped, will
 
 It is recommended to `await` the promise returned from `start` when available.
 
-:::caution
+:::warning
 Will Error if instance cannot be started
 :::
 

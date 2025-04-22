@@ -41,7 +41,7 @@ Typings: `async start(): Promise<void>`
 
 Start the `mongod` and the watcher processes
 
-:::caution
+:::warning
 Currently does not check if the instance is in a correct state and just resets all values, see [#662](https://github.com/typegoose/mongodb-memory-server/issues/662).
 :::
 
@@ -51,7 +51,7 @@ Typings: `async stop(): Promise<boolean>`
 
 Stop the `mongod` and the watcher processes
 
-:::caution
+:::warning
 Will not Error if instance is not running
 :::
 

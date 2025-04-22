@@ -7,14 +7,14 @@ This Guide will show how `mongodb-memory-server` can be used with Docker & docke
 
 ## Important Notes before Starting
 
-:::caution
+:::warning
 It is common that images like `node:16-alpine` are used, which will not work with this package, because mongodb does not provide binaries for Alpine yet.
 It is recommended to switch to images like `node:16` (or `node:16-buster`) for Debian builds.
 
 See [No Build available for Alpine Linux](../known-issues.md#no-build-available-for-alpine-linux).
 :::
 
-:::caution
+:::warning
 Docker Debian builds (at least with `debian:11`), extra packages have to be installed:
 
 ```sh

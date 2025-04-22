@@ -94,7 +94,7 @@ afterAll(async () => {
 });
 ```
 
-:::caution
+:::warning
 It is very important to limit the spawned number of Jest workers on machines that have many cores, because otherwise the tests may run slower than with fewer workers, because the database instance(s) may be hit very hard.  
 Use either [`--maxWorkers 4`](https://jestjs.io/docs/configuration#maxworkers-number--string) or [`--runInBand`](https://jestjs.io/docs/cli#--runinband) to limit the workers.
 :::

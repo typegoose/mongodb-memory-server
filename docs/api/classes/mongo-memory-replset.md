@@ -55,7 +55,7 @@ Typings: `async start(): Promise<void>`
 
 Used to start an new ReplSet or to Re-Start an stopped ReplSet
 
-:::caution
+:::warning
 Will Error if ReplSet is already running
 :::
 
@@ -83,7 +83,7 @@ Stop an running instance, this function will by default call [`.cleanup`](#clean
 
 With `cleanupOptions` options for cleanup can be manually set.
 
-:::caution
+:::warning
 Will not Error if instance is not running
 :::
 
@@ -105,10 +105,10 @@ It is recommended to `await` the promise returned from `start` when available.
 
 Does not start the replset instance if not already starting (unlike [`ensureInstance`](./mongo-memory-server.md#ensureinstance)).
 
-:::caution
+:::warning
 Will Error if state is not `running` or `init`.
 :::
-:::caution
+:::warning
 Will **not** Error if a error is encountered while waiting.
 :::
 
@@ -154,7 +154,7 @@ Typings:
 
 Getter & Setter for [`_instanceOpts`](#_instanceopts)
 
-:::caution
+:::warning
 Will Throw an Error if `state` is not `stopped`
 :::
 
@@ -175,7 +175,7 @@ Typings:
 
 Getter & Setter for [`_binaryOpts`](#_binaryopts)
 
-:::caution
+:::warning
 Will Throw an Error if `state` is not `stopped`
 :::
 
@@ -196,7 +196,7 @@ Typings:
 
 Getter & Setter for [`_replSetOpts`](#_replsetopts)
 
-:::caution
+:::warning
 Will Throw an Error if `state` is not `stopped`
 :::
 
@@ -222,7 +222,7 @@ Typings: `get state(): MongoMemoryReplSetStates`
 
 Getter for [`_state`](#_state)
 
-:::caution
+:::warning
 Will Throw an Error if `state` is not `stopped`
 :::
 
