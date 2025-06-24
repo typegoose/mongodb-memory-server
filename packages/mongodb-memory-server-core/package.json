@@ -38,7 +38,7 @@
     "@types/semver": "^7.7.0",
     "@types/tar-stream": "^3.1.4",
     "@types/yauzl": "^2.10.3",
-    "@types/yazl": "^2.4.5",
+    "@types/yazl": "^3.3.0",
     "rimraf": "^5.0.10",
     "yazl": "^3.3.1"
   },
