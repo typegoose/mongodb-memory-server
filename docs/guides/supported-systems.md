@@ -80,12 +80,20 @@ Default version is `12` (when in `unstable` or `testing`, otherwise none)
 
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `6`<br/>
-Highest version is `36` (see note) (higher versions will be clamped to this value)<br/>
-Default version is `34` (when above or equal to `34`, otherwise none)
+Highest version is `42` (see note) (higher versions will be clamped to this value)<br/>
+Default version is `28` (when above or equal to `28`, otherwise none)
+
+Mongodb compat chart (x86_64)
+(Limited to currently known mongodb versions as of writing)
+
+| Fedora versions | RHEL mapping |  Mongodb versions  |
+| :-------------: | :----------: | :----------------: |
+|     `>=34`      | `9.0 \| 9.3` | `>=6.0.4 <=8.0.9`  |
+|     `>=28`      |    `8.0`     | `>=3.4.24 <=8.0.9` |
 
 :::note
-Fedora 36 and onwards dont ship openssl1.1 anymore by default and currently needs to be manually installed.  
-There are currently no newer mongodb builds that support the newer provided openssl.
+There are no official builds from mongodb for fedora.  
+This mapping to RHEL is based on the table in [Relationship between Fedora and RHEL](https://docs.fedoraproject.org/en-US/quick-docs/fedora-and-red-hat-enterprise-linux/index.html#_history_of_red_hat_enterprise_linux_and_fedora).
 :::
 
 ### Rhel

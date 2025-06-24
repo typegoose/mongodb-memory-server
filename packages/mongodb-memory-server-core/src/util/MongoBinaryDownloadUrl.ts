@@ -337,6 +337,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    */
   getFedoraVersionString(os: LinuxOS): string {
     const fedoraVer: number = parseInt(os.release, 10);
+    const coercedVersion = semver.coerce(this.version);
+
+    if (isNullOrUndefined(coercedVersion)) {
+      throw new UnknownVersionError(this.version);
+    }
 
     const rhelOS: LinuxOS = {
       os: 'linux',
@@ -345,9 +350,19 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       release: '8.0',
     };
 
-    // 36 and onwards dont ship with libcrypto.so.1.1 anymore and need to be manually installed ("openssl1.1")
-    // 34 onward dosnt have "compat-openssl10" anymore, and only build from 4.0.24 are available for "rhel80"
-    if (fedoraVer >= 34) {
+    // rough fedora->rhel version mapping
+    // https://docs.fedoraproject.org/en-US/quick-docs/fedora-and-red-hat-enterprise-linux/index.html
+
+    // as of mongodb 8.0.9, there are currently no binaries for rhel 10.0 / fedora 40
+
+    if (fedoraVer >= 34 && semver.satisfies(coercedVersion, '>=8.0.0')) {
+      // since mongodb 8.0.0, they only ship "rhel93" and no more "rhel90"
+      rhelOS.release = '9.3';
+    } else if (fedoraVer >= 34) {
+      // 36 and onwards dont ship with libcrypto.so.1.1 anymore and need to be manually installed ("openssl1.1")
+      // 34 onward dosnt have "compat-openssl10" anymore, and only build from 4.0.24 are available for "rhel80"
+      rhelOS.release = '9.0';
+    } else if (fedoraVer >= 28) {
       rhelOS.release = '8.0';
     } else if (fedoraVer >= 19) {
       rhelOS.release = '7.0';
@@ -407,6 +422,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           );
         }
       }
+
+      // as of mongodb 8.0.9, there are currently no binaries for rhel 10.0
 
       if (semver.satisfies(releaseAsSemver, '>=9.3.0')) {
         // since mongodb 8.0.0 there are only binaries for `rhel93`, no more `rhel90`
