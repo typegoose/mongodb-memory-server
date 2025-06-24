@@ -94,7 +94,7 @@ There are currently no newer mongodb builds that support the newer provided open
 
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `5`<br/>
-Highest version is `9` (higher versions will be clamped to this value)<br/>
+Highest version is `9.3` (higher versions will be clamped to this value)<br/>
 Default version is `70`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 

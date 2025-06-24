@@ -408,7 +408,10 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         }
       }
 
-      if (semver.satisfies(releaseAsSemver, '>=9.0.0')) {
+      if (semver.satisfies(releaseAsSemver, '>=9.3.0')) {
+        // since mongodb 8.0.0 there are only binaries for `rhel93`, no more `rhel90`
+        name += '93';
+      } else if (semver.satisfies(releaseAsSemver, '>=9.0.0')) {
         // there are only binaries for rhel90 since 6.0.4
         name += '90';
       } else if (semver.satisfies(releaseAsSemver, '8.2.0') && this.arch == 'aarch64') {
