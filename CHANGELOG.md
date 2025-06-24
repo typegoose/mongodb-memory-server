@@ -1,3 +1,9 @@
+## [10.2.0-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.1...v10.2.0-beta.2) (2025-06-24)
+
+### Reverts
+
+* Revert "deps(mongodb): upgrade to version 6.17.0" ([beba000](https://github.com/typegoose/mongodb-memory-server/commit/beba000f98072e425004bc686545dd074ed20e07))
+
 ## [10.2.0-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.4...v10.2.0-beta.1) (2025-06-24)
 
 ### Features
