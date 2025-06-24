@@ -25,7 +25,10 @@ describe('utils', () => {
 
   describe('pathExists', () => {
     it('should return true if there are stats', async () => {
-      jest.spyOn(fspromises, 'stat').mockResolvedValueOnce(new Stats());
+      jest.spyOn(fspromises, 'stat').mockResolvedValueOnce(
+        // @ts-expect-error Mock value, though nodejs does not want it to be public anymore
+        new Stats()
+      );
       await expect(utils.pathExists('/some/path')).resolves.toEqual(true);
     });
 

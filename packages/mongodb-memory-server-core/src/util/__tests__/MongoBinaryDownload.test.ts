@@ -332,10 +332,10 @@ describe('MongoBinaryDownload', () => {
       jest.spyOn(mbd, 'getPath').mockResolvedValue(outPath);
 
       // prepare the archive
-      await new Promise((res, rej) => {
+      await new Promise<void>((res, rej) => {
         const zipfile = new yazl.ZipFile();
         const writeStream = createWriteStream(zipPath);
-        writeStream.once('close', res);
+        writeStream.once('close', () => res());
         writeStream.once('error', rej);
         zipfile.outputStream.once('error', rej);
         zipfile.outputStream.pipe(writeStream);
@@ -382,11 +382,11 @@ describe('MongoBinaryDownload', () => {
       jest.spyOn(mbd, 'getPath').mockResolvedValue(outPath);
 
       // prepare the archive
-      await new Promise((res, rej) => {
+      await new Promise<void>((res, rej) => {
         const tarPack = pack();
         const gzipStream = createGzip();
         const writeStream = createWriteStream(tarPath);
-        writeStream.once('close', res);
+        writeStream.once('close', () => res());
         writeStream.once('error', rej);
         gzipStream.once('error', rej);
         tarPack.once('error', rej);
