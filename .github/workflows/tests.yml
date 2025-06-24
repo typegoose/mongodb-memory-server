@@ -101,6 +101,7 @@ jobs:
             @semantic-release/changelog@6.x
             conventional-changelog-conventionalcommits@8
             conventional-changelog-writer@8.0.1
+            semantic-release-replace-plugin@1.2.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
