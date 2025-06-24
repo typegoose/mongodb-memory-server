@@ -35,7 +35,7 @@
     "@types/debug": "^4.1.12",
     "@types/find-cache-dir": "^3.2.1",
     "@types/follow-redirects": "^1.14.4",
-    "@types/semver": "^7.5.8",
+    "@types/semver": "^7.7.0",
     "@types/tar-stream": "^3.1.4",
     "@types/yauzl": "^2.10.3",
     "@types/yazl": "^2.4.5",
