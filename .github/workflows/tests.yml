@@ -93,16 +93,14 @@ jobs:
         uses: cycjimmy/semantic-release-action@c4a2fa890676fc2db25ad0aacd8ab4a0f1f4c024 # v4.2.1
         with:
           # dry_run: true
-          # using semantic-release 23.x because of https://github.com/semantic-release/release-notes-generator/issues/675
+          # "conventional-changelog-writer" is exactly installed as "cycjimmy/semantic-release-action" depends on 8.0.0, which causes errors
+          # plugins included in semantic-release by default:
+          # @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/npm @semantic-release/github
           extra_plugins: |
             @semantic-release/git@10.x
             @semantic-release/changelog@6.x
-            @semantic-release/commit-analyzer@13.x
-            @semantic-release/release-notes-generator@14.x
-            @semantic-release/github@10.x
-            @semantic-release/npm@12.x
-            @commitlint/config-conventional@19.x
-            semantic-release-replace-plugin@1.2.7
+            conventional-changelog-conventionalcommits@8
+            conventional-changelog-writer@8.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
