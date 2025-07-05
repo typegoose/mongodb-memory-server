@@ -353,16 +353,21 @@ export class MongoBinaryDownload {
   }
 
   /**
-   * Downlaod given httpOptions to tempDownloadLocation, then move it to downloadLocation
+   * Download given httpOptions to tempDownloadLocation, then move it to downloadLocation
+   * @param url The URL to download the file from
    * @param httpOptions The httpOptions directly passed to https.get
    * @param downloadLocation The location the File should be after the download
    * @param tempDownloadLocation The location the File should be while downloading
+   * @param maxRetries Maximum number of retries on download failure
+   * @param baseDelay Base delay in milliseconds for retrying the download
    */
   async httpDownload(
     url: URL,
     httpOptions: RequestOptions,
     downloadLocation: string,
-    tempDownloadLocation: string
+    tempDownloadLocation: string,
+    maxRetries: number = 3,
+    baseDelay: number = 1000
   ): Promise<string> {
     log('httpDownload');
     const downloadUrl = this.assignDownloadingURL(url);
@@ -373,106 +378,180 @@ export class MongoBinaryDownload {
       ...httpOptions,
     };
 
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await this.attemptDownload(
+          url,
+          useHttpsOptions,
+          downloadLocation,
+          tempDownloadLocation,
+          downloadUrl,
+          httpOptions
+        );
+      } catch (error) {
+        if (attempt === maxRetries) {
+          throw error;
+        }
+
+        const delay = baseDelay * Math.pow(2, attempt);
+        log(`httpDownload: attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+
+    throw new Error('Max retries exceeded');
+  }
+
+  private async attemptDownload(
+    url: URL,
+    useHttpsOptions: Parameters<typeof https.get>[1],
+    downloadLocation: string,
+    tempDownloadLocation: string,
+    downloadUrl: string,
+    httpOptions: RequestOptions
+  ): Promise<string> {
     return new Promise((resolve, reject) => {
       log(`httpDownload: trying to download "${downloadUrl}"`);
-      https
-        .get(url, useHttpsOptions, (response) => {
-          if (response.statusCode != 200) {
-            if (response.statusCode === 403) {
-              reject(
-                new DownloadError(
-                  downloadUrl,
-                  "Status Code is 403 (MongoDB's 404)\n" +
-                    "This means that the requested version-platform combination doesn't exist\n" +
-                    "Try to use different version 'new MongoMemoryServer({ binary: { version: 'X.Y.Z' } })'\n" +
-                    'List of available versions can be found here: ' +
-                    'https://www.mongodb.com/download-center/community/releases/archive'
-                )
-              );
 
-              return;
-            }
+      let stallTimer: NodeJS.Timeout;
+      const stallTimeout = 30000; // 30 seconds without data = stall
 
-            reject(
-              new DownloadError(downloadUrl, `Status Code isnt 200! (it is ${response.statusCode})`)
-            );
+      const resetStallTimer = () => {
+        if (stallTimer) {
+          clearTimeout(stallTimer);
+        }
 
-            return;
-          }
+        stallTimer = setTimeout(() => {
+          reject(
+            new DownloadError(downloadUrl, 'Network I/O stalled - no data received for 30 seconds')
+          );
+        }, stallTimeout);
+      };
 
-          // content-length, otherwise 0
-          let contentLength: number;
+      const clearStallTimer = () => {
+        if (stallTimer) {
+          clearTimeout(stallTimer);
+          stallTimer = null as any;
+        }
+      };
 
-          if (typeof response.headers['content-length'] != 'string') {
-            log('Response header "content-lenght" is empty!');
+      const request = https.get(url, useHttpsOptions, (response) => {
+        resetStallTimer();
 
-            contentLength = 0;
-          } else {
-            contentLength = parseInt(response.headers['content-length'], 10);
+        if (response.statusCode != 200) {
+          clearStallTimer();
 
-            if (Number.isNaN(contentLength)) {
-              log('Response header "content-lenght" resolved to NaN!');
-
-              contentLength = 0;
-            }
-          }
-
-          // error if the content-length header is missing or is 0 if config option "DOWNLOAD_IGNORE_MISSING_HEADER" is not set to "true"
-          if (
-            !envToBool(resolveConfig(ResolveConfigVariables.DOWNLOAD_IGNORE_MISSING_HEADER)) &&
-            contentLength <= 0
-          ) {
+          if (response.statusCode === 403) {
             reject(
               new DownloadError(
                 downloadUrl,
-                'Response header "content-length" does not exist or resolved to NaN'
+                "Status Code is 403 (MongoDB's 404)\n" +
+                  "This means that the requested version-platform combination doesn't exist\n" +
+                  "Try to use different version 'new MongoMemoryServer({ binary: { version: 'X.Y.Z' } })'\n" +
+                  'List of available versions can be found here: ' +
+                  'https://www.mongodb.com/download-center/community/releases/archive'
               )
             );
 
             return;
           }
 
-          this.dlProgress.current = 0;
-          this.dlProgress.length = contentLength;
-          this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
+          reject(
+            new DownloadError(downloadUrl, `Status Code isn't 200! (it is ${response.statusCode})`)
+          );
 
-          const fileStream = createWriteStream(tempDownloadLocation);
+          return;
+        }
 
-          response.pipe(fileStream);
+        // content-length, otherwise 0
+        let contentLength: number;
 
-          fileStream.on('finish', async () => {
-            if (
-              this.dlProgress.current < this.dlProgress.length &&
-              !httpOptions.path?.endsWith('.md5')
-            ) {
-              reject(
-                new DownloadError(
-                  downloadUrl,
-                  `Too small (${this.dlProgress.current} bytes) mongod binary downloaded.`
-                )
-              );
+        if (typeof response.headers['content-length'] != 'string') {
+          log('Response header "content-length" is empty!');
+          contentLength = 0;
+        } else {
+          contentLength = parseInt(response.headers['content-length'], 10);
 
-              return;
-            }
+          if (Number.isNaN(contentLength)) {
+            log('Response header "content-length" resolved to NaN!');
+            contentLength = 0;
+          }
+        }
 
-            this.printDownloadProgress({ length: 0 }, true);
+        // error if the content-length header is missing or is 0 if config option "DOWNLOAD_IGNORE_MISSING_HEADER" is not set to "true"
+        if (
+          !envToBool(resolveConfig(ResolveConfigVariables.DOWNLOAD_IGNORE_MISSING_HEADER)) &&
+          contentLength <= 0
+        ) {
+          clearStallTimer();
+          reject(
+            new DownloadError(
+              downloadUrl,
+              'Response header "content-length" does not exist or resolved to NaN'
+            )
+          );
 
-            fileStream.close();
-            await fspromises.rename(tempDownloadLocation, downloadLocation);
-            log(`httpDownload: moved "${tempDownloadLocation}" to "${downloadLocation}"`);
+          return;
+        }
 
-            resolve(downloadLocation);
-          });
+        this.dlProgress.current = 0;
+        this.dlProgress.length = contentLength;
+        this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
 
-          response.on('data', (chunk: any) => {
-            this.printDownloadProgress(chunk);
-          });
-        })
-        .on('error', (err: Error) => {
-          // log it without having debug enabled
-          console.error(`Couldnt download "${downloadUrl}"!`, err.message);
+        const fileStream = createWriteStream(tempDownloadLocation);
+
+        response.pipe(fileStream);
+
+        fileStream.on('finish', async () => {
+          clearStallTimer();
+
+          if (
+            this.dlProgress.current < this.dlProgress.length &&
+            !httpOptions.path?.endsWith('.md5')
+          ) {
+            reject(
+              new DownloadError(
+                downloadUrl,
+                `Too small (${this.dlProgress.current} bytes) mongod binary downloaded.`
+              )
+            );
+
+            return;
+          }
+
+          this.printDownloadProgress({ length: 0 }, true);
+
+          fileStream.close();
+          await fspromises.rename(tempDownloadLocation, downloadLocation);
+          log(`httpDownload: moved "${tempDownloadLocation}" to "${downloadLocation}"`);
+
+          resolve(downloadLocation);
+        });
+
+        response.on('data', (chunk: any) => {
+          resetStallTimer();
+          this.printDownloadProgress(chunk);
+        });
+
+        response.on('error', (err: Error) => {
+          clearStallTimer();
           reject(new DownloadError(downloadUrl, err.message));
         });
+      });
+
+      request.on('error', (err: Error) => {
+        clearStallTimer();
+        console.error(`Could NOT download "${downloadUrl}"!`, err.message);
+        reject(new DownloadError(downloadUrl, err.message));
+      });
+
+      request.setTimeout(60000, () => {
+        clearStallTimer();
+        request.destroy();
+        reject(new DownloadError(downloadUrl, 'Request timeout after 60 seconds'));
+      });
+
+      resetStallTimer();
     });
   }
 
