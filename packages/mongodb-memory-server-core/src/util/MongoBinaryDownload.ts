@@ -372,7 +372,7 @@ export class MongoBinaryDownload {
     log('httpDownload');
     const downloadUrl = this.assignDownloadingURL(url);
 
-    const maxRedirects = parseInt(resolveConfig(ResolveConfigVariables.MAX_REDIRECTS) || '');
+    const maxRedirects = parseInt(resolveConfig(ResolveConfigVariables.MAX_REDIRECTS) ?? '');
     const useHttpsOptions: Parameters<typeof https.get>[1] = {
       maxRedirects: Number.isNaN(maxRedirects) ? 2 : maxRedirects,
       ...httpOptions,
