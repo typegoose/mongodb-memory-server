@@ -423,6 +423,17 @@ export class MongoBinaryDownload {
     throw new Error('Max retries exceeded');
   }
 
+  /**
+   * Attempt to download the file from the given URL
+   * This function is used internally by `httpDownload`
+   * @param url
+   * @param useHttpsOptions
+   * @param downloadLocation
+   * @param tempDownloadLocation
+   * @param downloadUrl
+   * @param httpOptions
+   * @private
+   */
   private async attemptDownload(
     url: URL,
     useHttpsOptions: Parameters<typeof https.get>[1],
