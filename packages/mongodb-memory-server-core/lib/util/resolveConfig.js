@@ -35,6 +35,7 @@ var ResolveConfigVariables;
     ResolveConfigVariables["SYSTEM_BINARY_VERSION_CHECK"] = "SYSTEM_BINARY_VERSION_CHECK";
     ResolveConfigVariables["USE_ARCHIVE_NAME_FOR_BINARY_NAME"] = "USE_ARCHIVE_NAME_FOR_BINARY_NAME";
     ResolveConfigVariables["MAX_REDIRECTS"] = "MAX_REDIRECTS";
+    ResolveConfigVariables["MAX_RETRIES"] = "MAX_RETRIES";
     ResolveConfigVariables["DISTRO"] = "DISTRO";
 })(ResolveConfigVariables || (exports.ResolveConfigVariables = ResolveConfigVariables = {}));
 /** The Prefix for Environmental values */
@@ -52,6 +53,7 @@ exports.defaultValues = new Map([
     [ResolveConfigVariables.USE_ARCHIVE_NAME_FOR_BINARY_NAME, 'false'],
     [ResolveConfigVariables.MD5_CHECK, 'true'],
     [ResolveConfigVariables.MAX_REDIRECTS, '2'],
+    [ResolveConfigVariables.MAX_RETRIES, '3'], // Default maxRetries for downloads
 ]);
 /**
  * Set an Default value for an specific key

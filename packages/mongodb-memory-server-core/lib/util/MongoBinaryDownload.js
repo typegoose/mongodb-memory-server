@@ -19,6 +19,8 @@ const DryMongoBinary_1 = require("./DryMongoBinary");
 const readline_1 = require("readline");
 const errors_1 = require("./errors");
 const log = (0, debug_1.default)('MongoMS:MongoBinaryDownload');
+const retryableStatusCodes = [503, 500];
+const retryableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'ECONNREFUSED'];
 /**
  * Download and extract the "mongod" binary
  */
@@ -258,7 +260,7 @@ class MongoBinaryDownload {
      * @param maxRetries Maximum number of retries on download failure
      * @param baseDelay Base delay in milliseconds for retrying the download
      */
-    async httpDownload(url, httpOptions, downloadLocation, tempDownloadLocation, maxRetries = 3, baseDelay = 1000) {
+    async httpDownload(url, httpOptions, downloadLocation, tempDownloadLocation, maxRetries, baseDelay = 1000) {
         log('httpDownload');
         const downloadUrl = this.assignDownloadingURL(url);
         const maxRedirects = parseInt((0, resolveConfig_1.default)(resolveConfig_1.ResolveConfigVariables.MAX_REDIRECTS) ?? '');
@@ -266,16 +268,28 @@ class MongoBinaryDownload {
             maxRedirects: Number.isNaN(maxRedirects) ? 2 : maxRedirects,
             ...httpOptions,
         };
-        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        // Get maxRetries from config if not provided
+        const retriesFromConfig = parseInt((0, resolveConfig_1.default)(resolveConfig_1.ResolveConfigVariables.MAX_RETRIES) ?? '');
+        const retries = typeof maxRetries === 'number'
+            ? maxRetries
+            : !Number.isNaN(retriesFromConfig)
+                ? retriesFromConfig
+                : 3;
+        for (let attempt = 0; attempt <= retries; attempt++) {
             try {
                 return await this.attemptDownload(url, useHttpsOptions, downloadLocation, tempDownloadLocation, downloadUrl, httpOptions);
             }
             catch (error) {
-                if (attempt === maxRetries) {
+                const shouldRetry = (error instanceof errors_1.DownloadError &&
+                    retryableStatusCodes.some((code) => error.message.includes(code.toString()))) ||
+                    (error?.code && retryableErrorCodes.includes(error.code));
+                if (!shouldRetry || attempt === retries) {
                     throw error;
                 }
-                const delay = baseDelay * Math.pow(2, attempt);
-                log(`httpDownload: attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+                const base = baseDelay * Math.pow(2, attempt);
+                const jitter = Math.floor(Math.random() * 1000);
+                const delay = base + jitter;
+                log(`httpDownload: attempt ${attempt + 1} failed with ${error.message}, retrying in ${delay}ms...`);
                 await new Promise((resolve) => setTimeout(resolve, delay));
             }
         }
@@ -284,26 +298,8 @@ class MongoBinaryDownload {
     async attemptDownload(url, useHttpsOptions, downloadLocation, tempDownloadLocation, downloadUrl, httpOptions) {
         return new Promise((resolve, reject) => {
             log(`httpDownload: trying to download "${downloadUrl}"`);
-            let stallTimer;
-            const stallTimeout = 30000; // 30 seconds without data = stall
-            const resetStallTimer = () => {
-                if (stallTimer) {
-                    clearTimeout(stallTimer);
-                }
-                stallTimer = setTimeout(() => {
-                    reject(new errors_1.DownloadError(downloadUrl, 'Network I/O stalled - no data received for 30 seconds'));
-                }, stallTimeout);
-            };
-            const clearStallTimer = () => {
-                if (stallTimer) {
-                    clearTimeout(stallTimer);
-                    stallTimer = null;
-                }
-            };
             const request = follow_redirects_1.https.get(url, useHttpsOptions, (response) => {
-                resetStallTimer();
                 if (response.statusCode != 200) {
-                    clearStallTimer();
                     if (response.statusCode === 403) {
                         reject(new errors_1.DownloadError(downloadUrl, "Status Code is 403 (MongoDB's 404)\n" +
                             "This means that the requested version-platform combination doesn't exist\n" +
@@ -331,7 +327,6 @@ class MongoBinaryDownload {
                 // error if the content-length header is missing or is 0 if config option "DOWNLOAD_IGNORE_MISSING_HEADER" is not set to "true"
                 if (!(0, resolveConfig_1.envToBool)((0, resolveConfig_1.default)(resolveConfig_1.ResolveConfigVariables.DOWNLOAD_IGNORE_MISSING_HEADER)) &&
                     contentLength <= 0) {
-                    clearStallTimer();
                     reject(new errors_1.DownloadError(downloadUrl, 'Response header "content-length" does not exist or resolved to NaN'));
                     return;
                 }
@@ -341,7 +336,6 @@ class MongoBinaryDownload {
                 const fileStream = (0, fs_1.createWriteStream)(tempDownloadLocation);
                 response.pipe(fileStream);
                 fileStream.on('finish', async () => {
-                    clearStallTimer();
                     if (this.dlProgress.current < this.dlProgress.length &&
                         !httpOptions.path?.endsWith('.md5')) {
                         reject(new errors_1.DownloadError(downloadUrl, `Too small (${this.dlProgress.current} bytes) mongod binary downloaded.`));
@@ -354,25 +348,20 @@ class MongoBinaryDownload {
                     resolve(downloadLocation);
                 });
                 response.on('data', (chunk) => {
-                    resetStallTimer();
                     this.printDownloadProgress(chunk);
                 });
                 response.on('error', (err) => {
-                    clearStallTimer();
                     reject(new errors_1.DownloadError(downloadUrl, err.message));
                 });
             });
             request.on('error', (err) => {
-                clearStallTimer();
                 console.error(`Could NOT download "${downloadUrl}"!`, err.message);
                 reject(new errors_1.DownloadError(downloadUrl, err.message));
             });
             request.setTimeout(60000, () => {
-                clearStallTimer();
                 request.destroy();
                 reject(new errors_1.DownloadError(downloadUrl, 'Request timeout after 60 seconds'));
             });
-            resetStallTimer();
         });
     }
     /**

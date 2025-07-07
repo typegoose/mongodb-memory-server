@@ -18,6 +18,7 @@ export declare enum ResolveConfigVariables {
     SYSTEM_BINARY_VERSION_CHECK = "SYSTEM_BINARY_VERSION_CHECK",
     USE_ARCHIVE_NAME_FOR_BINARY_NAME = "USE_ARCHIVE_NAME_FOR_BINARY_NAME",
     MAX_REDIRECTS = "MAX_REDIRECTS",
+    MAX_RETRIES = "MAX_RETRIES",// Added for download retry configuration
     DISTRO = "DISTRO"
 }
 /** The Prefix for Environmental values */

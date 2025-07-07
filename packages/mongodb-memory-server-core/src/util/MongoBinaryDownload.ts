@@ -19,6 +19,9 @@ import { RequestOptions } from 'https';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
+const retryableStatusCodes = [503, 500];
+const retryableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'ECONNREFUSED'];
+
 export interface MongoBinaryDownloadProgress {
   current: number;
   length: number;
@@ -366,7 +369,7 @@ export class MongoBinaryDownload {
     httpOptions: RequestOptions,
     downloadLocation: string,
     tempDownloadLocation: string,
-    maxRetries: number = 3,
+    maxRetries?: number,
     baseDelay: number = 1000
   ): Promise<string> {
     log('httpDownload');
@@ -378,7 +381,16 @@ export class MongoBinaryDownload {
       ...httpOptions,
     };
 
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    // Get maxRetries from config if not provided
+    const retriesFromConfig = parseInt(resolveConfig(ResolveConfigVariables.MAX_RETRIES) ?? '');
+    const retries =
+      typeof maxRetries === 'number'
+        ? maxRetries
+        : !Number.isNaN(retriesFromConfig)
+          ? retriesFromConfig
+          : 3;
+
+    for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         return await this.attemptDownload(
           url,
@@ -388,13 +400,22 @@ export class MongoBinaryDownload {
           downloadUrl,
           httpOptions
         );
-      } catch (error) {
-        if (attempt === maxRetries) {
+      } catch (error: any) {
+        const shouldRetry =
+          (error instanceof DownloadError &&
+            retryableStatusCodes.some((code) => error.message.includes(code.toString()))) ||
+          (error?.code && retryableErrorCodes.includes(error.code));
+
+        if (!shouldRetry || attempt === retries) {
           throw error;
         }
 
-        const delay = baseDelay * Math.pow(2, attempt);
-        log(`httpDownload: attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+        const base = baseDelay * Math.pow(2, attempt);
+        const jitter = Math.floor(Math.random() * 1000);
+        const delay = base + jitter;
+        log(
+          `httpDownload: attempt ${attempt + 1} failed with ${error.message}, retrying in ${delay}ms...`
+        );
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
@@ -413,34 +434,8 @@ export class MongoBinaryDownload {
     return new Promise((resolve, reject) => {
       log(`httpDownload: trying to download "${downloadUrl}"`);
 
-      let stallTimer: NodeJS.Timeout;
-      const stallTimeout = 30000; // 30 seconds without data = stall
-
-      const resetStallTimer = () => {
-        if (stallTimer) {
-          clearTimeout(stallTimer);
-        }
-
-        stallTimer = setTimeout(() => {
-          reject(
-            new DownloadError(downloadUrl, 'Network I/O stalled - no data received for 30 seconds')
-          );
-        }, stallTimeout);
-      };
-
-      const clearStallTimer = () => {
-        if (stallTimer) {
-          clearTimeout(stallTimer);
-          stallTimer = null as any;
-        }
-      };
-
       const request = https.get(url, useHttpsOptions, (response) => {
-        resetStallTimer();
-
         if (response.statusCode != 200) {
-          clearStallTimer();
-
           if (response.statusCode === 403) {
             reject(
               new DownloadError(
@@ -483,7 +478,6 @@ export class MongoBinaryDownload {
           !envToBool(resolveConfig(ResolveConfigVariables.DOWNLOAD_IGNORE_MISSING_HEADER)) &&
           contentLength <= 0
         ) {
-          clearStallTimer();
           reject(
             new DownloadError(
               downloadUrl,
@@ -503,8 +497,6 @@ export class MongoBinaryDownload {
         response.pipe(fileStream);
 
         fileStream.on('finish', async () => {
-          clearStallTimer();
-
           if (
             this.dlProgress.current < this.dlProgress.length &&
             !httpOptions.path?.endsWith('.md5')
@@ -529,29 +521,23 @@ export class MongoBinaryDownload {
         });
 
         response.on('data', (chunk: any) => {
-          resetStallTimer();
           this.printDownloadProgress(chunk);
         });
 
         response.on('error', (err: Error) => {
-          clearStallTimer();
           reject(new DownloadError(downloadUrl, err.message));
         });
       });
 
       request.on('error', (err: Error) => {
-        clearStallTimer();
         console.error(`Could NOT download "${downloadUrl}"!`, err.message);
         reject(new DownloadError(downloadUrl, err.message));
       });
 
       request.setTimeout(60000, () => {
-        clearStallTimer();
         request.destroy();
         reject(new DownloadError(downloadUrl, 'Request timeout after 60 seconds'));
       });
-
-      resetStallTimer();
     });
   }
 
