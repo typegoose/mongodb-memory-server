@@ -90,7 +90,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@c4a2fa890676fc2db25ad0aacd8ab4a0f1f4c024 # v4.2.1
+        uses: cycjimmy/semantic-release-action@16ca923e6ccbb50770c415a0ccd43709a8c5f7a4 # v4.2.2
         with:
           # dry_run: true
           # "conventional-changelog-writer" is exactly installed as "cycjimmy/semantic-release-action" depends on 8.0.0, which causes errors
