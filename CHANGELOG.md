@@ -1,3 +1,10 @@
+## [10.2.0-beta.3](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.2...v10.2.0-beta.3) (2025-07-14)
+
+### Fixes
+
+* add retry logic for downloads with configurable retries and backoff ([27c7d71](https://github.com/typegoose/mongodb-memory-server/commit/27c7d711473833c40024fd822d55eedc7be5d2c3))
+* use DownloadError on max retries exceeded ([b90e086](https://github.com/typegoose/mongodb-memory-server/commit/b90e086c3be6ba49a0ca3dcf51b265bcf9d15a5f))
+
 ## [10.2.0-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.1...v10.2.0-beta.2) (2025-06-24)
 
 ### Reverts
