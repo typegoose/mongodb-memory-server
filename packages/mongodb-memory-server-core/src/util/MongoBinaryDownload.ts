@@ -420,7 +420,7 @@ export class MongoBinaryDownload {
       }
     }
 
-    throw new Error('Max retries exceeded');
+    throw new DownloadError(downloadUrl, 'Max retries exceeded');
   }
 
   /**
