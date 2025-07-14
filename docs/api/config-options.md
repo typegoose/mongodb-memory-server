@@ -269,6 +269,19 @@ Also see [ARCHIVE_NAME](#archive_name).
 Keep in mind that downloaded binaries will never be automatically deleted.
 :::
 
+### MAX_RETRIES
+
+| Environment Variable | PackageJson |
+| :------------------: | :---------: |
+|  `MONGOMS_MAX_RETRIES`  |  `maxRetries`  |
+
+Option `MAX_RETRIES` is used to set the maximum number of retry attempts for downloading binaries when a retryable error occurs.
+
+Default: `3`
+
+Set this to control how many times the downloader will attempt to recover from transient errors (like network issues) before failing.
+
+
 ## How to use them in the package.json
 
 To use the config options in the `package.json`, they need to be camelCased (and without `_`), and need to be in the property `config.mongodbMemoryServer`
