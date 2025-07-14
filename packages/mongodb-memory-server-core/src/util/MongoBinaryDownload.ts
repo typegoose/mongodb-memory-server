@@ -19,8 +19,20 @@ import { RequestOptions } from 'https';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
-const retryableStatusCodes = [503, 500];
-const retryableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'ECONNREFUSED'];
+const retryableStatusCodes = [429, 500, 503];
+
+const retryableErrorCodes = [
+  'ECONNRESET',
+  'ETIMEDOUT',
+  'ENOTFOUND',
+  'ECONNREFUSED',
+  'EPIPE',
+  'EHOSTUNREACH',
+  'EAI_AGAIN',
+  'ENETUNREACH',
+  'ECONNABORTED',
+  'aborted',
+];
 
 export interface MongoBinaryDownloadProgress {
   current: number;
