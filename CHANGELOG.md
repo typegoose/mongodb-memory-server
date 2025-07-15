@@ -1,3 +1,9 @@
+## [10.2.0-beta.4](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.3...v10.2.0-beta.4) (2025-07-15)
+
+### Fixes
+
+* add more retryable status and error codes during downloads ([#936](https://github.com/typegoose/mongodb-memory-server/issues/936)) ([dc82f62](https://github.com/typegoose/mongodb-memory-server/commit/dc82f62ec196f0bbf0044bbcce1c5da6b3b8b6f0))
+
 ## [10.2.0-beta.3](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.2...v10.2.0-beta.3) (2025-07-14)
 
 ### Fixes
