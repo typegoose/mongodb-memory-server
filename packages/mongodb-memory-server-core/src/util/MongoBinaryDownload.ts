@@ -237,7 +237,10 @@ export class MongoBinaryDownload {
       requestOptions,
       downloadLocation,
       tempDownloadLocation
-    );
+    ).catch((err) => {
+      log(`Error:`, err);
+      throw err;
+    });
 
     return downloadedFile;
   }
