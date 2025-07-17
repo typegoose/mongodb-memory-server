@@ -1,3 +1,9 @@
+## [10.2.0-beta.6](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.5...v10.2.0-beta.6) (2025-07-17)
+
+### Fixes
+
+* **MongoBinaryDownload:** add tests for httpDownload ([bbdad60](https://github.com/typegoose/mongodb-memory-server/commit/bbdad60ee1de5eacc11ef82e40fec0575304c11a))
+
 ## [10.2.0-beta.5](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.4...v10.2.0-beta.5) (2025-07-17)
 
 ### Fixes
