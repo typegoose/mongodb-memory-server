@@ -202,9 +202,16 @@ export class UnknownVersionError extends Error {
  * Error for when downloading fails
  */
 export class DownloadError extends Error {
+  /// The maximal amount of re-trying a download
+  public maxRetries?: number;
+  /// The attempted tries for a download
+  public attempts?: number;
+
   constructor(
     public url: string,
-    public msg: string
+    public msg: string,
+    /// The error code, if available like "Status: 404", "ENOTFOUND" or "aborted"
+    public code?: string
   ) {
     super(`Download failed for url \"${url}\", Details:\n${msg}`);
   }

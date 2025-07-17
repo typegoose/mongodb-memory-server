@@ -415,10 +415,15 @@ export class MongoBinaryDownload {
       } catch (error: any) {
         const shouldRetry =
           (error instanceof DownloadError &&
-            retryableStatusCodes.some((code) => error.message.includes(code.toString()))) ||
+            retryableStatusCodes.some((code) => error?.code === `Status: ${code}`)) ||
           (error?.code && retryableErrorCodes.includes(error.code));
 
         if (!shouldRetry || attempt === retries) {
+          if (error instanceof DownloadError) {
+            error.maxRetries = retries;
+            error.attempts = attempt;
+          }
+
           throw error;
         }
 
@@ -432,7 +437,11 @@ export class MongoBinaryDownload {
       }
     }
 
-    throw new DownloadError(downloadUrl, 'Max retries exceeded');
+    const error = new DownloadError(downloadUrl, 'Max retries exceeded', 'Max retries exceeded');
+    error.maxRetries = retries;
+    error.attempts = retries;
+
+    throw error;
   }
 
   /**
@@ -467,7 +476,8 @@ export class MongoBinaryDownload {
                   "This means that the requested version-platform combination doesn't exist\n" +
                   "Try to use different version 'new MongoMemoryServer({ binary: { version: 'X.Y.Z' } })'\n" +
                   'List of available versions can be found here: ' +
-                  'https://www.mongodb.com/download-center/community/releases/archive'
+                  'https://www.mongodb.com/download-center/community/releases/archive',
+                'Status: 403'
               )
             );
 
@@ -475,7 +485,11 @@ export class MongoBinaryDownload {
           }
 
           reject(
-            new DownloadError(downloadUrl, `Status Code isn't 200! (it is ${response.statusCode})`)
+            new DownloadError(
+              downloadUrl,
+              `Status Code isn't 200! (it is ${response.statusCode})`,
+              `Status: ${response.statusCode}`
+            )
           );
 
           return;
@@ -504,7 +518,8 @@ export class MongoBinaryDownload {
           reject(
             new DownloadError(
               downloadUrl,
-              'Response header "content-length" does not exist or resolved to NaN'
+              'Response header "content-length" does not exist or resolved to NaN',
+              'Invalid Content-Length'
             )
           );
 
@@ -527,7 +542,8 @@ export class MongoBinaryDownload {
             reject(
               new DownloadError(
                 downloadUrl,
-                `Too small (${this.dlProgress.current} bytes) mongod binary downloaded.`
+                `Too small (${this.dlProgress.current} bytes) mongod binary downloaded.`,
+                'File too small'
               )
             );
 
@@ -548,18 +564,25 @@ export class MongoBinaryDownload {
         });
 
         response.on('error', (err: Error) => {
-          reject(new DownloadError(downloadUrl, err.message));
+          // use the code if available, otherwise use the entire message
+          const code = (err as any)?.code ?? err.message;
+
+          reject(new DownloadError(downloadUrl, err.message, code));
         });
       });
 
       request.on('error', (err: Error) => {
         console.error(`Could NOT download "${downloadUrl}"!`, err.message);
-        reject(new DownloadError(downloadUrl, err.message));
+
+        // use the code if available, otherwise use the entire message
+        const code = (err as any)?.code ?? err.message;
+
+        reject(new DownloadError(downloadUrl, err.message, code));
       });
 
       request.setTimeout(60000, () => {
         request.destroy();
-        reject(new DownloadError(downloadUrl, 'Request timeout after 60 seconds'));
+        reject(new DownloadError(downloadUrl, 'Request timeout after 60 seconds', 'ETIMEDOUT'));
       });
     });
   }
