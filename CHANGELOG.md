@@ -1,3 +1,11 @@
+## [10.2.0-beta.5](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.4...v10.2.0-beta.5) (2025-07-17)
+
+### Fixes
+
+* **errors:** add more properties to "DownloadError" ([45007b1](https://github.com/typegoose/mongodb-memory-server/commit/45007b184e6456fe88e9d859cc01e719d13a7442)), closes [#929](https://github.com/typegoose/mongodb-memory-server/issues/929)
+* **MongoBinaryDownload::attempDownload:** add experimental feature "EXP_RESUME_DOWNLOAD" ([185c840](https://github.com/typegoose/mongodb-memory-server/commit/185c8402f0728241dd58b8281db2c455137e3532))
+* **MongoBinaryDownload::download:** print full error object to debug logs ([b907cb0](https://github.com/typegoose/mongodb-memory-server/commit/b907cb055f555d0c3ee6d94adb11d6aa8b7f4065))
+
 ## [10.2.0-beta.4](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.3...v10.2.0-beta.4) (2025-07-15)
 
 ### Fixes
