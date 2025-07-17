@@ -146,8 +146,8 @@ Format: `https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.20
 
 ### DOWNLOAD_IGNORE_MISSING_HEADER
 
-|  Environment Variable  |  PackageJson  |
-| :--------------------: | :-----------: |
+|       Environment Variable       |          PackageJson          |
+| :------------------------------: | :---------------------------: |
 | `DOWNLOAD_IGNORE_MISSING_HEADER` | `downloadIgnoreMissingHeader` |
 
 Option `DOWNLOAD_IGNORE_MISSING_HEADER` can be set to `true` to ignore missing response headers like `content-length`.
@@ -239,9 +239,9 @@ Default: `false`
 
 ### MAX_REDIRECTS
 
-| Environment Variable | PackageJson |
-| :------------------: | :---------: |
-|  `MONGOMS_MAX_REDIRECTS`  |  `maxRedirects`  |
+|  Environment Variable   |  PackageJson   |
+| :---------------------: | :------------: |
+| `MONGOMS_MAX_REDIRECTS` | `maxRedirects` |
 
 Option `MAX_REDIRECTS` is used to set the maximal amount of redirects to follow
 
@@ -271,9 +271,9 @@ Keep in mind that downloaded binaries will never be automatically deleted.
 
 ### MAX_RETRIES
 
-| Environment Variable | PackageJson |
-| :------------------: | :---------: |
-|  `MONGOMS_MAX_RETRIES`  |  `maxRetries`  |
+| Environment Variable  | PackageJson  |
+| :-------------------: | :----------: |
+| `MONGOMS_MAX_RETRIES` | `maxRetries` |
 
 Option `MAX_RETRIES` is used to set the maximum number of retry attempts for downloading binaries when a retryable error occurs.
 
@@ -281,6 +281,17 @@ Default: `3`
 
 Set this to control how many times the downloader will attempt to recover from transient errors (like network issues) before failing.
 
+### EXP_RESUME_DOWNLOAD
+
+|     Environment Variable      |     PackageJson     |
+| :---------------------------: | :-----------------: |
+| `MONGOMS_EXP_RESUME_DOWNLOAD` | `expResumeDownload` |
+
+Option `EXP_RESUME_DOWNLOAD` is used to enable / disable resuming a download of a binary instead of starting over on retries or interruptions.
+
+This is a experimental option, it maybe removed, renamed or have changed behavior in the future and any version.
+
+Default: `false`
 
 ## How to use them in the package.json
 

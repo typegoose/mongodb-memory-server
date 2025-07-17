@@ -35,6 +35,7 @@ export enum ResolveConfigVariables {
   MAX_REDIRECTS = 'MAX_REDIRECTS',
   MAX_RETRIES = 'MAX_RETRIES', // Added for download retry configuration
   DISTRO = 'DISTRO',
+  EXP_RESUME_DOWNLOAD = 'EXP_RESUME_DOWNLOAD',
 }
 
 /** The Prefix for Environmental values */

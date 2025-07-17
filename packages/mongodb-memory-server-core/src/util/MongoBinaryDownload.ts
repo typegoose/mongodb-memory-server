@@ -10,7 +10,7 @@ import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
-import { assertion, mkdir, pathExists, md5FromFile } from './utils';
+import { assertion, mkdir, pathExists, md5FromFile, statPath } from './utils';
 import { DryMongoBinary } from './DryMongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
@@ -19,7 +19,7 @@ import { RequestOptions } from 'https';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
-const retryableStatusCodes = [429, 500, 503];
+const retryableStatusCodes = [416, 429, 500, 503];
 
 const retryableErrorCodes = [
   'ECONNRESET',
@@ -460,17 +460,31 @@ export class MongoBinaryDownload {
    */
   private async attemptDownload(
     url: URL,
-    useHttpsOptions: Parameters<typeof https.get>[1],
+    useHttpsOptions: RequestOptions,
     downloadLocation: string,
     tempDownloadLocation: string,
     downloadUrl: string,
     httpOptions: RequestOptions
   ): Promise<string> {
+    /** Offset to resume from; for now a non-0 value indicates to use file "append" mode */
+    let offset = 0;
+
+    if (envToBool(resolveConfig(ResolveConfigVariables.EXP_RESUME_DOWNLOAD))) {
+      const stat = await statPath(tempDownloadLocation);
+
+      if (stat && stat.size != 0) {
+        useHttpsOptions.headers = useHttpsOptions.headers ?? {};
+        useHttpsOptions.headers['Range'] = `bytes=${stat.size}-`;
+        offset = stat.size;
+        log(`httpDownload: resuming download at ${offset}`);
+      }
+    }
+
     return new Promise((resolve, reject) => {
       log(`httpDownload: trying to download "${downloadUrl}"`);
 
-      const request = https.get(url, useHttpsOptions, (response) => {
-        if (response.statusCode != 200) {
+      const request = https.get(url, useHttpsOptions, async (response) => {
+        if (response.statusCode != 200 && response.statusCode != 206) {
           if (response.statusCode === 403) {
             reject(
               new DownloadError(
@@ -487,6 +501,11 @@ export class MongoBinaryDownload {
             return;
           }
 
+          // delete temporary file on "416: Range Not Satisfiable" and let it re-try
+          if (response.statusCode === 416) {
+            await fspromises.rm(tempDownloadLocation, { force: true });
+          }
+
           reject(
             new DownloadError(
               downloadUrl,
@@ -499,6 +518,7 @@ export class MongoBinaryDownload {
         }
 
         // content-length, otherwise 0
+        // note that content-length will not be the full size when resuming a download via "Range"
         let contentLength: number;
 
         if (typeof response.headers['content-length'] != 'string') {
@@ -533,7 +553,12 @@ export class MongoBinaryDownload {
         this.dlProgress.length = contentLength;
         this.dlProgress.totalMb = Math.round((this.dlProgress.length / 1048576) * 10) / 10;
 
-        const fileStream = createWriteStream(tempDownloadLocation);
+        // "w" opens for write, creates the file if it does not exist, or truncates if it does
+        // "a" opens for append, creates the file if it does not exist
+        const flags = offset === 0 ? 'w' : 'a';
+
+        // not using option "start" as we already open in "append" mode
+        const fileStream = createWriteStream(tempDownloadLocation, { /* start: offset, */ flags });
 
         response.pipe(fileStream);
 
