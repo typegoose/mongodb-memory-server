@@ -51,6 +51,9 @@ export class MongoBinaryDownload {
   /** These options are kind of raw, they are not run through DryMongoBinary.generateOptions */
   binaryOpts: Required<MongoBinaryOpts>;
 
+  /** Determines if direct stdio should be done, or repeated `console.log`s */
+  public isTTY: boolean = false;
+
   constructor(opts: MongoBinaryOpts) {
     assertion(typeof opts.downloadDir === 'string', new Error('An DownloadDir must be specified!'));
     const version = opts.version ?? resolveConfig(ResolveConfigVariables.VERSION);
@@ -76,6 +79,8 @@ export class MongoBinaryDownload {
       totalMb: 0,
       lastPrintedAt: 0,
     };
+
+    this.isTTY = process.stdout.isTTY;
   }
 
   /**
@@ -385,7 +390,8 @@ export class MongoBinaryDownload {
     downloadLocation: string,
     tempDownloadLocation: string,
     maxRetries?: number,
-    baseDelay: number = 1000
+    baseDelay: number = 1000,
+    timeout: number = 60000
   ): Promise<string> {
     log('httpDownload');
     const downloadUrl = this.assignDownloadingURL(url);
@@ -405,7 +411,8 @@ export class MongoBinaryDownload {
           ? retriesFromConfig
           : 3;
 
-    for (let attempt = 0; attempt <= retries; attempt++) {
+    // start at 1 attempt as there are basically no 0 attemps
+    for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         return await this.attemptDownload(
           url,
@@ -413,7 +420,8 @@ export class MongoBinaryDownload {
           downloadLocation,
           tempDownloadLocation,
           downloadUrl,
-          httpOptions
+          httpOptions,
+          timeout
         );
       } catch (error: any) {
         const shouldRetry =
@@ -464,7 +472,8 @@ export class MongoBinaryDownload {
     downloadLocation: string,
     tempDownloadLocation: string,
     downloadUrl: string,
-    httpOptions: RequestOptions
+    httpOptions: RequestOptions,
+    timeout: number = 60000
   ): Promise<string> {
     /** Offset to resume from; for now a non-0 value indicates to use file "append" mode */
     let offset = 0;
@@ -560,6 +569,15 @@ export class MongoBinaryDownload {
         // not using option "start" as we already open in "append" mode
         const fileStream = createWriteStream(tempDownloadLocation, { /* start: offset, */ flags });
 
+        fileStream.on('error', (err) => {
+          response.destroy();
+
+          // use the code if available, otherwise use the entire message
+          const code = (err as any)?.code ?? err.message;
+
+          reject(new DownloadError(downloadUrl, err.message, code));
+        });
+
         response.pipe(fileStream);
 
         fileStream.on('finish', async () => {
@@ -608,9 +626,9 @@ export class MongoBinaryDownload {
         reject(new DownloadError(downloadUrl, err.message, code));
       });
 
-      request.setTimeout(60000, () => {
+      request.setTimeout(timeout, () => {
         request.destroy();
-        reject(new DownloadError(downloadUrl, 'Request timeout after 60 seconds', 'ETIMEDOUT'));
+        reject(new DownloadError(downloadUrl, `Request timeout after ${timeout}ms`, 'ETIMEDOUT'));
       });
     });
   }
@@ -637,7 +655,7 @@ export class MongoBinaryDownload {
     const crReturn = this.binaryOpts.platform === 'win32' ? '\x1b[0G' : '\r';
     const message = `Downloading MongoDB "${this.binaryOpts.version}": ${percentComplete}% (${mbComplete}mb / ${this.dlProgress.totalMb}mb)${crReturn}`;
 
-    if (process.stdout.isTTY) {
+    if (this.isTTY) {
       // if TTY overwrite last line over and over until finished and clear line to avoid residual characters
       clearLine(process.stdout, 0); // this is because "process.stdout.clearLine" does not exist anymore
       process.stdout.write(message);

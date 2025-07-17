@@ -1,7 +1,7 @@
 import { createWriteStream, promises as fspromises } from 'fs';
 import { assertIsError } from '../../__tests__/testUtils/test_utils';
 import { DryMongoBinary } from '../DryMongoBinary';
-import { Md5CheckFailedError } from '../errors';
+import { DownloadError, Md5CheckFailedError } from '../errors';
 import { MongoBinaryOpts } from '../MongoBinary';
 import MongoBinaryDownload from '../MongoBinaryDownload';
 import MongoBinaryDownloadUrl from '../MongoBinaryDownloadUrl';
@@ -11,10 +11,18 @@ import * as path from 'path';
 import * as yazl from 'yazl';
 import { pack } from 'tar-stream';
 import { createGzip } from 'zlib';
+import { Server, createServer } from 'https';
 
 describe('MongoBinaryDownload', () => {
+  let originalTTY: boolean = false;
+
+  beforeAll(() => {
+    originalTTY = process.stdout.isTTY;
+  });
+
   afterEach(() => {
     delete process.env[envName(ResolveConfigVariables.MD5_CHECK)];
+    process.stdout.isTTY = originalTTY;
     jest.restoreAllMocks();
   });
 
@@ -212,7 +220,7 @@ describe('MongoBinaryDownload', () => {
     expect(console.log).toHaveBeenCalledWith(
       `Downloading MongoDB "${version}": 20% (1mb / ${du.dlProgress.totalMb}mb)\r`
     );
-    expect(console.log).toBeCalledTimes(1);
+    expect(console.log).toHaveBeenCalledTimes(1);
     expect(process.stdout.write).not.toHaveBeenCalled();
 
     du.printDownloadProgress({ length: 10 });
@@ -220,7 +228,7 @@ describe('MongoBinaryDownload', () => {
     expect(process.stdout.write).not.toHaveBeenCalled();
     expect(du.dlProgress.current).toBe(1048576 + 10);
 
-    process.stdout.isTTY = true;
+    du.isTTY = true;
     du.printDownloadProgress({ length: 0 }, true);
     expect(console.log).toHaveBeenCalledTimes(1);
     expect(process.stdout.write).toHaveBeenCalledWith(
@@ -414,6 +422,381 @@ describe('MongoBinaryDownload', () => {
       expect(outPathStat.isFile()).toBeTruthy();
 
       expect((await fspromises.readFile(outPath)).toString()).toMatchSnapshot();
+    });
+  });
+
+  describe('should download correctly', () => {
+    let tmpdir: string;
+    let server: Server;
+
+    let key: string;
+    let cert: string;
+
+    let exp_resume_before: any;
+
+    const totalBytes = 1024 * 10;
+
+    beforeAll(async () => {
+      const certPath = path.resolve(__dirname, 'localhost');
+
+      // the certificate is only for localhost and only for testing
+      key = await fspromises.readFile(path.resolve(certPath, './private-key.key'), 'utf-8');
+      cert = await fspromises.readFile(path.resolve(certPath, './certificate.crt'), 'utf-8');
+
+      exp_resume_before = process.env[envName(ResolveConfigVariables.EXP_RESUME_DOWNLOAD)];
+    });
+
+    beforeEach(async () => {
+      tmpdir = await utils.createTmpDir('mongo-mem-test-download-');
+
+      delete process.env[envName(ResolveConfigVariables.EXP_RESUME_DOWNLOAD)];
+    });
+    afterEach(async () => {
+      await utils.removeDir(tmpdir);
+
+      if (server) {
+        server.close();
+      }
+
+      jest.restoreAllMocks();
+    });
+
+    afterAll(() => {
+      process.env[envName(ResolveConfigVariables.EXP_RESUME_DOWNLOAD)] = exp_resume_before;
+    });
+
+    function createTestServer(
+      interruptAfter?: number,
+      timeoutFirstRequest?: boolean,
+      statusCode?: number
+    ) {
+      let isFirstRequest = true;
+
+      const builder = createServer(
+        {
+          key,
+          cert,
+        },
+        (req, res) => {
+          if (req.url != '/archive.tgz') {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: `Invalid Path ${req.url}` }));
+
+            return;
+          }
+
+          let toSendBytes = totalBytes;
+          let rangeStart = 0;
+
+          if (req.headers.range) {
+            rangeStart = parseInt(req.headers.range.match(/bytes=(\d+)-/)?.[1] ?? '0');
+            toSendBytes = totalBytes - rangeStart;
+          }
+
+          if (statusCode) {
+            res.writeHead(403, {
+              'Content-Type': 'application/xml',
+            });
+
+            res.end();
+
+            return;
+          }
+
+          res.writeHead(200, {
+            'Content-Type': 'application/gzip',
+            'Content-Length': toSendBytes,
+            'Accept-Ranges': 'bytes',
+          });
+
+          // dont send any other data, this will invoke the stalling callback on the client
+          if (isFirstRequest && timeoutFirstRequest) {
+            // to not leave it as a potential dangling handle
+            setTimeout(() => res.destroy(), 500);
+
+            isFirstRequest = false;
+
+            return;
+          }
+
+          const buffer = genBuffer(toSendBytes, rangeStart);
+
+          if (interruptAfter) {
+            // only partially sending data and then ending will result in a error "aborted" with code "ECONNRESET"
+            res.write(buffer.slice(0, interruptAfter));
+          } else {
+            res.write(buffer);
+          }
+
+          isFirstRequest = false;
+
+          res.end();
+        }
+      );
+
+      server = builder.listen(5000);
+    }
+
+    /** Generate 4 bytes 00, then 4 bytes FF until "toGen" */
+    function genBuffer(toGen: number, offset: number) {
+      const buffer = Buffer.alloc(toGen);
+
+      for (let i = 0; i < toGen; i++) {
+        const byteId = offset + i;
+
+        if (byteId % 8 < 4) {
+          buffer.writeUInt8(0, i);
+        } else {
+          buffer.writeUInt8(255, i);
+        }
+      }
+
+      return buffer;
+    }
+
+    it('should download correctly and fully', async () => {
+      jest.spyOn(console, 'log').mockImplementation(() => void 0);
+      createTestServer();
+
+      const downloadDir = path.join(tmpdir, 'downloadDir');
+
+      await utils.mkdir(downloadDir);
+
+      const outfile = path.join(downloadDir, 'archive.tgz');
+      const tmpfile = outfile + '.downloading';
+
+      const options: MongoBinaryOpts = {
+        arch: 'x64',
+        downloadDir,
+        os: {
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '24.04',
+        },
+        version: '8.0.0',
+      };
+      const mbd = new MongoBinaryDownload(options);
+      mbd.isTTY = false;
+
+      const resolved = await mbd.httpDownload(
+        new URL('https://localhost:5000/archive.tgz'),
+        {
+          rejectUnauthorized: false,
+        },
+        outfile,
+        tmpfile,
+        1,
+        0,
+        1000
+      );
+
+      expect(resolved).toStrictEqual(outfile);
+
+      const stat = await utils.statPath(outfile);
+
+      expect(stat).not.toBeUndefined();
+      utils.assertion(stat !== undefined); // for types
+
+      expect(stat.size).toStrictEqual(totalBytes);
+
+      const buffer = await fspromises.readFile(outfile, null);
+
+      const expected = genBuffer(totalBytes, 0);
+
+      expect(buffer).toStrictEqual(expected);
+    });
+
+    it('should download interrupt and resume', async () => {
+      process.env[envName(ResolveConfigVariables.EXP_RESUME_DOWNLOAD)] = 'true';
+
+      jest.spyOn(console, 'log').mockImplementation(() => void 0);
+      createTestServer(totalBytes / 2);
+
+      const downloadDir = path.join(tmpdir, 'downloadDir');
+
+      await utils.mkdir(downloadDir);
+
+      const outfile = path.join(downloadDir, 'archive.tgz');
+      const tmpfile = outfile + '.downloading';
+
+      const options: MongoBinaryOpts = {
+        arch: 'x64',
+        downloadDir,
+        os: {
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '24.04',
+        },
+        version: '8.0.0',
+      };
+      const mbd = new MongoBinaryDownload(options);
+      mbd.isTTY = false;
+
+      const resolved = await mbd.httpDownload(
+        new URL('https://localhost:5000/archive.tgz'),
+        {
+          rejectUnauthorized: false,
+        },
+        outfile,
+        tmpfile,
+        2,
+        0,
+        500
+      );
+
+      expect(resolved).toStrictEqual(outfile);
+
+      const stat = await utils.statPath(outfile);
+
+      expect(stat).not.toBeUndefined();
+      utils.assertion(stat !== undefined); // for types
+
+      expect(stat.size).toStrictEqual(totalBytes);
+
+      const buffer = await fspromises.readFile(outfile, null);
+
+      const expected = genBuffer(totalBytes, 0);
+
+      expect(buffer).toStrictEqual(expected);
+    });
+
+    it('should download retry after stalling', async () => {
+      jest.spyOn(console, 'log').mockImplementation(() => void 0);
+      createTestServer(undefined, true);
+
+      const downloadDir = path.join(tmpdir, 'downloadDir');
+
+      await utils.mkdir(downloadDir);
+
+      const outfile = path.join(downloadDir, 'archive.tgz');
+      const tmpfile = outfile + '.downloading';
+
+      const options: MongoBinaryOpts = {
+        arch: 'x64',
+        downloadDir,
+        os: {
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '24.04',
+        },
+        version: '8.0.0',
+      };
+      const mbd = new MongoBinaryDownload(options);
+      mbd.isTTY = false;
+
+      const resolved = await mbd.httpDownload(
+        new URL('https://localhost:5000/archive.tgz'),
+        {
+          rejectUnauthorized: false,
+        },
+        outfile,
+        tmpfile,
+        2,
+        0,
+        200
+      );
+
+      expect(resolved).toStrictEqual(outfile);
+
+      const stat = await utils.statPath(outfile);
+
+      expect(stat).not.toBeUndefined();
+      utils.assertion(stat !== undefined); // for types
+
+      expect(stat.size).toStrictEqual(totalBytes);
+
+      const buffer = await fspromises.readFile(outfile, null);
+
+      const expected = genBuffer(totalBytes, 0);
+
+      expect(buffer).toStrictEqual(expected);
+    });
+
+    it('should error of repeated retry errors', async () => {
+      jest.spyOn(console, 'log').mockImplementation(() => void 0);
+      createTestServer(10);
+
+      const downloadDir = path.join(tmpdir, 'downloadDir');
+
+      await utils.mkdir(downloadDir);
+
+      const outfile = path.join(downloadDir, 'archive.tgz');
+      const tmpfile = outfile + '.downloading';
+
+      const options: MongoBinaryOpts = {
+        arch: 'x64',
+        downloadDir,
+        os: {
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '24.04',
+        },
+        version: '8.0.0',
+      };
+      const mbd = new MongoBinaryDownload(options);
+      mbd.isTTY = false;
+
+      try {
+        await mbd.httpDownload(
+          new URL('https://localhost:5000/archive.tgz'),
+          {
+            rejectUnauthorized: false,
+          },
+          outfile,
+          tmpfile,
+          2,
+          0,
+          200
+        );
+      } catch (err) {
+        expect(err).toBeInstanceOf(DownloadError);
+        assertIsError(err);
+        expect(JSON.stringify(err)).toMatchSnapshot();
+      }
+    });
+
+    it('should error on 403 without retrying', async () => {
+      jest.spyOn(console, 'log').mockImplementation(() => void 0);
+      createTestServer(undefined, undefined, 403);
+
+      const downloadDir = path.join(tmpdir, 'downloadDir');
+
+      await utils.mkdir(downloadDir);
+
+      const outfile = path.join(downloadDir, 'archive.tgz');
+      const tmpfile = outfile + '.downloading';
+
+      const options: MongoBinaryOpts = {
+        arch: 'x64',
+        downloadDir,
+        os: {
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '24.04',
+        },
+        version: '8.0.0',
+      };
+      const mbd = new MongoBinaryDownload(options);
+      mbd.isTTY = false;
+
+      try {
+        await mbd.httpDownload(
+          new URL('https://localhost:5000/archive.tgz'),
+          {
+            rejectUnauthorized: false,
+          },
+          outfile,
+          tmpfile,
+          3,
+          0,
+          200
+        );
+      } catch (err) {
+        expect(err).toBeInstanceOf(DownloadError);
+        expect(err).toHaveProperty('attempts', 1);
+        assertIsError(err);
+        expect(JSON.stringify(err)).toMatchSnapshot();
+      }
     });
   });
 });

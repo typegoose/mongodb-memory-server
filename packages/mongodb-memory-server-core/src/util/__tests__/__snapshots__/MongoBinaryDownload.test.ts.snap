@@ -6,4 +6,8 @@ exports[`MongoBinaryDownload extract() should extract zip archives 1`] = `"main 
 
 exports[`MongoBinaryDownload makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result 1`] = `"{\\"binarymd5\\":\\"anotherMD5\\",\\"checkfilemd5\\":\\"someMD5\\"}"`;
 
+exports[`MongoBinaryDownload should download correctly should error of repeated retry errors 1`] = `"{\\"url\\":\\"https://localhost:5000/archive.tgz\\",\\"msg\\":\\"aborted\\",\\"code\\":\\"ECONNRESET\\",\\"maxRetries\\":2,\\"attempts\\":2}"`;
+
+exports[`MongoBinaryDownload should download correctly should error on 403 without retrying 1`] = `"{\\"url\\":\\"https://localhost:5000/archive.tgz\\",\\"msg\\":\\"Status Code is 403 (MongoDB's 404)\\\\nThis means that the requested version-platform combination doesn't exist\\\\nTry to use different version 'new MongoMemoryServer({ binary: { version: 'X.Y.Z' } })'\\\\nList of available versions can be found here: https://www.mongodb.com/download-center/community/releases/archive\\",\\"code\\":\\"Status: 403\\",\\"maxRetries\\":3,\\"attempts\\":1}"`;
+
 exports[`MongoBinaryDownload should passthrough options to MongoBinaryDownloadUrl 1`] = `"/path/to/somewhere/mongod-x64-custom-4.0.0"`;
