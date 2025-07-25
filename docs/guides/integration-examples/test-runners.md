@@ -165,6 +165,7 @@ export default defineConfig({
 
 ```ts
 import type { TestProject } from 'vitest/node';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 declare module 'vitest' {
   export interface ProvidedContext {
