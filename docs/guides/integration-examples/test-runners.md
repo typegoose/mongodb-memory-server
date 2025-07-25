@@ -145,6 +145,8 @@ Note that this tutorial is pre mongodb-memory-server 7.x.
 
 ## vitest
 
+<span class="badge badge--secondary">vitest version 3</span>
+
 For [vitest](https://vitest.dev/), create a [global setup file](https://vitest.dev/config/#globalsetup).
 
 `vitest.config.mts`:
@@ -204,4 +206,14 @@ test('...', () => {
 });
 ```
 
-See also [vitest-mms](https://github.com/danielpza/vitest-mms)
+See also [vitest-mms](https://github.com/danielpza/vitest-mms), which provides the `globalSetup` configuration among others helpers:
+
+```ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globalSetup: ['vitest-mms/globalSetup'],
+  },
+});
+```
