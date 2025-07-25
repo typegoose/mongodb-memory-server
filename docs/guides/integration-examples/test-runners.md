@@ -206,6 +206,10 @@ test('...', () => {
 });
 ```
 
+:::note
+Keep in mind that the global setup is running in a different global scope, so your tests don't have access to variables defined here. However, you can pass down serializable data to tests via [provide](https://vitest.dev/config/#provide) method as described above.
+:::
+
 See also [vitest-mms](https://github.com/danielpza/vitest-mms), which provides the `globalSetup` configuration among others helpers:
 
 ```ts
