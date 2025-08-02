@@ -1,3 +1,43 @@
+## [10.2.0](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.4...v10.2.0) (2025-08-02)
+
+### Features
+
+* **MongoBinaryDownloadUrl:** adjust fedora-rhel mapping based on official documentation ([4031b74](https://github.com/typegoose/mongodb-memory-server/commit/4031b740318b897db2bdd346a0be81d372b3431d)), closes [#928](https://github.com/typegoose/mongodb-memory-server/issues/928)
+* **MongoBinaryDownloadUrl:** support rhel93 binaries ([dd66037](https://github.com/typegoose/mongodb-memory-server/commit/dd66037aad37abc8e36bb5f0d49e6f70b7251ecb))
+
+### Fixes
+
+* add more retryable status and error codes during downloads ([#936](https://github.com/typegoose/mongodb-memory-server/issues/936)) ([dc82f62](https://github.com/typegoose/mongodb-memory-server/commit/dc82f62ec196f0bbf0044bbcce1c5da6b3b8b6f0))
+* add retry logic for downloads with configurable retries and backoff ([27c7d71](https://github.com/typegoose/mongodb-memory-server/commit/27c7d711473833c40024fd822d55eedc7be5d2c3))
+* **errors:** add more properties to "DownloadError" ([45007b1](https://github.com/typegoose/mongodb-memory-server/commit/45007b184e6456fe88e9d859cc01e719d13a7442)), closes [#929](https://github.com/typegoose/mongodb-memory-server/issues/929)
+* **MongoBinaryDownload::attempDownload:** add experimental feature "EXP_RESUME_DOWNLOAD" ([185c840](https://github.com/typegoose/mongodb-memory-server/commit/185c8402f0728241dd58b8281db2c455137e3532))
+* **MongoBinaryDownload::download:** print full error object to debug logs ([b907cb0](https://github.com/typegoose/mongodb-memory-server/commit/b907cb055f555d0c3ee6d94adb11d6aa8b7f4065))
+* **MongoBinaryDownload:** add tests for httpDownload ([bbdad60](https://github.com/typegoose/mongodb-memory-server/commit/bbdad60ee1de5eacc11ef82e40fec0575304c11a))
+* use DownloadError on max retries exceeded ([b90e086](https://github.com/typegoose/mongodb-memory-server/commit/b90e086c3be6ba49a0ca3dcf51b265bcf9d15a5f))
+
+### Style
+
+* **utils.test:** remove random non-error "ts-expect-error" ([873aa6b](https://github.com/typegoose/mongodb-memory-server/commit/873aa6b457c21e11b9ca8f2d7003521597693e84))
+
+### Dependencies
+
+* **debug:** upgrade to version 4.4.1 ([93b56dd](https://github.com/typegoose/mongodb-memory-server/commit/93b56dd5b58c787a5a3675972e4b3ebca51bc9a9))
+* **https-proxy-agent:** upgrade to version 7.0.6 ([39a3393](https://github.com/typegoose/mongodb-memory-server/commit/39a33935ba733759e499e0758e469b53f28f3197))
+* **semver:** upgrade to version 7.7.2 ([b7140b1](https://github.com/typegoose/mongodb-memory-server/commit/b7140b1d61e4e7c14ecf4e27501df3cd7a4d66bd))
+* **tslib:** upgrade to version 2.8.1 ([a94d970](https://github.com/typegoose/mongodb-memory-server/commit/a94d970eaa5fdc9a074d074e1f109ca246fdbb48))
+* **yauzl:** upgrade to version 3.2.0 ([25b2619](https://github.com/typegoose/mongodb-memory-server/commit/25b2619fcfc1d6ea4f79b6ec48db413172014390))
+
+### Dev-Dependencies
+
+* **@types/jest:** upgrade to version 29.5.14 ([5d8ae09](https://github.com/typegoose/mongodb-memory-server/commit/5d8ae09dc829d0a36ed665fd7a7d08943a0a3e39))
+* **@types/semver:** upgrade to version 7.7.0 ([fed0d70](https://github.com/typegoose/mongodb-memory-server/commit/fed0d7030664faaab3def72db778bfcf1ac3c500))
+* **@types/tar-stream:** upgrade to version 3.1.4 ([1b2cba4](https://github.com/typegoose/mongodb-memory-server/commit/1b2cba46c60c60d21896c1dd56564bcb554e4076))
+* **@types/yazl:** upgrade to version 3.3.0 ([d946c4a](https://github.com/typegoose/mongodb-memory-server/commit/d946c4a1759fdef41485d8e5782676306f669060))
+* **eslint-plugin-prettier:** upgrade to version 5.5.0 ([7452a8d](https://github.com/typegoose/mongodb-memory-server/commit/7452a8d33f06d4bb2747ca9ad07ae2eacb327239))
+* **prettier:** upgrade to version 3.6.0 ([39fe52f](https://github.com/typegoose/mongodb-memory-server/commit/39fe52f92e1874c9557763203ff9d17323451698))
+* **ts-jest:** upgrade to version 29.4.0 ([600b708](https://github.com/typegoose/mongodb-memory-server/commit/600b7082a0d6a1f0eff29886aaf6af76435ea7f6))
+* **yazl:** upgrade to version 3.3.1 ([4be97b1](https://github.com/typegoose/mongodb-memory-server/commit/4be97b157bfa407331f0b55e65f11bc169565aa9))
+
 ## [10.2.0-beta.6](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0-beta.5...v10.2.0-beta.6) (2025-07-17)
 
 ### Fixes
