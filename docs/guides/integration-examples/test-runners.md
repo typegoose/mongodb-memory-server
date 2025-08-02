@@ -135,10 +135,82 @@ describe('...', () => {
 });
 ```
 
-## AVA test runner
+## vitest
 
-For AVA there is a [detailed written tutorial](https://github.com/zellwk/ava/blob/8b7ccba1d80258b272ae7cae6ba4967cd1c13030/docs/recipes/endpoint-testing-with-mongoose.md) on how to test mongoose models with mongodb-memory-server by [@zellwk](https://github.com/zellwk).
+<span class="badge badge--secondary">vitest version 3</span>
+
+For [vitest](https://vitest.dev/), create a [global setup file](https://vitest.dev/config/#globalsetup).
+
+`vitest.config.mts`:
+
+```ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globalSetup: ['./globalSetup.ts'],
+  },
+});
+```
+
+`globalSetup.ts`:
+
+```ts
+import type { TestProject } from 'vitest/node';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
+declare module 'vitest' {
+  export interface ProvidedContext {
+    MONGO_URI: string;
+  }
+}
+
+export default async function setup({ provide }: TestProject) {
+  const mongod = await MongoMemoryServer.create();
+
+  const uri = mongod.getUri();
+
+  provide('MONGO_URI', uri);
+
+  return async () => {
+    await mongod.stop();
+  };
+}
+```
+
+Then use it in your tests:
+
+`example.test.js`
+
+```ts
+import { inject, test } from 'vitest';
+import { MongoClient } from 'mongodb';
+
+const MONGO_URI = inject('MONGO_URI');
+const mongoClient = new MongoClient(MONGO_URI);
+
+beforeAll(async () => {
+  await mongoClient.connect();
+  return () => mongoClient.disconnect();
+});
+
+test('...', () => {
+  const db = mongoClient.db('my-db');
+});
+```
 
 :::note
-Note that this tutorial is pre mongodb-memory-server 7.x.
+Keep in mind that the global setup is running in a different global scope, so your tests don't have access to variables defined here. However, you can pass down serializable data to tests via [provide](https://vitest.dev/config/#provide) method as described above.
 :::
+
+See also [vitest-mms](https://github.com/danielpza/vitest-mms), which provides the `globalSetup` configuration among others helpers:
+
+```ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globalSetup: ['vitest-mms/globalSetup'],
+  },
+});
+```
