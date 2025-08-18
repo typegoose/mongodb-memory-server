@@ -37,11 +37,11 @@ jobs:
           wget -nc https://ftp.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
           sudo dpkg -i libssl1.1_1.1.1w-0+deb11u1_amd64.deb
       # end libssl1.1 install
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: github.event.inputs.git-ref == ''
         with:
           fetch-depth: 0 # always fetch everything to be sure for codecov
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: github.event.inputs.git-ref != ''
         with:
           ref: ${{ github.event.inputs.git-ref }}
@@ -80,7 +80,7 @@ jobs:
     needs: [tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
