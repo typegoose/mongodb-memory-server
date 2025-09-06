@@ -1564,6 +1564,22 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
+        it('rhel 9.3 (x86_64) & 7.0.14', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '7.0.14',
+            os: {
+              os: 'linux',
+              dist: 'rhel',
+              release: '9.3',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel90-7.0.14.tgz'
+          );
+        });
+
         it('rhel 9.3 (x86_64) & 8.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
