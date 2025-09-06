@@ -1,3 +1,9 @@
+## [10.2.1-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0...v10.2.1-beta.1) (2025-09-06)
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** use "rhel90" before mongodb 8.0.0 ([7cc91e6](https://github.com/typegoose/mongodb-memory-server/commit/7cc91e6475018e528103ad8885618099494fd47c)), closes [#942](https://github.com/typegoose/mongodb-memory-server/issues/942) [#941](https://github.com/typegoose/mongodb-memory-server/issues/941)
+
 ## [10.2.0](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.4...v10.2.0) (2025-08-02)
 
 ### Features
