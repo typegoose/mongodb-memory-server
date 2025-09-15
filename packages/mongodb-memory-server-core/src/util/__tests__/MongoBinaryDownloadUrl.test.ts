@@ -864,6 +864,26 @@ describe('MongoBinaryDownloadUrl', () => {
           );
           expect(console.warn).toHaveBeenCalledTimes(1);
         });
+
+        it('cachyos (x86_64) & 8.0.7 (using ubuntu2404)', async () => {
+          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x64',
+            version: '8.0.7',
+            os: {
+              os: 'linux',
+              dist: 'cachyos',
+              release: '',
+              id_like: [],
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-8.0.7.tgz'
+          );
+          expect(console.warn).toHaveBeenCalledTimes(1);
+        });
       });
 
       describe('for gentoo', () => {

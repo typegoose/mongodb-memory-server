@@ -144,4 +144,29 @@ HOME_URL="https://amazonlinux.com/"`;
       );
     });
   });
+
+  describe('extra os tests', () => {
+    it('should parse cachyos', () => {
+      // output taken from https://github.com/typegoose/mongodb-memory-server/issues/947
+      const example = `NAME="CachyOS Linux"
+PRETTY_NAME="CachyOS"
+ID=cachyos
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://cachyos.org/"
+DOCUMENTATION_URL="https://wiki.cachyos.org/"
+SUPPORT_URL="https://discuss.cachyos.org/"
+BUG_REPORT_URL="https://github.com/cachyos"
+PRIVACY_POLICY_URL="https://terms.archlinux.org/docs/privacy-policy/"
+LOGO=cachyos`;
+
+      expect(getos.parseOS(example)).toEqual<getos.LinuxOS>({
+        os: 'linux',
+        dist: 'cachyos',
+        release: '',
+        codename: undefined,
+        id_like: undefined,
+      });
+    });
+  });
 });

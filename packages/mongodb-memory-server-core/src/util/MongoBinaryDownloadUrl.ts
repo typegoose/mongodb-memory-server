@@ -237,7 +237,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     } else if (regexHelper(/alpine/i, os)) {
       console.warn('There is no official build of MongoDB for Alpine!');
       // Match "arch", "archlinux", "manjaro", "manjarolinux", "arco", "arcolinux"
-    } else if (regexHelper(/(arch|manjaro|arco)(?:linux)?$/i, os)) {
+    } else if (regexHelper(/(arch|manjaro|arco|cachyos)(?:linux)?$/i, os)) {
       console.warn(
         `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu 22.04 release.`
       );
