@@ -237,7 +237,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     } else if (regexHelper(/alpine/i, os)) {
       console.warn('There is no official build of MongoDB for Alpine!');
       // Match "arch", "archlinux", "manjaro", "manjarolinux", "arco", "arcolinux"
-    } else if (regexHelper(/(arch|manjaro|arco)(?:linux)?$/i, os)) {
+    } else if (regexHelper(/(arch|manjaro|arco|cachyos)(?:linux)?$/i, os)) {
       console.warn(
         `There is no official build of MongoDB for ArchLinux (${os.dist}). Falling back to Ubuntu 22.04 release.`
       );
@@ -425,7 +425,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
       // as of mongodb 8.0.9, there are currently no binaries for rhel 10.0
 
-      if (semver.satisfies(releaseAsSemver, '>=9.3.0')) {
+      if (semver.satisfies(releaseAsSemver, '>=9.3.0') && semver.gte(coercedVersion, '8.0.0')) {
         // since mongodb 8.0.0 there are only binaries for `rhel93`, no more `rhel90`
         name += '93';
       } else if (semver.satisfies(releaseAsSemver, '>=9.0.0')) {

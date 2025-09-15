@@ -1,3 +1,15 @@
+## [10.2.1-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.1-beta.1...v10.2.1-beta.2) (2025-09-15)
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** add "cachyos" as arch-like ([b32b3d2](https://github.com/typegoose/mongodb-memory-server/commit/b32b3d28f1ba72a512503b55cff0383ed9b8c186)), closes [#947](https://github.com/typegoose/mongodb-memory-server/issues/947)
+
+## [10.2.1-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0...v10.2.1-beta.1) (2025-09-06)
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** use "rhel90" before mongodb 8.0.0 ([7cc91e6](https://github.com/typegoose/mongodb-memory-server/commit/7cc91e6475018e528103ad8885618099494fd47c)), closes [#942](https://github.com/typegoose/mongodb-memory-server/issues/942) [#941](https://github.com/typegoose/mongodb-memory-server/issues/941)
+
 ## [10.2.0](https://github.com/typegoose/mongodb-memory-server/compare/v10.1.4...v10.2.0) (2025-08-02)
 
 ### Features
