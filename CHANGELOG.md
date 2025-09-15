@@ -1,3 +1,9 @@
+## [10.2.1-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.1-beta.1...v10.2.1-beta.2) (2025-09-15)
+
+### Fixes
+
+* **MongoBinaryDownloadUrl:** add "cachyos" as arch-like ([b32b3d2](https://github.com/typegoose/mongodb-memory-server/commit/b32b3d28f1ba72a512503b55cff0383ed9b8c186)), closes [#947](https://github.com/typegoose/mongodb-memory-server/issues/947)
+
 ## [10.2.1-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0...v10.2.1-beta.1) (2025-09-06)
 
 ### Fixes
