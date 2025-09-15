@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-global-4.4",
-  "version": "10.2.1-beta.2",
+  "version": "10.2.1",
   "mongodb_version": "4.4.28",
   "description": "MongoDB Server for testing (auto-download 4.4 version to ~/.cache/mongodb-binaries).",
   "main": "index.js",
@@ -25,7 +25,7 @@
     "mongomem"
   ],
   "dependencies": {
-    "mongodb-memory-server-core": "10.2.1-beta.2",
+    "mongodb-memory-server-core": "10.2.1",
     "tslib": "^2.8.1"
   },
   "scripts": {
