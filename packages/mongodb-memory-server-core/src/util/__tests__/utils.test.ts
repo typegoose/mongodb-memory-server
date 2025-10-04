@@ -83,61 +83,6 @@ describe('utils', () => {
     });
   });
 
-  describe('tryReleaseFile', () => {
-    it('should return an Parsed Output', async () => {
-      expect.assertions(2);
-      const shouldOutput = 'HelloThere';
-      jest.spyOn(fspromises, 'readFile').mockResolvedValueOnce(shouldOutput);
-
-      await expect(
-        utils.tryReleaseFile('/some/path', (output) => {
-          expect(output).toEqual(shouldOutput);
-
-          return { hello: output } as any;
-        })
-      ).resolves.toEqual({ hello: shouldOutput });
-    });
-
-    it('should return "undefined" if "ENOENT"', async () => {
-      const retError = new Error();
-      // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
-      retError.code = 'ENOENT';
-      jest.spyOn(fspromises, 'readFile').mockRejectedValueOnce(retError);
-
-      await expect(
-        utils.tryReleaseFile('/some/path', () => {
-          fail('This Function should never run');
-        })
-      ).resolves.toBeUndefined();
-    });
-
-    it('should return "undefined" if "EACCES"', async () => {
-      const retError = new Error();
-      // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
-      retError.code = 'EACCES';
-      jest.spyOn(fspromises, 'readFile').mockRejectedValueOnce(retError);
-
-      await expect(
-        utils.tryReleaseFile('/some/path', () => {
-          fail('This Function should never run');
-        })
-      ).resolves.toBeUndefined();
-    });
-
-    it('should throw an error if error is not "ENOENT" or "EACCES"', async () => {
-      const retError = new Error();
-      // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
-      retError.code = 'EPERM';
-      jest.spyOn(fspromises, 'readFile').mockRejectedValueOnce(retError);
-
-      await expect(
-        utils.tryReleaseFile('/some/path', () => {
-          fail('This Function should never run');
-        })
-      ).rejects.toThrow(retError);
-    });
-  });
-
   describe('getHost', () => {
     it('should correctly extract host & port', () => {
       expect(utils.getHost('mongodb://user:pass@localhost:port/authdb?queryoptions=1')).toEqual(

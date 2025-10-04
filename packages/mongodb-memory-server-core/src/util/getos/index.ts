@@ -1,6 +1,7 @@
 import { platform } from 'os';
 import debug from 'debug';
-import { isNullOrUndefined, tryReleaseFile } from '../utils';
+import { errorWithCode, isNullOrUndefined } from '../utils';
+import { promises as fspromises } from 'fs';
 
 const log = debug('MongoMS:getos');
 
@@ -154,4 +155,28 @@ export function parseOS(input: string): LinuxOS {
     release: input.match(OSRegex.release)?.[1].toLocaleLowerCase() ?? '',
     id_like: input.match(OSRegex.id_like)?.[1].toLocaleLowerCase().split(' '),
   };
+}
+
+/**
+ * Try to read a release file path and apply a parser to the output
+ * @param path The Path to read for an release file
+ * @param parser An function to parse the output of the file
+ */
+export async function tryReleaseFile(
+  path: string,
+  parser: (output: string) => LinuxOS | undefined
+): Promise<LinuxOS | undefined> {
+  try {
+    const output = await fspromises.readFile(path);
+
+    return parser(output.toString());
+  } catch (err) {
+    if (errorWithCode(err) && !['ENOENT', 'EACCES'].includes(err.code)) {
+      throw err;
+    }
+
+    log(`tryReleaseFile: "${path}" does not exist`);
+
+    return undefined;
+  }
 }
