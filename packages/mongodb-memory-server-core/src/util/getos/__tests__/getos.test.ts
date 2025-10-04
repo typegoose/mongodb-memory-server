@@ -124,6 +124,34 @@ HOME_URL="https://amazonlinux.com/"`;
         id_like: ['centos', 'rhel', 'fedora'],
       });
     });
+
+    it('should parse ids with dashes', () => {
+      // output taken from https://github.com/typegoose/mongodb-memory-server/issues/948
+      const example = `NAME="openSUSE Tumbleweed"
+# VERSION="20250925"
+ID="opensuse-tumbleweed"
+ID_LIKE="opensuse suse"
+VERSION_ID="20250925"
+PRETTY_NAME="openSUSE Tumbleweed"
+ANSI_COLOR="0;32"
+# CPE 2.3 format, boo#1217921
+CPE_NAME="cpe:2.3:o:opensuse:tumbleweed:20250925:*:*:*:*:*:*:*"
+#CPE 2.2 format
+#CPE_NAME="cpe:/o:opensuse:tumbleweed:20250925"
+BUG_REPORT_URL="https://bugzilla.opensuse.org"
+SUPPORT_URL="https://bugs.opensuse.org"
+HOME_URL="https://www.opensuse.org"
+DOCUMENTATION_URL="https://en.opensuse.org/Portal:Tumbleweed"
+LOGO="distributor-logo-Tumbleweed"`;
+
+      expect(getos.parseOS(example)).toEqual<getos.LinuxOS>({
+        os: 'linux',
+        dist: 'opensuse-tumbleweed',
+        release: '20250925',
+        codename: undefined,
+        id_like: ['opensuse', 'suse'],
+      });
+    });
   });
 
   describe('isValidOs', () => {
