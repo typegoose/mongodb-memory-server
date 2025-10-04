@@ -1,3 +1,13 @@
+## [10.2.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.1...v10.2.2) (2025-10-04)
+
+### Fixes
+
+* **getos:** allow os-release id's with dashes ([a5626a6](https://github.com/typegoose/mongodb-memory-server/commit/a5626a6f6053c6bfae42c577877fe07294754c41)), closes [#948](https://github.com/typegoose/mongodb-memory-server/issues/948)
+
+### Refactor
+
+* **getos:** move function from utils to getos only used there ([7d07e96](https://github.com/typegoose/mongodb-memory-server/commit/7d07e9623eafa4caff56b41e65e787aa0206df39))
+
 ## [10.2.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.0...v10.2.1) (2025-09-15)
 
 ### Fixes
