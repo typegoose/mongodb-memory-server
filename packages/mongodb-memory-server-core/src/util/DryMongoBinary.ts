@@ -41,7 +41,7 @@ export interface DryMongoBinaryOptions extends BaseDryMongoBinaryOptions {
 export interface DryMongoBinaryNameOptions {
   version: NonNullable<DryMongoBinaryOptions['version']>;
   arch: NonNullable<DryMongoBinaryOptions['arch']>;
-  platform: NonNullable<DryMongoBinaryOptions['version']>;
+  platform: NonNullable<DryMongoBinaryOptions['platform']>;
   os: NonNullable<DryMongoBinaryOptions['os']>;
 }
 
