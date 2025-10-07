@@ -5,6 +5,8 @@ name: Node.js CI
 
 on:
   push:
+    branches-ignore:
+      - 'gh-pages'
   pull_request:
   workflow_dispatch:
     inputs:
@@ -12,8 +14,13 @@ on:
         description: Git Ref (Optional)
         required: false
 
+permissions:
+  contents: read
+
 jobs:
   tests:
+    permissions:
+      contents: read  # for actions/checkout to fetch code
     runs-on: ${{ matrix.distro }}
     strategy:
       matrix:
@@ -76,6 +83,11 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   publish:
+    permissions:
+      contents: write  # for actions/checkout to fetch code and for semantic-release to push commits, release releases and tags
+      issues: write # for semantic-release to comment on and close issues
+      pull-requests: write # for semantic-release to comment on and close pull requests
+      id-token: write # for semantic-release to enable use of OIDC for npm provenance
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || startsWith(github.ref, 'refs/heads/old')
     needs: [tests]
     runs-on: ubuntu-latest
@@ -104,4 +116,5 @@ jobs:
             semantic-release-replace-plugin@1.2.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # replace with trusted-publishing once available, see https://github.com/semantic-release/npm/issues/958
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

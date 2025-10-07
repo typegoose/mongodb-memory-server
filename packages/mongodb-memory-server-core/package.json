@@ -31,6 +31,10 @@
     "url": "https://github.com/typegoose/mongodb-memory-server/issues"
   },
   "homepage": "https://github.com/typegoose/mongodb-memory-server",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "devDependencies": {
     "@types/debug": "^4.1.12",
     "@types/find-cache-dir": "^3.2.1",
@@ -56,6 +60,7 @@
     "tslib": "^2.8.1",
     "yauzl": "^3.2.0"
   },
+
   "scripts": {
     "clean": "rimraf tmp lib build coverage node_modules/.cache",
     "build": "rimraf ./lib && tsc -p ./tsconfig.build.json",
