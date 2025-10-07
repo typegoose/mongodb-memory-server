@@ -1,3 +1,13 @@
+## [10.2.3](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.2...v10.2.3) (2025-10-07)
+
+### Fixes
+
+* enable npm provenance publishing ([6ec4d55](https://github.com/typegoose/mongodb-memory-server/commit/6ec4d555a1505571a0d734c51b45a7327d66fb68))
+
+### Style
+
+* **DryMongoBinary:** fix "platform" using "version" type ([#949](https://github.com/typegoose/mongodb-memory-server/issues/949)) ([efc8460](https://github.com/typegoose/mongodb-memory-server/commit/efc84608d626829e1fe820ef7f56eefddb63e4b6))
+
 ## [10.2.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.1...v10.2.2) (2025-10-04)
 
 ### Fixes
