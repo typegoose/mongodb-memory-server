@@ -463,7 +463,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
             if (
               !(
                 err instanceof MongoNetworkError &&
-                /^connection \d+ to [\d.]+:\d+ closed$/i.test(err.message)
+                /^connection \d+ to [\d.]+:\d+ closed$/i.test(err.message) ||
+                'read ECONNRESET' === err.message
               )
             ) {
               console.warn(err);
