@@ -1852,6 +1852,52 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for Suse', () => {
+        it('should Error when Suse 13 is requested [KnownVersionIncompatibilityError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x86_64',
+            version: '8.0.0',
+            os: {
+              // pseudo os, may not represent actual data
+              os: 'linux',
+              dist: 'opensuse',
+              release: '13',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a KnownVersionIncompatibilityError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
+            expect(err.message).toMatchSnapshot();
+          }
+        });
+
+        it('should Error when Suse 14 is requested [KnownVersionIncompatibilityError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x86_64',
+            version: '8.0.0',
+            os: {
+              // pseudo os, may not represent actual data
+              os: 'linux',
+              dist: 'opensuse',
+              release: '14',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a KnownVersionIncompatibilityError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
+            expect(err.message).toMatchSnapshot();
+          }
+        });
+
         it('openSuse-tumbleweed 20250925 (x86_64) & 8.0.0', async () => {
           // from https://github.com/typegoose/mongodb-memory-server/issues/948
           const du = new MongoBinaryDownloadUrl({

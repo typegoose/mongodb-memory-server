@@ -493,11 +493,28 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
   getSuseVersionString(os: LinuxOS): string {
     /** Set the default suse release number */
     const DEFAULT_SUSE_RELEASE = 15;
+
+    const coercedVersion = semver.coerce(this.version);
+
+    if (isNullOrUndefined(coercedVersion)) {
+      throw new UnknownVersionError(this.version);
+    }
+
     let suseRelease = parseInt(os.release, 10);
 
     if (Number.isNaN(suseRelease)) {
       console.warn(`Could not parse suse version from "${os.release}", using default`);
       suseRelease = DEFAULT_SUSE_RELEASE;
+    }
+
+    // mongodb does not provide binaries for suse 13 & 14
+    if (suseRelease === 13 || suseRelease === 14) {
+      throw new KnownVersionIncompatibilityError(
+        `${os.dist} ${suseRelease || os.release || os.codename}`,
+        this.version,
+        'none',
+        'Mongodb does not provide binaries for Suse version 13 & 14'
+      );
     }
 
     // base case for higher than mongodb supported suse versions or no version is available

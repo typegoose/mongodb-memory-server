@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for Suse should Error when Suse 13 is requested [KnownVersionIncompatibilityError] 1`] = `
+"Requested Version \\"8.0.0\\" is not available for \\"opensuse 13\\"! Available Versions: \\"none\\"
+Mongodb does not provide binaries for Suse version 13 & 14"
+`;
+
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for Suse should Error when Suse 14 is requested [KnownVersionIncompatibilityError] 1`] = `
+"Requested Version \\"8.0.0\\" is not available for \\"opensuse 14\\"! Available Versions: \\"none\\"
+Mongodb does not provide binaries for Suse version 13 & 14"
+`;
+
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when requesting a version below 4.2.1 for debian 10+ [#554] [KnownVersionIncompatibilityError] 1`] = `
 "Requested Version \\"4.0.25\\" is not available for \\"Debian 10\\"! Available Versions: \\">=4.2.1\\"
 Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release"
