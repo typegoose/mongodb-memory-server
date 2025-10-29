@@ -243,7 +243,7 @@ describe('MongodbInstance', () => {
       const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '5.0.19' },
+        binary: { version: '5.0.31' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
@@ -253,7 +253,7 @@ describe('MongodbInstance', () => {
       const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '6.0.14' },
+        binary: { version: '6.0.25' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
@@ -275,7 +275,7 @@ describe('MongodbInstance', () => {
       const mongod = await MongodbInstance.create({
         // this works without problems, because no explicit storage-engine is given, so mongodb automatically chooses wiredTiger
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '8.0.1' },
+        binary: { version: '8.0.14' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();

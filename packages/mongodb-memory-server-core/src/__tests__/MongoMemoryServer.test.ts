@@ -79,7 +79,7 @@ describe('MongoMemoryServer', () => {
         },
         binary: {
           // 7.0 removed "ephemeralForTest", this test is explicitly for that engine
-          version: '6.0.14',
+          version: '6.0.25',
         },
       });
 
@@ -265,7 +265,7 @@ describe('MongoMemoryServer', () => {
         },
         binary: {
           // 7.0 removed "ephemeralForTest", this test is explicitly for that engine
-          version: '6.0.14',
+          version: '6.0.25',
         },
       });
 
@@ -1252,7 +1252,7 @@ describe('MongoMemoryServer', () => {
     it('should not warn if "ephemeralForTest" is used explicitly in mongodb 6.0', async () => {
       jest.spyOn(console, 'warn');
       const server = await MongoMemoryServer.create({
-        binary: { version: '6.0.14' },
+        binary: { version: '6.0.25' },
         instance: { storageEngine: 'ephemeralForTest' },
       });
 

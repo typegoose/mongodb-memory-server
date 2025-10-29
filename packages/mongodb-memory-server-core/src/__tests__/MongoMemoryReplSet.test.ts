@@ -241,7 +241,7 @@ describe('single server replset', () => {
       replSet: { auth: { enable: true }, count: 3, storageEngine: 'ephemeralForTest' },
       binary: {
         // 7.0 removed "ephemeralForTest", this test is explicitly for that engine
-        version: '6.0.14',
+        version: '6.0.25',
       },
     });
 
@@ -732,7 +732,7 @@ describe('MongoMemoryReplSet', () => {
     it('should not warn if "ephemeralForTest" is used explicitly in mongodb 6.0', async () => {
       jest.spyOn(console, 'warn');
       const server = await MongoMemoryReplSet.create({
-        binary: { version: '6.0.14' },
+        binary: { version: '6.0.25' },
         replSet: { storageEngine: 'ephemeralForTest' },
       });
 
