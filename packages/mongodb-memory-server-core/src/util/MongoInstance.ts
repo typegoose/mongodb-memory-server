@@ -464,7 +464,10 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
               !(
                 err instanceof MongoNetworkError &&
                 /^connection \d+ to [\d.]+:\d+ closed$/i.test(err.message)
-              )
+              ) &&
+              // "Connection Reset" may happen in the middle of the operation, for whatever reason before the command finishes,
+              // this is not a error we need to log. (re https://github.com/typegoose/mongodb-memory-server/issues/900)
+              !(err instanceof Error && 'read ECONNRESET' === err.message)
             ) {
               console.warn(err);
             }
