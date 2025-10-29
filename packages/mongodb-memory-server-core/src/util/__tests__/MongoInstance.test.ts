@@ -264,7 +264,7 @@ describe('MongodbInstance', () => {
       const mongod = await MongodbInstance.create({
         // this works without problems, because no explicit storage-engine is given, so mongodb automatically chooses wiredTiger
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '7.0.14' },
+        binary: { version: '7.0.24' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
