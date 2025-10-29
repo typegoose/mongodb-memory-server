@@ -51,7 +51,7 @@
     "camelcase": "^6.3.0",
     "debug": "^4.4.1",
     "find-cache-dir": "^3.3.2",
-    "follow-redirects": "^1.15.9",
+    "follow-redirects": "^1.15.11",
     "https-proxy-agent": "^7.0.6",
     "mongodb": "^6.9.0",
     "new-find-package-json": "^2.0.0",
