@@ -55,7 +55,7 @@
     "https-proxy-agent": "^7.0.6",
     "mongodb": "^6.9.0",
     "new-find-package-json": "^2.0.0",
-    "semver": "^7.7.2",
+    "semver": "^7.7.3",
     "tar-stream": "^3.1.7",
     "tslib": "^2.8.1",
     "yauzl": "^3.2.0"
