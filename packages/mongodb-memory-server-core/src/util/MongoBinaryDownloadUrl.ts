@@ -489,11 +489,36 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * Get the version string for Suse / OpenSuse
    * @param os LinuxOS Object
    */
-  // TODO: add tests for getSuseVersionString
+  // TODO: more tests are necessary for suse
   getSuseVersionString(os: LinuxOS): string {
-    const releaseMatch: RegExpMatchArray | null = os.release.match(/(^11|^12|^15)/);
+    /** Set the default suse release number */
+    const DEFAULT_SUSE_RELEASE = 15;
+    let suseRelease = parseInt(os.release, 10);
 
-    return releaseMatch ? `suse${releaseMatch[0]}` : '';
+    if (Number.isNaN(suseRelease)) {
+      console.warn(`Could not parse suse version from "${os.release}", using default`);
+      suseRelease = DEFAULT_SUSE_RELEASE;
+    }
+
+    // base case for higher than mongodb supported suse versions or no version is available
+    {
+      // TODO: try to keep this up-to-date to the latest mongodb supported suse version
+      /**
+       * Highest suse release supported by mongodb binaries
+       * @see https://www.mongodb.com/download-center/community/releases/archive
+       */
+      const highestSuseRelease = 15; // 15 is the highest supported as of mongodb 8.2.0
+
+      if (suseRelease > highestSuseRelease) {
+        log(
+          `getSuseVersionString: suseRelease "${suseRelease}" is higher than the currently supported mongodb release of "${highestSuseRelease}". Using highest known suse release.`
+        );
+
+        return `suse${highestSuseRelease}`;
+      }
+    }
+
+    return `suse${suseRelease}`;
   }
 
   /**
@@ -633,7 +658,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
       if (ubuntuYear > highestUbuntuYear) {
         log(
-          `getUbuntuVersionString: ubuntuYear "${ubuntuYear}" is higher than the currently supported mongodb year of "${highestUbuntuYear}", using highest known`
+          `getUbuntuVersionString: ubuntuYear "${ubuntuYear}" is higher than the currently supported mongodb year of "${highestUbuntuYear}". Using highest known ubuntu year.`
         );
 
         return 'ubuntu2404';

@@ -1815,7 +1815,7 @@ describe('MongoBinaryDownloadUrl', () => {
         });
       });
 
-      describe('Oracle Linux', () => {
+      describe('for Oracle Linux', () => {
         it('ol 8.7 (x86_64) & 5.0.0 (using rhel80)', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -1847,6 +1847,25 @@ describe('MongoBinaryDownloadUrl', () => {
           });
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.4.17.tgz'
+          );
+        });
+      });
+
+      describe('for Suse', () => {
+        it('openSuse-tumbleweed 20250925 (x86_64) & 8.0.0', async () => {
+          // from https://github.com/typegoose/mongodb-memory-server/issues/948
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x86_64',
+            version: '8.0.0',
+            os: {
+              os: 'linux',
+              dist: 'opensuse-tumbleweed',
+              release: '20250925',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-suse15-8.0.0.tgz'
           );
         });
       });

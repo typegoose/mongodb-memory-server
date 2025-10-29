@@ -143,8 +143,12 @@ Default version is `21`
 
 (uses mongodb's `suse` release)<br/>
 Lowest supported Distribution version is `11`<br/>
-Highest version is `12`<br/>
-Default version is none
+Highest version is `15`<br/>
+Default version is `15`
+
+:::note
+Currently the only test is `opensuse-tumbleweed`. More OS testing data would be appreciated (follow [Issue Template `Distribution Support`](https://github.com/typegoose/mongodb-memory-server/issues/new?template=distribution-support.md)).
+:::
 
 ### Arch
 
