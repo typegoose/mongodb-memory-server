@@ -5,7 +5,7 @@
 * **MongoBinaryDownloadUrl::getSuseVersionString:** add fallback version ([45311e7](https://github.com/typegoose/mongodb-memory-server/commit/45311e7c837a40f47475050cffbd0c49a852d61a)), closes [#948](https://github.com/typegoose/mongodb-memory-server/issues/948)
 * **resolveConfig:** update default binary version to 7.0.24 ([868e534](https://github.com/typegoose/mongodb-memory-server/commit/868e5340b921d1ecc2142b6fe2b3615d0072b1fb))
 * update default-4.2-binary to 4.2.25 ([06e0d2a](https://github.com/typegoose/mongodb-memory-server/commit/06e0d2ac6ae55c425d08ce395d783aaa4cde7b74))
-* update default-4.2-binary to 4.4.29 ([f118364](https://github.com/typegoose/mongodb-memory-server/commit/f11836499fcba9c8cfb0cd1e5b840e1bcc17ac2c))
+* update default-4.4-binary to 4.4.29 ([f118364](https://github.com/typegoose/mongodb-memory-server/commit/f11836499fcba9c8cfb0cd1e5b840e1bcc17ac2c))
 
 ### Fixes
 
