@@ -1,5 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for Suse should Error when Suse 12 and mongodb 8.0.0 is requested [KnownVersionIncompatibilityError] 1`] = `
+"Requested Version \\"8.0.0\\" is not available for \\"opensuse 12\\"! Available Versions: \\"<8.0.0\\"
+Mongodb only provides binaries for suse 15 for 8.0.0 and above"
+`;
+
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for Suse should Error when Suse 13 is requested [KnownVersionIncompatibilityError] 1`] = `
 "Requested Version \\"8.0.0\\" is not available for \\"opensuse 13\\"! Available Versions: \\"none\\"
 Mongodb does not provide binaries for Suse version 13 & 14"

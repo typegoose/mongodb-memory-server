@@ -517,6 +517,20 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       );
     }
 
+    // mongodb does not provide suse 12 binaries for higher than 7.0.x
+    if (
+      suseRelease < 15 &&
+      semver.gte(coercedVersion, '8.0.0') &&
+      !testVersionIsLatest(this.version)
+    ) {
+      throw new KnownVersionIncompatibilityError(
+        `${os.dist} ${suseRelease || os.release || os.codename}`,
+        this.version,
+        '<8.0.0',
+        'Mongodb only provides binaries for suse 15 for 8.0.0 and above'
+      );
+    }
+
     // base case for higher than mongodb supported suse versions or no version is available
     {
       // TODO: try to keep this up-to-date to the latest mongodb supported suse version

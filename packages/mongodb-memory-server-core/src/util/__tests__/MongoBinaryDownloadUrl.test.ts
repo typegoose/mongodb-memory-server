@@ -1898,6 +1898,63 @@ describe('MongoBinaryDownloadUrl', () => {
           }
         });
 
+        it('should Error when Suse 12 and mongodb 8.0.0 is requested [KnownVersionIncompatibilityError]', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x86_64',
+            version: '8.0.0',
+            os: {
+              // pseudo os, may not represent actual data
+              os: 'linux',
+              dist: 'opensuse',
+              release: '12',
+            },
+          });
+
+          try {
+            await du.getDownloadUrl();
+            fail('Expected to throw a KnownVersionIncompatibilityError');
+          } catch (err) {
+            assertIsError(err);
+            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
+            expect(err.message).toMatchSnapshot();
+          }
+        });
+
+        it('suse 12 (x86_64) & 7.0.24', async () => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x86_64',
+            version: '7.0.24',
+            os: {
+              // pseudo os, may not represent actual data
+              os: 'linux',
+              dist: 'opensuse',
+              release: '12',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-suse12-7.0.24.tgz'
+          );
+        });
+
+        it('openSuse-tumbleweed 20250925 (x86_64) & 7.0.24', async () => {
+          // from https://github.com/typegoose/mongodb-memory-server/issues/948
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'linux',
+            arch: 'x86_64',
+            version: '7.0.24',
+            os: {
+              os: 'linux',
+              dist: 'opensuse-tumbleweed',
+              release: '20250925',
+            },
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-suse15-7.0.24.tgz'
+          );
+        });
+
         it('openSuse-tumbleweed 20250925 (x86_64) & 8.0.0', async () => {
           // from https://github.com/typegoose/mongodb-memory-server/issues/948
           const du = new MongoBinaryDownloadUrl({
