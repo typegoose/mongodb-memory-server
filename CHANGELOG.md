@@ -1,3 +1,32 @@
+## [10.3.0](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.3...v10.3.0) (2025-10-31)
+
+### Features
+
+* **MongoBinaryDownloadUrl::getSuseVersionString:** add fallback version ([45311e7](https://github.com/typegoose/mongodb-memory-server/commit/45311e7c837a40f47475050cffbd0c49a852d61a)), closes [#948](https://github.com/typegoose/mongodb-memory-server/issues/948)
+* **resolveConfig:** update default binary version to 7.0.24 ([868e534](https://github.com/typegoose/mongodb-memory-server/commit/868e5340b921d1ecc2142b6fe2b3615d0072b1fb))
+* update default-4.2-binary to 4.2.25 ([06e0d2a](https://github.com/typegoose/mongodb-memory-server/commit/06e0d2ac6ae55c425d08ce395d783aaa4cde7b74))
+* update default-4.2-binary to 4.4.29 ([f118364](https://github.com/typegoose/mongodb-memory-server/commit/f11836499fcba9c8cfb0cd1e5b840e1bcc17ac2c))
+
+### Fixes
+
+* **MongoBinaryDownloadUrl::getSuseVersionString:** add known compat issue for suse 12 & >=8.0.0 ([97675be](https://github.com/typegoose/mongodb-memory-server/commit/97675bebbf3191e97bfd3004bf2756d1ae06525b))
+* **MongoBinaryDownloadUrl::getSuseVersionString:** add known compat issue for suse 13 & 14 ([f6d22b7](https://github.com/typegoose/mongodb-memory-server/commit/f6d22b7089cf6b7d77744d26dbf3416fe28d265a))
+* **MongoInstance::stop:** silence "ECONNRESET" errors on shutdown ([e48f2aa](https://github.com/typegoose/mongodb-memory-server/commit/e48f2aa2254d3794ce23960eacc9e380a106bdb3)), closes [#900](https://github.com/typegoose/mongodb-memory-server/issues/900) [#946](https://github.com/typegoose/mongodb-memory-server/issues/946)
+
+### Dependencies
+
+* **debug:** upgrade to version 4.4.3 ([591a62f](https://github.com/typegoose/mongodb-memory-server/commit/591a62ff0824d0465971618e9c53dfb2cc520fcb))
+* **follow-redirects:** upgrade to version 1.15.11 ([d649b1d](https://github.com/typegoose/mongodb-memory-server/commit/d649b1deb5bdb19bc42bb5e30fd5ddda9f9d1e2b))
+* **semver:** upgrade to version 7.7.3 ([67c6cb0](https://github.com/typegoose/mongodb-memory-server/commit/67c6cb0371ede0409def011fe473f40cbdd24e77))
+
+### Dev-Dependencies
+
+* **@types/semver:** upgrade to version 7.7.1 ([4b75634](https://github.com/typegoose/mongodb-memory-server/commit/4b75634e2a1c0a9027651d7341c4f5e3c0e590e0))
+* **eslint-config-prettier:** upgrade to version 9.1.2 ([8c92905](https://github.com/typegoose/mongodb-memory-server/commit/8c92905b01c4de5f1f323b9191ffee35179c1513))
+* **eslint-plugin-prettier:** upgrade to version 5.5.4 ([ca60b90](https://github.com/typegoose/mongodb-memory-server/commit/ca60b90930bff289cb78e752603efbe68786ee16))
+* **prettier:** upgrade to version 3.6.2 ([c1cc12d](https://github.com/typegoose/mongodb-memory-server/commit/c1cc12d1a3c0c4c6127da4539108c71c803a70ec))
+* **ts-jest:** upgrade to version 29.4.5 ([26a4d8b](https://github.com/typegoose/mongodb-memory-server/commit/26a4d8b17340d8e038ab2f9e992c52ec5324f8dc))
+
 ## [10.3.0-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.3...v10.3.0-beta.1) (2025-10-29)
 
 ### Features
