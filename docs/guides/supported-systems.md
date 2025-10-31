@@ -149,6 +149,11 @@ Default version is `15`
 :::note
 Currently the only test is `opensuse-tumbleweed`. More OS testing data would be appreciated (follow [Issue Template `Distribution Support`](https://github.com/typegoose/mongodb-memory-server/issues/new?template=distribution-support.md)).
 :::
+:::note
+Suse `15` binaries still require OpenSSL 1.1 installed. This may conflict with latest versions of `opensuse-tumbleweed`.
+A workaround reported to work is to use the `rhel-9` binaries via config option [`DISTRO`](../api/config-options.md#distro).
+[Original Comment on #948](https://github.com/typegoose/mongodb-memory-server/issues/948#issuecomment-3372911839).
+:::
 
 ### Arch
 
