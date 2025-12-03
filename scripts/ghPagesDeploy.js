@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const deployInfo = require('./getDeployInfo')();
 const { execSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -70,7 +69,7 @@ function main() {
   console.log('\nRemoving & Moving build\n');
 
   // create deployAs directory, if not empty
-  if (!!deployInfo.deployPath) {
+  if (deployInfo.deployPath) {
     fs.mkdirSync(deployInfo.deployPath, { recursive: true });
   }
 
@@ -167,7 +166,7 @@ function hasChanges() {
     return false;
   } catch (err) {
     // check if the error is a childprocess error, which will always have a "status" property
-    if (!!err.status) {
+    if (err.status) {
       return true;
     }
 

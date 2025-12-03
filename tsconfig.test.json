@@ -7,6 +7,7 @@
     "packages/**/*",
     "*.js",
     ".*.js",
+    "*.mjs",
     "website/**/*.js",
     "scripts/**/*.js"
   ],

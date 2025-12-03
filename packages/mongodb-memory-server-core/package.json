@@ -67,7 +67,7 @@
     "watch": "jest --watchAll",
     "coverage": "jest --coverage",
     "lint": "yarn run eslint && yarn run tscheck",
-    "eslint": "ESLINT_USE_FLAT_CONFIG=false eslint -c ../../.eslintrc.js 'src/**/*.{js,ts}'",
+    "eslint": "eslint -c ../../eslint.config.mjs \"./**/*.{js,ts,cjs,mjs,cts,mts}\"",
     "test": "yarn run lint && yarn run coverage",
     "test:watch": "yarn run watch",
     "tscheck": "tsc --noEmit"

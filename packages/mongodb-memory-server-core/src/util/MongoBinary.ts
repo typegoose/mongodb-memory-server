@@ -84,7 +84,7 @@ export class MongoBinary {
     let binaryPath: string | undefined = await DryMongoBinary.locateBinary(options);
 
     // check if the system binary has the same version as requested
-    if (!!options.systemBinary) {
+    if (options.systemBinary) {
       // this case should actually never be false, because if "SYSTEM_BINARY" is set, "locateBinary" will run "getSystemPath" which tests the path for permissions
       if (!isNullOrUndefined(binaryPath)) {
         // dont warn if the versions dont match if "SYSTEM_BINARY_VERSION_CHECK" is false, but still test the binary if it is available to be executed

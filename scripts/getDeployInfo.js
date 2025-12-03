@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 /*
  * Script to get deployment information
  */
@@ -36,9 +35,9 @@ module.exports = function getDeployInfo() {
   return {
     branch,
     // change deploy name to be the deploy path in version directory
-    deployPath: !!deployName ? `versions/${deployName}` : '',
+    deployPath: deployName ? `versions/${deployName}` : '',
     // deploy name should always be defined, if not set via the above, use the package.json major version
-    deployName: !!deployName ? deployName : packagejson.version.split('.')[0] + '.x',
+    deployName: deployName ? deployName : packagejson.version.split('.')[0] + '.x',
     searchName: deployName.length === 0 ? 'current' : deployName,
   };
 };

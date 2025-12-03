@@ -31,7 +31,7 @@ describe('Restart single MongoMemoryReplSet instance', () => {
     const replSetBefore = await MongoMemoryReplSet.create(opts);
 
     // Write real port to config (because 27017 may be busy, we need to get real port)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
     opts.instanceOpts[0].port = replSetBefore.servers[0].instanceInfo!.port;
 
     await replSetBefore.stop();

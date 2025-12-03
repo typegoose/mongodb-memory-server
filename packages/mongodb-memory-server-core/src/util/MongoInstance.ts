@@ -316,14 +316,14 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     result.push('--dbpath', this.instanceOpts.dbPath);
 
     // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
-    if (!!this.instanceOpts.replSet) {
+    if (this.instanceOpts.replSet) {
       this.isReplSet = true;
       result.push('--replSet', this.instanceOpts.replSet);
     }
-    if (!!this.instanceOpts.storageEngine) {
+    if (this.instanceOpts.storageEngine) {
       result.push('--storageEngine', this.instanceOpts.storageEngine);
     }
-    if (!!this.instanceOpts.ip) {
+    if (this.instanceOpts.ip) {
       result.push('--bind_ip', this.instanceOpts.ip);
     }
     if (this.instanceOpts.auth) {

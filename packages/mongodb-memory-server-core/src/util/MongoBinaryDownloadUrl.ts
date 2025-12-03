@@ -83,7 +83,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     const archive_name = resolveConfig(ResolveConfigVariables.ARCHIVE_NAME);
 
     // double-"!" to not include falsy values
-    if (!!archive_name) {
+    if (archive_name) {
       return archive_name;
     }
 
@@ -175,7 +175,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = `mongodb-linux-${this.arch}`;
 
     // guard against any falsy values
-    if (!!osString) {
+    if (osString) {
       name += `-${osString}`;
     }
 
@@ -686,7 +686,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     switch (platform) {
       case 'darwin':
         return 'osx';
-      case 'win32':
+      case 'win32': {
         const version = semver.coerce(this.version);
 
         if (isNullOrUndefined(version)) {
@@ -694,6 +694,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         }
 
         return semver.gte(version, '4.3.0') ? 'windows' : 'win32';
+      }
       case 'linux':
         return 'linux';
       default:

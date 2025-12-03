@@ -1,3 +1,4 @@
+/* eslint-disable no-async-promise-executor */
 import * as lockFile from '../lockfile';
 import * as path from 'path';
 import { pathExists } from '../utils';

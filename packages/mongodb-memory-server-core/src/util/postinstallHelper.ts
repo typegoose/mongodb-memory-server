@@ -15,7 +15,7 @@ import {
 
 findPackageJson(process.env.INIT_CWD);
 
-if (!!envToBool(resolveConfig(ResolveConfigVariables.DISABLE_POSTINSTALL))) {
+if (envToBool(resolveConfig(ResolveConfigVariables.DISABLE_POSTINSTALL))) {
   console.log(
     'Mongodb-Memory-Server* postinstall skipped because "DISABLE_POSTINSTALL" was set to an truthy value'
   );

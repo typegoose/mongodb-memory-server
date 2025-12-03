@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MongoClient, MongoServerError } from 'mongodb';
 import MongoMemoryServer, {
   CreateUser,
