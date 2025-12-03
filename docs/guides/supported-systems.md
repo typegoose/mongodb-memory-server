@@ -52,7 +52,7 @@ Depends on the distribution, many common ones should just work right out of the 
 <span class="badge badge--success">Supported</span>
 
 (uses mongodb's `ubuntu` release)<br/>
-Lowest supported Distribution version is `1404`<br/>
+Lowest supported Distribution version is `1604`<br/>
 Highest version is `2404` (higher versions will be clamped to this value)<br/>
 Default version is `2204`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
@@ -70,7 +70,7 @@ See [this mongodb issue](https://jira.mongodb.org/browse/SERVER-62300).
 <span class="badge badge--success">Supported</span>
 
 (uses mongodb's `debian` release)<br/>
-Lowest supported Distribution version is `71`<br/>
+Lowest supported Distribution version is `9.2`<br/>
 Highest version is `12` (higher versions will be clamped to this value)<br/>
 Default version is `12` (when in `unstable` or `testing`, otherwise none)
 
@@ -79,7 +79,7 @@ Default version is `12` (when in `unstable` or `testing`, otherwise none)
 <span class="badge badge--success">Supported</span>
 
 (uses mongodb's `rhel` release)<br/>
-Lowest supported Distribution version is `6`<br/>
+Lowest supported Distribution version is `12`<br/>
 Highest version is `42` (see note) (higher versions will be clamped to this value)<br/>
 Default version is `28` (when above or equal to `28`, otherwise none)
 
@@ -101,7 +101,7 @@ This mapping to RHEL is based on the table in [Relationship between Fedora and R
 <span class="badge badge--warning">Untested</span>
 
 (uses mongodb's `rhel` release)<br/>
-Lowest supported Distribution version is `5`<br/>
+Lowest supported Distribution version is `6.2`<br/>
 Highest version is `9.3` (higher versions will be clamped to this value)<br/>
 Default version is `70`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
@@ -124,7 +124,7 @@ Default version is `1`
 <span class="badge badge--warning">Untested</span> <span class="badge badge--warning">Outdated</span>
 
 (uses mongodb's `ubuntu` release)<br/>
-Lowest supported Distribution version is `3` (or `0.3`)<br/>
+Lowest supported Distribution version is `4`<br/>
 Highest version is `7`<br/>
 Default version is `7`
 
@@ -133,7 +133,7 @@ Default version is `7`
 <span class="badge badge--success">Supported</span>
 
 (uses mongodb's `ubuntu` release)<br/>
-Lowest supported Distribution version is `17`<br/>
+Lowest supported Distribution version is `18`<br/>
 Highest version is `22`<br/>
 Default version is `21`
 
