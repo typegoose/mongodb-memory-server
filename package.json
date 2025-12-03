@@ -8,11 +8,11 @@
     "url": "git+https://github.com/typegoose/mongodb-memory-server.git"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.8.1",
-    "@commitlint/config-conventional": "17.8.1",
+    "@commitlint/cli": "20.1.0",
+    "@commitlint/config-conventional": "20.0.0",
     "@types/jest": "^29.5.14",
     "@types/node": "~24.10.0",
-    "commitlint": "17.8.1",
+    "commitlint": "20.1.0",
     "cross-env": "7.0.3",
     "doctoc": "2.2.1",
     "eslint": "9.39.1",
