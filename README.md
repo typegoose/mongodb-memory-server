@@ -68,7 +68,7 @@ Choose any package, because they are the same. They differ only in the default c
 
 ### Requirements
 
-- NodeJS: 16.20.1+
+- NodeJS: 20.19.0+
 - Typescript: 5.3+ (if used)
 
 And one of those (on Linux):
