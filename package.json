@@ -10,7 +10,7 @@
   "devDependencies": {
     "@commitlint/cli": "20.1.0",
     "@commitlint/config-conventional": "20.0.0",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "@types/node": "~24.10.0",
     "commitlint": "20.1.0",
     "doctoc": "2.2.1",
