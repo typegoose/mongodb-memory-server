@@ -43,11 +43,11 @@ The default binary version has been upgraded from `6.0.x` to `7.0.x`. For more s
 In mongodb `7.0.0` storage engine `ephemeralForTest` has been removed, mongodb-memory-server will automatically translate any occurrence to `wiredTiger` with a warning.
 
 It is recommended to run the tests against a tmpfs or equivalent (default `/tmp` on linux / macos).
-:::
+:::-->
 
 ## Non-Breaking changes / Additions
 
-### Compiler target is now `es2021`
+### Compiler target is now `es2023`
 
-The tsconfig `target` option has been updated to `es2021`, which will result in less polyfills.
-This should be a non-breaking change. -->
+The tsconfig `target` option has been updated to `es2023`, which will result in less polyfills.
+This should be a non-breaking change.
