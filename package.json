@@ -23,7 +23,7 @@
     "lint-staged": "14.0.1",
     "prettier": "3.7.4",
     "ts-jest": "29.4.6",
-    "typedoc": "^0.25.13",
+    "typedoc": "^0.28.15",
     "typescript": "~5.9.3",
     "typescript-eslint": "8.48.1"
   },
