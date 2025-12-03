@@ -641,7 +641,7 @@ describe('MongoBinaryDownload', () => {
         tmpfile,
         2,
         0,
-        500
+        200
       );
 
       expect(resolved).toStrictEqual(outfile);
