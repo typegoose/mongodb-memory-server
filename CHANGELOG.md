@@ -1,3 +1,14 @@
+## [10.4.0](https://github.com/typegoose/mongodb-memory-server/compare/v10.3.0...v10.4.0) (2025-12-03)
+
+### Features
+
+* **resolveConfig:** stabilize "RESUME_DOWNLOAD" option ([3fa975f](https://github.com/typegoose/mongodb-memory-server/commit/3fa975f7b5bc03df223aef6a443029f7aa50de9c))
+
+### Dev-Dependencies
+
+* **prettier:** upgrade to version 3.7.4 ([753dceb](https://github.com/typegoose/mongodb-memory-server/commit/753dceb6d95baf92779fce18cf55977b1b0cc915))
+* **ts-jest:** upgrade to version 29.4.6 ([e4be65b](https://github.com/typegoose/mongodb-memory-server/commit/e4be65bdacc9f6aa715e82a6b2cf0dbcf0addc14))
+
 ## [10.3.0](https://github.com/typegoose/mongodb-memory-server/compare/v10.2.3...v10.3.0) (2025-10-31)
 
 ### Features
