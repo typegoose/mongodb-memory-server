@@ -478,7 +478,7 @@ export class MongoBinaryDownload {
     /** Offset to resume from; for now a non-0 value indicates to use file "append" mode */
     let offset = 0;
 
-    if (envToBool(resolveConfig(ResolveConfigVariables.EXP_RESUME_DOWNLOAD))) {
+    if (envToBool(resolveConfig(ResolveConfigVariables.RESUME_DOWNLOAD))) {
       const stat = await statPath(tempDownloadLocation);
 
       if (stat && stat.size != 0) {

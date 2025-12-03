@@ -432,7 +432,7 @@ describe('MongoBinaryDownload', () => {
     let key: string;
     let cert: string;
 
-    let exp_resume_before: any;
+    let resume_before: any;
 
     const totalBytes = 1024 * 10;
 
@@ -443,13 +443,13 @@ describe('MongoBinaryDownload', () => {
       key = await fspromises.readFile(path.resolve(certPath, './private-key.key'), 'utf-8');
       cert = await fspromises.readFile(path.resolve(certPath, './certificate.crt'), 'utf-8');
 
-      exp_resume_before = process.env[envName(ResolveConfigVariables.EXP_RESUME_DOWNLOAD)];
+      resume_before = process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)];
     });
 
     beforeEach(async () => {
       tmpdir = await utils.createTmpDir('mongo-mem-test-download-');
 
-      delete process.env[envName(ResolveConfigVariables.EXP_RESUME_DOWNLOAD)];
+      delete process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)];
     });
     afterEach(async () => {
       await utils.removeDir(tmpdir);
@@ -462,7 +462,7 @@ describe('MongoBinaryDownload', () => {
     });
 
     afterAll(() => {
-      process.env[envName(ResolveConfigVariables.EXP_RESUME_DOWNLOAD)] = exp_resume_before;
+      process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)] = resume_before;
     });
 
     function createTestServer(
@@ -607,7 +607,7 @@ describe('MongoBinaryDownload', () => {
     });
 
     it('should download interrupt and resume', async () => {
-      process.env[envName(ResolveConfigVariables.EXP_RESUME_DOWNLOAD)] = 'true';
+      process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)] = 'true';
 
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
       createTestServer(totalBytes / 2);

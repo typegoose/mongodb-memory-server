@@ -281,15 +281,13 @@ Default: `3`
 
 Set this to control how many times the downloader will attempt to recover from transient errors (like network issues) before failing.
 
-### EXP_RESUME_DOWNLOAD
+### RESUME_DOWNLOAD
 
-|     Environment Variable      |     PackageJson     |
-| :---------------------------: | :-----------------: |
-| `MONGOMS_EXP_RESUME_DOWNLOAD` | `expResumeDownload` |
+|   Environment Variable    |     PackageJson     |
+| :-----------------------: | :-----------------: |
+| `MONGOMS_RESUME_DOWNLOAD` | `expResumeDownload` |
 
-Option `EXP_RESUME_DOWNLOAD` is used to enable / disable resuming a download of a binary instead of starting over on retries or interruptions.
-
-This is a experimental option, it maybe removed, renamed or have changed behavior in the future and any version.
+Option `RESUME_DOWNLOAD` is used to enable / disable resuming a download of a binary instead of starting over on retries or interruptions.
 
 Default: `false`
 
