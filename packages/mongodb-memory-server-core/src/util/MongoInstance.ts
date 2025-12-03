@@ -675,7 +675,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           MongoInstanceEvents.instanceError,
           new StdoutInstanceError(
             `Instance Failed to start with "DBException in initAndListen". Original Error:\n` +
-              loadedJSON?.attr?.error ?? line // try to use the parsed json, but as fallback use the entire line
+              loadedJSON?.attr?.error
           )
         );
       }

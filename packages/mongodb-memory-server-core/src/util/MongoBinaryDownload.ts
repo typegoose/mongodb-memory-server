@@ -16,6 +16,7 @@ import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
 import { DownloadError, GenericMMSError, Md5CheckFailedError } from './errors';
 import { RequestOptions } from 'https';
+import { OutgoingHttpHeaders } from 'http';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -483,7 +484,7 @@ export class MongoBinaryDownload {
 
       if (stat && stat.size != 0) {
         useHttpsOptions.headers = useHttpsOptions.headers ?? {};
-        useHttpsOptions.headers['Range'] = `bytes=${stat.size}-`;
+        (useHttpsOptions.headers as OutgoingHttpHeaders)['Range'] = `bytes=${stat.size}-`;
         offset = stat.size;
         log(`httpDownload: resuming download at ${offset}`);
       }
