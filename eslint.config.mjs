@@ -5,7 +5,14 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  globalIgnores(['**/lib/', '**/build/', 'website/build/', 'website/.docusaurus/', '**/coverage/']),
+  globalIgnores([
+    '**/lib/',
+    '**/build/',
+    'website/build/',
+    'website/.docusaurus/',
+    '**/coverage/',
+    '**/typedoc_out/',
+  ]),
   eslint.configs.recommended,
   tseslint.configs.recommended,
   prettier,
