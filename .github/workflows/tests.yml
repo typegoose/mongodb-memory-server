@@ -116,5 +116,3 @@ jobs:
             semantic-release-replace-plugin@1.2.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # replace with trusted-publishing once available, see https://github.com/semantic-release/npm/issues/958
-          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
