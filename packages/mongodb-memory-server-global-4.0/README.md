@@ -10,6 +10,8 @@
 [![Sponsors on Open Collective](https://opencollective.com/mongodb-memory-server/sponsors/badge.svg)](#sponsors)
 [![mongodb-memory-server-global-4.0](https://snyk.io/advisor/npm-package/mongodb-memory-server-global-4.0/badge.svg)](https://snyk.io/advisor/npm-package/mongodb-memory-server-global-4.0)
 
+**This package is deprecated and wont recieve `mongodb-memory-server` versions 11.0.0 or above**
+
 Main default package which downloads `v4.0` mongod binary to `%HOME/.cache/mongodb-binaries` directory on package install.
 
 [Full README with avaliable options and examples](https://github.com/typegoose/mongodb-memory-server)
