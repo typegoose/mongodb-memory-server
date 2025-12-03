@@ -63,22 +63,6 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(spy.mock.calls).toMatchSnapshot();
         });
 
-        it('ubuntu 14.04 (x86_64) & 3.6.3', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '3.6.3',
-            os: {
-              os: 'linux',
-              dist: 'Ubuntu Linux',
-              release: '14.04',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.6.3.tgz'
-          );
-        });
-
         it('ubuntu 20.04 (x86_64) & 4.0.0', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -491,22 +475,6 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for debian', () => {
-        it('debian 8.1 (x86_64) & 3.6.3', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '3.6.3',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '8.1',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian81-3.6.3.tgz'
-          );
-        });
-
         it('debian 10 (x86_64) & 4.2.1', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -2107,17 +2075,6 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     describe('for win32 & windows', () => {
-      it('windows (x86_64) & 3.6 (using win32)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'win32',
-          arch: 'x64',
-          version: '3.6.3',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-3.6.3.zip'
-        );
-      });
-
       it('windows (x86_64) & 4.0.14 (using win32)', async () => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
@@ -2216,28 +2173,6 @@ describe('MongoBinaryDownloadUrl', () => {
         });
         expect(await du.getDownloadUrl()).toBe(
           'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.4.0.tgz'
-        );
-      });
-
-      it('macos (x86_64) & 3.6.3 (using osx)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: '3.6.3',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz'
-        );
-      });
-
-      it('macos (x86_64) & 3.0.0 (using osx)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: '3.0.0',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.0.0.tgz'
         );
       });
 
@@ -2377,7 +2312,7 @@ describe('MongoBinaryDownloadUrl', () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
-        version: '3.6.3',
+        version: '0.0.0',
       });
       expect(await du.getDownloadUrl()).toBe(`https://fastdl.mongodb.org/linux/${archiveName}`);
       delete process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)];
@@ -2390,7 +2325,7 @@ describe('MongoBinaryDownloadUrl', () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
-        version: '3.6.3',
+        version: '0.0.0',
       });
       jest.spyOn(du, 'getArchiveName');
       expect(await du.getDownloadUrl()).toBe(downloadUrl);
@@ -2489,53 +2424,11 @@ describe('MongoBinaryDownloadUrl', () => {
       downloadUrl = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
-        version: '3.6.3',
+        version: '8.2.1',
       });
     });
 
-    it('should return a archive name for Ubuntu 14.10', () => {
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getUbuntuVersionString({
-          os: 'linux',
-          dist: 'Ubuntu Linux',
-          release: '14.10',
-        })
-      ).toBe('ubuntu1410-clang');
-    });
-
-    it('should return a archive name for Ubuntu 14.04', () => {
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getUbuntuVersionString({
-          os: 'linux',
-          dist: 'Ubuntu Linux',
-          release: '14.04',
-        })
-      ).toBe('ubuntu1404');
-    });
-
-    it('should return a archive name for Ubuntu 12.04', () => {
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getUbuntuVersionString({
-          os: 'linux',
-          dist: 'Ubuntu Linux',
-          release: '12.04',
-        })
-      ).toBe('ubuntu1204');
-    });
-
     it('should return a archive name for Ubuntu 18.04', () => {
-      const oldMongoVersion = downloadUrl.version;
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getUbuntuVersionString({
-          os: 'linux',
-          dist: 'Ubuntu Linux',
-          release: '18.04',
-        })
-      ).toBe('ubuntu1604');
       downloadUrl.version = '4.0.1';
       expect(
         downloadUrl.getUbuntuVersionString({
@@ -2544,19 +2437,9 @@ describe('MongoBinaryDownloadUrl', () => {
           release: '18.04',
         })
       ).toBe('ubuntu1804');
-      downloadUrl.version = oldMongoVersion;
     });
 
     it('should return a archive name for Ubuntu 20.04', () => {
-      const oldMongoVersion = downloadUrl.version;
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getUbuntuVersionString({
-          os: 'linux',
-          dist: 'Ubuntu Linux',
-          release: '20.04',
-        })
-      ).toBe('ubuntu1604');
       downloadUrl.version = '4.0.1';
       expect(
         downloadUrl.getUbuntuVersionString({
@@ -2565,7 +2448,6 @@ describe('MongoBinaryDownloadUrl', () => {
           release: '20.04',
         })
       ).toBe('ubuntu1804');
-      downloadUrl.version = oldMongoVersion;
     });
 
     it('should return a archive name for Ubuntu 21.04 using 2004', () => {
@@ -2640,67 +2522,12 @@ describe('MongoBinaryDownloadUrl', () => {
       downloadUrl = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
-        version: '3.6.3',
+        version: '8.2.1',
       });
     });
 
-    it('should return a archive name for debian 6.2', () => {
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getDebianVersionString({
-          os: 'linux',
-          dist: 'debian',
-          release: '6.2',
-        })
-      ).toBe('debian');
-    });
-
-    it('should return a archive name for debian 7.0', () => {
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getDebianVersionString({
-          os: 'linux',
-          dist: 'debian',
-          release: '7.0',
-        })
-      ).toBe('debian');
-    });
-
-    it('should return a archive name for debian 7.1', () => {
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getDebianVersionString({
-          os: 'linux',
-          dist: 'debian',
-          release: '7.1',
-        })
-      ).toBe('debian71');
-    });
-
-    it('should return a archive name for debian 8.0', () => {
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getDebianVersionString({
-          os: 'linux',
-          dist: 'debian',
-          release: '8.0',
-        })
-      ).toBe('debian71');
-    });
-
-    it('should return a archive name for debian 8.1', () => {
-      downloadUrl.version = '3.6.3';
-      expect(
-        downloadUrl.getDebianVersionString({
-          os: 'linux',
-          dist: 'debian',
-          release: '8.1',
-        })
-      ).toBe('debian81');
-    });
-
     it('should return a archive name for debian 9.0', () => {
-      downloadUrl.version = '3.6.3';
+      downloadUrl.version = '4.2.0';
       expect(
         downloadUrl.getDebianVersionString({
           os: 'linux',
@@ -2728,7 +2555,7 @@ describe('MongoBinaryDownloadUrl', () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
-        version: '3.6.3',
+        version: '8.2.1',
         os: {
           os: 'linux',
           dist: 'alpine',
@@ -2753,7 +2580,7 @@ describe('MongoBinaryDownloadUrl', () => {
       const du = new MongoBinaryDownloadUrl({
         platform: 'linux',
         arch: 'x64',
-        version: '3.6.3',
+        version: '8.2.1',
         os: {
           os: 'linux',
           dist: 'unknown',

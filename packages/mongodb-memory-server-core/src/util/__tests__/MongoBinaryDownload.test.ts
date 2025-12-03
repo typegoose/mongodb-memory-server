@@ -54,7 +54,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (
       (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
@@ -69,7 +69,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(true);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
 
     expect(du.httpDownload).not.toHaveBeenCalled();
   });
@@ -81,7 +81,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (
       (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
@@ -104,7 +104,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (
       (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
@@ -122,7 +122,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (
       (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
