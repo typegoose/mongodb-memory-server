@@ -478,7 +478,7 @@ describe('MongoBinaryDownload', () => {
           cert,
         },
         (req, res) => {
-          if (req.url != '/archive.tgz') {
+          if (!req.url?.endsWith('/archive.tgz')) {
             res.writeHead(404, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: `Invalid Path ${req.url}` }));
 
@@ -579,7 +579,7 @@ describe('MongoBinaryDownload', () => {
       mbd.isTTY = false;
 
       const resolved = await mbd.httpDownload(
-        new URL('https://localhost:5000/archive.tgz'),
+        new URL('https://localhost:5000/1/archive.tgz'),
         {
           rejectUnauthorized: false,
         },
@@ -633,7 +633,7 @@ describe('MongoBinaryDownload', () => {
       mbd.isTTY = false;
 
       const resolved = await mbd.httpDownload(
-        new URL('https://localhost:5000/archive.tgz'),
+        new URL('https://localhost:5000/2/archive.tgz'),
         {
           rejectUnauthorized: false,
         },
@@ -685,7 +685,7 @@ describe('MongoBinaryDownload', () => {
       mbd.isTTY = false;
 
       const resolved = await mbd.httpDownload(
-        new URL('https://localhost:5000/archive.tgz'),
+        new URL('https://localhost:5000/3/archive.tgz'),
         {
           rejectUnauthorized: false,
         },
@@ -738,7 +738,7 @@ describe('MongoBinaryDownload', () => {
 
       try {
         await mbd.httpDownload(
-          new URL('https://localhost:5000/archive.tgz'),
+          new URL('https://localhost:5000/4/archive.tgz'),
           {
             rejectUnauthorized: false,
           },
@@ -781,7 +781,7 @@ describe('MongoBinaryDownload', () => {
 
       try {
         await mbd.httpDownload(
-          new URL('https://localhost:5000/archive.tgz'),
+          new URL('https://localhost:5000/5/archive.tgz'),
           {
             rejectUnauthorized: false,
           },
