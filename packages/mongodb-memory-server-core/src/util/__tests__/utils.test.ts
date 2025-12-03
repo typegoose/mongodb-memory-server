@@ -46,7 +46,7 @@ describe('utils', () => {
       // @ts-expect-error because there is no FSError, or an error with an "code" property - but still being used
       retError.code = 'EPERM';
       jest.spyOn(fspromises, 'stat').mockRejectedValueOnce(retError);
-      await expect(utils.statPath('/some/path')).rejects.toThrowError(retError);
+      await expect(utils.statPath('/some/path')).rejects.toThrow(retError);
     });
   });
 

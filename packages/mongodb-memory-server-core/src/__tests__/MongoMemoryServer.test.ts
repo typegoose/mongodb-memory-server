@@ -831,14 +831,14 @@ describe('MongoMemoryServer', () => {
       }
 
       // it is tested multiple times, to ensure it is an *instanceof* that error, and *the message* is correct
-      expect(getUri).toThrowError(StateError);
+      expect(getUri).toThrow(StateError);
       expect(getUri).toThrowErrorMatchingSnapshot();
       expect(mongoServer.getUri()).not.toBeUndefined();
 
       await newMongoServer.start();
       expect(newMongoServer.getUri()).not.toBeUndefined();
       await newMongoServer.stop();
-      expect(getUri).toThrowError(StateError);
+      expect(getUri).toThrow(StateError);
       expect(getUri).toThrowErrorMatchingSnapshot();
     });
 

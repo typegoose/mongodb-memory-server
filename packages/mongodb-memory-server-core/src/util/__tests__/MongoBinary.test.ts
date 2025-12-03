@@ -88,7 +88,7 @@ describe('MongoBinary', () => {
       } catch (err) {
         assertIsError(err);
         expect(err.message).toMatchSnapshot();
-        expect(DryMongoBinary.locateBinary).toBeCalledTimes(1);
+        expect(DryMongoBinary.locateBinary).toHaveBeenCalledTimes(1);
         expect(MongoBinary.download).not.toHaveBeenCalled();
       }
     });

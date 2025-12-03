@@ -2476,7 +2476,7 @@ describe('MongoBinaryDownloadUrl', () => {
         expect((await du.getArchiveNameLinux()).includes('ubuntu1804')).toBeTruthy();
 
         // @ts-expect-error "overwriteDistro" is protected
-        expect(du.overwriteDistro).toBeCalledTimes(1);
+        expect(du.overwriteDistro).toHaveBeenCalledTimes(1);
       });
     });
 
@@ -2511,7 +2511,7 @@ describe('MongoBinaryDownloadUrl', () => {
         expect((await du.getArchiveNameLinux()).includes('ubuntu1804')).toBeTruthy();
 
         // @ts-expect-error "overwriteDistro" is protected
-        expect(du.overwriteDistro).toBeCalledTimes(1);
+        expect(du.overwriteDistro).toHaveBeenCalledTimes(1);
       });
     });
   });
@@ -2610,7 +2610,7 @@ describe('MongoBinaryDownloadUrl', () => {
           os: 'win32',
         },
       });
-      expect(() => du.translatePlatform('sunos')).toThrowError(UnknownPlatformError);
+      expect(() => du.translatePlatform('sunos')).toThrow(UnknownPlatformError);
     });
   });
 

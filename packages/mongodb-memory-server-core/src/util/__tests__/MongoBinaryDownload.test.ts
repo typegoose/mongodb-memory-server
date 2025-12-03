@@ -147,10 +147,10 @@ describe('MongoBinaryDownload', () => {
     const res = await du.makeMD5check(urlToMongoDBArchivePath, mongoDBArchivePath);
 
     expect(res).toBe(true);
-    expect(du.download).toBeCalledWith(urlToMongoDBArchivePath);
-    expect(fspromises.readFile).toBeCalledWith(fileWithReferenceMd5);
-    expect(fspromises.unlink).toBeCalledTimes(1);
-    expect(utils.md5FromFile).toBeCalledWith(mongoDBArchivePath);
+    expect(du.download).toHaveBeenCalledWith(urlToMongoDBArchivePath);
+    expect(fspromises.readFile).toHaveBeenCalledWith(fileWithReferenceMd5);
+    expect(fspromises.unlink).toHaveBeenCalledTimes(1);
+    expect(utils.md5FromFile).toHaveBeenCalledWith(mongoDBArchivePath);
   });
 
   it('makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result', async () => {
@@ -308,7 +308,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(DryMongoBinary, 'generateOptions');
     // @ts-expect-error "getPath" is protected
     const path = await mbd.getPath();
-    expect(DryMongoBinary.generateOptions).toBeCalledWith(expect.objectContaining(options));
+    expect(DryMongoBinary.generateOptions).toHaveBeenCalledWith(expect.objectContaining(options));
     expect(path).toMatchSnapshot();
   });
 

@@ -568,8 +568,8 @@ describe('DryBinary', () => {
       const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
       expect(returnValue).toEqual(mockBinary);
       expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
-      expect(binary.DryMongoBinary.binaryCache.has).toBeCalledTimes(1);
-      expect(binary.DryMongoBinary.binaryCache.get).toBeCalledTimes(1);
+      expect(binary.DryMongoBinary.binaryCache.has).toHaveBeenCalledTimes(1);
+      expect(binary.DryMongoBinary.binaryCache.get).toHaveBeenCalledTimes(1);
     });
 
     it('should return "generateDownloadPath" return value if not in cache', async () => {
@@ -582,7 +582,7 @@ describe('DryBinary', () => {
       const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
       expect(returnValue).toEqual(mockBinary);
       expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
-      expect(binary.DryMongoBinary.binaryCache.has).toBeCalledTimes(1);
+      expect(binary.DryMongoBinary.binaryCache.has).toHaveBeenCalledTimes(1);
       expect(binary.DryMongoBinary.generateDownloadPath).toHaveBeenCalled();
     });
   });

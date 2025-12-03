@@ -523,7 +523,7 @@ describe('MongoMemoryReplSet', () => {
     replSet.servers = [instance];
 
     expect(await replSet.stop()).toEqual(false);
-    expect(instance.stop).toBeCalledTimes(1);
+    expect(instance.stop).toHaveBeenCalledTimes(1);
   });
 
   it('"_waitForPrimary" should throw an error if timeout is reached', async () => {

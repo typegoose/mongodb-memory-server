@@ -287,7 +287,7 @@ describe('MongodbInstance', () => {
     jest.spyOn(dbUtil, 'killProcess');
     await mongod.stop();
 
-    expect(dbUtil.killProcess).not.toBeCalled();
+    expect(dbUtil.killProcess).not.toHaveBeenCalled();
   });
 
   it('"kill" should not try to open a connection to a not running ReplSet instance', async () => {
@@ -309,7 +309,7 @@ describe('MongodbInstance', () => {
     }
     await mongod.stop();
 
-    expect(MongoClient.connect).not.toBeCalled();
+    expect(MongoClient.connect).not.toHaveBeenCalled();
   });
 
   test('"kill" should not wait too much to open a connection to a ReplSet instance', async () => {
