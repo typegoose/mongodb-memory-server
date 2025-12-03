@@ -12,7 +12,7 @@ const outerPackageJson = {
   config: {
     mongodbMemoryServer: {
       inner: false,
-      version: '3.0.0',
+      version: '6.0.0',
     },
   },
 };
@@ -20,7 +20,7 @@ const innerPackageJson = {
   config: {
     mongodbMemoryServer: {
       inner: true,
-      version: '4.0.0',
+      version: '7.0.0',
     },
   },
 };
@@ -71,7 +71,7 @@ describe('resolveConfig', () => {
       process.chdir(`${tmpDir}/project`);
       const out = findPackageJson();
       utils.assertion(!utils.isNullOrUndefined(out));
-      expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('3.0.0');
+      expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('6.0.0');
       expect(out.config.inner).toBe(false);
     });
 
@@ -80,7 +80,7 @@ describe('resolveConfig', () => {
       process.chdir(`${tmpDir}/project/subproject`);
       const out = findPackageJson();
       utils.assertion(!utils.isNullOrUndefined(out));
-      expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('4.0.0');
+      expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('7.0.0');
       expect(out.config.inner).toBe(true);
     });
 
@@ -89,7 +89,7 @@ describe('resolveConfig', () => {
       process.chdir(`${tmpDir}/project`);
       const out = findPackageJson(`${tmpDir}/project/subproject`);
       utils.assertion(!utils.isNullOrUndefined(out));
-      expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('4.0.0');
+      expect(resolveConfig(ResolveConfigVariables.VERSION)).toBe('7.0.0');
       expect(out.config.inner).toBe(true);
     });
   });

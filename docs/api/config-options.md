@@ -142,7 +142,7 @@ It is discouraged to use query parameters, they may work, but not officially sup
 
 Option `DOWNLOAD_URL` is used to overwrite the ***complete*** URL (including [`DOWNLOAD_MIRROR`](#download_mirror))
 
-Format: `https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
+Format: `https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-8.0.1.tgz`
 
 ### DOWNLOAD_IGNORE_MISSING_HEADER
 
@@ -211,7 +211,7 @@ Default: `true`
 
 Option `ARCHIVE_NAME` is used to overwrite the complete archive name
 
-Format: `mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
+Format: `mongodb-linux-x86_64-ubuntu2404-8.0.1.tgz`
 
 [See here for what archive names are available](https://www.mongodb.com/download-center/community/releases/archive)
 

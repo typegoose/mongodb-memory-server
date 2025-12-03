@@ -209,16 +209,6 @@ describe('MongodbInstance', () => {
   });
 
   describe('should work with mongodb LTS releases', () => {
-    it('should work with mongodb 4.0', async () => {
-      const gotPort = await getFreePort(27445);
-      const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '4.0.28' }, // explicit version instead of default to not mess it up later
-      });
-      expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
-      await mongod.stop();
-    });
-
     it('should work with mongodb 4.2', async () => {
       const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({

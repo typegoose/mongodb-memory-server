@@ -28,7 +28,7 @@ jobs:
         distro: [ubuntu-24.04]
         node-version: [20.x, 22.x, 24.x]
     steps:
-      # Install libssl1.1 for libcrypto.so.1.1, which is required for binaries before 22.04 is available (4.0, 4.2, 4.4, 5.0)
+      # Install libssl1.1 for libcrypto.so.1.1, which is required for binaries before 22.04 is available (4.2, 4.4, 5.0)
       # currently 5.0 is still in LTS
       - name: Load libssl chache
         # cache the package so that we dont need to hit the debian server so often

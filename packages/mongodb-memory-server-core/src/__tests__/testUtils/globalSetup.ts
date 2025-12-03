@@ -7,7 +7,6 @@ export = async function globalSetup(): Promise<void> {
   assertion(!isNullOrUndefined(defaultVersion), new Error('Default version is not defined'));
   const versions = [
     defaultVersion,
-    '4.0.28',
     '4.2.25',
     '4.4.29',
     '5.0.31',
