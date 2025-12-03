@@ -19,7 +19,7 @@
     "eslint-plugin-prettier": "5.5.4",
     "husky": "8.0.3",
     "jest": "29.7.0",
-    "lint-staged": "14.0.1",
+    "lint-staged": "15.5.1",
     "prettier": "3.7.4",
     "ts-jest": "29.4.6",
     "typedoc": "^0.28.15",
