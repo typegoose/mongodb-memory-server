@@ -280,6 +280,17 @@ describe('MongodbInstance', () => {
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
     });
+
+    it('should work with mongodb 8.2', async () => {
+      const gotPort = await getFreePort(27445);
+      const mongod = await MongodbInstance.create({
+        // this works without problems, because no explicit storage-engine is given, so mongodb automatically chooses wiredTiger
+        instance: { port: gotPort, dbPath: tmpDir },
+        binary: { version: '8.2.1' },
+      });
+      expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
+      await mongod.stop();
+    });
   });
 
   it('"kill" should not call "killProcess" if no childProcesses are not running', async () => {
