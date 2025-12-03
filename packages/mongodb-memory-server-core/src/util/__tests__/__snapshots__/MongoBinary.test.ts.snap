@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`MongoBinary getPath should not trigger an download an error if "RUNTIME_DOWNLOAD" is false and no binary is found 1`] = `"MongoBinary.getPath: could not find an valid binary path! (Got: \\"undefined\\", RUNTIME_DOWNLOAD: \\"false\\")"`;
 

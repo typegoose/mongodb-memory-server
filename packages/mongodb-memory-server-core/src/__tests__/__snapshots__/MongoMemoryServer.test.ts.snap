@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`MongoMemoryServer "createAuth" should throw an error if called without "this.auth" defined 1`] = `"\\"createAuth\\" got called, but \\"this.auth\\" is undefined!"`;
 

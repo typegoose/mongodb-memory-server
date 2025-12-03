@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`MongoBinaryDownload extract() should extract tar.gz archives 1`] = `"main exec"`;
 

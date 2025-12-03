@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`MongodbInstance "_launchMongod" should throw an error if "mongodProcess.pid" is undefined 1`] = `"{\\"binary\\":\\"/tmp/thisShouldNotExist\\"}"`;
 

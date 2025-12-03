@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`LockFile Unknown Lockfile Status Errors should throw "UnknownLockfileStatus" in "lock" 1`] = `"Unknown LockFile Status: \\"-1\\""`;
 
