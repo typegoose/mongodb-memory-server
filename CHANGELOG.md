@@ -1,3 +1,13 @@
+## [11.0.0-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.0-beta.1...v11.0.0-beta.2) (2025-12-03)
+
+### ⚠ BREAKING CHANGES
+
+* **resolveConfig:** Default mongodb binary version is now 8.2.x
+
+### Features
+
+* **resolveConfig:** update default binary version to 8.2.1 ([fefb155](https://github.com/typegoose/mongodb-memory-server/commit/fefb155d3fe06a0f0a58b33a9ae5b7dbfa87212f))
+
 ## [11.0.0-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.4.0...v11.0.0-beta.1) (2025-12-03)
 
 ### ⚠ BREAKING CHANGES
