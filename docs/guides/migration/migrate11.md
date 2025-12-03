@@ -31,11 +31,13 @@ Distribution support has been adjusted to only contain 4.2.0 and higher as well,
 - Rhel: 6.2
 - Fedora: 12
 
-<!-- ### Mongodb Driver Version upgraded to 6.x
+### Mongodb Driver Version upgraded to 7.x
 
-The used MongoDB Driver version is now `6.7.0`.
+The used MongoDB Driver version is now `7.0.0`.
 
-### Default binary version is now 7.x
+See [Minimal mongodb version is now `4.2.0`](#minimal-mongodb-version-is-now-420).
+
+<!-- ### Default binary version is now 7.x
 
 The default binary version has been upgraded from `6.0.x` to `7.0.x`. For more specifics see [mongodb-server-versions](../mongodb-server-versions.md).
 
