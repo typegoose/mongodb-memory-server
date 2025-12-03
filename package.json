@@ -45,7 +45,7 @@
     "watch": "yarn --cwd packages/mongodb-memory-server-core run watch",
     "build": "tsc --build tsconfig.build.json",
     "readme:toc": "doctoc ./README.md",
-    "postinstall": "husky install",
+    "postinstall": "husky",
     "website": "yarn --cwd website/ run start",
     "typedoc": "yarn --cwd packages/mongodb-memory-server-core/ typedoc"
   }
