@@ -37,15 +37,9 @@ The used MongoDB Driver version is now `7.0.0`.
 
 See [Minimal mongodb version is now `4.2.0`](#minimal-mongodb-version-is-now-420).
 
-<!-- ### Default binary version is now 7.x
+### Default binary version is now 8.2.x
 
-The default binary version has been upgraded from `6.0.x` to `7.0.x`. For more specifics see [mongodb-server-versions](../mongodb-server-versions.md).
-
-:::note
-In mongodb `7.0.0` storage engine `ephemeralForTest` has been removed, mongodb-memory-server will automatically translate any occurrence to `wiredTiger` with a warning.
-
-It is recommended to run the tests against a tmpfs or equivalent (default `/tmp` on linux / macos).
-:::-->
+The default binary version has been upgraded from `7.0.x` to `8.2.x`. For more specifics see [mongodb-server-versions](../mongodb-server-versions.md).
 
 ## Non-Breaking changes / Additions
 
