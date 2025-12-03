@@ -15,7 +15,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "jest"],
-    "importHelpers": true
+    "importHelpers": true,
+    "allowJs": true
   },
   "include": ["src/**/*"]
 }

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-
 module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'prettier'],
@@ -8,7 +5,11 @@ module.exports = {
   parserOptions: {
     sourceType: 'module',
     useJSXTextNode: true,
-    project: [path.resolve(__dirname, 'tsconfig.test.json')],
+    projectService: {
+      allowDefaultProject: [],
+      defaultProject: 'tsconfig.test.json',
+    },
+    tsconfigRootDir: __dirname,
   },
   rules: {
     'no-underscore-dangle': 0,
@@ -37,6 +38,12 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-use-before-define': 0,
     '@typescript-eslint/no-empty-function': 0,
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        caughtErrors: 'none',
+      },
+    ],
     curly: ['error', 'all'],
     'padding-line-between-statements': [
       'warn',
@@ -91,4 +98,18 @@ module.exports = {
     node: true,
     jest: true,
   },
+  overrides: [
+    {
+      files: [
+        'scripts/**/*.js',
+        'website/**/*.js',
+        'packages/*-global*/**/*.js',
+        'packages/mongodb-memory-server/**/*.js',
+        'packages/mongodb-memory-server-core/scripts/*.js',
+      ],
+      rules: {
+        '@typescript-eslint/no-require-imports': 0,
+      },
+    },
+  ],
 };
