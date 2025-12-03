@@ -17,7 +17,7 @@
     "commitlint": "17.8.1",
     "cross-env": "7.0.3",
     "doctoc": "2.2.1",
-    "eslint": "8.57.0",
+    "eslint": "9.25.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "5.5.4",
     "husky": "8.0.3",
@@ -35,7 +35,7 @@
   },
   "lint-staged": {
     "packages/**/*.{ts,tsx,js,jsx}": [
-      "eslint --fix"
+      "ESLINT_USE_FLAT_CONFIG=false eslint --fix"
     ],
     "./README.md": [
       "doctoc ./README.md"
@@ -43,7 +43,7 @@
   },
   "scripts": {
     "test": "yarn --cwd packages/mongodb-memory-server-core run test",
-    "lint": "eslint -c ./.eslintrc.js './**/*.{js,ts}'",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint -c ./.eslintrc.js './**/*.{js,ts}'",
     "watch": "yarn --cwd packages/mongodb-memory-server-core run watch",
     "build": "tsc --build tsconfig.build.json",
     "readme:toc": "doctoc ./README.md",
