@@ -1,3 +1,9 @@
+## [11.0.0-beta.3](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.0-beta.2...v11.0.0-beta.3) (2025-12-04)
+
+### Fixes
+
+* **resolveConfig:** correct the mapping for "RESUME_DOWNLOAD" ([6ae3ebf](https://github.com/typegoose/mongodb-memory-server/commit/6ae3ebfaa9ae23cb1b103bc1c91bd457e5d0c277))
+
 ## [11.0.0-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.0-beta.1...v11.0.0-beta.2) (2025-12-03)
 
 ### ⚠ BREAKING CHANGES
