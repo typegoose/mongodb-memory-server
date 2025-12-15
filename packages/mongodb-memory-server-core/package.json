@@ -68,7 +68,6 @@
     "coverage": "jest --coverage",
     "lint": "eslint -c ../../eslint.config.mjs .",
     "test": "yarn run lint && yarn run coverage",
-    "test:watch": "yarn run watch",
-    "tscheck": "tsc --noEmit"
+    "test:watch": "yarn run watch"
   }
 }
