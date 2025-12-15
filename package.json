@@ -15,7 +15,7 @@
     "commitlint": "20.2.0",
     "doctoc": "2.2.1",
     "eslint": "9.39.2",
-    "eslint-config-prettier": "^10.1.2",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "5.5.4",
     "husky": "9.1.7",
     "jest": "30.2.0",
