@@ -43,6 +43,7 @@
     "build": "tsc --build tsconfig.build.json",
     "readme:toc": "doctoc ./README.md",
     "postinstall": "husky",
-    "website": "npm run --prefix website/ start"
+    "website": "npm run --prefix website/ start",
+    "typedoc": "npx --workspace=mongodb-memory-server-core typedoc"
   }
 }

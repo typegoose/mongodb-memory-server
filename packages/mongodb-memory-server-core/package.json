@@ -67,7 +67,6 @@
     "coverage": "jest --coverage",
     "lint": "eslint -c ../../eslint.config.mjs .",
     "test": "npm run lint && npm run coverage",
-    "test:watch": "jest --watchAll",
-    "typedoc": "typedoc"
+    "test:watch": "jest --watchAll"
   }
 }
