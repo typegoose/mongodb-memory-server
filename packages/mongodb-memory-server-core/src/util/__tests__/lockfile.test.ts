@@ -1,3 +1,4 @@
+/* eslint-disable no-async-promise-executor */
 import * as lockFile from '../lockfile';
 import * as path from 'path';
 import { pathExists } from '../utils';
@@ -40,7 +41,7 @@ describe('LockFile', () => {
     jest.spyOn(lockFile.LockFile, 'checkLock');
     await lock.unlock();
     // @ts-expect-error because "checkLock" is protected
-    expect(lockFile.LockFile.checkLock).not.toBeCalled();
+    expect(lockFile.LockFile.checkLock).not.toHaveBeenCalled();
   });
 
   it('should successfully acquire lock after another unlocked', async () => {
@@ -69,7 +70,7 @@ describe('LockFile', () => {
       await lock2;
     });
     // @ts-expect-error because "waitForLock" is protected
-    expect(lockFile.LockFile.waitForLock).toBeCalled();
+    expect(lockFile.LockFile.waitForLock).toHaveBeenCalled();
     expect(lockFile.LockFile.events.listenerCount(lockFile.LockFileEvents.unlock)).toBe(1);
 
     await lock1.unlock();

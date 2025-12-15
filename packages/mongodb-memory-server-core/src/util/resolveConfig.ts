@@ -41,7 +41,7 @@ export enum ResolveConfigVariables {
 /** The Prefix for Environmental values */
 export const ENV_CONFIG_PREFIX = 'MONGOMS_';
 /** This Value exists here, because "defaultValues" can be changed with "setDefaultValue", but this property is constant */
-export const DEFAULT_VERSION = '7.0.24';
+export const DEFAULT_VERSION = '8.2.1';
 /** Default values for some config options that require explicit setting, it is constant so that the default values cannot be interfered with */
 export const defaultValues = new Map<ResolveConfigVariables, string>([
   // apply app-default values here
@@ -54,7 +54,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.MD5_CHECK, 'true'],
   [ResolveConfigVariables.MAX_REDIRECTS, '2'],
   [ResolveConfigVariables.MAX_RETRIES, '3'], // Default maxRetries for downloads
-  [ResolveConfigVariables.RESUME_DOWNLOAD, 'false'],
+  [ResolveConfigVariables.RESUME_DOWNLOAD, 'true'],
 ]);
 
 /** Interface for storing information about the found package.json from `findPackageJson` */

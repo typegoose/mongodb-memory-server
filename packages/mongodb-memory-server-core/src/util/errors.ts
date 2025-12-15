@@ -139,7 +139,7 @@ export class NoRegexMatchError extends Error {
     public extra?: string
   ) {
     super();
-    const addExtra = !!extra ? `(${extra})` : '';
+    const addExtra = extra ? `(${extra})` : '';
     this.message = `Expected "${name}" to have Regex Matches${addExtra}`;
   }
 }
@@ -153,7 +153,7 @@ export class KnownVersionIncompatibilityError extends Error {
   ) {
     super();
 
-    const addExtra = !!extra ? `\n${extra}` : '';
+    const addExtra = extra ? `\n${extra}` : '';
     this.message = `Requested Version "${requested_version}" is not available for "${dist}"! Available Versions: "${available_versions}"${addExtra}`;
   }
 }
@@ -213,7 +213,7 @@ export class DownloadError extends Error {
     /// The error code, if available like "Status: 404", "ENOTFOUND" or "aborted"
     public code?: string
   ) {
-    super(`Download failed for url \"${url}\", Details:\n${msg}`);
+    super(`Download failed for url "${url}", Details:\n${msg}`);
   }
 }
 

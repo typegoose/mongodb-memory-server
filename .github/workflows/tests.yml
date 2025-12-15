@@ -26,9 +26,9 @@ jobs:
       matrix:
         # this is a hack as there is currently no (public) way to access "runs-on" with version
         distro: [ubuntu-24.04]
-        node-version: [16.x, 18.x, 20.x, 22.x, 24.x]
+        node-version: [20.x, 22.x, 24.x]
     steps:
-      # Install libssl1.1 for libcrypto.so.1.1, which is required for binaries before 22.04 is available (4.0, 4.2, 4.4, 5.0)
+      # Install libssl1.1 for libcrypto.so.1.1, which is required for binaries before 22.04 is available (4.2, 4.4, 5.0)
       # currently 5.0 is still in LTS
       - name: Load libssl chache
         # cache the package so that we dont need to hit the debian server so often
@@ -67,17 +67,15 @@ jobs:
             ${{ matrix.distro }}-
             ${{ matrix.distro }}
       - name: Install node_modules
-        run: yarn
-      - name: TSCheck
-        run: yarn --cwd packages/mongodb-memory-server-core run tscheck
+        run: npm ci
       - name: ESLint
-        run: yarn run lint
+        run: npm run lint
       - name: Tests
-        run: yarn --cwd packages/mongodb-memory-server-core run coverage --colors
+        run: npm --workspace=mongodb-memory-server-core run coverage -- --colors
         env:
           CI: true
       - name: Send codecov.io stats
-        if: matrix.node-version == '16.x'
+        if: matrix.node-version == '24.x'
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -98,9 +96,9 @@ jobs:
         with:
           node-version: 24.x
       - name: Install node_modules
-        run: yarn install
+        run: npm ci
       - name: Build
-        run: yarn build
+        run: npm run build
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
         with:

@@ -88,7 +88,7 @@ describe('MongoBinary', () => {
       } catch (err) {
         assertIsError(err);
         expect(err.message).toMatchSnapshot();
-        expect(DryMongoBinary.locateBinary).toBeCalledTimes(1);
+        expect(DryMongoBinary.locateBinary).toHaveBeenCalledTimes(1);
         expect(MongoBinary.download).not.toHaveBeenCalled();
       }
     });
@@ -110,23 +110,54 @@ describe('MongoBinary', () => {
       });
 
       it('should return and check an SystemBinary', async () => {
-        // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
+        // Output taken from mongodb x64 for "ubuntu" version "4.2.25"
         // DO NOT INDENT THE TEXT
         jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
           // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
           {
-            stdout: Buffer.from(`db version v4.0.25
-git version: e2416422da84a0b63cde2397d60b521758b56d1b
-OpenSSL version: OpenSSL 1.1.1f  31 Mar 2020
+            stdout: Buffer.from(`db version v4.2.25
+git version: 41b59c2bfb5121e66f18cc3ef40055a1b5fb6c2e
+OpenSSL version: OpenSSL 1.1.1w  11 Sep 2023
 allocator: tcmalloc
 modules: none
 build environment:
     distmod: ubuntu1804
     distarch: x86_64
-    target_arch: x86_64`),
+    target_arch: x86_64
+`),
           }
         );
-        process.env[envName(ResolveConfigVariables.VERSION)] = '4.0.25'; // set it explicitly to that version to test matching versions
+        process.env[envName(ResolveConfigVariables.VERSION)] = '4.2.25'; // set it explicitly to that version to test matching versions
+        process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
+
+        const output = await MongoBinary.getPath();
+        expect(childProcess.spawnSync).toHaveBeenCalledTimes(1);
+        expect(MongoBinary.download).not.toHaveBeenCalled();
+        expect(output).toBe(sysBinaryPath);
+      });
+
+      it('should return and check an SystemBinary', async () => {
+        // Output taken from mongodb x64 for "ubuntu" version "5.0.31"
+        // DO NOT INDENT THE TEXT
+        jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
+          // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
+          {
+            stdout: Buffer.from(`db version v5.0.31
+Build Info: {
+    "version": "5.0.31",
+    "gitVersion": "973237567d45610d6976d5d489dfaaef6a52c2f9",
+    "openSSLVersion": "OpenSSL 1.1.1w  11 Sep 2023",
+    "modules": [],
+    "allocator": "tcmalloc",
+    "environment": {
+        "distmod": "ubuntu2004",
+        "distarch": "x86_64",
+        "target_arch": "x86_64"
+    }
+}`),
+          }
+        );
+        process.env[envName(ResolveConfigVariables.VERSION)] = '5.0.31'; // set it explicitly to that version to test matching versions
         process.env[envName(ResolveConfigVariables.SYSTEM_BINARY)] = sysBinaryPath;
 
         const output = await MongoBinary.getPath();
@@ -163,14 +194,14 @@ build environment:
 
       it('should return and check an SYSTEM_BINARY and warn version conflict', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-        // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
+        // Output taken from mongodb x64 for "ubuntu" version "4.2.24"
         // DO NOT INDENT THE TEXT
         jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
           // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
           {
-            stdout: Buffer.from(`db version v4.0.25
-git version: e2416422da84a0b63cde2397d60b521758b56d1b
-OpenSSL version: OpenSSL 1.1.1f  31 Mar 2020
+            stdout: Buffer.from(`db version v4.2.25
+git version: 41b59c2bfb5121e66f18cc3ef40055a1b5fb6c2e
+OpenSSL version: OpenSSL 1.1.1w  11 Sep 2023
 allocator: tcmalloc
 modules: none
 build environment:
@@ -194,14 +225,14 @@ build environment:
 
       it('should return and check a SYSTEM_BINARY and dont warn version conflict if SYSTEM_BINARY_VERSION_CHECK is false', async () => {
         jest.spyOn(console, 'warn');
-        // Output taken from mongodb x64 for "ubuntu" version "4.0.25"
+        // Output taken from mongodb x64 for "ubuntu" version "4.2.25"
         // DO NOT INDENT THE TEXT
         jest.spyOn(childProcess, 'spawnSync').mockReturnValue(
           // @ts-expect-error Because "Buffer" is missing values from type, but they are not used in code, so its fine
           {
-            stdout: Buffer.from(`db version v4.0.25
-git version: e2416422da84a0b63cde2397d60b521758b56d1b
-OpenSSL version: OpenSSL 1.1.1f  31 Mar 2020
+            stdout: Buffer.from(`db version v4.2.25
+git version: 41b59c2bfb5121e66f18cc3ef40055a1b5fb6c2e
+OpenSSL version: OpenSSL 1.1.1w  11 Sep 2023
 allocator: tcmalloc
 modules: none
 build environment:

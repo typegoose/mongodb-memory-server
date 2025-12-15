@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`DryBinary locateBinary should throw an error if SystemBinary was provided, but not found 1`] = `"No Binary at path \\"/usr/local/bin/mongod\\" was found! (ENOENT) (systemBinary)"`;
 

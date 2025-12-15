@@ -93,7 +93,7 @@ Example: `ubuntu-18.04`
 
 Option `VERSION` is used to set what mongodb version should be downloaded
 
-Default: `7.0.24` (see [Mongodb Server Versions](../guides/mongodb-server-versions.md) for a complete list and policy)
+Default: `8.2.1` (see [Mongodb Server Versions](../guides/mongodb-server-versions.md) for a complete list and policy)
 
 This Option does not have a effect when [`ARCHIVE_NAME`](#archive_name) or [`DOWNLOAD_URL`](#download_url) is defined.
 
@@ -142,7 +142,7 @@ It is discouraged to use query parameters, they may work, but not officially sup
 
 Option `DOWNLOAD_URL` is used to overwrite the ***complete*** URL (including [`DOWNLOAD_MIRROR`](#download_mirror))
 
-Format: `https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
+Format: `https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-8.0.1.tgz`
 
 ### DOWNLOAD_IGNORE_MISSING_HEADER
 
@@ -211,7 +211,7 @@ Default: `true`
 
 Option `ARCHIVE_NAME` is used to overwrite the complete archive name
 
-Format: `mongodb-linux-x86_64-ubuntu1604-4.0.20.tgz`
+Format: `mongodb-linux-x86_64-ubuntu2404-8.0.1.tgz`
 
 [See here for what archive names are available](https://www.mongodb.com/download-center/community/releases/archive)
 
@@ -289,7 +289,7 @@ Set this to control how many times the downloader will attempt to recover from t
 
 Option `RESUME_DOWNLOAD` is used to enable / disable resuming a download of a binary instead of starting over on retries or interruptions.
 
-Default: `false`
+Default: `true`
 
 ## How to use them in the package.json
 

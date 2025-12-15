@@ -1,3 +1,82 @@
+## [11.0.0-beta.4](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.0-beta.3...v11.0.0-beta.4) (2025-12-15)
+
+### Features
+
+* **resolveConfig:** enable "RESUME_DOWNLOAD" by default ([5197f69](https://github.com/typegoose/mongodb-memory-server/commit/5197f694d71cbae2361e8d1dd888fa1ddfbefde7))
+
+### Style
+
+* **MongoBinaryDownload::attemptDownload:** remove duplicated argument ([3162cc6](https://github.com/typegoose/mongodb-memory-server/commit/3162cc6bbdb72a4484602f8cc3a21584e829fc0f))
+* **MongoBinaryDownload:** document more options ([ae9784c](https://github.com/typegoose/mongodb-memory-server/commit/ae9784c35031af8e069726522177336e18c71d3f))
+
+### Dev-Dependencies
+
+* **commitlint:** upgrade to 20.2.0 ([c10f800](https://github.com/typegoose/mongodb-memory-server/commit/c10f8003340b0c633a0aca814f12fa6106c19e80))
+* **eslint-config-prettier:** upgrade to 10.1.8 ([a103e6b](https://github.com/typegoose/mongodb-memory-server/commit/a103e6bc0a55b0e4179c4459053fc22f7db67aed))
+* **eslint:** upgrade to 9.39.2 ([63c9577](https://github.com/typegoose/mongodb-memory-server/commit/63c9577f9740cf94031e5206127d3039e615a46b))
+* **typescript-eslint:** upgrade to 8.49.0 ([5857d3d](https://github.com/typegoose/mongodb-memory-server/commit/5857d3d700f031905821bac5a9d1acd1e44116cf))
+
+## [11.0.0-beta.3](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.0-beta.2...v11.0.0-beta.3) (2025-12-04)
+
+### Fixes
+
+* **resolveConfig:** correct the mapping for "RESUME_DOWNLOAD" ([6ae3ebf](https://github.com/typegoose/mongodb-memory-server/commit/6ae3ebfaa9ae23cb1b103bc1c91bd457e5d0c277))
+
+## [11.0.0-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.0-beta.1...v11.0.0-beta.2) (2025-12-03)
+
+### ⚠ BREAKING CHANGES
+
+* **resolveConfig:** Default mongodb binary version is now 8.2.x
+
+### Features
+
+* **resolveConfig:** update default binary version to 8.2.1 ([fefb155](https://github.com/typegoose/mongodb-memory-server/commit/fefb155d3fe06a0f0a58b33a9ae5b7dbfa87212f))
+
+## [11.0.0-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.4.0...v11.0.0-beta.1) (2025-12-03)
+
+### ⚠ BREAKING CHANGES
+
+* **tsconfig:** potentially breaking change upgrading "target" to "es2023" in tsconfig
+* **MongoBinaryDownloadUrl:** Removed support for mongodb version below 4.2.0
+* Remove "-global-4.0" package as it is now unsupported by the mongodb driver
+* Lowest supported NodeJS version is now 20.19.0
+
+* **tsconfig:** update "target" to "es2023" ([391da3d](https://github.com/typegoose/mongodb-memory-server/commit/391da3dc4f03cbca2c4fbbef5949d395b799c050))
+
+### Features
+
+* **MongoBinaryDownloadUrl:** drop support for mongod versions below 4.2.0 ([c4e6cf1](https://github.com/typegoose/mongodb-memory-server/commit/c4e6cf1792d79317e04360ea086eb8ecef8ebe0d)), closes [#894](https://github.com/typegoose/mongodb-memory-server/issues/894)
+* remove "mongodb-memory-server-global-4.0" ([9cf7211](https://github.com/typegoose/mongodb-memory-server/commit/9cf7211e132ac7d7c95cf34e6eb6496033d31dca))
+* set lowest supported nodejs version to 20.19.0 ([5c31896](https://github.com/typegoose/mongodb-memory-server/commit/5c3189697fc0f76015407f4cf9a675dbc01c9214))
+
+### Style
+
+* migrate to eslint flat config ([5a0e75c](https://github.com/typegoose/mongodb-memory-server/commit/5a0e75c6970c51f5ec6241c036299bdccaddb07d))
+
+### Dependencies
+
+* **mongodb:** upgrade to 7.0.0 ([8430483](https://github.com/typegoose/mongodb-memory-server/commit/8430483de3a4a239a969308fcb7799d39bc1887d))
+
+### Dev-Dependencies
+
+* **@types/jest:** upgrade to 30.0.0 ([0bd9079](https://github.com/typegoose/mongodb-memory-server/commit/0bd9079c1d2a800f683dbdd3a1eb9400973a30d2))
+* **@types/node:** upgrade to version 24.10.0 ([a42df53](https://github.com/typegoose/mongodb-memory-server/commit/a42df5357b48068b81b4291099ad4b4166964a61))
+* **@typescript-eslint/*:** upgrade to 7.18.0 ([b6c462c](https://github.com/typegoose/mongodb-memory-server/commit/b6c462cce8c3d39a20cc34843eed192cc91796eb))
+* **@typescript-eslint/*:** upgrade to 8.31.1 ([945c0ed](https://github.com/typegoose/mongodb-memory-server/commit/945c0ed9e1d30d950dcb96e7d8e0e8555d248ba4))
+* **commitlint:** upgrade to 20.1.0 ([097237c](https://github.com/typegoose/mongodb-memory-server/commit/097237cb4ef1c46568b472e11f96a2fda7049e1c))
+* **cross-env:** drop seemingly unused dependency ([c1d0cdb](https://github.com/typegoose/mongodb-memory-server/commit/c1d0cdb796afb073019d9f67877f7be7e04d4b6a))
+* **eslint-config-prettier:** upgrade to 10.1.2 ([0114ef2](https://github.com/typegoose/mongodb-memory-server/commit/0114ef2dd49b1f31e21766781d670177fea58649))
+* **eslint:** upgrade to 9.25.1 ([c8f5b26](https://github.com/typegoose/mongodb-memory-server/commit/c8f5b2609d83dedbeeb9a4a97b24c6aaed0f4ace))
+* **eslint:** upgrade to 9.39.1 ([e496a19](https://github.com/typegoose/mongodb-memory-server/commit/e496a19accf1aafe1ce4d506dc7ce8395dcd3a3d))
+* **husky:** upgrade to 9.1.7 ([ce6b910](https://github.com/typegoose/mongodb-memory-server/commit/ce6b910f5372441b4b849f590d6e2b909ca6025e))
+* **jest:** upgrade to 30.2.0 ([79a876a](https://github.com/typegoose/mongodb-memory-server/commit/79a876a49a2c430b994cb2179d141c176c906fa7))
+* **lint-staged:** upgrade to 15.5.1 ([e2025ec](https://github.com/typegoose/mongodb-memory-server/commit/e2025ecd5520d808d4f24bb259f5d0514624512b))
+* **lint-staged:** upgrade to 16.2.7 ([1ea41e2](https://github.com/typegoose/mongodb-memory-server/commit/1ea41e23e3cf4a5643f152853ada76004bbb3dc5))
+* **rimraf:** upgrade to 6.1.2 ([5d02ca1](https://github.com/typegoose/mongodb-memory-server/commit/5d02ca1cf268397f0bcbcb45f683fe963cf40d82))
+* **typedoc:** upgrade to 0.28.15 ([0df2ded](https://github.com/typegoose/mongodb-memory-server/commit/0df2dedd833bfa0b5996c0704d9c5335c2de3f97))
+* **typescript-eslint:** upgrade to 8.48.1 ([4aa9322](https://github.com/typegoose/mongodb-memory-server/commit/4aa9322b4ad869bb0b2f0c60ebd4d1441d5bcd35))
+* **typescript:** upgrade to version 5.9.3 ([0acffcd](https://github.com/typegoose/mongodb-memory-server/commit/0acffcde199b518fdbe79e5ca194c09640424557))
+
 ## [10.4.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.4.0...v10.4.1) (2025-12-04)
 
 ### Fixes

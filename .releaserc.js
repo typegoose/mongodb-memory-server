@@ -3,67 +3,67 @@ module.exports = {
     [
       '@semantic-release/commit-analyzer',
       {
-        preset: "angular",
+        preset: 'angular',
         releaseRules: [
-          {breaking: true, release: 'major'},
-          {type: "feat", release: "minor"},
-          {type: "fix", release: "patch"},
-          {type: "docs", release: false},
-          {type: "style", release: false},
-          {type: "refactor", release: "patch"},
-          {type: "perf", release: "patch"},
-          {type: "test", release: false},
-          {type: "chore", release: false},
-          {type: "deps", release: "minor"},
-          {type: "devdeps", release: false},
+          { breaking: true, release: 'major' },
+          { type: 'feat', release: 'minor' },
+          { type: 'fix', release: 'patch' },
+          { type: 'docs', release: false },
+          { type: 'style', release: false },
+          { type: 'refactor', release: 'patch' },
+          { type: 'perf', release: 'patch' },
+          { type: 'test', release: false },
+          { type: 'chore', release: false },
+          { type: 'deps', release: 'minor' },
+          { type: 'devdeps', release: false },
           // backwards compatability, remove after 9.0 has been published
-          {type: "dependencies", release: "minor"},
+          { type: 'dependencies', release: 'minor' },
           // dont trigger another release on release commit
-          {type: "release", release: false}
+          { type: 'release', release: false },
         ],
         parserOpts: {
-          noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES']
-        }
-      }
+          noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES'],
+        },
+      },
     ],
     [
       '@semantic-release/release-notes-generator',
       {
-        preset: "conventionalcommits",
+        preset: 'conventionalcommits',
         presetConfig: {
           types: [
-            {type: "feat", section: "Features"},
-            {type: "fix", section: "Fixes"},
-            {type: "docs", hidden: true},
-            {type: "style", section: "Style"},
-            {type: "refactor", section: "Refactor"},
-            {type: "perf", section: "Performance"},
-            {type: "test", hidden: true},
-            {type: "chore", hidden: true},
-            {type: "deps", section: "Dependencies"},
-            {type: "devdeps", section: "Dev-Dependencies"},
+            { type: 'feat', section: 'Features' },
+            { type: 'fix', section: 'Fixes' },
+            { type: 'docs', hidden: true },
+            { type: 'style', section: 'Style' },
+            { type: 'refactor', section: 'Refactor' },
+            { type: 'perf', section: 'Performance' },
+            { type: 'test', hidden: true },
+            { type: 'chore', hidden: true },
+            { type: 'deps', section: 'Dependencies' },
+            { type: 'devdeps', section: 'Dev-Dependencies' },
             // backwards compatability, remove after 9.0 has been published
-            {type: "dependencies", section: "Dependencies"},
-            {type: "revert", section: "Reverts"},
-            {type: "release", hidden: true}
-          ]
-        }
-      }
+            { type: 'dependencies', section: 'Dependencies' },
+            { type: 'revert', section: 'Reverts' },
+            { type: 'release', hidden: true },
+          ],
+        },
+      },
     ],
     [
       // Update versions in sub-packages dependencies
-      "semantic-release-replace-plugin",
+      'semantic-release-replace-plugin',
       {
-        "replacements": [
+        replacements: [
           {
-            "files": ["packages/*/package.json"],
-            "from": "\"mongodb-memory-server-core\": \".*\"",
-            "to": "\"mongodb-memory-server-core\": \"${nextRelease.version}\"",
-          }
-        ]
-      }
+            files: ['packages/*/package.json'],
+            from: '"mongodb-memory-server-core": ".*"',
+            to: '"mongodb-memory-server-core": "${nextRelease.version}"',
+          },
+        ],
+      },
     ],
-    "@semantic-release/changelog",
+    '@semantic-release/changelog',
     [
       '@semantic-release/npm',
       {
@@ -89,13 +89,6 @@ module.exports = {
       '@semantic-release/npm',
       {
         npmPublish: true,
-        pkgRoot: './packages/mongodb-memory-server-global-4.0',
-      },
-    ],
-    [
-      '@semantic-release/npm',
-      {
-        npmPublish: true,
         pkgRoot: './packages/mongodb-memory-server-global-4.2',
       },
     ],
@@ -106,19 +99,22 @@ module.exports = {
         pkgRoot: './packages/mongodb-memory-server-global-4.4',
       },
     ],
-    ["@semantic-release/git", {
-      "assets": ["packages/*/package.json", "CHANGELOG.md"],
-      "message": "release: v${nextRelease.version}"
-    }],
-    "@semantic-release/github"
+    [
+      '@semantic-release/git',
+      {
+        assets: ['packages/*/package.json', 'CHANGELOG.md'],
+        message: 'release: v${nextRelease.version}',
+      },
+    ],
+    '@semantic-release/github',
   ],
   branches: [
     // from what i read in the semantic-release configuration and in some issues, the order has to be like this:
     // other branches
     // main / upstream branch
     // prerelease branches
-    { name: "old\\/(\\d+)(\\.x)", range: "${name.replace(/^old\\//g, '')}", prerelease: false },
-    "master",
-    { name: "beta", prerelease: true }
-  ]
+    { name: 'old\\/(\\d+)(\\.x)', range: "${name.replace(/^old\\//g, '')}", prerelease: false },
+    'master',
+    { name: 'beta', prerelease: true },
+  ],
 };

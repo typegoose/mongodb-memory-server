@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for Suse should Error when Suse 12 and mongodb 8.0.0 is requested [KnownVersionIncompatibilityError] 1`] = `
 "Requested Version \\"8.0.0\\" is not available for \\"opensuse 12\\"! Available Versions: \\"<8.0.0\\"

@@ -24,8 +24,8 @@ import {
 
 // ignore the nodejs warning for coverage
 /* istanbul ignore next */
-if (lt(process.version, '16.20.1')) {
-  console.warn('Using NodeJS below 16.20.1');
+if (lt(process.version, '20.19.0')) {
+  console.warn('Using NodeJS below 20.19.0');
 }
 
 const log = debug('MongoMS:MongoInstance');
@@ -316,14 +316,14 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     result.push('--dbpath', this.instanceOpts.dbPath);
 
     // "!!" converts the value to an boolean (double-invert) so that no "falsy" values are added
-    if (!!this.instanceOpts.replSet) {
+    if (this.instanceOpts.replSet) {
       this.isReplSet = true;
       result.push('--replSet', this.instanceOpts.replSet);
     }
-    if (!!this.instanceOpts.storageEngine) {
+    if (this.instanceOpts.storageEngine) {
       result.push('--storageEngine', this.instanceOpts.storageEngine);
     }
-    if (!!this.instanceOpts.ip) {
+    if (this.instanceOpts.ip) {
       result.push('--bind_ip', this.instanceOpts.ip);
     }
     if (this.instanceOpts.auth) {
@@ -675,7 +675,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
           MongoInstanceEvents.instanceError,
           new StdoutInstanceError(
             `Instance Failed to start with "DBException in initAndListen". Original Error:\n` +
-              loadedJSON?.attr?.error ?? line // try to use the parsed json, but as fallback use the entire line
+              loadedJSON?.attr?.error
           )
         );
       }

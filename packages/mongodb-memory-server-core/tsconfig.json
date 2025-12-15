@@ -3,7 +3,7 @@
     "rootDir": "./src",
     "outDir": "./build",
     "noEmit": false,
-    "target": "es2021",
+    "target": "es2023",
     "module": "commonjs",
     "sourceMap": true,
     "declaration": true,
@@ -15,7 +15,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "jest"],
-    "importHelpers": true
+    "importHelpers": true,
+    "allowJs": true
   },
   "include": ["src/**/*"]
 }

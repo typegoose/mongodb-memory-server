@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as dbUtil from '../utils';
 import MongodbInstance, { MongoInstanceEvents } from '../MongoInstance';
 import resolveConfig, { ResolveConfigVariables } from '../resolveConfig';
@@ -209,16 +208,6 @@ describe('MongodbInstance', () => {
   });
 
   describe('should work with mongodb LTS releases', () => {
-    it('should work with mongodb 4.0', async () => {
-      const gotPort = await getFreePort(27445);
-      const mongod = await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '4.0.28' }, // explicit version instead of default to not mess it up later
-      });
-      expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
-      await mongod.stop();
-    });
-
     it('should work with mongodb 4.2', async () => {
       const gotPort = await getFreePort(27445);
       const mongod = await MongodbInstance.create({
@@ -298,7 +287,7 @@ describe('MongodbInstance', () => {
     jest.spyOn(dbUtil, 'killProcess');
     await mongod.stop();
 
-    expect(dbUtil.killProcess).not.toBeCalled();
+    expect(dbUtil.killProcess).not.toHaveBeenCalled();
   });
 
   it('"kill" should not try to open a connection to a not running ReplSet instance', async () => {
@@ -320,7 +309,7 @@ describe('MongodbInstance', () => {
     }
     await mongod.stop();
 
-    expect(MongoClient.connect).not.toBeCalled();
+    expect(MongoClient.connect).not.toHaveBeenCalled();
   });
 
   test('"kill" should not wait too much to open a connection to a ReplSet instance', async () => {

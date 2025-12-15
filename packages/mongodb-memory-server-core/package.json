@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-core",
-  "version": "10.4.1",
+  "version": "11.0.0-beta.4",
   "description": "MongoDB Server for testing (core package, without autodownload). The server will allow you to connect your favourite ODM or client library to the MongoDB Server and run parallel integration tests isolated from each other.",
   "main": "lib/index",
   "types": "lib/index.d.ts",
@@ -11,7 +11,7 @@
     "directory": "packages/mongodb-memory-server-core"
   },
   "engines": {
-    "node": ">=16.20.1"
+    "node": ">=20.19.0"
   },
   "files": [
     "lib",
@@ -43,7 +43,7 @@
     "@types/tar-stream": "^3.1.4",
     "@types/yauzl": "^2.10.3",
     "@types/yazl": "^3.3.0",
-    "rimraf": "^5.0.10",
+    "rimraf": "^6.1.2",
     "yazl": "^3.3.1"
   },
   "dependencies": {
@@ -53,7 +53,7 @@
     "find-cache-dir": "^3.3.2",
     "follow-redirects": "^1.15.11",
     "https-proxy-agent": "^7.0.6",
-    "mongodb": "^6.9.0",
+    "mongodb": "^7.0.0",
     "new-find-package-json": "^2.0.0",
     "semver": "^7.7.3",
     "tar-stream": "^3.1.7",
@@ -64,12 +64,9 @@
     "clean": "rimraf tmp lib build coverage node_modules/.cache",
     "build": "rimraf ./lib && tsc -p ./tsconfig.build.json",
     "build:tests": "rimraf ./build && tsc -p ./tsconfig.json",
-    "watch": "jest --watchAll",
     "coverage": "jest --coverage",
-    "lint": "yarn run eslint && yarn run tscheck",
-    "eslint": "eslint -c ../../.eslintrc.js 'src/**/*.{js,ts}'",
-    "test": "yarn run lint && yarn run coverage",
-    "test:watch": "yarn run watch",
-    "tscheck": "tsc --noEmit"
+    "lint": "eslint -c ../../eslint.config.mjs .",
+    "test": "npm run lint && npm run coverage",
+    "test:watch": "jest --watchAll"
   }
 }

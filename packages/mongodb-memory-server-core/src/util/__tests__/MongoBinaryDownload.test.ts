@@ -54,7 +54,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (
       (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
@@ -69,7 +69,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(true);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
 
     expect(du.httpDownload).not.toHaveBeenCalled();
   });
@@ -81,7 +81,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (
       (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
@@ -104,7 +104,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (
       (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
@@ -122,7 +122,7 @@ describe('MongoBinaryDownload', () => {
     jest.spyOn(du, 'httpDownload').mockResolvedValue('/tmp/someFile.tgz');
     jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
 
-    await du.download('https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-3.6.3.tgz');
+    await du.download('https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.4.tgz');
     expect(du.httpDownload).toHaveBeenCalledTimes(1);
     const callArg1 = (
       (du.httpDownload as jest.Mock).mock.calls[0] as Parameters<
@@ -147,10 +147,10 @@ describe('MongoBinaryDownload', () => {
     const res = await du.makeMD5check(urlToMongoDBArchivePath, mongoDBArchivePath);
 
     expect(res).toBe(true);
-    expect(du.download).toBeCalledWith(urlToMongoDBArchivePath);
-    expect(fspromises.readFile).toBeCalledWith(fileWithReferenceMd5);
-    expect(fspromises.unlink).toBeCalledTimes(1);
-    expect(utils.md5FromFile).toBeCalledWith(mongoDBArchivePath);
+    expect(du.download).toHaveBeenCalledWith(urlToMongoDBArchivePath);
+    expect(fspromises.readFile).toHaveBeenCalledWith(fileWithReferenceMd5);
+    expect(fspromises.unlink).toHaveBeenCalledTimes(1);
+    expect(utils.md5FromFile).toHaveBeenCalledWith(mongoDBArchivePath);
   });
 
   it('makeMD5check throws an error if md5 of downloaded mongoDBArchive is NOT the same as in the reference result', async () => {
@@ -182,7 +182,7 @@ describe('MongoBinaryDownload', () => {
     const downloadDir = '/path/to/downloadDir';
     jest.spyOn(DryMongoBinary, 'generateOptions').mockResolvedValue({
       arch: 'x64',
-      version: '4.0.25',
+      version: '7.0.0',
       downloadDir: downloadDir,
       systemBinary: '',
       os: {
@@ -197,11 +197,11 @@ describe('MongoBinaryDownload', () => {
 
     // @ts-expect-error because "getPath" is "protected"
     const path = await du.getPath();
-    expect(path).toEqual(`${downloadDir}/mongod-x64-ubuntu-4.0.25`);
+    expect(path).toEqual(`${downloadDir}/mongod-x64-ubuntu-7.0.0`);
   });
 
   it('should print the download progress (printDownloadProgress)', () => {
-    const version = '4.0.25';
+    const version = '7.0.1';
     process.stdout.isTTY = false;
     jest.spyOn(console, 'log').mockImplementation(() => void 0);
     jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
@@ -302,13 +302,13 @@ describe('MongoBinaryDownload', () => {
         dist: 'custom',
         release: '100.0',
       },
-      version: '4.0.0',
+      version: '7.0.0',
     };
     const mbd = new MongoBinaryDownload(options);
     jest.spyOn(DryMongoBinary, 'generateOptions');
     // @ts-expect-error "getPath" is protected
     const path = await mbd.getPath();
-    expect(DryMongoBinary.generateOptions).toBeCalledWith(expect.objectContaining(options));
+    expect(DryMongoBinary.generateOptions).toHaveBeenCalledWith(expect.objectContaining(options));
     expect(path).toMatchSnapshot();
   });
 
@@ -333,7 +333,7 @@ describe('MongoBinaryDownload', () => {
           dist: 'custom',
           release: '100.0',
         },
-        version: '4.0.0',
+        version: '7.0.0',
       };
       const mbd = new MongoBinaryDownload(options);
       // @ts-expect-error "getPath" is "protected"
@@ -383,7 +383,7 @@ describe('MongoBinaryDownload', () => {
           dist: 'custom',
           release: '100.0',
         },
-        version: '4.0.0',
+        version: '7.0.0',
       };
       const mbd = new MongoBinaryDownload(options);
       // @ts-expect-error "getPath" is "protected"
@@ -478,7 +478,7 @@ describe('MongoBinaryDownload', () => {
           cert,
         },
         (req, res) => {
-          if (req.url != '/archive.tgz') {
+          if (!req.url?.endsWith('/archive.tgz')) {
             res.writeHead(404, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: `Invalid Path ${req.url}` }));
 
@@ -511,8 +511,10 @@ describe('MongoBinaryDownload', () => {
 
           // dont send any other data, this will invoke the stalling callback on the client
           if (isFirstRequest && timeoutFirstRequest) {
-            // to not leave it as a potential dangling handle
-            setTimeout(() => res.destroy(), 500);
+            // this branch is meant to have the client trigger a "ETIMEDOUT" (via "socket.timeout") instead of the server giving a "socket hangup" / "ECONNRESET"
+
+            // but to not leave it as a potential dangling handle, we should destry to response after some time
+            setTimeout(() => res.destroy(), 1000);
 
             isFirstRequest = false;
 
@@ -579,7 +581,7 @@ describe('MongoBinaryDownload', () => {
       mbd.isTTY = false;
 
       const resolved = await mbd.httpDownload(
-        new URL('https://localhost:5000/archive.tgz'),
+        new URL('https://localhost:5000/1/archive.tgz'),
         {
           rejectUnauthorized: false,
         },
@@ -606,7 +608,7 @@ describe('MongoBinaryDownload', () => {
       expect(buffer).toStrictEqual(expected);
     });
 
-    it('should download interrupt and resume', async () => {
+    it('should download interrupt and resume (aborted / ECONNRESET)', async () => {
       process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)] = 'true';
 
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
@@ -633,59 +635,7 @@ describe('MongoBinaryDownload', () => {
       mbd.isTTY = false;
 
       const resolved = await mbd.httpDownload(
-        new URL('https://localhost:5000/archive.tgz'),
-        {
-          rejectUnauthorized: false,
-        },
-        outfile,
-        tmpfile,
-        2,
-        0,
-        500
-      );
-
-      expect(resolved).toStrictEqual(outfile);
-
-      const stat = await utils.statPath(outfile);
-
-      expect(stat).not.toBeUndefined();
-      utils.assertion(stat !== undefined); // for types
-
-      expect(stat.size).toStrictEqual(totalBytes);
-
-      const buffer = await fspromises.readFile(outfile, null);
-
-      const expected = genBuffer(totalBytes, 0);
-
-      expect(buffer).toStrictEqual(expected);
-    });
-
-    it('should download retry after stalling', async () => {
-      jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      createTestServer(undefined, true);
-
-      const downloadDir = path.join(tmpdir, 'downloadDir');
-
-      await utils.mkdir(downloadDir);
-
-      const outfile = path.join(downloadDir, 'archive.tgz');
-      const tmpfile = outfile + '.downloading';
-
-      const options: MongoBinaryOpts = {
-        arch: 'x64',
-        downloadDir,
-        os: {
-          os: 'linux',
-          dist: 'Ubuntu Linux',
-          release: '24.04',
-        },
-        version: '8.0.0',
-      };
-      const mbd = new MongoBinaryDownload(options);
-      mbd.isTTY = false;
-
-      const resolved = await mbd.httpDownload(
-        new URL('https://localhost:5000/archive.tgz'),
+        new URL('https://localhost:5000/2/archive.tgz'),
         {
           rejectUnauthorized: false,
         },
@@ -712,7 +662,60 @@ describe('MongoBinaryDownload', () => {
       expect(buffer).toStrictEqual(expected);
     });
 
-    it('should error of repeated retry errors', async () => {
+    it('should download retry after stalling (ETIMEDOUT)', async () => {
+      jest.spyOn(console, 'log').mockImplementation(() => void 0);
+      createTestServer(undefined, true);
+
+      const downloadDir = path.join(tmpdir, 'downloadDir');
+
+      await utils.mkdir(downloadDir);
+
+      const outfile = path.join(downloadDir, 'archive.tgz');
+      const tmpfile = outfile + '.downloading';
+
+      const options: MongoBinaryOpts = {
+        arch: 'x64',
+        downloadDir,
+        os: {
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '24.04',
+        },
+        version: '8.0.0',
+      };
+      const mbd = new MongoBinaryDownload(options);
+      mbd.isTTY = false;
+
+      const resolved = await mbd.httpDownload(
+        new URL('https://localhost:5000/3/archive.tgz'),
+        {
+          rejectUnauthorized: false,
+        },
+        outfile,
+        tmpfile,
+        2,
+        0,
+        // timeout needs to be lower than handle clean-up in "createTestServer"
+        200
+      );
+
+      expect(resolved).toStrictEqual(outfile);
+
+      const stat = await utils.statPath(outfile);
+
+      expect(stat).not.toBeUndefined();
+      utils.assertion(stat !== undefined); // for types
+
+      expect(stat.size).toStrictEqual(totalBytes);
+
+      const buffer = await fspromises.readFile(outfile, null);
+
+      const expected = genBuffer(totalBytes, 0);
+
+      expect(buffer).toStrictEqual(expected);
+    });
+
+    it('should error of repeated retry errors (aborted & ECONNRESET)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
       createTestServer(10);
 
@@ -738,7 +741,7 @@ describe('MongoBinaryDownload', () => {
 
       try {
         await mbd.httpDownload(
-          new URL('https://localhost:5000/archive.tgz'),
+          new URL('https://localhost:5000/4/archive.tgz'),
           {
             rejectUnauthorized: false,
           },
@@ -781,7 +784,7 @@ describe('MongoBinaryDownload', () => {
 
       try {
         await mbd.httpDownload(
-          new URL('https://localhost:5000/archive.tgz'),
+          new URL('https://localhost:5000/5/archive.tgz'),
           {
             rejectUnauthorized: false,
           },

@@ -42,6 +42,6 @@ packages/mongodb-memory-server-core/lib
 
 coverage
 .nyc_output
-package-lock.json
+yarn.lock
 build
 typedoc_out

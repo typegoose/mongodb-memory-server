@@ -68,8 +68,8 @@ Choose any package, because they are the same. They differ only in the default c
 
 ### Requirements
 
-- NodeJS: 16.20.1+
-- Typescript: 5.3+ (if used)
+- NodeJS: 20.19.0+
+- Typescript: 5.9+ (if used)
 
 And one of those (on Linux):
 
@@ -86,7 +86,7 @@ On Linux, you will also need `libcurl4` (or `libcurl3` on some older distro vers
 
 ### Configuring which mongod binary to use
 
-The default behavior is that version `7.0.24` for your OS will be downloaded. By setting [Environment variables](https://typegoose.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
+The default behavior is that version `8.2.1` for your OS will be downloaded. By setting [Environment variables](https://typegoose.github.io/mongodb-memory-server/docs/api/config-options) you are able to specify which version and binary will be downloaded:
 
 ```sh
 export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
@@ -128,7 +128,7 @@ const mongod = new MongoMemoryServer({
     auth?: boolean, // add "--auth" argument, dont use this directly use top-level "auth"
   },
   binary?: {
-    version?: string, // by default '7.0.24'
+    version?: string, // by default '8.2.1'
     downloadDir?: string, // see the documentation on what is chosen by default https://typegoose.github.io/mongodb-memory-server/docs/api/config-options#download_dir
     platform?: string, // by default os.platform()
     arch?: string, // by default os.arch()

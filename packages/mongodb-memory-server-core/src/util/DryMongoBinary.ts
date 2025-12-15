@@ -84,7 +84,7 @@ export class DryMongoBinary {
     log(`locateBinary: Trying to locate Binary for version "${opts.version}"`);
     const useOpts = await this.generateOptions(opts);
 
-    if (!!useOpts.systemBinary) {
+    if (useOpts.systemBinary) {
       log(`locateBinary: env "SYSTEM_BINARY" was provided with value: "${useOpts.systemBinary}"`);
 
       const systemReturn = await this.getSystemPath(path.resolve(useOpts.systemBinary));
@@ -227,7 +227,7 @@ export class DryMongoBinary {
     opts.arch = groups.arch;
 
     if (groups.platform === 'linux') {
-      const distMatches = !!groups.dist ? /([a-z]+)(\d*)/gim.exec(groups.dist) : null;
+      const distMatches = groups.dist ? /([a-z]+)(\d*)/gim.exec(groups.dist) : null;
 
       opts.os = {
         os: 'linux',

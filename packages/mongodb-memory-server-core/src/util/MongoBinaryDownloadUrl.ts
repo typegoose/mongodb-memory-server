@@ -83,7 +83,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     const archive_name = resolveConfig(ResolveConfigVariables.ARCHIVE_NAME);
 
     // double-"!" to not include falsy values
-    if (!!archive_name) {
+    if (archive_name) {
       return archive_name;
     }
 
@@ -175,7 +175,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     let name = `mongodb-linux-${this.arch}`;
 
     // guard against any falsy values
-    if (!!osString) {
+    if (osString) {
       name += `-${osString}`;
     }
 
@@ -302,10 +302,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       name += '10';
     } else if (release >= 9) {
       name += '92';
-    } else if (release >= 8.1) {
-      name += '81';
-    } else if (release >= 7.1) {
-      name += '71';
     }
 
     if (isTesting || release >= 12) {
@@ -368,8 +364,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       rhelOS.release = '7.0';
     } else if (fedoraVer >= 12) {
       rhelOS.release = '6.2';
-    } else if (fedoraVer >= 6) {
-      rhelOS.release = '5.5';
     }
 
     return this.getRhelVersionString(rhelOS);
@@ -451,8 +445,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         name += '70';
       } else if (semver.satisfies(releaseAsSemver, '^6.0.0')) {
         name += '62';
-      } else if (semver.satisfies(releaseAsSemver, '^5.0.0')) {
-        name += '55';
       } else {
         console.warn(`Unhandled RHEL version: "${release}"("${this.arch}")`);
       }
@@ -568,7 +560,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     {
       if (/^linux\s?mint\s*$/i.test(os.dist)) {
         const mintToUbuntuRelease: Record<number, string> = {
-          17: '14.04',
           18: '16.04',
           19: '18.04',
           20: '20.04',
@@ -586,7 +577,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
       if (/^elementary(?:\s?os)?\s*$/i.test(os.dist)) {
         const elementaryToUbuntuRelease: Record<number, string> = {
-          3: '14.04',
           4: '16.04',
           5: '18.04',
           6: '20.04',
@@ -644,20 +634,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       }
     }
 
-    if (ubuntuOS.release === '14.10') {
-      return 'ubuntu1410-clang';
-    }
-
-    // there are no MongoDB 3.x binary distributions for ubuntu >= 18
-    // https://www.mongodb.org/dl/linux/x86_64-ubuntu1604
-    if (ubuntuYear >= 18 && semver.satisfies(coercedVersion, '3.x.x')) {
-      log(
-        `getUbuntuVersionString: ubuntuYear is "${ubuntuYear}", which dosnt have an 3.x.x version, defaulting to "1604"`
-      );
-
-      return 'ubuntu1604';
-    }
-
     // there are no MongoDB <=4.3.x binary distributions for ubuntu > 18
     // https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
     if (ubuntuYear > 18 && semver.satisfies(coercedVersion, '<=4.3.x')) {
@@ -710,7 +686,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     switch (platform) {
       case 'darwin':
         return 'osx';
-      case 'win32':
+      case 'win32': {
         const version = semver.coerce(this.version);
 
         if (isNullOrUndefined(version)) {
@@ -718,6 +694,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
         }
 
         return semver.gte(version, '4.3.0') ? 'windows' : 'win32';
+      }
       case 'linux':
         return 'linux';
       default:

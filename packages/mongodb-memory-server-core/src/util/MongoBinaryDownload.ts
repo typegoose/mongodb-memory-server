@@ -16,6 +16,7 @@ import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
 import { DownloadError, GenericMMSError, Md5CheckFailedError } from './errors';
 import { RequestOptions } from 'https';
+import { OutgoingHttpHeaders } from 'http';
 
 const log = debug('MongoMS:MongoBinaryDownload');
 
@@ -383,6 +384,7 @@ export class MongoBinaryDownload {
    * @param tempDownloadLocation The location the File should be while downloading
    * @param maxRetries Maximum number of retries on download failure
    * @param baseDelay Base delay in milliseconds for retrying the download
+   * @param timeout The time of inactivity(0bytes/second) after which the request is canceled
    */
   async httpDownload(
     url: URL,
@@ -420,7 +422,6 @@ export class MongoBinaryDownload {
           downloadLocation,
           tempDownloadLocation,
           downloadUrl,
-          httpOptions,
           timeout
         );
       } catch (error: any) {
@@ -458,12 +459,12 @@ export class MongoBinaryDownload {
   /**
    * Attempt to download the file from the given URL
    * This function is used internally by `httpDownload`
-   * @param url
-   * @param useHttpsOptions
-   * @param downloadLocation
-   * @param tempDownloadLocation
-   * @param downloadUrl
-   * @param httpOptions
+   * @param url The URL to download the file from
+   * @param useHttpsOptions The httpOptions directly passed to https.get
+   * @param downloadLocation The location the File should be after the download
+   * @param tempDownloadLocation The location the File should be while downloading
+   * @param downloadUrl The url as a string for error messages
+   * @param timeout The time of inactivity(0bytes/second) after which the request is canceled
    * @private
    */
   private async attemptDownload(
@@ -472,7 +473,6 @@ export class MongoBinaryDownload {
     downloadLocation: string,
     tempDownloadLocation: string,
     downloadUrl: string,
-    httpOptions: RequestOptions,
     timeout: number = 60000
   ): Promise<string> {
     /** Offset to resume from; for now a non-0 value indicates to use file "append" mode */
@@ -483,7 +483,7 @@ export class MongoBinaryDownload {
 
       if (stat && stat.size != 0) {
         useHttpsOptions.headers = useHttpsOptions.headers ?? {};
-        useHttpsOptions.headers['Range'] = `bytes=${stat.size}-`;
+        (useHttpsOptions.headers as OutgoingHttpHeaders)['Range'] = `bytes=${stat.size}-`;
         offset = stat.size;
         log(`httpDownload: resuming download at ${offset}`);
       }
@@ -583,7 +583,7 @@ export class MongoBinaryDownload {
         fileStream.on('finish', async () => {
           if (
             this.dlProgress.current < this.dlProgress.length &&
-            !httpOptions.path?.endsWith('.md5')
+            !useHttpsOptions.path?.endsWith('.md5')
           ) {
             reject(
               new DownloadError(

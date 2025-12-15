@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const deployInfo = require('./getDeployInfo')();
 const { execSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -45,18 +44,18 @@ function main() {
   console.log('\nInstall of root\n');
 
   // make sure everything is correctly installed
-  execSync('yarn install', { stdio: 'inherit' });
+  execSync('npm ci', { stdio: 'inherit' });
 
   console.log('\nInstall & Build of website\n');
 
   // make sure everything is correctly installed
-  execSync('yarn --cwd ./website install', { stdio: 'inherit' });
+  execSync('npm ci --prefix=website/', { stdio: 'inherit' });
 
   // build the website
-  execSync('yarn --cwd ./website build', { stdio: 'inherit' });
+  execSync('npm run --prefix=website/ build', { stdio: 'inherit' });
 
   // build the typedoc website
-  execSync('yarn run typedoc', { stdio: 'inherit' });
+  execSync('npm run typedoc', { stdio: 'inherit' });
 
   console.log('\nSwitching Branches\n');
 
@@ -70,7 +69,7 @@ function main() {
   console.log('\nRemoving & Moving build\n');
 
   // create deployAs directory, if not empty
-  if (!!deployInfo.deployPath) {
+  if (deployInfo.deployPath) {
     fs.mkdirSync(deployInfo.deployPath, { recursive: true });
   }
 
@@ -167,7 +166,7 @@ function hasChanges() {
     return false;
   } catch (err) {
     // check if the error is a childprocess error, which will always have a "status" property
-    if (!!err.status) {
+    if (err.status) {
       return true;
     }
 

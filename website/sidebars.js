@@ -42,6 +42,7 @@ module.exports = {
       'guides/common-issues',
     ],
     Migration: [
+      'guides/migration/migrate11',
       'guides/migration/migrate10',
       'guides/migration/migrate9',
       'guides/migration/migrate8',

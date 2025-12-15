@@ -568,8 +568,8 @@ describe('DryBinary', () => {
       const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
       expect(returnValue).toEqual(mockBinary);
       expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
-      expect(binary.DryMongoBinary.binaryCache.has).toBeCalledTimes(1);
-      expect(binary.DryMongoBinary.binaryCache.get).toBeCalledTimes(1);
+      expect(binary.DryMongoBinary.binaryCache.has).toHaveBeenCalledTimes(1);
+      expect(binary.DryMongoBinary.binaryCache.get).toHaveBeenCalledTimes(1);
     });
 
     it('should return "generateDownloadPath" return value if not in cache', async () => {
@@ -582,7 +582,7 @@ describe('DryBinary', () => {
       const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
       expect(returnValue).toEqual(mockBinary);
       expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
-      expect(binary.DryMongoBinary.binaryCache.has).toBeCalledTimes(1);
+      expect(binary.DryMongoBinary.binaryCache.has).toHaveBeenCalledTimes(1);
       expect(binary.DryMongoBinary.generateDownloadPath).toHaveBeenCalled();
     });
   });
@@ -689,7 +689,7 @@ describe('DryBinary', () => {
 
     it('should use "parseArchiveNameRegex" when DOWNLOAD_URL is defined', async () => {
       const parseArchiveNameRegexSpy = jest.spyOn(binary.DryMongoBinary, 'parseArchiveNameRegex');
-      const envURL = 'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.25.tgz';
+      const envURL = 'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.0.tgz';
       process.env[envName(ResolveConfigVariables.DOWNLOAD_URL)] = envURL;
       const customos: OtherOS = {
         os: 'win32',
@@ -706,7 +706,7 @@ describe('DryBinary', () => {
       const output = await binary.DryMongoBinary.generateOptions(origOptions);
 
       expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
-        version: '4.0.25',
+        version: '7.0.0',
         arch: 'x86_64',
         downloadDir: path.dirname(origOptions.downloadDir),
         systemBinary: '',
@@ -724,7 +724,7 @@ describe('DryBinary', () => {
 
     it('should use "parseArchiveNameRegex" when ARCHIVE_NAME is defined', async () => {
       const parseArchiveNameRegexSpy = jest.spyOn(binary.DryMongoBinary, 'parseArchiveNameRegex');
-      const envARCHIVE = 'mongodb-linux-x86_64-ubuntu1604-4.0.24.tgz';
+      const envARCHIVE = 'mongodb-linux-x86_64-ubuntu1604-7.0.0.tgz';
       process.env[envName(ResolveConfigVariables.ARCHIVE_NAME)] = envARCHIVE;
       const customos: OtherOS = {
         os: 'win32',
@@ -741,7 +741,7 @@ describe('DryBinary', () => {
       const output = await binary.DryMongoBinary.generateOptions(origOptions);
 
       expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
-        version: '4.0.24',
+        version: '7.0.0',
         arch: 'x86_64',
         downloadDir: path.dirname(origOptions.downloadDir),
         systemBinary: '',
@@ -760,7 +760,7 @@ describe('DryBinary', () => {
 
   describe('parseArchiveNameRegex', () => {
     it('should parse and overwrite input options LINUX-UBUNTU', async () => {
-      const input = 'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.0.25.tgz';
+      const input = 'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-7.0.0.tgz';
       // The following options are made different to check that the function actually changes them
       const customos: OtherOS = {
         os: 'win32',
@@ -777,7 +777,7 @@ describe('DryBinary', () => {
       const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
 
       expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
-        version: '4.0.25',
+        version: '7.0.0',
         arch: 'x86_64',
         downloadDir: origOptions.downloadDir,
         systemBinary: '',
@@ -791,7 +791,7 @@ describe('DryBinary', () => {
     });
 
     it('should parse and overwrite input options MACOS', async () => {
-      const input = 'http://downloads.mongodb.org/osx/mongodb-osx-ssl-x86_64-4.0.25.tgz';
+      const input = 'http://downloads.mongodb.org/osx/mongodb-osx-ssl-x86_64-7.0.0.tgz';
       // The following options are made different to check that the function actually changes them
       const customos: OtherOS = {
         os: 'win32',
@@ -808,7 +808,7 @@ describe('DryBinary', () => {
       const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
 
       expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
-        version: '4.0.25',
+        version: '7.0.0',
         arch: 'x86_64',
         downloadDir: origOptions.downloadDir,
         systemBinary: '',
@@ -850,7 +850,7 @@ describe('DryBinary', () => {
 
     it('should parse and overwrite input options WINDOWS', async () => {
       const input =
-        'https://downloads.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-4.0.25.zip';
+        'https://downloads.mongodb.org/win32/mongodb-win32-x86_64-2008plus-ssl-7.0.0.zip';
       // The following options are made different to check that the function actually changes them
       const customos: OtherOS = {
         os: 'osx',
@@ -867,7 +867,7 @@ describe('DryBinary', () => {
       const output = binary.DryMongoBinary.parseArchiveNameRegex(input, origOptions);
 
       expect(output).toStrictEqual<binary.DryMongoBinaryOptions>({
-        version: '4.0.25',
+        version: '7.0.0',
         arch: 'x86_64',
         downloadDir: origOptions.downloadDir,
         systemBinary: '',

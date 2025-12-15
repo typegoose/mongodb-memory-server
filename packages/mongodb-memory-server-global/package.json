@@ -1,6 +1,6 @@
 {
   "name": "mongodb-memory-server-global",
-  "version": "10.4.1",
+  "version": "11.0.0-beta.4",
   "description": "MongoDB Server for testing (auto-download latest version to ~/.cache/mongodb-binaries).",
   "main": "index.js",
   "types": "index.d.ts",
@@ -11,7 +11,7 @@
     "directory": "packages/mongodb-memory-server-global"
   },
   "engines": {
-    "node": ">=16.20.1"
+    "node": ">=20.19.0"
   },
   "homepage": "https://github.com/typegoose/mongodb-memory-server",
   "keywords": [
@@ -28,7 +28,7 @@
     "provenance": true
   },
   "dependencies": {
-    "mongodb-memory-server-core": "10.4.1",
+    "mongodb-memory-server-core": "11.0.0-beta.4",
     "tslib": "^2.8.1"
   },
   "scripts": {
