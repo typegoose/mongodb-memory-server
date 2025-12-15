@@ -69,7 +69,6 @@
     "lint": "yarn run eslint && yarn run tscheck",
     "eslint": "eslint -c ../../.eslintrc.js 'src/**/*.{js,ts}'",
     "test": "yarn run lint && yarn run coverage",
-    "test:watch": "yarn run watch",
-    "tscheck": "tsc --noEmit"
+    "test:watch": "yarn run watch"
   }
 }
