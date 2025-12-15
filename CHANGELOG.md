@@ -1,3 +1,21 @@
+## [11.0.0-beta.4](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.0-beta.3...v11.0.0-beta.4) (2025-12-15)
+
+### Features
+
+* **resolveConfig:** enable "RESUME_DOWNLOAD" by default ([5197f69](https://github.com/typegoose/mongodb-memory-server/commit/5197f694d71cbae2361e8d1dd888fa1ddfbefde7))
+
+### Style
+
+* **MongoBinaryDownload::attemptDownload:** remove duplicated argument ([3162cc6](https://github.com/typegoose/mongodb-memory-server/commit/3162cc6bbdb72a4484602f8cc3a21584e829fc0f))
+* **MongoBinaryDownload:** document more options ([ae9784c](https://github.com/typegoose/mongodb-memory-server/commit/ae9784c35031af8e069726522177336e18c71d3f))
+
+### Dev-Dependencies
+
+* **commitlint:** upgrade to 20.2.0 ([c10f800](https://github.com/typegoose/mongodb-memory-server/commit/c10f8003340b0c633a0aca814f12fa6106c19e80))
+* **eslint-config-prettier:** upgrade to 10.1.8 ([a103e6b](https://github.com/typegoose/mongodb-memory-server/commit/a103e6bc0a55b0e4179c4459053fc22f7db67aed))
+* **eslint:** upgrade to 9.39.2 ([63c9577](https://github.com/typegoose/mongodb-memory-server/commit/63c9577f9740cf94031e5206127d3039e615a46b))
+* **typescript-eslint:** upgrade to 8.49.0 ([5857d3d](https://github.com/typegoose/mongodb-memory-server/commit/5857d3d700f031905821bac5a9d1acd1e44116cf))
+
 ## [11.0.0-beta.3](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.0-beta.2...v11.0.0-beta.3) (2025-12-04)
 
 ### Fixes
