@@ -384,6 +384,7 @@ export class MongoBinaryDownload {
    * @param tempDownloadLocation The location the File should be while downloading
    * @param maxRetries Maximum number of retries on download failure
    * @param baseDelay Base delay in milliseconds for retrying the download
+   * @param timeout The time of inactivity(0bytes/second) after which the request is canceled
    */
   async httpDownload(
     url: URL,
@@ -459,12 +460,13 @@ export class MongoBinaryDownload {
   /**
    * Attempt to download the file from the given URL
    * This function is used internally by `httpDownload`
-   * @param url
-   * @param useHttpsOptions
-   * @param downloadLocation
-   * @param tempDownloadLocation
-   * @param downloadUrl
-   * @param httpOptions
+   * @param url The URL to download the file from
+   * @param useHttpsOptions The httpOptions directly passed to https.get
+   * @param downloadLocation The location the File should be after the download
+   * @param tempDownloadLocation The location the File should be while downloading
+   * @param downloadUrl The url as a string for error messages
+   * @param httpOptions The original unmodified `httpOptions`. TODO: this should likely be removed
+   * @param timeout The time of inactivity(0bytes/second) after which the request is canceled
    * @private
    */
   private async attemptDownload(
