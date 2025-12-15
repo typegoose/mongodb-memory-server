@@ -41,7 +41,7 @@
   },
   "scripts": {
     "test": "yarn --cwd packages/mongodb-memory-server-core run test",
-    "lint": "eslint -c ./eslint.config.mjs \"./**/*.{js,ts,cjs,mjs,cts,mts}\"",
+    "lint": "eslint -c ./eslint.config.mjs .",
     "watch": "yarn --cwd packages/mongodb-memory-server-core run watch",
     "build": "tsc --build tsconfig.build.json",
     "readme:toc": "doctoc ./README.md",
