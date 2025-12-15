@@ -289,7 +289,7 @@ Set this to control how many times the downloader will attempt to recover from t
 
 Option `RESUME_DOWNLOAD` is used to enable / disable resuming a download of a binary instead of starting over on retries or interruptions.
 
-Default: `false`
+Default: `true`
 
 ## How to use them in the package.json
 

@@ -54,7 +54,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.MD5_CHECK, 'true'],
   [ResolveConfigVariables.MAX_REDIRECTS, '2'],
   [ResolveConfigVariables.MAX_RETRIES, '3'], // Default maxRetries for downloads
-  [ResolveConfigVariables.RESUME_DOWNLOAD, 'false'],
+  [ResolveConfigVariables.RESUME_DOWNLOAD, 'true'],
 ]);
 
 /** Interface for storing information about the found package.json from `findPackageJson` */
