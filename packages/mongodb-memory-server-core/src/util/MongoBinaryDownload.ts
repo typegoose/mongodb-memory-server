@@ -422,7 +422,6 @@ export class MongoBinaryDownload {
           downloadLocation,
           tempDownloadLocation,
           downloadUrl,
-          httpOptions,
           timeout
         );
       } catch (error: any) {
@@ -465,7 +464,6 @@ export class MongoBinaryDownload {
    * @param downloadLocation The location the File should be after the download
    * @param tempDownloadLocation The location the File should be while downloading
    * @param downloadUrl The url as a string for error messages
-   * @param httpOptions The original unmodified `httpOptions`. TODO: this should likely be removed
    * @param timeout The time of inactivity(0bytes/second) after which the request is canceled
    * @private
    */
@@ -475,7 +473,6 @@ export class MongoBinaryDownload {
     downloadLocation: string,
     tempDownloadLocation: string,
     downloadUrl: string,
-    httpOptions: RequestOptions,
     timeout: number = 60000
   ): Promise<string> {
     /** Offset to resume from; for now a non-0 value indicates to use file "append" mode */
@@ -586,7 +583,7 @@ export class MongoBinaryDownload {
         fileStream.on('finish', async () => {
           if (
             this.dlProgress.current < this.dlProgress.length &&
-            !httpOptions.path?.endsWith('.md5')
+            !useHttpsOptions.path?.endsWith('.md5')
           ) {
             reject(
               new DownloadError(
