@@ -455,7 +455,9 @@ describe('MongoBinaryDownload', () => {
       await utils.removeDir(tmpdir);
 
       if (server) {
-        server.close();
+        await new Promise((res) => {
+          server.close(res);
+        });
       }
 
       jest.restoreAllMocks();
