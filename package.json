@@ -26,11 +26,9 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "8.49.0"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "lint-staged": {
     "packages/**/*.{ts,tsx,js,jsx}": [
       "eslint --fix"
