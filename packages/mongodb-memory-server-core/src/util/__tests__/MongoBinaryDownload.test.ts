@@ -511,8 +511,10 @@ describe('MongoBinaryDownload', () => {
 
           // dont send any other data, this will invoke the stalling callback on the client
           if (isFirstRequest && timeoutFirstRequest) {
-            // to not leave it as a potential dangling handle
-            setTimeout(() => res.destroy(), 500);
+            // this branch is meant to have the client trigger a "ETIMEDOUT" (via "socket.timeout") instead of the server giving a "socket hangup" / "ECONNRESET"
+
+            // but to not leave it as a potential dangling handle, we should destry to response after some time
+            setTimeout(() => res.destroy(), 1000);
 
             isFirstRequest = false;
 
@@ -606,7 +608,7 @@ describe('MongoBinaryDownload', () => {
       expect(buffer).toStrictEqual(expected);
     });
 
-    it('should download interrupt and resume', async () => {
+    it('should download interrupt and resume (aborted / ECONNRESET)', async () => {
       process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)] = 'true';
 
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
@@ -660,7 +662,7 @@ describe('MongoBinaryDownload', () => {
       expect(buffer).toStrictEqual(expected);
     });
 
-    it('should download retry after stalling', async () => {
+    it('should download retry after stalling (ETIMEDOUT)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
       createTestServer(undefined, true);
 
@@ -693,6 +695,7 @@ describe('MongoBinaryDownload', () => {
         tmpfile,
         2,
         0,
+        // timeout needs to be lower than handle clean-up in "createTestServer"
         200
       );
 
@@ -712,7 +715,7 @@ describe('MongoBinaryDownload', () => {
       expect(buffer).toStrictEqual(expected);
     });
 
-    it('should error of repeated retry errors', async () => {
+    it('should error of repeated retry errors (aborted & ECONNRESET)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
       createTestServer(10);
 
