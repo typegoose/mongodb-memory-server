@@ -1,3 +1,9 @@
+## [10.4.2](https://github.com/typegoose/mongodb-memory-server/compare/v10.4.1...v10.4.2) (2025-12-15)
+
+### Fixes
+
+* trigger patch release due to 11.0.0 ([1ac1ddc](https://github.com/typegoose/mongodb-memory-server/commit/1ac1ddcdb1314cc65ae3a1822faae250e6520140))
+
 ## [10.4.1](https://github.com/typegoose/mongodb-memory-server/compare/v10.4.0...v10.4.1) (2025-12-04)
 
 ### Fixes
