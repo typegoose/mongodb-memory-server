@@ -44,18 +44,18 @@ function main() {
   console.log('\nInstall of root\n');
 
   // make sure everything is correctly installed
-  execSync('yarn install', { stdio: 'inherit' });
+  execSync('npm ci', { stdio: 'inherit' });
 
   console.log('\nInstall & Build of website\n');
 
   // make sure everything is correctly installed
-  execSync('yarn --cwd ./website install', { stdio: 'inherit' });
+  execSync('npm ci --prefix=website/', { stdio: 'inherit' });
 
   // build the website
-  execSync('yarn --cwd ./website build', { stdio: 'inherit' });
+  execSync('npm run --prefix=website/ build', { stdio: 'inherit' });
 
   // build the typedoc website
-  execSync('yarn run typedoc', { stdio: 'inherit' });
+  execSync('npm run --workspace=mongodb-memory-server-core typedoc', { stdio: 'inherit' });
 
   console.log('\nSwitching Branches\n');
 

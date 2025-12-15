@@ -8,6 +8,9 @@
 .docusaurus
 .cache-loader
 
+# Other Package Manager lock files
+yarn.lock
+
 # Misc
 .DS_Store
 .env.local

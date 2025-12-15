@@ -66,7 +66,7 @@
     "build:tests": "rimraf ./build && tsc -p ./tsconfig.json",
     "coverage": "jest --coverage",
     "lint": "eslint -c ../../eslint.config.mjs .",
-    "test": "yarn run lint && yarn run coverage",
+    "test": "npm run lint && npm run coverage",
     "test:watch": "jest --watchAll"
   }
 }

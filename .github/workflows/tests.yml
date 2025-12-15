@@ -67,11 +67,11 @@ jobs:
             ${{ matrix.distro }}-
             ${{ matrix.distro }}
       - name: Install node_modules
-        run: yarn
+        run: npm ci
       - name: ESLint
-        run: yarn run lint
+        run: npm run lint
       - name: Tests
-        run: yarn --cwd packages/mongodb-memory-server-core run coverage --colors
+        run: npm --workspace=mongodb-memory-server-core run coverage -- --colors
         env:
           CI: true
       - name: Send codecov.io stats
@@ -96,9 +96,9 @@ jobs:
         with:
           node-version: 24.x
       - name: Install node_modules
-        run: yarn install
+        run: npm ci
       - name: Build
-        run: yarn build
+        run: npm run build
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
         with:
