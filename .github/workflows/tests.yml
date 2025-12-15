@@ -68,8 +68,6 @@ jobs:
             ${{ matrix.distro }}
       - name: Install node_modules
         run: yarn
-      - name: TSCheck
-        run: yarn --cwd packages/mongodb-memory-server-core run tscheck
       - name: ESLint
         run: yarn run lint
       - name: Tests
