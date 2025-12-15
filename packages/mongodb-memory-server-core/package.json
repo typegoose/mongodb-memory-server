@@ -66,8 +66,7 @@
     "build:tests": "rimraf ./build && tsc -p ./tsconfig.json",
     "watch": "jest --watchAll",
     "coverage": "jest --coverage",
-    "lint": "yarn run eslint && yarn run tscheck",
-    "eslint": "eslint -c ../../eslint.config.mjs .",
+    "lint": "eslint -c ../../eslint.config.mjs .",
     "test": "yarn run lint && yarn run coverage",
     "test:watch": "yarn run watch",
     "tscheck": "tsc --noEmit"
