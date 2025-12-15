@@ -64,10 +64,9 @@
     "clean": "rimraf tmp lib build coverage node_modules/.cache",
     "build": "rimraf ./lib && tsc -p ./tsconfig.build.json",
     "build:tests": "rimraf ./build && tsc -p ./tsconfig.json",
-    "watch": "jest --watchAll",
     "coverage": "jest --coverage",
     "lint": "eslint -c ../../eslint.config.mjs .",
     "test": "yarn run lint && yarn run coverage",
-    "test:watch": "yarn run watch"
+    "test:watch": "jest --watchAll"
   }
 }
