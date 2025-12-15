@@ -55,7 +55,7 @@ function main() {
   execSync('npm run --prefix=website/ build', { stdio: 'inherit' });
 
   // build the typedoc website
-  execSync('npm run --workspace=mongodb-memory-server-core typedoc', { stdio: 'inherit' });
+  execSync('npm run typedoc', { stdio: 'inherit' });
 
   console.log('\nSwitching Branches\n');
 
