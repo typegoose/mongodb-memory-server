@@ -18,6 +18,6 @@ jobs:
         with:
           node-version: 24.x
       - name: Install Dependencies
-        run: npm ci --prefix=website/ --frozen-lockfile
+        run: npm ci --prefix=website/
       - name: Build the Website
         run: npm run --prefix=website/ build
