@@ -1,3 +1,9 @@
+## [11.0.1](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.0...v11.0.1) (2025-12-23)
+
+### Fixes
+
+* **MongoBinaryDownload:** use "http" module for "USE_HTTP" requests ([9c967f3](https://github.com/typegoose/mongodb-memory-server/commit/9c967f3018f1d8ba91102cd7efb74397e642b1c7)), closes [#962](https://github.com/typegoose/mongodb-memory-server/issues/962)
+
 ## [11.0.0](https://github.com/typegoose/mongodb-memory-server/compare/v10.4.1...v11.0.0) (2025-12-15)
 
 ### ⚠ BREAKING CHANGES
