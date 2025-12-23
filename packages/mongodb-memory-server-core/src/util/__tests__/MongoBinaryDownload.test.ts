@@ -11,7 +11,8 @@ import * as path from 'path';
 import * as yazl from 'yazl';
 import { pack } from 'tar-stream';
 import { createGzip } from 'zlib';
-import { Server, createServer } from 'https';
+import https from 'https';
+import http from 'http';
 
 describe('MongoBinaryDownload', () => {
   let originalTTY: boolean = false;
@@ -425,9 +426,9 @@ describe('MongoBinaryDownload', () => {
     });
   });
 
-  describe('should download correctly', () => {
+  describe('should download correctly https', () => {
     let tmpdir: string;
-    let server: Server;
+    let server: https.Server;
 
     let key: string;
     let cert: string;
@@ -474,7 +475,7 @@ describe('MongoBinaryDownload', () => {
     ) {
       let isFirstRequest = true;
 
-      const builder = createServer(
+      const builder = https.createServer(
         {
           key,
           cert,
@@ -799,6 +800,142 @@ describe('MongoBinaryDownload', () => {
         assertIsError(err);
         expect(JSON.stringify(err)).toMatchSnapshot();
       }
+    });
+  });
+
+  describe('should download correctly http', () => {
+    let tmpdir: string;
+    let server: http.Server;
+
+    const totalBytes = 1024 * 10;
+
+    let originalUseHttp: any;
+
+    beforeAll(async () => {
+      originalUseHttp = process.env[envName(ResolveConfigVariables.USE_HTTP)];
+    });
+
+    beforeEach(async () => {
+      tmpdir = await utils.createTmpDir('mongo-mem-test-download-');
+
+      process.env[envName(ResolveConfigVariables.USE_HTTP)] = 'true';
+    });
+    afterEach(async () => {
+      await utils.removeDir(tmpdir);
+
+      if (server) {
+        await new Promise((res) => {
+          server.close(res);
+        });
+      }
+
+      jest.restoreAllMocks();
+    });
+
+    afterAll(() => {
+      process.env[envName(ResolveConfigVariables.USE_HTTP)] = originalUseHttp;
+    });
+
+    function createTestServer() {
+      const builder = http.createServer({}, (req, res) => {
+        if (req.url != '/archive.tgz') {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: `Invalid Path ${req.url}` }));
+
+          return;
+        }
+
+        let toSendBytes = totalBytes;
+        let rangeStart = 0;
+
+        if (req.headers.range) {
+          rangeStart = parseInt(req.headers.range.match(/bytes=(\d+)-/)?.[1] ?? '0');
+          toSendBytes = totalBytes - rangeStart;
+        }
+
+        res.writeHead(200, {
+          'Content-Type': 'application/gzip',
+          'Content-Length': toSendBytes,
+          'Accept-Ranges': 'bytes',
+        });
+
+        const buffer = genBuffer(toSendBytes, rangeStart);
+
+        res.write(buffer);
+
+        res.end();
+      });
+
+      server = builder.listen(5000);
+    }
+
+    /** Generate 4 bytes 00, then 4 bytes FF until "toGen" */
+    function genBuffer(toGen: number, offset: number) {
+      const buffer = Buffer.alloc(toGen);
+
+      for (let i = 0; i < toGen; i++) {
+        const byteId = offset + i;
+
+        if (byteId % 8 < 4) {
+          buffer.writeUInt8(0, i);
+        } else {
+          buffer.writeUInt8(255, i);
+        }
+      }
+
+      return buffer;
+    }
+
+    it('should correctly allow HTTP requests', async () => {
+      jest.spyOn(console, 'log').mockImplementation(() => void 0);
+      createTestServer();
+
+      const downloadDir = path.join(tmpdir, 'downloadDir');
+
+      await utils.mkdir(downloadDir);
+
+      const outfile = path.join(downloadDir, 'archive.tgz');
+      const tmpfile = outfile + '.downloading';
+
+      const options: MongoBinaryOpts = {
+        arch: 'x64',
+        downloadDir,
+        os: {
+          os: 'linux',
+          dist: 'Ubuntu Linux',
+          release: '24.04',
+        },
+        version: '8.0.0',
+      };
+      const mbd = new MongoBinaryDownload(options);
+      mbd.isTTY = false;
+
+      const resolved = await mbd.httpDownload(
+        new URL('http://localhost:5000/archive.tgz'),
+        {
+          rejectUnauthorized: false,
+        },
+        outfile,
+        tmpfile,
+        1,
+        0,
+        1000
+      );
+
+      expect(resolved).toStrictEqual(outfile);
+
+      const stat = await utils.statPath(outfile);
+
+      expect(stat).not.toBeUndefined();
+      utils.assertion(stat !== undefined); // for types
+
+      expect(stat.size).toStrictEqual(totalBytes);
+
+      const buffer = await fspromises.readFile(outfile, null);
+
+      const expected = genBuffer(totalBytes, 0);
+
+      expect(buffer).toStrictEqual(expected);
     });
   });
 });
