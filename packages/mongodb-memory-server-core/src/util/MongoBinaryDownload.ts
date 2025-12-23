@@ -2,7 +2,7 @@ import os from 'os';
 import { URL } from 'url';
 import path from 'path';
 import { promises as fspromises, createWriteStream, createReadStream, constants } from 'fs';
-import { https } from 'follow-redirects';
+import { https, http } from 'follow-redirects';
 import { createUnzip } from 'zlib';
 import tar from 'tar-stream';
 import yauzl from 'yauzl';
@@ -213,7 +213,6 @@ export class MongoBinaryDownload {
     const requestOptions: RequestOptions = {
       method: 'GET',
       rejectUnauthorized: strictSsl,
-      protocol: envToBool(resolveConfig(ResolveConfigVariables.USE_HTTP)) ? 'http:' : 'https:',
       agent: proxy ? new HttpsProxyAgent(proxy) : undefined,
     };
 
@@ -492,7 +491,9 @@ export class MongoBinaryDownload {
     return new Promise((resolve, reject) => {
       log(`httpDownload: trying to download "${downloadUrl}"`);
 
-      const request = https.get(url, useHttpsOptions, async (response) => {
+      const protocol = envToBool(resolveConfig(ResolveConfigVariables.USE_HTTP)) ? http : https;
+
+      const request = protocol.get(url, useHttpsOptions, async (response) => {
         if (response.statusCode != 200 && response.statusCode != 206) {
           if (response.statusCode === 403) {
             reject(
