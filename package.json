@@ -20,7 +20,7 @@
     "husky": "9.1.7",
     "jest": "30.3.0",
     "lint-staged": "16.2.7",
-    "prettier": "3.7.4",
+    "prettier": "3.8.3",
     "ts-jest": "29.4.9",
     "typedoc": "^0.28.19",
     "typescript": "~5.9.3",
