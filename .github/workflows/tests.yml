@@ -23,6 +23,7 @@ jobs:
       contents: read  # for actions/checkout to fetch code
     runs-on: ${{ matrix.distro }}
     strategy:
+      fail-fast: false
       matrix:
         # this is a hack as there is currently no (public) way to access "runs-on" with version
         distro: [ubuntu-24.04]
