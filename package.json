@@ -13,7 +13,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "~24.10.0",
     "commitlint": "20.5.2",
-    "doctoc": "2.2.1",
+    "doctoc": "2.4.1",
     "eslint": "9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "5.5.4",
