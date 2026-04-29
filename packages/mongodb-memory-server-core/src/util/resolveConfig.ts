@@ -203,5 +203,6 @@ findPackageJson();
 if (envToBool(resolveConfig(ResolveConfigVariables.DEBUG)) && !debug_enabled) {
   debug.enable('MongoMS:*');
   log('Debug Mode Enabled, through package.json');
+  // eslint-disable-next-line no-useless-assignment
   debug_enabled = true;
 }

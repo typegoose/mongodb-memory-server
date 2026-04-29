@@ -14,7 +14,7 @@
     "@types/node": "~24.10.0",
     "commitlint": "20.5.2",
     "doctoc": "2.4.1",
-    "eslint": "9.39.2",
+    "eslint": "10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "5.5.4",
     "husky": "9.1.7",
@@ -24,7 +24,9 @@
     "ts-jest": "29.4.9",
     "typedoc": "^0.28.19",
     "typescript": "~5.9.3",
-    "typescript-eslint": "8.49.0"
+    "typescript-eslint": "8.59.1",
+    "globals": "^17.5.0",
+    "@eslint/js": "^10.0.1"
   },
   "workspaces": [
     "packages/*"

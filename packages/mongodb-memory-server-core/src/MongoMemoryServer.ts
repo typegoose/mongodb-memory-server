@@ -421,6 +421,8 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     /**
      * This variable is used for determining if "createAuth" should be run
      */
+    // the following eslint lint seems to be a false positive?
+    // eslint-disable-next-line no-useless-assignment
     let isNew: boolean = true;
 
     const opts = await DryMongoBinary.generateOptions(this.opts.binary);
