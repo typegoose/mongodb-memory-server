@@ -13,7 +13,7 @@ export = async function globalSetup(): Promise<void> {
     '6.0.25',
     '7.0.24',
     '8.0.14',
-    '8.2.1',
+    '8.2.6',
   ];
   // Ensure all required versions are downloaded for tests
   for (const version of versions) {
