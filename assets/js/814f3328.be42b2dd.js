@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkmongodb_memory_server_website=globalThis.webpackChunkmongodb_memory_server_website||[]).push([[7472],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[]}')}}]);
