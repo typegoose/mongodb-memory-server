@@ -36,7 +36,7 @@
     "provenance": true
   },
   "devDependencies": {
-    "@types/debug": "^4.1.12",
+    "@types/debug": "^4.1.13",
     "@types/find-cache-dir": "^3.2.1",
     "@types/follow-redirects": "^1.14.4",
     "@types/semver": "^7.7.1",
