@@ -8,7 +8,7 @@ export = async function globalSetup(): Promise<void> {
   const versions = [
     defaultVersion,
     '4.2.25',
-    '4.4.29',
+    '4.4.30',
     '5.0.31',
     '6.0.25',
     '7.0.24',
