@@ -12,8 +12,8 @@
   "dependencies": {
     "@docusaurus/core": "3.10.0",
     "@docusaurus/preset-classic": "3.10.0",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
   },
   "browserslist": {
     "production": [
