@@ -2,7 +2,7 @@
 
 ### Dependencies
 
-* **yuzl:** upgrade to 3.3.1 ([#993](https://github.com/typegoose/mongodb-memory-server/issues/993)) ([30e206f](https://github.com/typegoose/mongodb-memory-server/commit/30e206fbdfe39dccba961c14058f0bc213edcac5)), closes [#992](https://github.com/typegoose/mongodb-memory-server/issues/992)
+* **yauzl:** upgrade to 3.3.1 ([#993](https://github.com/typegoose/mongodb-memory-server/issues/993)) ([30e206f](https://github.com/typegoose/mongodb-memory-server/commit/30e206fbdfe39dccba961c14058f0bc213edcac5)), closes [#992](https://github.com/typegoose/mongodb-memory-server/issues/992)
 
 ## [11.1.0](https://github.com/typegoose/mongodb-memory-server/compare/v11.0.1...v11.1.0) (2026-04-29)
 
