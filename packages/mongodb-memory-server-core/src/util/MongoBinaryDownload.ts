@@ -343,36 +343,25 @@ export class MongoBinaryDownload {
   ): Promise<void> {
     log('extractZip');
 
-    return new Promise((resolve, reject) => {
-      yauzl.open(mongoDBArchive, { lazyEntries: true }, (err, zipfile) => {
-        if (err || !zipfile) {
-          return reject(err);
-        }
+    const zipfile = await yauzl.openPromise(mongoDBArchive, { lazyEntries: true });
 
-        zipfile.readEntry();
+    for await (const entry of zipfile.eachEntry()) {
+      if (!filter(entry.fileName)) {
+        continue;
+      }
 
-        zipfile.on('end', () => resolve());
+      const readstream = await zipfile.openReadStreamPromise(entry);
 
-        zipfile.on('entry', (entry) => {
-          if (!filter(entry.fileName)) {
-            return zipfile.readEntry();
-          }
+      const writestream = createWriteStream(extractPath, { mode: 0o775 });
 
-          zipfile.openReadStream(entry, (err2, r) => {
-            if (err2 || !r) {
-              return reject(err2);
-            }
+      await new Promise<void>((res, rej) => {
+        writestream.once('finish', res);
+        writestream.once('error', rej);
+        readstream.once('error', rej);
 
-            r.on('end', () => zipfile.readEntry());
-            r.pipe(
-              createWriteStream(extractPath, {
-                mode: 0o775,
-              })
-            );
-          });
-        });
+        readstream.pipe(writestream);
       });
-    });
+    }
   }
 
   /**
