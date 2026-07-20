@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkmongodb_memory_server_website=globalThis.webpackChunkmongodb_memory_server_website||[]).push([[4595],{4245(e,s,r){r.r(s),r.d(s,{default:()=>i});r(6540);var o=r(6347),t=r(6025),u=r(4848);const i=function(){return(0,u.jsx)(o.rd,{to:(0,t.Ay)("docs/guides/quick-start-guide")})}}}]);
