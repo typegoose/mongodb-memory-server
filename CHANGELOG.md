@@ -1,3 +1,17 @@
+## [11.3.0-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v11.2.0...v11.3.0-beta.1) (2026-07-20)
+
+### Fixes
+
+* **MongoBinaryDownload:** replace zip implementation with new promise API ([3fb04f4](https://github.com/typegoose/mongodb-memory-server/commit/3fb04f4b6ab06ca3aef54967f28e6432ee59e079)), closes [#990](https://github.com/typegoose/mongodb-memory-server/issues/990)
+
+### Dependencies
+
+* **yauzl:** upgrade to 3.4.0 ([e3f6432](https://github.com/typegoose/mongodb-memory-server/commit/e3f6432e3ae9bd59d7abb4fd0c0eb392babad6d1))
+
+### Dev-Dependencies
+
+* **@types/yauzl:** upgrade to 3.4.0 ([71fe42d](https://github.com/typegoose/mongodb-memory-server/commit/71fe42d8535aabc407b7730d38e0f15a97a3f02c))
+
 ## [11.2.0](https://github.com/typegoose/mongodb-memory-server/compare/v11.1.0...v11.2.0) (2026-05-28)
 
 ### Dependencies
