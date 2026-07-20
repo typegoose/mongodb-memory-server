@@ -55,7 +55,7 @@ jobs:
           ref: ${{ github.event.inputs.git-ref }}
           fetch-depth: 5 # because this is an manual trigger, only fetch the latest 5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
       - name: Load MongoDB binary cache
@@ -93,7 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Use Node.js 24
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24.x
       - name: Install node_modules
