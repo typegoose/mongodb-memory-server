@@ -293,15 +293,17 @@ Default: `true`
 
 ### VALIDATE_BINARY_CHECKSUM
 
-|         Environment Variable          |         PackageJson         |
-| :------------------------------------: | :--------------------------: |
+|        Environment Variable        |       PackageJson        |
+| :---------------------------------: | :-----------------------: |
 | `MONGOMS_VALIDATE_BINARY_CHECKSUM` | `validateBinaryChecksum` |
 
-Option `VALIDATE_BINARY_CHECKSUM` is used to enable an md5 check of the cached (already extracted) `mongod` binary before using it, in addition to the always-on check for obviously truncated (too small) binaries.
+Option `VALIDATE_BINARY_CHECKSUM` is used to enable an md5 check of the cached (already extracted) `mongod` binary before using it, in addition to the always-on checks for obviously truncated (too small) binaries and for a missing checksum sidecar file.
 
 Default: `false`
 
-The checksum is generated once, after a binary is extracted, and stored alongside it as `<binary>.md5`. Enabling this option adds the cost of hashing the full binary on every start, so it is off by default; use it if you suspect binaries can get corrupted on disk (e.g. a process killed mid-extraction) between runs.
+The checksum is generated once, after a binary is extracted, and stored alongside it as `<binary>.md5`. Since this sidecar is only written on a successful extraction, a cached binary without one is always treated as corrupted and re-downloaded, regardless of this option (this also applies to binaries cached by a version of this package older than this check). Enabling this option additionally hashes the full binary on every start to catch on-disk corruption after a successful extraction (e.g. a process killed mid-write); it is off by default because of that added cost.
+
+This option does not apply to a binary provided via `SYSTEM_BINARY` — system binaries are never extracted by this package, so no checksum sidecar is ever generated or checked for them.
 
 ## How to use them in the package.json
 

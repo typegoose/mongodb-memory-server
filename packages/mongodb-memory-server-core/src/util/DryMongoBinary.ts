@@ -131,46 +131,69 @@ export class DryMongoBinary {
     }
 
     const foundBinaryPath = returnValue[1];
-    const binaryStat = await statPath(foundBinaryPath);
 
-    if (!isNullOrUndefined(binaryStat) && binaryStat.size < MIN_BINARY_SIZE_BYTES) {
-      log(
-        `locateBinary: binary at "${foundBinaryPath}" is only "${binaryStat.size}" bytes (expected at least "${MIN_BINARY_SIZE_BYTES}"), treating as corrupted`
-      );
+    if (await this.isBinaryCorrupted(foundBinaryPath)) {
       await this.removeCorruptedBinary(foundBinaryPath);
 
       return undefined;
-    }
-
-    // opt-in, default off: hashing the full binary on every start has a real cost
-    if (envToBool(resolveConfig(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM))) {
-      const checksumFile = `${foundBinaryPath}.md5`;
-
-      if (await pathExists(checksumFile)) {
-        const [expectedChecksum, actualChecksum] = await Promise.all([
-          fspromises.readFile(checksumFile, 'utf-8'),
-          md5FromFile(foundBinaryPath),
-        ]);
-
-        if (expectedChecksum.trim() !== actualChecksum) {
-          log(
-            `locateBinary: checksum mismatch for binary at "${foundBinaryPath}" (expected: "${expectedChecksum.trim()}", actual: "${actualChecksum}"), treating as corrupted`
-          );
-          await this.removeCorruptedBinary(foundBinaryPath);
-
-          return undefined;
-        }
-      } else {
-        log(
-          `locateBinary: "VALIDATE_BINARY_CHECKSUM" is enabled, but no checksum file exists for "${foundBinaryPath}", skipping validation`
-        );
-      }
     }
 
     log(`locateBinary: found binary at "${foundBinaryPath}"`);
     this.binaryCache.set(opts.version, foundBinaryPath);
 
     return foundBinaryPath;
+  }
+
+  /**
+   * Check whether the binary at "binaryPath" is corrupted:
+   * - it cannot be stat'd
+   * - it is below the expected minimum size (truncated download/extraction)
+   * - its checksum sidecar (`<binary>.md5`) is missing (it is always written on successful
+   *   extraction, so its absence means an incomplete/pre-existing extraction)
+   * - (opt-in via "VALIDATE_BINARY_CHECKSUM") its content does not match the checksum sidecar
+   */
+  private static async isBinaryCorrupted(binaryPath: string): Promise<boolean> {
+    const binaryStat = await statPath(binaryPath);
+
+    if (isNullOrUndefined(binaryStat)) {
+      log(`isBinaryCorrupted: could not stat binary at "${binaryPath}", treating as corrupted`);
+
+      return true;
+    }
+
+    if (binaryStat.size < MIN_BINARY_SIZE_BYTES) {
+      log(
+        `isBinaryCorrupted: binary at "${binaryPath}" is only "${binaryStat.size}" bytes (expected at least "${MIN_BINARY_SIZE_BYTES}"), treating as corrupted`
+      );
+
+      return true;
+    }
+
+    const checksumFile = `${binaryPath}.md5`;
+
+    if (!(await pathExists(checksumFile))) {
+      log(`isBinaryCorrupted: no checksum file exists for "${binaryPath}", treating as corrupted`);
+
+      return true;
+    }
+
+    // opt-in, default off: hashing the full binary on every start has a real cost
+    if (envToBool(resolveConfig(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM))) {
+      const [expectedChecksum, actualChecksum] = await Promise.all([
+        fspromises.readFile(checksumFile, 'utf-8'),
+        md5FromFile(binaryPath),
+      ]);
+
+      if (expectedChecksum.trim() !== actualChecksum) {
+        log(
+          `isBinaryCorrupted: checksum mismatch for binary at "${binaryPath}" (expected: "${expectedChecksum.trim()}", actual: "${actualChecksum}"), treating as corrupted`
+        );
+
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**

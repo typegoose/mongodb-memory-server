@@ -579,6 +579,10 @@ describe('DryBinary', () => {
       jest
         .spyOn(binary.DryMongoBinary, 'generateDownloadPath')
         .mockResolvedValue([true, mockBinary]);
+      jest
+        .spyOn(utils, 'pathExists')
+        .mockImplementation((path) => Promise.resolve(!path.endsWith('.lock')));
+      jest.spyOn(utils, 'statPath').mockResolvedValue({ size: 2 * 1024 * 1024 } as Stats);
 
       const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
       expect(returnValue).toEqual(mockBinary);
@@ -640,7 +644,22 @@ describe('DryBinary', () => {
       expect(rmSpy).toHaveBeenCalledWith('/tmp/1.1.1.md5', { force: true });
     });
 
-    it('should return the binary path when checksum validation is enabled but no checksum file exists', async () => {
+    it('should return "undefined" and remove the binary when no checksum file exists (checksum validation disabled)', async () => {
+      jest
+        .spyOn(binary.DryMongoBinary, 'generateDownloadPath')
+        .mockResolvedValue([true, '/tmp/1.1.1']);
+      jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
+      jest.spyOn(utils, 'statPath').mockResolvedValue({ size: 2 * 1024 * 1024 } as Stats);
+      const rmSpy = jest.spyOn(fspromises, 'rm').mockResolvedValue(void 0);
+
+      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
+      expect(returnValue).toBeUndefined();
+      expect(binary.DryMongoBinary.binaryCache.size).toBe(0);
+      expect(rmSpy).toHaveBeenCalledWith('/tmp/1.1.1', { force: true });
+      expect(rmSpy).toHaveBeenCalledWith('/tmp/1.1.1.md5', { force: true });
+    });
+
+    it('should return "undefined" and remove the binary when checksum validation is enabled but no checksum file exists', async () => {
       process.env[envName(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM)] = 'true';
       jest
         .spyOn(binary.DryMongoBinary, 'generateDownloadPath')
@@ -648,11 +667,29 @@ describe('DryBinary', () => {
       jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
       jest.spyOn(utils, 'statPath').mockResolvedValue({ size: 2 * 1024 * 1024 } as Stats);
       const md5Spy = jest.spyOn(utils, 'md5FromFile');
+      const rmSpy = jest.spyOn(fspromises, 'rm').mockResolvedValue(void 0);
 
       const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
-      expect(returnValue).toEqual('/tmp/1.1.1');
-      expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
+      expect(returnValue).toBeUndefined();
+      expect(binary.DryMongoBinary.binaryCache.size).toBe(0);
       expect(md5Spy).not.toHaveBeenCalled();
+      expect(rmSpy).toHaveBeenCalledWith('/tmp/1.1.1', { force: true });
+      expect(rmSpy).toHaveBeenCalledWith('/tmp/1.1.1.md5', { force: true });
+    });
+
+    it('should return "undefined" and remove the binary if it cannot be stat\'d', async () => {
+      jest
+        .spyOn(binary.DryMongoBinary, 'generateDownloadPath')
+        .mockResolvedValue([true, '/tmp/1.1.1']);
+      jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
+      jest.spyOn(utils, 'statPath').mockResolvedValue(undefined);
+      const rmSpy = jest.spyOn(fspromises, 'rm').mockResolvedValue(void 0);
+
+      const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
+      expect(returnValue).toBeUndefined();
+      expect(binary.DryMongoBinary.binaryCache.size).toBe(0);
+      expect(rmSpy).toHaveBeenCalledWith('/tmp/1.1.1', { force: true });
+      expect(rmSpy).toHaveBeenCalledWith('/tmp/1.1.1.md5', { force: true });
     });
   });
 
