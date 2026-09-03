@@ -21,7 +21,7 @@
     "jest": "30.5.1",
     "lint-staged": "16.4.0",
     "prettier": "3.9.6",
-    "ts-jest": "29.4.9",
+    "ts-jest": "29.4.12",
     "typedoc": "^0.28.19",
     "typescript": "~5.9.3",
     "typescript-eslint": "8.59.1",
