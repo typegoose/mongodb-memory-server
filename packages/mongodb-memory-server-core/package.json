@@ -39,7 +39,7 @@
     "@types/debug": "^4.1.13",
     "@types/find-cache-dir": "^3.2.1",
     "@types/follow-redirects": "^1.14.4",
-    "@types/semver": "^7.7.1",
+    "@types/semver": "^7.8.0",
     "@types/yauzl": "^3.4.0",
     "@types/yazl": "^3.3.1",
     "rimraf": "^6.1.3",
