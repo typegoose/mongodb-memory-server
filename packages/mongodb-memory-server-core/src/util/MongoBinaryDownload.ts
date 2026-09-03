@@ -600,6 +600,8 @@ export class MongoBinaryDownload {
         });
 
         response.on('error', (err: Error) => {
+          log(`Response with error for download "${downloadUrl}"!, Error:`, err.message);
+
           // use the code if available, otherwise use the entire message
           const code = (err as any)?.code ?? err.message;
 
