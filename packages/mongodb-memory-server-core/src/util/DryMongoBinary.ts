@@ -1,26 +1,31 @@
 import debug from 'debug';
+import findCacheDir from 'find-cache-dir';
+import { promises as fspromises } from 'fs';
+import { arch, homedir, platform } from 'os';
+import * as path from 'path';
+import { BinaryNotFoundError, NoRegexMatchError, ParseArchiveRegexError } from './errors';
+import { AnyOS, getOS, isLinuxOS, OtherOS } from './getos';
+import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 import {
   DEFAULT_VERSION,
   envToBool,
   packageJsonPath,
-  resolveConfig,
   ResolveConfigVariables,
+  resolveConfig,
 } from './resolveConfig';
 import {
   assertion,
   checkBinaryPermissions,
   isNullOrUndefined,
   lockfilePath,
+  md5FromFile,
   pathExists,
+  statPath,
 } from './utils';
-import * as path from 'path';
-import { arch, homedir, platform } from 'os';
-import findCacheDir from 'find-cache-dir';
-import { getOS, AnyOS, isLinuxOS, OtherOS } from './getos';
-import { BinaryNotFoundError, NoRegexMatchError, ParseArchiveRegexError } from './errors';
-import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 
 const log = debug('MongoMS:DryMongoBinary');
+
+const MIN_BINARY_SIZE_BYTES = 1024 * 1024;
 
 /** Interface for general options required to pass-around (all optional) */
 export interface BaseDryMongoBinaryOptions {
@@ -124,10 +129,55 @@ export class DryMongoBinary {
       return undefined;
     }
 
-    log(`locateBinary: found binary at "${returnValue[1]}"`);
-    this.binaryCache.set(opts.version, returnValue[1]);
+    const foundBinaryPath = returnValue[1];
+    const binaryStat = await statPath(foundBinaryPath);
 
-    return returnValue[1];
+    if (!isNullOrUndefined(binaryStat) && binaryStat.size < MIN_BINARY_SIZE_BYTES) {
+      log(
+        `locateBinary: binary at "${foundBinaryPath}" is only "${binaryStat.size}" bytes (expected at least "${MIN_BINARY_SIZE_BYTES}"), treating as corrupted`
+      );
+      await this.removeCorruptedBinary(foundBinaryPath);
+
+      return undefined;
+    }
+
+    // opt-in, default off: hashing the full binary on every start has a real cost
+    if (envToBool(resolveConfig(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM))) {
+      const checksumFile = `${foundBinaryPath}.md5`;
+
+      if (await pathExists(checksumFile)) {
+        const [expectedChecksum, actualChecksum] = await Promise.all([
+          fspromises.readFile(checksumFile, 'utf-8'),
+          md5FromFile(foundBinaryPath),
+        ]);
+
+        if (expectedChecksum.trim() !== actualChecksum) {
+          log(
+            `locateBinary: checksum mismatch for binary at "${foundBinaryPath}" (expected: "${expectedChecksum.trim()}", actual: "${actualChecksum}"), treating as corrupted`
+          );
+          await this.removeCorruptedBinary(foundBinaryPath);
+
+          return undefined;
+        }
+      } else {
+        log(
+          `locateBinary: "VALIDATE_BINARY_CHECKSUM" is enabled, but no checksum file exists for "${foundBinaryPath}", skipping validation`
+        );
+      }
+    }
+
+    log(`locateBinary: found binary at "${foundBinaryPath}"`);
+    this.binaryCache.set(opts.version, foundBinaryPath);
+
+    return foundBinaryPath;
+  }
+
+  /**
+   * Remove a corrupted binary and its checksum sidecar
+   */
+  private static async removeCorruptedBinary(binaryPath: string): Promise<void> {
+    await fspromises.rm(binaryPath, { force: true });
+    await fspromises.rm(`${binaryPath}.md5`, { force: true });
   }
 
   /**

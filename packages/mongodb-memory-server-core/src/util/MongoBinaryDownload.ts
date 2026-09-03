@@ -284,6 +284,10 @@ export class MongoBinaryDownload {
       );
     }
 
+    // checksum of the extracted binary, not the archive (that is checked in "makeMD5check")
+    const binaryChecksum = await md5FromFile(mongodbFullPath);
+    await fspromises.writeFile(`${mongodbFullPath}.md5`, binaryChecksum);
+
     return mongodbFullPath;
   }
 

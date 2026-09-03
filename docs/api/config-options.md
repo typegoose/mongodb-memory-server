@@ -291,6 +291,18 @@ Option `RESUME_DOWNLOAD` is used to enable / disable resuming a download of a bi
 
 Default: `true`
 
+### VALIDATE_BINARY_CHECKSUM
+
+|         Environment Variable          |         PackageJson         |
+| :------------------------------------: | :--------------------------: |
+| `MONGOMS_VALIDATE_BINARY_CHECKSUM` | `validateBinaryChecksum` |
+
+Option `VALIDATE_BINARY_CHECKSUM` is used to enable an md5 check of the cached (already extracted) `mongod` binary before using it, in addition to the always-on check for obviously truncated (too small) binaries.
+
+Default: `false`
+
+The checksum is generated once, after a binary is extracted, and stored alongside it as `<binary>.md5`. Enabling this option adds the cost of hashing the full binary on every start, so it is off by default; use it if you suspect binaries can get corrupted on disk (e.g. a process killed mid-extraction) between runs.
+
 ## How to use them in the package.json
 
 To use the config options in the `package.json`, they need to be camelCased (and without `_`), and need to be in the property `config.mongodbMemoryServer`
