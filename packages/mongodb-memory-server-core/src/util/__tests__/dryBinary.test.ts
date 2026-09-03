@@ -591,9 +591,7 @@ describe('DryBinary', () => {
       jest
         .spyOn(binary.DryMongoBinary, 'generateDownloadPath')
         .mockResolvedValue([true, '/tmp/1.1.1']);
-      jest.spyOn(utils, 'pathExists').mockImplementation((path) => {
-        return Promise.resolve(path === '/tmp/1.1.1.lock' ? false : false);
-      });
+      jest.spyOn(utils, 'pathExists').mockResolvedValue(false);
       jest.spyOn(utils, 'statPath').mockResolvedValue({ size: 10 } as Stats);
       const rmSpy = jest.spyOn(fspromises, 'rm').mockResolvedValue(void 0);
 

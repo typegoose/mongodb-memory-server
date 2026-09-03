@@ -25,6 +25,7 @@ import {
 
 const log = debug('MongoMS:DryMongoBinary');
 
+// a real "mongod" binary is always well above this size; anything smaller indicates a truncated download/extraction
 const MIN_BINARY_SIZE_BYTES = 1024 * 1024;
 
 /** Interface for general options required to pass-around (all optional) */
