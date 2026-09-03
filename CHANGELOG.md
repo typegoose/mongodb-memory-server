@@ -1,3 +1,35 @@
+## [11.3.0-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0-beta.1...v11.3.0-beta.2) (2026-09-03)
+
+### Fixes
+
+* **MongoBinaryDownload::attemptDownload:** add log when response recieves a error ([143588b](https://github.com/typegoose/mongodb-memory-server/commit/143588b7e3cc9eaf1ce2dacffff54f2177cc43e8))
+* **MongoBinaryDownload::attemptDownload:** change "console.error" to a debug "log" ([833bcc7](https://github.com/typegoose/mongodb-memory-server/commit/833bcc714a0a40e87664eee23acea294e867d601))
+* **MongoMemoryReplSet:** increase "electionTimeoutMillis" timeout to 5000ms ([76d727a](https://github.com/typegoose/mongodb-memory-server/commit/76d727a009611639ec40ee9a9df5dc87a384d5d5)), closes [#995](https://github.com/typegoose/mongodb-memory-server/issues/995)
+
+### Style
+
+* **utils::killProcess:** fix typo "An" -> "A" ([c2a18ac](https://github.com/typegoose/mongodb-memory-server/commit/c2a18ac065bc843748461171321e8c113608063d))
+
+### Dependencies
+
+* **@types/tar-stream:** remove ([7fbd7f2](https://github.com/typegoose/mongodb-memory-server/commit/7fbd7f29f9cf0a45c676ad7ce19378df78d7f0a3))
+* **mongodb:** upgrade to 7.5.0 ([15e5cca](https://github.com/typegoose/mongodb-memory-server/commit/15e5cca9b342fdeba52ee08b7b1ae6320a02731e))
+* **semver:** upgrade to 7.8.5 ([c3c5adc](https://github.com/typegoose/mongodb-memory-server/commit/c3c5adc7a0f003a71d1858a1eb57818f53c5f5e6))
+* **tar-stream:** upgrade to 3.2.1 ([3e89726](https://github.com/typegoose/mongodb-memory-server/commit/3e89726da891d66f7417ff0ef4010e1ffb4da83a))
+
+### Dev-Dependencies
+
+* **@types/semver:** upgrade to 7.8.0 ([1705b60](https://github.com/typegoose/mongodb-memory-server/commit/1705b6013775b4338fb2d8d1d2f082ec6247290c))
+* **doctoc:** upgrade to 2.5.0 ([833623b](https://github.com/typegoose/mongodb-memory-server/commit/833623b3f78c36410c3090e66b3d9ef3b7ada8b6))
+* **eslint-plugin-prettier:** upgrade to 5.5.6 ([38394c9](https://github.com/typegoose/mongodb-memory-server/commit/38394c9c5362c7dfa150ddc8b636ab60ce3ea13a))
+* **eslint:** upgrade to 10.9.1 ([16b408d](https://github.com/typegoose/mongodb-memory-server/commit/16b408d71d82711131adda5d0ff7dd44f2d50e58))
+* **globals:** upgrade to 17.12.0 ([1765718](https://github.com/typegoose/mongodb-memory-server/commit/17657189f9c4db97a6306b99e557b0a60eb576dc))
+* **jest:** upgrade to 30.5.1 ([a7d0a44](https://github.com/typegoose/mongodb-memory-server/commit/a7d0a44ae4ea31622f094838bdcc9875e844ff02))
+* **prettier:** upgrade to 3.9.6 ([46fea46](https://github.com/typegoose/mongodb-memory-server/commit/46fea462af72c2b0ea9baf14be7a9c4ad1b0912c))
+* **ts-jest:** upgrade to 29.4.12 ([6166072](https://github.com/typegoose/mongodb-memory-server/commit/616607290a8ca850a8bea9ab35a00249d9c73af8))
+* **typedoc:** upgrade to 0.28.20 ([5dc343f](https://github.com/typegoose/mongodb-memory-server/commit/5dc343fe199c4cf2d68ab13b79167c5f01ceaf8d))
+* **typescript-eslint:** upgrade to 8.69.0 ([c9b8e55](https://github.com/typegoose/mongodb-memory-server/commit/c9b8e5521f34123ea475563b5e792e0adc5585ee))
+
 ## [11.3.0-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v11.2.0...v11.3.0-beta.1) (2026-07-20)
 
 ### Fixes
