@@ -608,7 +608,7 @@ export class MongoBinaryDownload {
       });
 
       request.on('error', (err: Error) => {
-        console.error(`Could NOT download "${downloadUrl}"!`, err.message);
+        log(`Request failed for download "${downloadUrl}"!, Error:`, err.message);
 
         // use the code if available, otherwise use the entire message
         const code = (err as any)?.code ?? err.message;
