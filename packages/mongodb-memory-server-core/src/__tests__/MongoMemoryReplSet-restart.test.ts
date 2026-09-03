@@ -1,4 +1,5 @@
 import MongoMemoryReplSet, { MongoMemoryReplSetOpts } from '../MongoMemoryReplSet';
+import { resetPortsCache } from '../util/getport';
 import { createTmpDir, removeDir } from '../util/utils';
 
 let tmpDir: string;
@@ -9,10 +10,6 @@ beforeEach(async () => {
 afterEach(async () => {
   await removeDir(tmpDir);
 });
-
-const sleep = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
 
 describe('Restart single MongoMemoryReplSet instance', () => {
   it('should start and stop twice', async () => {
@@ -36,13 +33,7 @@ describe('Restart single MongoMemoryReplSet instance', () => {
 
     await replSetBefore.stop();
 
-    /*
-     * get-port has a portlocking-feature that keeps ports locked for
-     * "a minimum of 15 seconds and a maximum of 30 seconds before being released again"
-     * https://github.com/sindresorhus/get-port#beware
-     */
-    // this test needs to use the *exact same port* again, otherwise Mongod will throw an error "No host described in new configuration ${newPort} for replica set testset maps to this node"
-    await sleep(30000);
+    resetPortsCache();
 
     const replSetAfter = await MongoMemoryReplSet.create(opts);
     await replSetAfter.stop();
