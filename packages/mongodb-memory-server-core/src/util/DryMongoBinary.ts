@@ -25,7 +25,7 @@ import {
 
 const log = debug('MongoMS:DryMongoBinary');
 
-// a real "mongod" binary is always well above this size; anything smaller indicates a truncated download/extraction
+/** a real "mongod" binary is always well above this size; anything smaller indicates a truncated download/extraction */
 const MIN_BINARY_SIZE_BYTES = 1024 * 1024;
 
 /** Interface for general options required to pass-around (all optional) */
@@ -179,14 +179,17 @@ export class DryMongoBinary {
 
     // opt-in, default off: hashing the full binary on every start has a real cost
     if (envToBool(resolveConfig(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM))) {
-      const [expectedChecksum, actualChecksum] = await Promise.all([
+      const [checksumFileContent, actualChecksum] = await Promise.all([
         fspromises.readFile(checksumFile, 'utf-8'),
         md5FromFile(binaryPath),
       ]);
+      // the sidecar is written as "CHECKSUM *FILENAME" (md5sum's binary-mode format), but a sidecar
+      // written before that format was introduced only has the raw checksum, so only ever read the first token
+      const expectedChecksum = checksumFileContent.trim().split(/\s+/)[0];
 
-      if (expectedChecksum.trim() !== actualChecksum) {
+      if (expectedChecksum !== actualChecksum) {
         log(
-          `isBinaryCorrupted: checksum mismatch for binary at "${binaryPath}" (expected: "${expectedChecksum.trim()}", actual: "${actualChecksum}"), treating as corrupted`
+          `isBinaryCorrupted: checksum mismatch for binary at "${binaryPath}" (expected: "${expectedChecksum}", actual: "${actualChecksum}"), treating as corrupted`
         );
 
         return true;
