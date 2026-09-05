@@ -372,6 +372,11 @@ describe('MongoBinaryDownload', () => {
       expect(outPathStat.isFile()).toBeTruthy();
 
       expect((await fspromises.readFile(outPath)).toString()).toMatchSnapshot();
+
+      const checksumContent = (await fspromises.readFile(`${outPath}.md5`)).toString();
+      expect(checksumContent).toEqual(
+        `${await utils.md5FromFile(outPath)} *${path.basename(outPath)}\n`
+      );
     });
 
     it('should extract tar.gz archives', async () => {
@@ -424,6 +429,11 @@ describe('MongoBinaryDownload', () => {
       expect(outPathStat.isFile()).toBeTruthy();
 
       expect((await fspromises.readFile(outPath)).toString()).toMatchSnapshot();
+
+      const checksumContent = (await fspromises.readFile(`${outPath}.md5`)).toString();
+      expect(checksumContent).toEqual(
+        `${await utils.md5FromFile(outPath)} *${path.basename(outPath)}\n`
+      );
     });
   });
 

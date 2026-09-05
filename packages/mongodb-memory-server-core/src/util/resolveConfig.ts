@@ -36,6 +36,7 @@ export enum ResolveConfigVariables {
   MAX_RETRIES = 'MAX_RETRIES', // Added for download retry configuration
   DISTRO = 'DISTRO',
   RESUME_DOWNLOAD = 'RESUME_DOWNLOAD',
+  VALIDATE_BINARY_CHECKSUM = 'VALIDATE_BINARY_CHECKSUM',
 }
 
 /** The Prefix for Environmental values */
@@ -55,6 +56,7 @@ export const defaultValues = new Map<ResolveConfigVariables, string>([
   [ResolveConfigVariables.MAX_REDIRECTS, '2'],
   [ResolveConfigVariables.MAX_RETRIES, '3'], // Default maxRetries for downloads
   [ResolveConfigVariables.RESUME_DOWNLOAD, 'true'],
+  [ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM, 'false'],
 ]);
 
 /** Interface for storing information about the found package.json from `findPackageJson` */
