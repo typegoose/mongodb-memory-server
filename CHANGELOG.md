@@ -1,3 +1,9 @@
+## [11.3.0-beta.3](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0-beta.2...v11.3.0-beta.3) (2026-09-09)
+
+### Fixes
+
+* **MongoInstance::stop:** change to always unset the "mongodProcess" ([9e32ef2](https://github.com/typegoose/mongodb-memory-server/commit/9e32ef21ab82e27f4546939b2f6547e0179990ae)), closes [#1032](https://github.com/typegoose/mongodb-memory-server/issues/1032)
+
 ## [11.3.0-beta.2](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0-beta.1...v11.3.0-beta.2) (2026-09-03)
 
 ### Fixes
