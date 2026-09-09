@@ -304,7 +304,7 @@ describe('MongodbInstance', () => {
     jest.spyOn(MongoClient, 'connect');
     process.kill(mongod.mongodProcess!.pid!, 'SIGKILL');
     // loop until the mongod process actually exits
-    while (dbUtil.isAlive(mongod.mongodProcess!.pid)) {
+    while (mongod.mongodProcess && dbUtil.isAlive(mongod.mongodProcess.pid)) {
       await new Promise<void>((resolve) => setTimeout(resolve, 5));
     }
     await mongod.stop();

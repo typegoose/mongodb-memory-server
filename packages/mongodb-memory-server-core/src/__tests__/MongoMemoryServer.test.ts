@@ -5,7 +5,7 @@ import MongoMemoryServer, {
   MongoMemoryServerEvents,
   MongoMemoryServerStates,
 } from '../MongoMemoryServer';
-import MongoInstance from '../util/MongoInstance';
+import MongoInstance, { MongoInstanceEvents } from '../util/MongoInstance';
 import * as utils from '../util/utils';
 import { InstanceInfoError, StateError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
@@ -1358,6 +1358,55 @@ describe('MongoMemoryServer', () => {
       await outer.cleanup({ doCleanup: true });
       // not "stopped" because of cleanup
       expect(outer.state).toStrictEqual(MongoMemoryServerStates.new);
+    });
+  });
+
+  describe('Unexpected exists should be handled correctly', () => {
+    it('Unexpected mongod exit should allow non-throw stop & cleanup (crash recovery wait)', async () => {
+      const mongoServer = await MongoMemoryServer.create();
+      expect(mongoServer.state).toStrictEqual(MongoMemoryServerStates.running);
+
+      const dbPath = mongoServer.instanceInfo!.dbPath;
+      const instance = mongoServer.instanceInfo!.instance;
+
+      // wait for the crash-recovery to fully settle first
+      const closedPromise = new Promise<void>((resolve) => {
+        instance.once(MongoInstanceEvents.instanceClosed, () => resolve());
+      });
+      // simulate a unexpected exit
+      process.kill(instance.mongodProcess!.pid!, 'SIGKILL');
+      await closedPromise;
+
+      // wait for the error handler to stop, before trying to stop; re #1032
+      expect(instance.stopPromise).toBeDefined();
+      await instance.stopPromise!;
+
+      // previously, this had throw a cleanup assertion error
+      await mongoServer.stop({ doCleanup: true });
+
+      // for sanity, check that cleanup actually ran and did its job
+      expect(await utils.statPath(dbPath)).toBeUndefined();
+
+      expect(mongoServer.state).toStrictEqual(MongoMemoryServerStates.new);
+    });
+
+    it('Unexpected mongod exit should allow non-throw stop & cleanup (no crash recovery wait)', async () => {
+      const mongoServer = await MongoMemoryServer.create();
+      expect(mongoServer.state).toStrictEqual(MongoMemoryServerStates.running);
+
+      const dbPath = mongoServer.instanceInfo!.dbPath;
+      const instance = mongoServer.instanceInfo!.instance;
+
+      // simulate a unexpected exit
+      process.kill(instance.mongodProcess!.pid!, 'SIGKILL');
+
+      // previously, this had throw a cleanup assertion error
+      await mongoServer.stop({ doCleanup: true });
+
+      // for sanity, check that cleanup actually ran and did its job
+      expect(await utils.statPath(dbPath)).toBeUndefined();
+
+      expect(mongoServer.state).toStrictEqual(MongoMemoryServerStates.new);
     });
   });
 });
