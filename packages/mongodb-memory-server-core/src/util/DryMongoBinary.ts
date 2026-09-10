@@ -1,26 +1,32 @@
 import debug from 'debug';
+import findCacheDir from 'find-cache-dir';
+import { promises as fspromises } from 'fs';
+import { arch, homedir, platform } from 'os';
+import * as path from 'path';
+import { BinaryNotFoundError, NoRegexMatchError, ParseArchiveRegexError } from './errors';
+import { AnyOS, getOS, isLinuxOS, OtherOS } from './getos';
+import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 import {
   DEFAULT_VERSION,
   envToBool,
   packageJsonPath,
-  resolveConfig,
   ResolveConfigVariables,
+  resolveConfig,
 } from './resolveConfig';
 import {
   assertion,
   checkBinaryPermissions,
   isNullOrUndefined,
   lockfilePath,
+  md5FromFile,
   pathExists,
+  statPath,
 } from './utils';
-import * as path from 'path';
-import { arch, homedir, platform } from 'os';
-import findCacheDir from 'find-cache-dir';
-import { getOS, AnyOS, isLinuxOS, OtherOS } from './getos';
-import { BinaryNotFoundError, NoRegexMatchError, ParseArchiveRegexError } from './errors';
-import { MongoBinaryDownloadUrl } from './MongoBinaryDownloadUrl';
 
 const log = debug('MongoMS:DryMongoBinary');
+
+/** a real "mongod" binary is always well above this size; anything smaller indicates a truncated download/extraction */
+const MIN_BINARY_SIZE_BYTES = 1024 * 1024;
 
 /** Interface for general options required to pass-around (all optional) */
 export interface BaseDryMongoBinaryOptions {
@@ -124,10 +130,81 @@ export class DryMongoBinary {
       return undefined;
     }
 
-    log(`locateBinary: found binary at "${returnValue[1]}"`);
-    this.binaryCache.set(opts.version, returnValue[1]);
+    const foundBinaryPath = returnValue[1];
 
-    return returnValue[1];
+    if (await this.isBinaryCorrupted(foundBinaryPath)) {
+      await this.removeCorruptedBinary(foundBinaryPath);
+
+      return undefined;
+    }
+
+    log(`locateBinary: found binary at "${foundBinaryPath}"`);
+    this.binaryCache.set(opts.version, foundBinaryPath);
+
+    return foundBinaryPath;
+  }
+
+  /**
+   * Check whether the binary at "binaryPath" is corrupted:
+   * - it cannot be stat'd
+   * - it is below the expected minimum size (truncated download/extraction)
+   * - its checksum sidecar (`<binary>.md5`) is missing (it is always written on successful
+   *   extraction, so its absence means an incomplete/pre-existing extraction)
+   * - (opt-in via "VALIDATE_BINARY_CHECKSUM") its content does not match the checksum sidecar
+   */
+  private static async isBinaryCorrupted(binaryPath: string): Promise<boolean> {
+    const binaryStat = await statPath(binaryPath);
+
+    if (isNullOrUndefined(binaryStat)) {
+      log(`isBinaryCorrupted: could not stat binary at "${binaryPath}", treating as corrupted`);
+
+      return true;
+    }
+
+    if (binaryStat.size < MIN_BINARY_SIZE_BYTES) {
+      log(
+        `isBinaryCorrupted: binary at "${binaryPath}" is only "${binaryStat.size}" bytes (expected at least "${MIN_BINARY_SIZE_BYTES}"), treating as corrupted`
+      );
+
+      return true;
+    }
+
+    const checksumFile = `${binaryPath}.md5`;
+
+    if (!(await pathExists(checksumFile))) {
+      log(`isBinaryCorrupted: no checksum file exists for "${binaryPath}", treating as corrupted`);
+
+      return true;
+    }
+
+    // opt-in, default off: hashing the full binary on every start has a real cost
+    if (envToBool(resolveConfig(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM))) {
+      const [checksumFileContent, actualChecksum] = await Promise.all([
+        fspromises.readFile(checksumFile, 'utf-8'),
+        md5FromFile(binaryPath),
+      ]);
+      // the sidecar is written as "CHECKSUM *FILENAME" (md5sum's binary-mode format), but a sidecar
+      // written before that format was introduced only has the raw checksum, so only ever read the first token
+      const expectedChecksum = checksumFileContent.trim().split(/\s+/)[0];
+
+      if (expectedChecksum !== actualChecksum) {
+        log(
+          `isBinaryCorrupted: checksum mismatch for binary at "${binaryPath}" (expected: "${expectedChecksum}", actual: "${actualChecksum}"), treating as corrupted`
+        );
+
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Remove a corrupted binary and its checksum sidecar
+   */
+  private static async removeCorruptedBinary(binaryPath: string): Promise<void> {
+    await fspromises.rm(binaryPath, { force: true });
+    await fspromises.rm(`${binaryPath}.md5`, { force: true });
   }
 
   /**
