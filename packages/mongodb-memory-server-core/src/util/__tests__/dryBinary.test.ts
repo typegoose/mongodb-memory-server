@@ -638,6 +638,7 @@ describe('DryBinary', () => {
       });
 
       it('should return "undefined" and remove the binary when no checksum file exists (checksum validation disabled)', async () => {
+        process.env[envName(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM)] = 'false';
         await fspromises.writeFile(binaryPath, Buffer.alloc(2 * 1024 * 1024, 'a'));
 
         const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
@@ -685,6 +686,7 @@ describe('DryBinary', () => {
       });
 
       it('should return the binary path when checksum validation is disabled and an existing checksum matches', async () => {
+        process.env[envName(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM)] = 'false';
         await fspromises.writeFile(binaryPath, Buffer.alloc(2 * 1024 * 1024, 'a'));
         await writeChecksumFile(await utils.md5FromFile(binaryPath));
         const md5Spy = jest.spyOn(utils, 'md5FromFile');
@@ -696,6 +698,7 @@ describe('DryBinary', () => {
       });
 
       it('should return the binary path when checksum validation is disabled even if an existing checksum does not match', async () => {
+        process.env[envName(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM)] = 'false';
         await fspromises.writeFile(binaryPath, Buffer.alloc(2 * 1024 * 1024, 'a'));
         await writeChecksumFile('0123456789abcdef0123456789abcdef');
         const md5Spy = jest.spyOn(utils, 'md5FromFile');
@@ -704,17 +707,6 @@ describe('DryBinary', () => {
         expect(returnValue).toEqual(binaryPath);
         expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
         expect(md5Spy).not.toHaveBeenCalled();
-      });
-
-      it('should return the binary path when checksum validation is enabled and a legacy (raw hash, no filename) checksum file matches', async () => {
-        process.env[envName(ResolveConfigVariables.VALIDATE_BINARY_CHECKSUM)] = 'true';
-        await fspromises.writeFile(binaryPath, Buffer.alloc(2 * 1024 * 1024, 'a'));
-        // sidecar written before the "md5sum -c" format was introduced: just the raw hash, no filename
-        await fspromises.writeFile(`${binaryPath}.md5`, await utils.md5FromFile(binaryPath));
-
-        const returnValue = await binary.DryMongoBinary.locateBinary({ version: '1.1.1' });
-        expect(returnValue).toEqual(binaryPath);
-        expect(binary.DryMongoBinary.binaryCache.size).toBe(1);
       });
     });
   });

@@ -183,8 +183,8 @@ export class DryMongoBinary {
         fspromises.readFile(checksumFile, 'utf-8'),
         md5FromFile(binaryPath),
       ]);
-      // the sidecar is written as "CHECKSUM *FILENAME" (md5sum's binary-mode format), but a sidecar
-      // written before that format was introduced only has the raw checksum, so only ever read the first token
+      // The sidecar is written as "CHECKSUM *FILENAME" (md5sum's binary-mode format).
+      // As we know the file we want to check, we can safely ignore the filename.
       const expectedChecksum = checksumFileContent.trim().split(/\s+/)[0];
 
       if (expectedChecksum !== actualChecksum) {
