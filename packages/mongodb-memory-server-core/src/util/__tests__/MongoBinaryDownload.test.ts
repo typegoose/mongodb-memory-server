@@ -13,6 +13,7 @@ import { pack } from 'tar-stream';
 import { createGzip } from 'zlib';
 import https from 'https';
 import http from 'http';
+import getFreePort from '../getport';
 
 describe('MongoBinaryDownload', () => {
   let originalTTY: boolean = false;
@@ -525,6 +526,7 @@ describe('MongoBinaryDownload', () => {
   describe('should download correctly https', () => {
     let tmpdir: string;
     let server: https.Server;
+    let port = 5000;
 
     let key: string;
     let cert: string;
@@ -539,6 +541,7 @@ describe('MongoBinaryDownload', () => {
       // the certificate is only for localhost and only for testing
       key = await fspromises.readFile(path.resolve(certPath, './private-key.key'), 'utf-8');
       cert = await fspromises.readFile(path.resolve(certPath, './certificate.crt'), 'utf-8');
+      port = await getFreePort(port);
 
       resume_before = process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)];
     });
@@ -635,7 +638,9 @@ describe('MongoBinaryDownload', () => {
         }
       );
 
-      server = builder.listen(5000);
+      server = builder.listen(port);
+
+      return `https://localhost:${port}`;
     }
 
     /** Generate 4 bytes 00, then 4 bytes FF until "toGen" */
@@ -657,7 +662,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should download correctly and fully', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      createTestServer();
+      const baseurl = createTestServer();
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -680,7 +685,7 @@ describe('MongoBinaryDownload', () => {
       mbd.isTTY = false;
 
       const resolved = await mbd.httpDownload(
-        new URL('https://localhost:5000/1/archive.tgz'),
+        new URL(baseurl + '/1/archive.tgz'),
         {
           rejectUnauthorized: false,
         },
@@ -711,7 +716,7 @@ describe('MongoBinaryDownload', () => {
       process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)] = 'true';
 
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      createTestServer(totalBytes / 2);
+      const baseurl = createTestServer(totalBytes / 2);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -734,7 +739,7 @@ describe('MongoBinaryDownload', () => {
       mbd.isTTY = false;
 
       const resolved = await mbd.httpDownload(
-        new URL('https://localhost:5000/2/archive.tgz'),
+        new URL(baseurl + '/2/archive.tgz'),
         {
           rejectUnauthorized: false,
         },
@@ -763,7 +768,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should download retry after stalling (ETIMEDOUT)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      createTestServer(undefined, true);
+      const baseurl = createTestServer(undefined, true);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -786,7 +791,7 @@ describe('MongoBinaryDownload', () => {
       mbd.isTTY = false;
 
       const resolved = await mbd.httpDownload(
-        new URL('https://localhost:5000/3/archive.tgz'),
+        new URL(baseurl + '/3/archive.tgz'),
         {
           rejectUnauthorized: false,
         },
@@ -816,7 +821,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should error of repeated retry errors (aborted & ECONNRESET)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      createTestServer(10);
+      const baseurl = createTestServer(10);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -840,7 +845,7 @@ describe('MongoBinaryDownload', () => {
 
       try {
         await mbd.httpDownload(
-          new URL('https://localhost:5000/4/archive.tgz'),
+          new URL(baseurl + '/4/archive.tgz'),
           {
             rejectUnauthorized: false,
           },
@@ -859,7 +864,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should error on 403 without retrying', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      createTestServer(undefined, undefined, 403);
+      const baseurl = createTestServer(undefined, undefined, 403);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -883,7 +888,7 @@ describe('MongoBinaryDownload', () => {
 
       try {
         await mbd.httpDownload(
-          new URL('https://localhost:5000/5/archive.tgz'),
+          new URL(baseurl + '/5/archive.tgz'),
           {
             rejectUnauthorized: false,
           },
@@ -905,6 +910,7 @@ describe('MongoBinaryDownload', () => {
   describe('should download correctly http', () => {
     let tmpdir: string;
     let server: http.Server;
+    let port = 5000;
 
     const totalBytes = 1024 * 10;
 
@@ -912,6 +918,7 @@ describe('MongoBinaryDownload', () => {
 
     beforeAll(async () => {
       originalUseHttp = process.env[envName(ResolveConfigVariables.USE_HTTP)];
+      port = await getFreePort(port);
     });
 
     beforeEach(async () => {
@@ -965,7 +972,9 @@ describe('MongoBinaryDownload', () => {
         res.end();
       });
 
-      server = builder.listen(5000);
+      server = builder.listen(port);
+
+      return `http://localhost:${port}`;
     }
 
     /** Generate 4 bytes 00, then 4 bytes FF until "toGen" */
@@ -987,7 +996,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should correctly allow HTTP requests', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      createTestServer();
+      const baseurl = createTestServer();
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -1010,7 +1019,7 @@ describe('MongoBinaryDownload', () => {
       mbd.isTTY = false;
 
       const resolved = await mbd.httpDownload(
-        new URL('http://localhost:5000/archive.tgz'),
+        new URL(baseurl + '/archive.tgz'),
         {
           rejectUnauthorized: false,
         },

@@ -400,50 +400,34 @@ export class MongoBinaryDownload {
     filter: (file: string) => boolean
   ): Promise<string | undefined> {
     log('extractZip');
-    /** the write of the extracted binary, so this function can await the bytes actually reaching disk */
-    let writeDone: Promise<void> | undefined;
-    /** the md5 of the extracted entry, only valid once "writeDone" resolved */
+    /** the md5 of the extracted entry, only valid once the entry has been written */
     let digest: (() => string) | undefined;
 
-    await new Promise<void>((resolve, reject) => {
-      yauzl.open(mongoDBArchive, { lazyEntries: true }, (err, zipfile) => {
-        if (err || !zipfile) {
-          return reject(err);
-        }
+    const zipfile = await yauzl.openPromise(mongoDBArchive, { lazyEntries: true });
 
-        zipfile.readEntry();
+    for await (const entry of zipfile.eachEntry()) {
+      if (!filter(entry.fileName)) {
+        continue;
+      }
 
-        zipfile.on('end', () => resolve());
+      const readstream = await zipfile.openReadStreamPromise(entry);
 
-        zipfile.on('entry', (entry) => {
-          if (!filter(entry.fileName)) {
-            return zipfile.readEntry();
-          }
+      const writestream = createWriteStream(extractPath, { mode: 0o775 });
 
-          zipfile.openReadStream(entry, (err2, r) => {
-            if (err2 || !r) {
-              return reject(err2);
-            }
+      // checksum the entry on its way to disk, so the checksum describes what the archive
+      // contained instead of whatever ended up being written
+      const hashing = md5PassThrough();
+      digest = hashing.digest;
 
-            r.on('end', () => zipfile.readEntry());
-            const hashing = md5PassThrough();
-            digest = hashing.digest;
-            writeDone = pipeline(
-              r,
-              hashing.stream,
-              createWriteStream(extractPath, {
-                mode: 0o775,
-              })
-            );
-            // a failed write has to fail the extraction, otherwise "end" never fires and this hangs
-            writeDone.catch(reject);
-          });
-        });
+      await new Promise<void>((res, rej) => {
+        writestream.once('finish', res);
+        writestream.once('error', rej);
+        readstream.once('error', rej);
+        hashing.stream.once('error', rej);
+
+        readstream.pipe(hashing.stream).pipe(writestream);
       });
-    });
-
-    // the archive being fully parsed does not mean the extracted file is fully written yet
-    await writeDone;
+    }
 
     return digest?.();
   }
@@ -684,6 +668,8 @@ export class MongoBinaryDownload {
         });
 
         response.on('error', (err: Error) => {
+          log(`Response with error for download "${downloadUrl}"!, Error:`, err.message);
+
           // use the code if available, otherwise use the entire message
           const code = (err as any)?.code ?? err.message;
 
@@ -692,7 +678,7 @@ export class MongoBinaryDownload {
       });
 
       request.on('error', (err: Error) => {
-        console.error(`Could NOT download "${downloadUrl}"!`, err.message);
+        log(`Request failed for download "${downloadUrl}"!, Error:`, err.message);
 
         // use the code if available, otherwise use the entire message
         const code = (err as any)?.code ?? err.message;
