@@ -435,6 +435,35 @@ describe('MongoBinaryDownload', () => {
       );
     });
 
+    it('should throw if the written binary does not match what was extracted from the archive', async () => {
+      const zipPath = path.join(tmpdir, 'archive.zip');
+      const outPath = path.join(tmpdir, 'binary.exe');
+      const mbd = new MongoBinaryDownload({ downloadDir: tmpdir, version: '7.0.0' });
+      // @ts-expect-error "getPath" is "protected"
+      jest.spyOn(mbd, 'getPath').mockResolvedValue(outPath);
+
+      await new Promise<void>((res, rej) => {
+        const zipfile = new yazl.ZipFile();
+        const writeStream = createWriteStream(zipPath);
+        writeStream.once('close', () => res());
+        writeStream.once('error', rej);
+        zipfile.outputStream.once('error', rej);
+        zipfile.outputStream.pipe(writeStream);
+        zipfile.addBuffer(
+          Buffer.from('main exec'),
+          'mongodb-platform-arch-platform-version/bin/mongod.exe'
+        );
+        zipfile.end();
+      });
+
+      // stand in for a write that did not land the same bytes the archive held
+      jest.spyOn(utils, 'md5FromFile').mockResolvedValue('0123456789abcdef0123456789abcdef');
+
+      await expect(mbd.extract(zipPath)).rejects.toThrow(/does not match what was extracted/);
+      // the sidecar must not be created for a binary that failed verification
+      expect(await utils.pathExists(`${outPath}.md5`)).toStrictEqual(false);
+    });
+
     // Regression tests for write failures during extraction. Previously the write stream was piped
     // without anything awaiting or handling it, so a failed write surfaced as an unhandled stream
     // error and left the extraction pending forever instead of failing it. See #990.

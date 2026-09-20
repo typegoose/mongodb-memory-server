@@ -5,13 +5,15 @@ import { promises as fspromises, createWriteStream, createReadStream, constants 
 import { https, http } from 'follow-redirects';
 import { createUnzip } from 'zlib';
 import { pipeline } from 'stream/promises';
+import { Transform } from 'stream';
+import { createHash } from 'crypto';
 import tar from 'tar-stream';
 import yauzl from 'yauzl';
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import resolveConfig, { envToBool, ResolveConfigVariables } from './resolveConfig';
 import debug from 'debug';
-import { assertion, mkdir, pathExists, md5FromFile, statPath } from './utils';
+import { assertion, isNullOrUndefined, mkdir, pathExists, md5FromFile, statPath } from './utils';
 import { DryMongoBinary } from './DryMongoBinary';
 import { MongoBinaryOpts } from './MongoBinary';
 import { clearLine } from 'readline';
@@ -35,6 +37,26 @@ const retryableErrorCodes = [
   'ECONNABORTED',
   'aborted',
 ];
+
+/**
+ * Create a passthrough that hashes everything flowing through it
+ *
+ * Used to checksum the binary as it is extracted, so the checksum describes what the archive
+ * contained instead of whatever ended up on disk
+ * @returns the passthrough stream, and a "digest" that is only valid once the stream has ended
+ */
+function md5PassThrough(): { stream: Transform; digest: () => string } {
+  const hash = createHash('md5');
+
+  const stream = new Transform({
+    transform(chunk, _encoding, callback) {
+      hash.update(chunk);
+      callback(null, chunk);
+    },
+  });
+
+  return { stream, digest: () => hash.digest('hex') };
+}
 
 export interface MongoBinaryDownloadProgress {
   current: number;
@@ -265,10 +287,12 @@ export class MongoBinaryDownload {
 
     const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?))$/i.test(file);
 
+    let extractedChecksum: string | undefined;
+
     if (/(.tar.gz|.tgz)$/.test(mongoDBArchive)) {
-      await this.extractTarGz(mongoDBArchive, mongodbFullPath, filter);
+      extractedChecksum = await this.extractTarGz(mongoDBArchive, mongodbFullPath, filter);
     } else if (/.zip$/.test(mongoDBArchive)) {
-      await this.extractZip(mongoDBArchive, mongodbFullPath, filter);
+      extractedChecksum = await this.extractZip(mongoDBArchive, mongodbFullPath, filter);
     } else {
       throw new Error(
         `MongoBinaryDownload: unsupported archive "${mongoDBArchive}" (downloaded from "${
@@ -287,6 +311,15 @@ export class MongoBinaryDownload {
 
     // checksum of the extracted binary, not the archive (that is checked in "makeMD5check")
     const binaryChecksum = await md5FromFile(mongodbFullPath);
+
+    // "extractedChecksum" was taken from the archive as the binary was extracted, so a difference
+    // means what was written is not what the archive contained
+    if (!isNullOrUndefined(extractedChecksum) && extractedChecksum !== binaryChecksum) {
+      throw new GenericMMSError(
+        `MongoBinaryDownload: the extracted binary at "${mongodbFullPath}" does not match what was extracted from "${mongoDBArchive}" (expected: "${extractedChecksum}", actual: "${binaryChecksum}")`
+      );
+    }
+
     // written in the "md5sum -c" binary-mode format ("CHECKSUM *FILENAME"), so it can also be verified manually
     await fspromises.writeFile(
       `${mongodbFullPath}.md5`,
@@ -306,17 +339,22 @@ export class MongoBinaryDownload {
     mongoDBArchive: string,
     extractPath: string,
     filter: (file: string) => boolean
-  ): Promise<void> {
+  ): Promise<string | undefined> {
     log('extractTarGz');
     const extract = tar.extract();
     /** the write of the extracted binary, so this function can await the bytes actually reaching disk */
     let writeDone: Promise<void> | undefined;
+    /** the md5 of the extracted entry, only valid once "writeDone" resolved */
+    let digest: (() => string) | undefined;
 
     await new Promise<void>((res, rej) => {
       extract.on('entry', (header, stream, next) => {
         if (filter(header.name)) {
+          const hashing = md5PassThrough();
+          digest = hashing.digest;
           writeDone = pipeline(
             stream,
+            hashing.stream,
             createWriteStream(extractPath, {
               mode: 0o775,
             })
@@ -346,6 +384,8 @@ export class MongoBinaryDownload {
 
     // the archive being fully parsed does not mean the extracted file is fully written yet
     await writeDone;
+
+    return digest?.();
   }
 
   /**
@@ -358,10 +398,12 @@ export class MongoBinaryDownload {
     mongoDBArchive: string,
     extractPath: string,
     filter: (file: string) => boolean
-  ): Promise<void> {
+  ): Promise<string | undefined> {
     log('extractZip');
     /** the write of the extracted binary, so this function can await the bytes actually reaching disk */
     let writeDone: Promise<void> | undefined;
+    /** the md5 of the extracted entry, only valid once "writeDone" resolved */
+    let digest: (() => string) | undefined;
 
     await new Promise<void>((resolve, reject) => {
       yauzl.open(mongoDBArchive, { lazyEntries: true }, (err, zipfile) => {
@@ -384,8 +426,11 @@ export class MongoBinaryDownload {
             }
 
             r.on('end', () => zipfile.readEntry());
+            const hashing = md5PassThrough();
+            digest = hashing.digest;
             writeDone = pipeline(
               r,
+              hashing.stream,
               createWriteStream(extractPath, {
                 mode: 0o775,
               })
@@ -399,6 +444,8 @@ export class MongoBinaryDownload {
 
     // the archive being fully parsed does not mean the extracted file is fully written yet
     await writeDone;
+
+    return digest?.();
   }
 
   /**
