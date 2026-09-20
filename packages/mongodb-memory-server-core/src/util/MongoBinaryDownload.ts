@@ -4,6 +4,7 @@ import path from 'path';
 import { promises as fspromises, createWriteStream, createReadStream, constants } from 'fs';
 import { https, http } from 'follow-redirects';
 import { createUnzip } from 'zlib';
+import { pipeline } from 'stream/promises';
 import tar from 'tar-stream';
 import yauzl from 'yauzl';
 import MongoBinaryDownloadUrl from './MongoBinaryDownloadUrl';
@@ -308,20 +309,26 @@ export class MongoBinaryDownload {
   ): Promise<void> {
     log('extractTarGz');
     const extract = tar.extract();
-    extract.on('entry', (header, stream, next) => {
-      if (filter(header.name)) {
-        stream.pipe(
-          createWriteStream(extractPath, {
-            mode: 0o775,
-          })
-        );
-      }
+    /** the write of the extracted binary, so this function can await the bytes actually reaching disk */
+    let writeDone: Promise<void> | undefined;
 
-      stream.on('end', () => next());
-      stream.resume();
-    });
+    await new Promise<void>((res, rej) => {
+      extract.on('entry', (header, stream, next) => {
+        if (filter(header.name)) {
+          writeDone = pipeline(
+            stream,
+            createWriteStream(extractPath, {
+              mode: 0o775,
+            })
+          );
+          // a failed write has to fail the extraction, otherwise the entry never ends and this hangs
+          writeDone.catch(rej);
+        }
 
-    return new Promise((res, rej) => {
+        stream.on('end', () => next());
+        stream.resume();
+      });
+
       createReadStream(mongoDBArchive)
         .on('error', (err) => {
           rej(new GenericMMSError('Unable to open tarball ' + mongoDBArchive + ': ' + err));
@@ -336,6 +343,9 @@ export class MongoBinaryDownload {
         })
         .on('finish', res);
     });
+
+    // the archive being fully parsed does not mean the extracted file is fully written yet
+    await writeDone;
   }
 
   /**
@@ -350,8 +360,10 @@ export class MongoBinaryDownload {
     filter: (file: string) => boolean
   ): Promise<void> {
     log('extractZip');
+    /** the write of the extracted binary, so this function can await the bytes actually reaching disk */
+    let writeDone: Promise<void> | undefined;
 
-    return new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       yauzl.open(mongoDBArchive, { lazyEntries: true }, (err, zipfile) => {
         if (err || !zipfile) {
           return reject(err);
@@ -372,15 +384,21 @@ export class MongoBinaryDownload {
             }
 
             r.on('end', () => zipfile.readEntry());
-            r.pipe(
+            writeDone = pipeline(
+              r,
               createWriteStream(extractPath, {
                 mode: 0o775,
               })
             );
+            // a failed write has to fail the extraction, otherwise "end" never fires and this hangs
+            writeDone.catch(reject);
           });
         });
       });
     });
+
+    // the archive being fully parsed does not mean the extracted file is fully written yet
+    await writeDone;
   }
 
   /**

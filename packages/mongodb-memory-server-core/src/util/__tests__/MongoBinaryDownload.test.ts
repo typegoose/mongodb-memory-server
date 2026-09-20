@@ -434,6 +434,63 @@ describe('MongoBinaryDownload', () => {
         `${await utils.md5FromFile(outPath)} *${path.basename(outPath)}\n`
       );
     });
+
+    // Regression tests for write failures during extraction. Previously the write stream was piped
+    // without anything awaiting or handling it, so a failed write surfaced as an unhandled stream
+    // error and left the extraction pending forever instead of failing it. See #990.
+    describe('write failures', () => {
+      const payload = Buffer.alloc(1024 * 1024, 'a');
+      const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?))$/i.test(file);
+
+      /** A directory cannot be opened as a write target, so the extracting write fails on open */
+      async function unwritableTarget(): Promise<string> {
+        const target = path.join(tmpdir, 'blocking-dir');
+        await utils.mkdir(target);
+
+        return target;
+      }
+
+      it('should reject when the binary from a zip archive cannot be written', async () => {
+        const zipPath = path.join(tmpdir, 'archive.zip');
+        const outPath = await unwritableTarget();
+        const mbd = new MongoBinaryDownload({ downloadDir: tmpdir, version: '7.0.0' });
+
+        await new Promise<void>((res, rej) => {
+          const zipfile = new yazl.ZipFile();
+          const writeStream = createWriteStream(zipPath);
+          writeStream.once('close', () => res());
+          writeStream.once('error', rej);
+          zipfile.outputStream.once('error', rej);
+          zipfile.outputStream.pipe(writeStream);
+          zipfile.addBuffer(payload, 'mongodb-platform-arch-platform-version/bin/mongod.exe');
+          zipfile.end();
+        });
+
+        await expect(mbd.extractZip(zipPath, outPath, filter)).rejects.toThrow(/EISDIR/);
+      });
+
+      it('should reject when the binary from a tar.gz archive cannot be written', async () => {
+        const tarPath = path.join(tmpdir, 'archive.tgz');
+        const outPath = await unwritableTarget();
+        const mbd = new MongoBinaryDownload({ downloadDir: tmpdir, version: '7.0.0' });
+
+        await new Promise<void>((res, rej) => {
+          const tarPack = pack();
+          const gzipStream = createGzip();
+          const writeStream = createWriteStream(tarPath);
+          writeStream.once('close', () => res());
+          writeStream.once('error', rej);
+          gzipStream.once('error', rej);
+          tarPack.once('error', rej);
+          tarPack.pipe(gzipStream);
+          gzipStream.pipe(writeStream);
+          tarPack.entry({ name: 'mongodb-platform-arch-platform-version/bin/mongod' }, payload);
+          tarPack.finalize();
+        });
+
+        await expect(mbd.extractTarGz(tarPath, outPath, filter)).rejects.toThrow(/EISDIR/);
+      });
+    });
   });
 
   describe('should download correctly https', () => {
