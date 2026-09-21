@@ -354,23 +354,18 @@ This likely means there has been a bug or your filesystem is bad, please report 
     let digest: (() => string) | undefined;
 
     await new Promise<void>((res, rej) => {
-      extract.on('entry', (header, stream, next) => {
+      extract.on('entry', (header, readStream, next) => {
         if (filter(header.name)) {
+          const writestream = createWriteStream(extractPath, { mode: 0o775 });
+
           const hashing = md5PassThrough();
           digest = hashing.digest;
-          writeDone = pipeline(
-            stream,
-            hashing.stream,
-            createWriteStream(extractPath, {
-              mode: 0o775,
-            })
-          );
           // a failed write has to fail the extraction, otherwise the entry never ends and this hangs
-          writeDone.catch(rej);
+          writeDone = pipeline(readStream, hashing.stream, writestream).catch(rej);
         }
 
-        stream.on('end', () => next());
-        stream.resume();
+        readStream.on('end', () => next());
+        readStream.resume();
       });
 
       createReadStream(mongoDBArchive)
@@ -418,7 +413,6 @@ This likely means there has been a bug or your filesystem is bad, please report 
       }
 
       const readstream = await zipfile.openReadStreamPromise(entry);
-
       const writestream = createWriteStream(extractPath, { mode: 0o775 });
 
       // checksum the entry on its way to disk, so the checksum describes what the archive
@@ -426,14 +420,7 @@ This likely means there has been a bug or your filesystem is bad, please report 
       const hashing = md5PassThrough();
       digest = hashing.digest;
 
-      await new Promise<void>((res, rej) => {
-        writestream.once('finish', res);
-        writestream.once('error', rej);
-        readstream.once('error', rej);
-        hashing.stream.once('error', rej);
-
-        readstream.pipe(hashing.stream).pipe(writestream);
-      });
+      await pipeline(readstream, hashing.stream, writestream);
     }
 
     return digest?.();
