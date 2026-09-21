@@ -1,3 +1,9 @@
+## [11.3.0-beta.6](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0-beta.5...v11.3.0-beta.6) (2026-09-21)
+
+### Dependencies
+
+* **mongodb:** lock to 7.5.X ([a3cb1d6](https://github.com/typegoose/mongodb-memory-server/commit/a3cb1d6ce17e817d8a356c080ce2ebc63786202f)), closes [#1026](https://github.com/typegoose/mongodb-memory-server/issues/1026)
+
 ## [11.3.0-beta.5](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0-beta.4...v11.3.0-beta.5) (2026-09-21)
 
 ### Refactor
