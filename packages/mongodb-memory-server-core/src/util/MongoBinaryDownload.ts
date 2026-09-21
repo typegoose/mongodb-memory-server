@@ -309,6 +309,10 @@ export class MongoBinaryDownload {
       );
     }
 
+    const filename = path.basename(mongodbFullPath);
+
+    log(`extract: Binary "${filename}" extracted, verifying checksum`);
+
     // checksum of the extracted binary, not the archive (that is checked in "makeMD5check")
     const binaryChecksum = await md5FromFile(mongodbFullPath);
 
@@ -323,10 +327,9 @@ This likely means there has been a bug or your filesystem is bad, please report 
     }
 
     // written in the "md5sum -c" binary-mode format ("CHECKSUM *FILENAME"), so it can also be verified manually
-    await fspromises.writeFile(
-      `${mongodbFullPath}.md5`,
-      `${binaryChecksum} *${path.basename(mongodbFullPath)}\n`
-    );
+    await fspromises.writeFile(`${mongodbFullPath}.md5`, `${binaryChecksum} *${filename}\n`);
+
+    log(`extract: Binary "${filename}" checksum verified. Binary is ready for use.`);
 
     return mongodbFullPath;
   }

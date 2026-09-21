@@ -133,7 +133,7 @@ export class DryMongoBinary {
     const foundBinaryPath = returnValue[1];
 
     if (await this.isBinaryCorrupted(foundBinaryPath)) {
-      await this.removeCorruptedBinary(foundBinaryPath);
+      await this.deleteBinary(foundBinaryPath);
 
       return undefined;
     }
@@ -202,7 +202,9 @@ export class DryMongoBinary {
   /**
    * Remove a corrupted binary and its checksum sidecar
    */
-  private static async removeCorruptedBinary(binaryPath: string): Promise<void> {
+  private static async deleteBinary(binaryPath: string): Promise<void> {
+    log(`deleteBinary: deleting ${binaryPath} + checksum`);
+
     await fspromises.rm(binaryPath, { force: true });
     await fspromises.rm(`${binaryPath}.md5`, { force: true });
   }
