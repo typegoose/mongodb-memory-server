@@ -467,7 +467,7 @@ describe('MongoBinaryDownload', () => {
 
     // Regression tests for write failures during extraction. Previously the write stream was piped
     // without anything awaiting or handling it, so a failed write surfaced as an unhandled stream
-    // error and left the extraction pending forever instead of failing it. See #990.
+    // error and left the extraction pending forever instead of failing it.
     describe('write failures', () => {
       const payload = Buffer.alloc(1024 * 1024, 'a');
       const filter = (file: string) => /(?:bin\/(?:mongod(?:\.exe)?))$/i.test(file);

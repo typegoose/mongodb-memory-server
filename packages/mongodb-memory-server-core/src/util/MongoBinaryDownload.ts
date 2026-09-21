@@ -316,7 +316,9 @@ export class MongoBinaryDownload {
     // means what was written is not what the archive contained
     if (!isNullOrUndefined(extractedChecksum) && extractedChecksum !== binaryChecksum) {
       throw new GenericMMSError(
-        `MongoBinaryDownload: the extracted binary at "${mongodbFullPath}" does not match what was extracted from "${mongoDBArchive}" (expected: "${extractedChecksum}", actual: "${binaryChecksum}")`
+        `MongoBinaryDownload: the extracted binary at "${mongodbFullPath}" does not match what was extracted from "${mongoDBArchive}"!
+This likely means there has been a bug or your filesystem is bad, please report this!
+(expected: "${extractedChecksum}", actual: "${binaryChecksum}")`
       );
     }
 
@@ -334,6 +336,7 @@ export class MongoBinaryDownload {
    * @param mongoDBArchive Archive location
    * @param extractPath Directory to extract to
    * @param filter Method to determine which files to extract
+   * @returns The md5 checksum of the extracted file, if there was one.
    */
   async extractTarGz(
     mongoDBArchive: string,
@@ -393,6 +396,7 @@ export class MongoBinaryDownload {
    * @param mongoDBArchive Archive location
    * @param extractPath Directory to extract to
    * @param filter Method to determine which files to extract
+   * @returns The md5 checksum of the extracted file, if there was one.
    */
   async extractZip(
     mongoDBArchive: string,
