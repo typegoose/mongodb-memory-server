@@ -1,3 +1,9 @@
+## [11.3.0-beta.5](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0-beta.4...v11.3.0-beta.5) (2026-09-21)
+
+### Refactor
+
+* **MongoBinaryDownload:** have the 2 extract function be more similar ([940b352](https://github.com/typegoose/mongodb-memory-server/commit/940b3528dd3fcca8e3f6b83114d71c6730aaff9e))
+
 ## [11.3.0-beta.4](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0-beta.3...v11.3.0-beta.4) (2026-09-21)
 
 ### Features
