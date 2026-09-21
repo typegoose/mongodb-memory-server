@@ -1,3 +1,9 @@
+## [11.3.0-beta.4](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0-beta.3...v11.3.0-beta.4) (2026-09-21)
+
+### Features
+
+* checksum binaries on extraction and check them ([#1023](https://github.com/typegoose/mongodb-memory-server/issues/1023)) ([174ab53](https://github.com/typegoose/mongodb-memory-server/commit/174ab530390af85564fe3a56c511d182e1255c32)), closes [#991](https://github.com/typegoose/mongodb-memory-server/issues/991)
+
 ## [11.3.0-beta.3](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0-beta.2...v11.3.0-beta.3) (2026-09-09)
 
 ### Fixes
