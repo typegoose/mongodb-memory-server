@@ -127,7 +127,7 @@ export async function killProcess(
 
       if (!debug.enabled('MongoMS:utils')) {
         console.warn(
-          'An Process didnt exit with signal "SIGINT" within 10 seconds, using "SIGKILL"!\n' +
+          'A child-process didnt exit with signal "SIGINT" within 10 seconds, using "SIGKILL"!\n' +
             'Enable debug logs for more information'
         );
       }

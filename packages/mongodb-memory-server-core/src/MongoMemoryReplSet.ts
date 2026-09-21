@@ -687,7 +687,14 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
         members,
         writeConcernMajorityJournalDefault: !isInMemory, // if storage engine is "ephemeralForTest" deactivate this option, otherwise enable it
         settings: {
-          electionTimeoutMillis: 500,
+          // This value controls the time the primary has to be "unreachable" until a election takes place.
+          // See https://www.mongodb.com/docs/manual/reference/replica-configuration/#mongodb-rsconf-rsconf.settings.electionTimeoutMillis
+          // Due to this, in write heavy workloads, the primary can be unavailble for quite some time, potentially resulting in
+          // intermittend "operation interrupted" errors, as the primary is forced to step down.
+          //
+          // Due to that issue, this value cannot be too low, otherwise it might cause a lot of intermittend failures
+          // so the middleground of half of the default 10 seconds is used, as that *should* be enough.
+          electionTimeoutMillis: 5000,
           ...this._replSetOpts.configSettings,
         },
       };

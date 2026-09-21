@@ -56,8 +56,7 @@ describe('getport', () => {
     });
 
     it('should respect max_tries', async () => {
-      const testPort = 40000;
-      await expect(getPort.getFreePort(testPort, 0)).resolves.toBeTruthy();
+      const testPort = await getPort.getFreePort(4000, 1);
       await expect(getPort.getFreePort(testPort, 0)).rejects.toBeTruthy();
     });
 

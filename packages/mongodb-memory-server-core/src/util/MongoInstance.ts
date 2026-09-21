@@ -483,6 +483,9 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         this.mongodProcess = undefined; // reset reference to the childProcess for "mongod"
       } else {
         this.debug('stop: mongodProcess: nothing to shutdown, skipping');
+        // due to the check above, the "true" block only runs if the process is alive
+        // but in any other case, we still want to unset the variable
+        this.mongodProcess = undefined; // reset reference to the childProcess for "mongod"
       }
       if (!isNullOrUndefined(this.killerProcess)) {
         await killProcess(this.killerProcess, 'killerProcess', this.instanceOpts.port);
