@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunkmongodb_memory_server_website=globalThis.webpackChunkmongodb_memory_server_website||[]).push([[2546],{9921(e){e.exports=JSON.parse('{"metadata":{"permalink":"/mongodb-memory-server/blog","page":1,"postsPerPage":10,"totalPages":1,"totalCount":0,"blogDescription":"Blog","blogTitle":"Blog"}}')}}]);
