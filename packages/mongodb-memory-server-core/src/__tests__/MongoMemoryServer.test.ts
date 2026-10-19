@@ -1417,8 +1417,6 @@ describe('MongoMemoryServer', () => {
       // @ts-expect-error "getNewPort" is protected
       await expect(mongoServer.getNewPort()).resolves.toStrictEqual(27017);
       expect(spy).toHaveBeenCalledWith(undefined, undefined, '127.0.0.1');
-
-      spy.mockRestore();
     });
 
     it('should probe on the first configured instance ip', async () => {
@@ -1428,8 +1426,6 @@ describe('MongoMemoryServer', () => {
       // @ts-expect-error "getNewPort" is protected
       await expect(mongoServer.getNewPort(27018)).resolves.toStrictEqual(27018);
       expect(spy).toHaveBeenCalledWith(27018, undefined, '::1');
-
-      spy.mockRestore();
     });
 
     it('should keep the unbound probe for a wildcard ip', async () => {
@@ -1439,8 +1435,6 @@ describe('MongoMemoryServer', () => {
       // @ts-expect-error "getNewPort" is protected
       await expect(mongoServer.getNewPort()).resolves.toStrictEqual(27019);
       expect(spy).toHaveBeenCalledWith(undefined, undefined, undefined);
-
-      spy.mockRestore();
     });
   });
 });

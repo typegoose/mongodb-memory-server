@@ -162,6 +162,9 @@ export function tryPort(port: number, host?: string): Promise<number> {
       res(port);
     };
 
+    // In macos, trying a port on a different host may cause the port to be reported free in nodejs,
+    // but fail when actually tried in mongod.
+    // Also see "probeHost".
     if (typeof host === 'string' && host.length > 0) {
       server.listen(port, host, onListening);
     } else {
