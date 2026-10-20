@@ -39,7 +39,7 @@ describe('getport', () => {
     });
 
     it('should return "-1" on a port used on the given host', async () => {
-      const testPort = 30001;
+      const testPort = 31000;
       const blockingServer = net.createServer();
       blockingServer.unref();
       blockingServer.listen(testPort, '127.0.0.1');
