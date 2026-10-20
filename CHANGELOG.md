@@ -1,3 +1,9 @@
+## [11.3.1-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0...v11.3.1-beta.1) (2026-10-20)
+
+### Fixes
+
+* **getport:** bind the port probe to the instance ip ([#1041](https://github.com/typegoose/mongodb-memory-server/issues/1041)) ([71ff3be](https://github.com/typegoose/mongodb-memory-server/commit/71ff3be36598aa7802eceda19d6395cbe3efb7af)), closes [#1040](https://github.com/typegoose/mongodb-memory-server/issues/1040)
+
 ## [11.3.0](https://github.com/typegoose/mongodb-memory-server/compare/v11.2.0...v11.3.0) (2026-09-21)
 
 ### Features
