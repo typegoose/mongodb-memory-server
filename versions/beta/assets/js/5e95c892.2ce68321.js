@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkmongodb_memory_server_website||=[]).push([[9647],{7121(e,r,s){s.r(r),s.d(r,{default:()=>d});s(6540);var a=s(4164),o=s(7559),t=s(5500),u=s(2831),c=s(9318),n=s(4848);function d(e){return(0,n.jsx)(t.e3,{className:(0,a.A)(o.G.wrapper.docsPages),children:(0,n.jsx)(c.A,{children:(0,u.v)(e.route.routes)})})}}}]);
