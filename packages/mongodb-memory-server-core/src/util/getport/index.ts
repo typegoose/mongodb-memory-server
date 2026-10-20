@@ -37,12 +37,14 @@ const MAX_DEFAULT_TRIES = 10;
  * Try to get a free port.
  * @param firstPort The first port to try or empty for a random port
  * @param max_tries maximum amount of tries to get a port, default to {@link MAX_DEFAULT_TRIES}
+ * @param host The address to bind the probe to, empty for the wildcard address (see {@link probeHost})
  * @returns A valid free port
  * @throws if "max_tries" is exceeded
  */
 export async function getFreePort(
   firstPort?: number,
-  max_tries: number = MAX_DEFAULT_TRIES
+  max_tries: number = MAX_DEFAULT_TRIES,
+  host?: string
 ): Promise<number> {
   // use "0" as a fallback to use net0listen, which generates a random free port
   firstPort = firstPort || 0;
@@ -70,7 +72,7 @@ export async function getFreePort(
 
     PORTS_CACHE.ports.add(nextPort);
 
-    const triedPort = await tryPort(nextPort);
+    const triedPort = await tryPort(nextPort, host);
 
     if (triedPort > 0) {
       // check if triedPort is already in the cache (ie the vm executed another instance's getport before binary startup)
@@ -113,12 +115,30 @@ export function validPort(port: number): number {
 }
 
 /**
+ * Resolve the address a port probe should bind to, from the address the instance will bind to.
+ * A wildcard probe does not conflict with a listener bound to a specific address (for example a
+ * running mongod on `127.0.0.1`), so it can report as free a port that mongod cannot take.
+ * @param ip The configured `instance.ip`, may be a comma-separated list like mongod's `--bind_ip`
+ * @returns The first address of `ip` (default `127.0.0.1`), or `undefined` for a wildcard address
+ */
+export function probeHost(ip?: string): string | undefined {
+  const first = (ip ?? '127.0.0.1').split(',')[0].trim();
+
+  if (first === '' || first === '0.0.0.0' || first === '::' || first === '*') {
+    return undefined;
+  }
+
+  return first;
+}
+
+/**
  * Try a given port.
  * @param port The port to try
+ * @param host The address to bind the probe to, empty for the wildcard address
  * @returns the port if successful, "-1" in case of `EADDRINUSE`, all other errors reject
  * @throws The error given if the code is not "EADDRINUSE"
  */
-export function tryPort(port: number): Promise<number> {
+export function tryPort(port: number, host?: string): Promise<number> {
   return new Promise((res, rej) => {
     const server = net.createServer();
 
@@ -134,13 +154,22 @@ export function tryPort(port: number): Promise<number> {
 
       res(-1);
     });
-    server.listen(port, () => {
+    const onListening = () => {
       const address = server.address();
       const port = (address as net.AddressInfo).port;
       server.close();
 
       res(port);
-    });
+    };
+
+    // In macos, trying a port on a different host may cause the port to be reported free in nodejs,
+    // but fail when actually tried in mongod.
+    // Also see "probeHost".
+    if (typeof host === 'string' && host.length > 0) {
+      server.listen(port, host, onListening);
+    } else {
+      server.listen(port, onListening);
+    }
   });
 }
 

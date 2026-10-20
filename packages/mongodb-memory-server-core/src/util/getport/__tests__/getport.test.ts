@@ -37,6 +37,30 @@ describe('getport', () => {
       blockingServer.listen(testPort);
       await expect(getPort.tryPort(testPort)).resolves.toStrictEqual(-1);
     });
+
+    it('should return "-1" on a port used on the given host', async () => {
+      const testPort = 31000;
+      const blockingServer = net.createServer();
+      blockingServer.unref();
+      blockingServer.listen(testPort, '127.0.0.1');
+      await expect(getPort.tryPort(testPort, '127.0.0.1')).resolves.toStrictEqual(-1);
+    });
+  });
+
+  describe('probeHost', () => {
+    it('should default to the loopback address', () => {
+      expect(getPort.probeHost()).toStrictEqual('127.0.0.1');
+    });
+
+    it('should use the first address of a list', () => {
+      expect(getPort.probeHost(' ::1 ,127.0.0.1')).toStrictEqual('::1');
+    });
+
+    it('should return undefined for a wildcard address', () => {
+      expect(getPort.probeHost('0.0.0.0')).toBeUndefined();
+      expect(getPort.probeHost('::,0.0.0.0')).toBeUndefined();
+      expect(getPort.probeHost('')).toBeUndefined();
+    });
   });
 
   describe('getFreePort', () => {
@@ -77,6 +101,20 @@ describe('getport', () => {
 
       const foundPort = await getPort.getFreePort(testPort);
       expect(foundPort).not.toStrictEqual(testPort); // not predictable port, so not testable to be a exact number
+
+      server.close();
+    });
+
+    it('should not return a port that is in use on the given host', async () => {
+      const testPort = 23400;
+      const server = await new Promise<net.Server>((res) => {
+        const server = net.createServer();
+        server.unref();
+        server.listen(testPort, '127.0.0.1', () => res(server));
+      });
+
+      const foundPort = await getPort.getFreePort(testPort, undefined, '127.0.0.1');
+      expect(foundPort).not.toStrictEqual(testPort);
 
       server.close();
     });
