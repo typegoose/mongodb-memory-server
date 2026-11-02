@@ -101,7 +101,7 @@ jobs:
       - name: Build
         run: npm run build
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
+        uses: cycjimmy/semantic-release-action@ad51787758d9654d5a75150a89a6fa9b3ccef95e # v8.1.4
         with:
           # dry_run: true
           # "conventional-changelog-writer" is exactly installed as "cycjimmy/semantic-release-action" depends on 8.0.0, which causes errors
