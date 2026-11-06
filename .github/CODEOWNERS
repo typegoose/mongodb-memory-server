@@ -1,7 +1,4 @@
 # Top Level; Everything that is not convered by anything below
-* @nodkz @hasezoey
+* @hasezoey
 
-**/LICENSE.md @nodkz
-website/ @hasezoey
-docs/ @hasezoey @nodkz
-.github/ @hasezoey @nodkz
+**/LICENSE.md @hasezoey @nodkz
