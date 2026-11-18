@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb';
+import { clientOpts } from './testUtils/test_utils';
 import { MongoMemoryServer } from '../index';
 
 // This is an Example test, do not merge it with others and do not delete this file
@@ -9,7 +10,7 @@ describe('Single MongoMemoryServer', () => {
 
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
-    con = await MongoClient.connect(mongoServer.getUri(), {});
+    con = await MongoClient.connect(mongoServer.getUri(), clientOpts);
   });
 
   afterAll(async () => {

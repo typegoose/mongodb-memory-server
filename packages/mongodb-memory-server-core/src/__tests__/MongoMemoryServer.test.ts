@@ -8,7 +8,7 @@ import MongoMemoryServer, {
 import MongoInstance, { MongoInstanceEvents } from '../util/MongoInstance';
 import * as utils from '../util/utils';
 import { InstanceInfoError, StateError } from '../util/errors';
-import { assertIsError } from './testUtils/test_utils';
+import { assertIsError, clientOpts } from './testUtils/test_utils';
 import { promises as fspromises } from 'fs';
 import * as path from 'path';
 import getFreePort from '../util/getport';
@@ -87,7 +87,7 @@ describe('MongoMemoryServer', () => {
 
       // test unpriviliged connection
       {
-        const con = await MongoClient.connect(mongoServer.getUri());
+        const con = await MongoClient.connect(mongoServer.getUri(), clientOpts);
 
         const db = con.db('somedb');
         const col = db.collection('somecol');
@@ -108,6 +108,7 @@ describe('MongoMemoryServer', () => {
         const con: MongoClient = await MongoClient.connect(
           utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
           {
+            ...clientOpts,
             authSource: 'admin',
             authMechanism: 'SCRAM-SHA-256',
             auth: {
@@ -175,7 +176,7 @@ describe('MongoMemoryServer', () => {
 
       // test unpriviliged connection
       {
-        const con = await MongoClient.connect(mongoServer.getUri());
+        const con = await MongoClient.connect(mongoServer.getUri(), clientOpts);
 
         const db = con.db('somedb');
         const col = db.collection('somecol');
@@ -196,6 +197,7 @@ describe('MongoMemoryServer', () => {
         const con: MongoClient = await MongoClient.connect(
           utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
           {
+            ...clientOpts,
             authSource: 'admin',
             authMechanism: 'SCRAM-SHA-256',
             auth: {
@@ -273,7 +275,7 @@ describe('MongoMemoryServer', () => {
 
       // test unpriviliged connection
       {
-        const con = await MongoClient.connect(mongoServer.getUri());
+        const con = await MongoClient.connect(mongoServer.getUri(), clientOpts);
 
         const db = con.db('somedb');
         const col = db.collection('somecol');
@@ -294,6 +296,7 @@ describe('MongoMemoryServer', () => {
         const con: MongoClient = await MongoClient.connect(
           utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
           {
+            ...clientOpts,
             authSource: 'admin',
             authMechanism: 'SCRAM-SHA-256',
             auth: {
@@ -337,6 +340,7 @@ describe('MongoMemoryServer', () => {
       // test read-only user connection
       {
         const con = await MongoClient.connect(mongoServer.getUri(), {
+          ...clientOpts,
           authSource: readOnlyUser.database,
           authMechanism: 'SCRAM-SHA-256',
           auth: {
@@ -385,7 +389,7 @@ describe('MongoMemoryServer', () => {
 
       const con: MongoClient = await MongoClient.connect(
         utils.uriTemplate(mongoServer.instanceInfo.ip, mongoServer.instanceInfo.port, 'admin'),
-        {}
+        clientOpts
       );
       const db = con.db('admin');
       expect(

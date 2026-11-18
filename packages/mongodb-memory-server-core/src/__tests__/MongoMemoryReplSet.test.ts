@@ -7,7 +7,7 @@ import MongoMemoryServer, { AutomaticAuth } from '../MongoMemoryServer';
 import * as utils from '../util/utils';
 import MongoInstance, { MongoMemoryInstanceOpts } from '../util/MongoInstance';
 import { ReplsetCountLowError, StateError, WaitForPrimaryTimeoutError } from '../util/errors';
-import { assertIsError } from './testUtils/test_utils';
+import { assertIsError, clientOpts } from './testUtils/test_utils';
 import * as debug from 'debug';
 
 jest.setTimeout(100000); // 10s
@@ -65,7 +65,7 @@ describe('single server replset', () => {
 
     await promise;
 
-    const con = await MongoClient.connect(replSet.getUri(), {});
+    const con = await MongoClient.connect(replSet.getUri(), clientOpts);
 
     await con.close();
     await replSet.stop();
@@ -252,7 +252,7 @@ describe('single server replset', () => {
 
     // test unpriviliged connection
     {
-      const con = await MongoClient.connect(replSet.getUri());
+      const con = await MongoClient.connect(replSet.getUri(), clientOpts);
 
       const db = con.db('somedb');
       const col = db.collection('somecol');
@@ -271,6 +271,7 @@ describe('single server replset', () => {
     // test priviliged connection
     {
       const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
+        ...clientOpts,
         authSource: 'admin',
         authMechanism: 'SCRAM-SHA-256',
         auth: {
@@ -324,7 +325,7 @@ describe('single server replset', () => {
 
       // test unpriviliged connection
       {
-        const con = await MongoClient.connect(replSet.getUri());
+        const con = await MongoClient.connect(replSet.getUri(), clientOpts);
 
         const db = con.db('somedb');
         const col = db.collection('somecol');
@@ -343,6 +344,7 @@ describe('single server replset', () => {
       // test priviliged connection
       {
         const con: MongoClient = await MongoClient.connect(replSet.getUri(), {
+          ...clientOpts,
           authSource: 'admin',
           authMechanism: 'SCRAM-SHA-256',
           auth: {
