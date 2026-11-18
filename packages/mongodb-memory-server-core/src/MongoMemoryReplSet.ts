@@ -23,6 +23,7 @@ import {
 import { MongoBinaryOpts } from './util/MongoBinary';
 import debug from 'debug';
 import { MongoClient, MongoError } from 'mongodb';
+import * as os from 'os';
 import {
   MongoInstanceEvents,
   MongoMemoryInstanceOpts,
@@ -669,6 +670,8 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
     const con: MongoClient = await MongoClient.connect(uris[0], {
       // somehow since mongodb-nodejs 4.0, this option is needed when the server is set to be in a replset
       directConnection: true,
+      // pass "os" explicitly, the driver's dynamic import of it fails in jest (https://jira.mongodb.org/browse/NODE-7832)
+      runtimeAdapters: { os },
       ...extraOptions,
     });
     log('_initReplSet: connected');
