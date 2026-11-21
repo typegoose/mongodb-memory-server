@@ -14,7 +14,7 @@
 <section class="tsd-panel">
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="getfreeport"><span class="tsd-kind-call-signature">getFreePort</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">firstPort</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">max_tries</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><a href="#getfreeport" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="getfreeport"><span class="tsd-kind-call-signature">getFreePort</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">firstPort</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">max_tries</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">host</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><a href="#getfreeport" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Try to get a free port.</p>
 </div>
@@ -26,6 +26,9 @@
 </div></li>
 <li><span><span class="tsd-kind-parameter">max_tries</span>: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = MAX_DEFAULT_TRIES</span></span>
 <div class="tsd-comment tsd-typography"><p>maximum amount of tries to get a port, default to MAX_DEFAULT_TRIES</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">host</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>The address to bind the probe to, empty for the wildcard address (see <a href="util_getport.probeHost.html" class="tsd-kind-function">probeHost</a>)</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A valid free port</p>
 
@@ -34,7 +37,7 @@
 <h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>if &quot;max_tries&quot; is exceeded</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/typegoose/mongodb-memory-server/blob/f1752c32f291503f51e239051147f44d9e16625f/packages/mongodb-memory-server-core/src/util/getport/index.ts#L43">packages/mongodb-memory-server-core/src/util/getport/index.ts:43</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/typegoose/mongodb-memory-server/blob/999013c07ed78c5538f95741047dbf5db29c87bf/packages/mongodb-memory-server-core/src/util/getport/index.ts#L44">packages/mongodb-memory-server-core/src/util/getport/index.ts:44</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
