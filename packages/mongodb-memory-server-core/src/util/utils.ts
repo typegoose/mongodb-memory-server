@@ -169,7 +169,7 @@ export function isAlive(pid?: number): boolean {
 
 /**
  * Call "process.nextTick" to ensure an function is exectued directly after all code surrounding it
- * look at the following link to get to know on why this needed: https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#process-nexttick (read full documentation)
+ * look at the following link to get to know on why this needed: https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick#processnexttick (read full documentation)
  */
 export async function ensureAsync(): Promise<void> {
   return new Promise((res) => process.nextTick(res));
