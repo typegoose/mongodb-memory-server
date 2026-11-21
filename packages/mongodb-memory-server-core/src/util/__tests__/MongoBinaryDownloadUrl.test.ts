@@ -990,70 +990,26 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     describe('for win32 & windows', () => {
-      it('windows (x86_64) & 4.2.0 (using win32)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'win32',
-          arch: 'x64',
-          version: '4.2.0',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2012plus-4.2.0.zip'
-        );
-      });
+      interface TestCase {
+        arch: 'x64' | 'arm64';
+        mongo: string;
+        expected: string;
+      }
 
-      it('windows (x86_64) & 4.4.0 (using windows)', async () => {
+      it.each<TestCase>([
+        { mongo: '4.2.0', expected: '/win32/mongodb-win32-x86_64-2012plus-4.2.0', arch: 'x64' },
+        { mongo: '4.4.0', expected: '/windows/mongodb-windows-x86_64-4.4.0', arch: 'x64' },
+        { mongo: '7.0.14', expected: '/windows/mongodb-windows-x86_64-7.0.14', arch: 'x64' },
+        { mongo: '8.0.0', expected: '/windows/mongodb-windows-x86_64-8.0.0', arch: 'x64' },
+        { mongo: '8.2.0', expected: '/windows/mongodb-windows-x86_64-8.2.0', arch: 'x64' },
+        { mongo: 'latest', expected: '/windows/mongodb-windows-x86_64-latest', arch: 'x64' },
+      ])('Release: MongoDB $mongo, Expecting $expected', async ({ arch, mongo, expected }) => {
         const du = new MongoBinaryDownloadUrl({
           platform: 'win32',
-          arch: 'x64',
-          version: '4.4.0',
+          arch,
+          version: mongo,
         });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-4.4.0.zip'
-        );
-      });
-
-      it('windows (x86_64) & 7.0.14 (using windows)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'win32',
-          arch: 'x64',
-          version: '7.0.14',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.14.zip'
-        );
-      });
-
-      it('windows (x86_64) & 8.0.0 (using windows)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'win32',
-          arch: 'x64',
-          version: '8.0.0',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-8.0.0.zip'
-        );
-      });
-
-      it('windows (x86_64) & 8.2.0 (using windows)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'win32',
-          arch: 'x64',
-          version: '8.2.0',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-8.2.0.zip'
-        );
-      });
-
-      it('windows (x86_64) & latest (using windows)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'win32',
-          arch: 'x64',
-          version: 'latest',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-latest.zip'
-        );
+        expect(await du.getDownloadUrl()).toBe(expectedBaseUrl + `${expected}.zip`);
       });
     });
 
