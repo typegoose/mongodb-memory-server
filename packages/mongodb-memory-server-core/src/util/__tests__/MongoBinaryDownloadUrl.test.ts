@@ -595,425 +595,67 @@ describe('MongoBinaryDownloadUrl', () => {
 
       describe('for rhel', () => {
         // These tests are made based on how the current implementation is, no actual rhel testing was done, so the data might be inaccurate
-        it('rhel 8.2 (x86_64) & 4.2.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '4.2.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8.2',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.2.0.tgz'
-          );
-        });
 
-        it('rhel 8.2 (x86_64) & 5.0.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '5.0.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8.2',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-5.0.0.tgz'
-          );
-        });
+        it.each<TestCase>([
+          // RHEL 8 legacy archive names
+          { dist: '8.2', mongo: '4.2.0', expected: 'x86_64-rhel80-4.2.0', arch: 'x64' },
+          { dist: '8.2', mongo: '5.0.0', expected: 'x86_64-rhel80-5.0.0', arch: 'x64' },
 
-        describe('rhel 8 download name change (JIRA SERVER-92375)', () => {
-          it('rhel 8.2 (x86_64) & 5.0.29', async () => {
+          { dist: '8.2', mongo: '4.4.2', expected: 'aarch64-rhel82-4.4.2', arch: 'arm64' },
+          { dist: '8.2', mongo: '5.0.0', expected: 'aarch64-rhel82-5.0.0', arch: 'arm64' },
+          { dist: '8.2', mongo: '6.0.10', expected: 'aarch64-rhel82-6.0.10', arch: 'arm64' },
+          { dist: '8.2', mongo: '7.0.0', expected: 'aarch64-rhel82-7.0.0', arch: 'arm64' },
+
+          // RHEL 8 download name change (JIRA SERVER-92375)
+          { dist: '8.2', mongo: '5.0.29', expected: 'x86_64-rhel8-5.0.29', arch: 'x64' },
+          { dist: '8.2', mongo: '6.0.17', expected: 'x86_64-rhel8-6.0.17', arch: 'x64' },
+          { dist: '8.2', mongo: '7.0.13', expected: 'x86_64-rhel8-7.0.13', arch: 'x64' },
+          { dist: '8.2', mongo: '8.0.0', expected: 'x86_64-rhel8-8.0.0', arch: 'x64' },
+          { dist: '8.2', mongo: '8.2.0', expected: 'x86_64-rhel8-8.2.0', arch: 'x64' },
+          { dist: '8', mongo: 'v5.0-latest', expected: 'x86_64-rhel80-v5.0-latest', arch: 'x64' },
+
+          { dist: '8.2', mongo: '5.0.29', expected: 'aarch64-rhel8-5.0.29', arch: 'arm64' },
+          { dist: '8.2', mongo: '6.0.17', expected: 'aarch64-rhel8-6.0.17', arch: 'arm64' },
+          { dist: '8.2', mongo: '7.0.13', expected: 'aarch64-rhel8-7.0.13', arch: 'arm64' },
+          { dist: '8.2', mongo: '8.0.0', expected: 'aarch64-rhel8-8.0.0', arch: 'arm64' },
+          { dist: '8.2', mongo: '8.2.0', expected: 'aarch64-rhel8-8.2.0', arch: 'arm64' },
+          {
+            dist: '8.2',
+            mongo: 'v4.4-latest',
+            expected: 'aarch64-rhel82-v4.4-latest',
+            arch: 'arm64',
+          },
+
+          // RHEL 9
+          { dist: '9', mongo: '6.0.4', expected: 'x86_64-rhel90-6.0.4', arch: 'x64' },
+          { dist: '9', mongo: '7.0.0', expected: 'x86_64-rhel90-7.0.0', arch: 'x64' },
+          { dist: '9', mongo: '6.0.7', expected: 'aarch64-rhel90-6.0.7', arch: 'arm64' },
+          { dist: '9', mongo: '7.0.0', expected: 'aarch64-rhel90-7.0.0', arch: 'arm64' },
+
+          // RHEL 9.3
+          { dist: '9.3', mongo: '7.0.14', expected: 'x86_64-rhel90-7.0.14', arch: 'x64' },
+          { dist: '9.3', mongo: '8.0.0', expected: 'x86_64-rhel93-8.0.0', arch: 'x64' },
+          { dist: '9.3', mongo: '8.2.0', expected: 'x86_64-rhel93-8.2.0', arch: 'x64' },
+          { dist: '9.3', mongo: '8.0.0', expected: 'aarch64-rhel93-8.0.0', arch: 'arm64' },
+          { dist: '9.3', mongo: '8.2.0', expected: 'aarch64-rhel93-8.2.0', arch: 'arm64' },
+        ])(
+          'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
+          async ({ arch, dist, mongo, expected }) => {
             const du = new MongoBinaryDownloadUrl({
               platform: 'linux',
-              arch: 'x64',
-              version: '5.0.29',
+              arch,
+              version: mongo,
               os: {
                 os: 'linux',
                 dist: 'rhel',
-                release: '8.2',
+                release: dist,
               },
             });
             expect(await du.getDownloadUrl()).toBe(
-              'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-5.0.29.tgz'
+              expectedBaseUrl + `/linux/mongodb-linux-${expected}.tgz`
             );
-          });
-
-          it('rhel 8.2 (x86_64) & 6.0.17', async () => {
-            const du = new MongoBinaryDownloadUrl({
-              platform: 'linux',
-              arch: 'x64',
-              version: '6.0.17',
-              os: {
-                os: 'linux',
-                dist: 'rhel',
-                release: '8.2',
-              },
-            });
-            expect(await du.getDownloadUrl()).toBe(
-              'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-6.0.17.tgz'
-            );
-          });
-
-          it('rhel 8.2 (x86_64) & 7.0.13', async () => {
-            const du = new MongoBinaryDownloadUrl({
-              platform: 'linux',
-              arch: 'x64',
-              version: '7.0.13',
-              os: {
-                os: 'linux',
-                dist: 'rhel',
-                release: '8.2',
-              },
-            });
-            expect(await du.getDownloadUrl()).toBe(
-              'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-7.0.13.tgz'
-            );
-          });
-
-          it('rhel 8.2 (x86_64) & 8.0.0', async () => {
-            const du = new MongoBinaryDownloadUrl({
-              platform: 'linux',
-              arch: 'x64',
-              version: '8.0.0',
-              os: {
-                os: 'linux',
-                dist: 'rhel',
-                release: '8.2',
-              },
-            });
-            expect(await du.getDownloadUrl()).toBe(
-              'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-8.0.0.tgz'
-            );
-          });
-
-          it('rhel 8.2 (arm64) & 5.0.29', async () => {
-            const du = new MongoBinaryDownloadUrl({
-              platform: 'linux',
-              arch: 'arm64',
-              version: '5.0.29',
-              os: {
-                os: 'linux',
-                dist: 'rhel',
-                release: '8.2',
-              },
-            });
-            expect(await du.getDownloadUrl()).toBe(
-              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel8-5.0.29.tgz'
-            );
-          });
-
-          it('rhel 8.2 (arm64) & 6.0.17', async () => {
-            const du = new MongoBinaryDownloadUrl({
-              platform: 'linux',
-              arch: 'arm64',
-              version: '6.0.17',
-              os: {
-                os: 'linux',
-                dist: 'rhel',
-                release: '8.2',
-              },
-            });
-            expect(await du.getDownloadUrl()).toBe(
-              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel8-6.0.17.tgz'
-            );
-          });
-
-          it('rhel 8.2 (arm64) & 7.0.13', async () => {
-            const du = new MongoBinaryDownloadUrl({
-              platform: 'linux',
-              arch: 'arm64',
-              version: '7.0.13',
-              os: {
-                os: 'linux',
-                dist: 'rhel',
-                release: '8.2',
-              },
-            });
-            expect(await du.getDownloadUrl()).toBe(
-              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel8-7.0.13.tgz'
-            );
-          });
-
-          it('rhel 8.2 (arm64) & 8.0.0', async () => {
-            const du = new MongoBinaryDownloadUrl({
-              platform: 'linux',
-              arch: 'arm64',
-              version: '8.0.0',
-              os: {
-                os: 'linux',
-                dist: 'rhel',
-                release: '8.2',
-              },
-            });
-            expect(await du.getDownloadUrl()).toBe(
-              'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel8-8.0.0.tgz'
-            );
-          });
-        });
-
-        it('rhel 8.2 (arm64) & 4.4.2', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: '4.4.2',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8.2',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-4.4.2.tgz'
-          );
-        });
-
-        it('rhel 8.2 (arm64) & 5.0.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: '5.0.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8.2',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-5.0.0.tgz'
-          );
-        });
-
-        it('rhel 8.2 (arm64) & 6.0.10', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: '6.0.10',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8.2',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-6.0.10.tgz'
-          );
-        });
-
-        it('rhel 8.2 (arm64) & 7.0.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: '7.0.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8.2',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-7.0.0.tgz'
-          );
-        });
-
-        it('rhel 8 (x86_64) & 8.2.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '8.2.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8.2',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel8-8.2.0.tgz'
-          );
-        });
-
-        it('rhel 8 (arm64) & 8.2.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: '8.2.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8.2',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel8-8.2.0.tgz'
-          );
-        });
-
-        it('rhel 9 (x86_64) & 6.0.4', async () => {
-          // lowest rhel 9 x64 supported version is 6.0.4
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '6.0.4',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '9',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel90-6.0.4.tgz'
-          );
-        });
-
-        it('rhel 9 (x86_64) & 7.0.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '7.0.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '9',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel90-7.0.0.tgz'
-          );
-        });
-
-        it('rhel 9 (arm64) & 6.0.7', async () => {
-          // lowest rhel 9 arm64 supported version is 6.0.7
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: '6.0.7',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '9',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel90-6.0.7.tgz'
-          );
-        });
-
-        it('rhel 9 (arm64) & 7.0.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: '7.0.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '9',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel90-7.0.0.tgz'
-          );
-        });
-
-        it('rhel 8 (x86_64) & v5.0-latest', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: 'v5.0-latest',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-v5.0-latest.tgz'
-          );
-        });
-
-        it('rhel 9.3 (x86_64) & 7.0.14', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '7.0.14',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '9.3',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel90-7.0.14.tgz'
-          );
-        });
-
-        it('rhel 9.3 (x86_64) & 8.0.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '8.0.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '9.3',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel93-8.0.0.tgz'
-          );
-        });
-
-        it('rhel 9.3 (x86_64) & 8.2.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '8.2.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '9.3',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel93-8.2.0.tgz'
-          );
-        });
-
-        it('rhel 9.3 (arm64) & 8.0.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: '8.0.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '9.3',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel93-8.0.0.tgz'
-          );
-        });
-
-        it('rhel 9.3 (arm64) & 8.2.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: '8.2.0',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '9.3',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel93-8.2.0.tgz'
-          );
-        });
+          }
+        );
 
         it('rocky linux 9.2 (x86_64) & 6.0.4 (using rhel90)', async () => {
           // lowest rhel 9 x64 supported version is 6.0.4
@@ -1115,22 +757,6 @@ describe('MongoBinaryDownloadUrl', () => {
             expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
             expect(err.message).toMatchSnapshot();
           }
-        });
-
-        it('should not throw a error for arm64 v4.4-latest', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'arm64',
-            version: 'v4.4-latest',
-            os: {
-              os: 'linux',
-              dist: 'rhel',
-              release: '8.2',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel82-v4.4-latest.tgz'
-          );
         });
 
         it('should warn when a unhandled RHEL release is used', async () => {
