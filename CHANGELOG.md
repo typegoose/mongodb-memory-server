@@ -1,3 +1,28 @@
+## [11.4.0-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.1-beta.1...v11.4.0-beta.1) (2026-11-21)
+
+### Fixes
+
+* **MongoBinaryDownload::attemptDownload:** improve handling of errors across streams ([9e28d3d](https://github.com/typegoose/mongodb-memory-server/commit/9e28d3dbfcd35cc810690050bf132dbd7e0ec9d8))
+
+### Style
+
+* **utils:** fix dead Node.js event loop guide link ([#1057](https://github.com/typegoose/mongodb-memory-server/issues/1057)) ([a29e32f](https://github.com/typegoose/mongodb-memory-server/commit/a29e32f3d890b86494ad84cc907feccb981cc4f1))
+
+### Dependencies
+
+* **follow-redirects:** upgrade to 1.16.3 ([5032d54](https://github.com/typegoose/mongodb-memory-server/commit/5032d5447d238369636a8450c4f68fe91e065212))
+* **tslib:** upgrade to 2.9.1 ([e96c966](https://github.com/typegoose/mongodb-memory-server/commit/e96c966cad7e11f3d7a1611ab8333bdb791780ed))
+
+### Dev-Dependencies
+
+* **eslint-plugin-prettier:** upgrade to 5.5.7 ([772267d](https://github.com/typegoose/mongodb-memory-server/commit/772267d4ec32b1c439b2e4ea98ec88b7e577dd1f))
+* **eslint:** upgrade to 10.15.0 ([2a8b924](https://github.com/typegoose/mongodb-memory-server/commit/2a8b924c534a859600839d3731358afb16169835))
+* **globals:** upgrade to 17.14.0 ([7a48390](https://github.com/typegoose/mongodb-memory-server/commit/7a4839087a6b640d614dd9decdc4409de8b2b9bf))
+* **jest:** upgrade to 30.5.2 ([f9c15ee](https://github.com/typegoose/mongodb-memory-server/commit/f9c15ee9a47d0ab5f9ddd5596659c4ea23ca49c1))
+* **prettier:** upgrade to 3.10.1 ([c0feda2](https://github.com/typegoose/mongodb-memory-server/commit/c0feda272255b98101d44ab5fbc063be153cce0f))
+* **ts-jest:** upgrade to 29.4.15 ([b1881c7](https://github.com/typegoose/mongodb-memory-server/commit/b1881c7d67f94b1e61651aad53c59286c557bcde))
+* **typescript-eslint:** upgrade to 8.73.0 ([22abcf9](https://github.com/typegoose/mongodb-memory-server/commit/22abcf9d2e19eb556cddaa95a5b1127b04815516))
+
 ## [11.3.1-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0...v11.3.1-beta.1) (2026-10-20)
 
 ### Fixes
