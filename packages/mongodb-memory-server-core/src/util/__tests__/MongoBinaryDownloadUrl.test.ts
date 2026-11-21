@@ -443,63 +443,48 @@ describe('MongoBinaryDownloadUrl', () => {
           );
         });
 
-        it('elementaryos 5 (x86_64) & 4.4.1 (using ubuntu1804)', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
+        interface ElementaryCase extends TestCase {
+          codename?: string;
+        }
+
+        it.each<ElementaryCase>([
+          { dist: '5.1', mongo: '4.4.1', expected: 'x86_64-ubuntu1804-4.4.1', arch: 'x64' },
+          // from "elementary/docker:odin-stable" (id: 1a8a0700e015)
+          {
+            dist: '6.1',
+            mongo: '5.0.0',
+            expected: 'x86_64-ubuntu2004-5.0.0',
             arch: 'x64',
-            version: '4.4.1',
-            os: {
-              os: 'linux',
-              dist: 'elementary OS',
-              release: '5.1',
-              id_like: ['ubuntu'],
-            },
-          });
-
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.1.tgz'
-          );
-        });
-
-        it('elementaryos 6.1 (x86_64) & 5.0.0 (using ubuntu2004)', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
+            codename: 'jolnir',
+          },
+          // from "elementary/docker:horus-stable" (id: a43c2a2e2cf2)
+          {
+            dist: '7',
+            mongo: '6.0.4',
+            expected: 'x86_64-ubuntu2204-6.0.4',
             arch: 'x64',
-            version: '5.0.0',
-            // from "elementary/docker:odin-stable" (id: 1a8a0700e015)
-            os: {
-              os: 'linux',
-              dist: 'elementary',
-              codename: 'jolnir',
-              release: '6.1',
-              id_like: ['ubuntu'],
-            },
-          });
-
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.0.tgz'
-          );
-        });
-
-        it('elementaryos 7.0 (x86_64) & 6.0.4 (using ubuntu2204)', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '6.0.4',
-            // from "elementary/docker:horus-stable" (id: a43c2a2e2cf2)
-            os: {
-              os: 'linux',
-              dist: 'elementary',
-              codename: 'horus',
-              release: '7',
-              id_like: ['ubuntu'],
-            },
-          });
-
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
-          );
-        });
+            codename: 'horus',
+          },
+        ])(
+          'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
+          async ({ arch, dist, mongo, expected, codename }) => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch,
+              version: mongo,
+              os: {
+                os: 'linux',
+                dist: 'elementary OS',
+                codename,
+                release: dist,
+                id_like: ['ubuntu'],
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              expectedBaseUrl + `/linux/mongodb-linux-${expected}.tgz`
+            );
+          }
+        );
       });
 
       describe('for LinuxMint', () => {
