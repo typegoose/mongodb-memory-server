@@ -336,125 +336,65 @@ describe('MongoBinaryDownloadUrl', () => {
 
       // for arch and arch based systems (no specific extra mapping)
       describe('for arch', () => {
-        it('arch (x86_64) & 4.4.2 (using ubuntu2004)', async () => {
-          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+        interface ArchCase extends Omit<TestCase, 'dist'> {
+          os: LinuxOS;
+        }
 
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '4.4.2',
-            os: {
-              os: 'linux',
-              dist: 'Arch',
-              release: 'rolling',
-              id_like: ['arch'],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
-          );
-          expect(console.warn).toHaveBeenCalledTimes(1);
-        });
+        // Define common OS configurations outside the test cases for cleaner formatting
+        const archOs: LinuxOS = {
+          os: 'linux',
+          dist: 'Arch',
+          release: 'rolling',
+          id_like: ['arch'],
+        };
+        const manjaroOs: LinuxOS = {
+          os: 'linux',
+          dist: 'ManjaroLinux',
+          release: '20.2',
+          id_like: ['arch'],
+        };
+        const archstrikeOs: LinuxOS = {
+          os: 'linux',
+          dist: 'ArchStrike',
+          release: 'rolling',
+          id_like: ['arch'],
+        };
+        const cachyosOs: LinuxOS = {
+          os: 'linux',
+          dist: 'cachyos',
+          release: '',
+          id_like: [],
+        };
 
-        it('arch (x86_64) & 5.0.0 (using ubuntu2004)', async () => {
-          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+        const testCases: ArchCase[] = [
+          { os: archOs, mongo: '4.4.2', expected: 'x86_64-ubuntu2004-4.4.2', arch: 'x64' },
+          { os: archOs, mongo: '5.0.0', expected: 'x86_64-ubuntu2004-5.0.0', arch: 'x64' },
+          { os: archOs, mongo: '6.0.4', expected: 'x86_64-ubuntu2204-6.0.4', arch: 'x64' },
+          { os: manjaroOs, mongo: '4.4.2', expected: 'x86_64-ubuntu2004-4.4.2', arch: 'x64' },
+          { os: archstrikeOs, mongo: '4.4.2', expected: 'x86_64-ubuntu2004-4.4.2', arch: 'x64' },
+          { os: cachyosOs, mongo: '8.0.7', expected: 'x86_64-ubuntu2204-8.0.7', arch: 'x64' },
+        ];
 
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '5.0.0',
-            os: {
-              os: 'linux',
-              dist: 'Arch',
-              release: 'rolling',
-              id_like: ['arch'],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.0.tgz'
-          );
-          expect(console.warn).toHaveBeenCalledTimes(1);
-        });
+        it.each<ArchCase>(testCases)(
+          'Release: $os.dist ($arch) at MongoDB $mongo, Expecting $expected',
+          async ({ arch, os, mongo, expected }) => {
+            jest.spyOn(console, 'warn').mockImplementation(() => void 0);
 
-        it('arch (x86_64) & 6.0.4 (using ubuntu2204)', async () => {
-          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch,
+              version: mongo,
+              os,
+            });
 
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '6.0.4',
-            os: {
-              os: 'linux',
-              dist: 'Arch',
-              release: 'rolling',
-              id_like: ['arch'],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-6.0.4.tgz'
-          );
-          expect(console.warn).toHaveBeenCalledTimes(1);
-        });
+            const result = await du.getDownloadUrl();
 
-        it('manjaro (x86_64) & 4.4.2 (using ubuntu2004)', async () => {
-          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '4.4.2',
-            os: {
-              os: 'linux',
-              dist: 'ManjaroLinux',
-              release: '20.2',
-              id_like: ['arch'],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
-          );
-          expect(console.warn).toHaveBeenCalledTimes(1);
-        });
-
-        it('archstrike (x86_64) & 4.4.2 (using ubuntu2004)', async () => {
-          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '4.4.2',
-            os: {
-              os: 'linux',
-              dist: 'ArchStrike',
-              release: 'rolling',
-              id_like: ['arch'],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.2.tgz'
-          );
-          expect(console.warn).toHaveBeenCalledTimes(1);
-        });
-
-        it('cachyos (x86_64) & 8.0.7 (using ubuntu2404)', async () => {
-          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '8.0.7',
-            os: {
-              os: 'linux',
-              dist: 'cachyos',
-              release: '',
-              id_like: [],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-8.0.7.tgz'
-          );
-          expect(console.warn).toHaveBeenCalledTimes(1);
-        });
+            expect(result).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-' + expected + '.tgz'
+            );
+            expect(console.warn).toHaveBeenCalledTimes(1);
+          }
+        );
       });
 
       describe('for gentoo', () => {
@@ -1912,7 +1852,7 @@ describe('MongoBinaryDownloadUrl', () => {
       ).toBe('ubuntu2004');
     });
 
-    it('should return a archive name for Ubuntu 22.04 using 1804 4.0', () => {
+    it('should return a archive name for Ubuntu 22.04 using  1804 4.0', () => {
       downloadUrl.version = '4.2.0';
       expect(
         downloadUrl.getUbuntuVersionString({
