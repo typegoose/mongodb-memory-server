@@ -146,165 +146,65 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for debian', () => {
-        it('debian 10 (x86_64) & 4.2.1', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
+        it.each<TestCase>([
+          // Debian 10 Tests
+          { dist: '10', mongo: '4.2.1', expected: 'x86_64-debian10-4.2.1', arch: 'x64' },
+          {
+            dist: '10',
+            mongo: 'v5.0-latest',
+            expected: 'x86_64-debian10-v5.0-latest',
             arch: 'x64',
-            version: '4.2.1',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '10',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-4.2.1.tgz'
-          );
-        });
+          },
 
-        it('debian 10 (x86_64) & v5.0-latest', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
+          // Debian 11 Tests
+          { dist: '11', mongo: '4.2.1', expected: 'x86_64-debian10-4.2.1', arch: 'x64' }, // Uses debian 10 binaries
+          { dist: '11', mongo: '5.0.7', expected: 'x86_64-debian10-5.0.7', arch: 'x64' }, // Uses debian 10 binaries
+          { dist: '11', mongo: '5.0.8', expected: 'x86_64-debian11-5.0.8', arch: 'x64' },
+          {
+            dist: '11',
+            mongo: 'v5.0-latest',
+            expected: 'x86_64-debian11-v5.0-latest',
             arch: 'x64',
-            version: 'v5.0-latest',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '10',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-v5.0-latest.tgz'
-          );
-        });
+          },
+          { dist: '11', mongo: '6.0.0', expected: 'x86_64-debian11-6.0.0', arch: 'x64' },
 
-        it('debian 11 (x86_64) & 4.2.1 (using debian 10 binaries)', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
+          // Debian 12 Tests
+          { dist: '12', mongo: '7.0.3', expected: 'x86_64-debian12-7.0.3', arch: 'x64' },
+          {
+            dist: '12',
+            mongo: 'v7.0-latest',
+            expected: 'x86_64-debian12-v7.0-latest',
             arch: 'x64',
-            version: '4.2.1',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '11',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-4.2.1.tgz'
-          );
-        });
+          },
 
-        it('debian 11 (x86_64) & 5.0.7 (using debian 10 binaries)', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '5.0.7',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '11',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-5.0.7.tgz'
-          );
-        });
+          // Debian Testing / Unstable (does not have a dist release set)
+          { dist: '', mongo: '7.0.3', expected: 'x86_64-debian12-7.0.3', arch: 'x64' }, // Testing/unstable (release: '')
 
-        it('debian 11 (x86_64) & 5.0.8', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
+          // General Success Case
+          {
+            dist: '10',
+            mongo: 'v4.2-latest',
+            expected: 'x86_64-debian10-v4.2-latest',
             arch: 'x64',
-            version: '5.0.8',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '11',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-5.0.8.tgz'
-          );
-        });
-
-        it('debian 11 (x86_64) & v5.0-latest', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: 'v5.0-latest',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '11',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-v5.0-latest.tgz'
-          );
-        });
-
-        it('debian 11 (x86_64) & 6.0.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '6.0.0',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '11',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-6.0.0.tgz'
-          );
-        });
-
-        it('debian 12 (x86_64) & 7.0.3', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '7.0.3',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '12',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian12-7.0.3.tgz'
-          );
-        });
-
-        it('debian 12 (x86_64) & v7.0-latest', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: 'v7.0-latest',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '12',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian12-v7.0-latest.tgz'
-          );
-        });
-
-        it('debian testing/unstable (x86_64) & 7.0.3', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '7.0.3',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian12-7.0.3.tgz'
-          );
-        });
+          },
+        ])(
+          'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
+          async ({ arch, dist, mongo, expected }) => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch,
+              version: mongo,
+              os: {
+                os: 'linux',
+                dist: 'debian',
+                release: dist,
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-' + expected + '.tgz'
+            );
+          }
+        );
 
         it('should throw a Error when the provided version could not be coerced [UnknownVersionError]', async () => {
           const du = new MongoBinaryDownloadUrl({
