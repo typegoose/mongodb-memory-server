@@ -109,7 +109,6 @@ jobs:
           extra_plugins: |
             @semantic-release/git
             @semantic-release/changelog
-            conventional-changelog-conventionalcommits
             semantic-release-replace-plugin@1.2.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
