@@ -13,7 +13,6 @@ import { pack } from 'tar-stream';
 import { createGzip } from 'zlib';
 import https from 'https';
 import http from 'http';
-import getFreePort from '../getport';
 
 describe('MongoBinaryDownload', () => {
   let originalTTY: boolean = false;
@@ -524,9 +523,10 @@ describe('MongoBinaryDownload', () => {
   });
 
   describe('should download correctly https', () => {
+    jest.setTimeout(15000);
+
     let tmpdir: string;
     let server: https.Server;
-    let port = 5000;
 
     let key: string;
     let cert: string;
@@ -541,7 +541,6 @@ describe('MongoBinaryDownload', () => {
       // the certificate is only for localhost and only for testing
       key = await fspromises.readFile(path.resolve(certPath, './private-key.key'), 'utf-8');
       cert = await fspromises.readFile(path.resolve(certPath, './certificate.crt'), 'utf-8');
-      port = await getFreePort(port);
 
       resume_before = process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)];
     });
@@ -567,10 +566,11 @@ describe('MongoBinaryDownload', () => {
       process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)] = resume_before;
     });
 
-    function createTestServer(
+    async function createTestServer(
       interruptAfter?: number,
       timeoutFirstRequest?: boolean,
-      statusCode?: number
+      statusCode?: number,
+      interruptEveryRequest: boolean = false
     ) {
       let isFirstRequest = true;
 
@@ -605,18 +605,22 @@ describe('MongoBinaryDownload', () => {
             return;
           }
 
-          res.writeHead(200, {
+          res.writeHead(rangeStart > 0 ? 206 : 200, {
             'Content-Type': 'application/gzip',
             'Content-Length': toSendBytes,
             'Accept-Ranges': 'bytes',
+            ...(rangeStart > 0
+              ? { 'Content-Range': `bytes ${rangeStart}-${totalBytes - 1}/${totalBytes}` }
+              : {}),
           });
 
-          // dont send any other data, this will invoke the stalling callback on the client
+          // Dont send any other data, this will invoke the stalling callback on the client
           if (isFirstRequest && timeoutFirstRequest) {
-            // this branch is meant to have the client trigger a "ETIMEDOUT" (via "socket.timeout") instead of the server giving a "socket hangup" / "ECONNRESET"
+            // This branch is meant to have the client trigger a "ETIMEDOUT" (via "socket.timeout") instead of the server giving a "socket hangup" / "ECONNRESET"
+            res.flushHeaders();
 
-            // but to not leave it as a potential dangling handle, we should destry to response after some time
-            setTimeout(() => res.destroy(), 1000);
+            // But to not leave it as a potential dangling handle, we should destroy the response after some time
+            setTimeout(() => res.destroy(), 15000).unref();
 
             isFirstRequest = false;
 
@@ -625,22 +629,32 @@ describe('MongoBinaryDownload', () => {
 
           const buffer = genBuffer(toSendBytes, rangeStart);
 
-          if (interruptAfter) {
+          if (interruptAfter && (interruptEveryRequest || (isFirstRequest && !req.headers.range))) {
+            isFirstRequest = false;
             // only partially sending data and then ending will result in a error "aborted" with code "ECONNRESET"
-            res.write(buffer.slice(0, interruptAfter));
-          } else {
-            res.write(buffer);
+            const socket = res.socket;
+            res.end(buffer.slice(0, interruptAfter));
+            setTimeout(() => {
+              socket?.destroy();
+            }, 10);
+
+            return;
           }
 
           isFirstRequest = false;
 
-          res.end();
+          res.end(buffer);
         }
       );
 
-      server = builder.listen(port);
+      server = await new Promise<https.Server>((resolve) => {
+        const s = builder.listen(0, () => resolve(s));
+      });
 
-      return `https://localhost:${port}`;
+      const address = server.address();
+      utils.assertion(address !== null && typeof address !== 'string');
+
+      return `https://localhost:${address.port}`;
     }
 
     /** Generate 4 bytes 00, then 4 bytes FF until "toGen" */
@@ -662,7 +676,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should download correctly and fully', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer();
+      const baseurl = await createTestServer();
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -693,7 +707,7 @@ describe('MongoBinaryDownload', () => {
         tmpfile,
         1,
         0,
-        1000
+        5000
       );
 
       expect(resolved).toStrictEqual(outfile);
@@ -716,7 +730,7 @@ describe('MongoBinaryDownload', () => {
       process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)] = 'true';
 
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer(totalBytes / 2);
+      const baseurl = await createTestServer(totalBytes / 2);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -747,7 +761,7 @@ describe('MongoBinaryDownload', () => {
         tmpfile,
         2,
         0,
-        200
+        5000
       );
 
       expect(resolved).toStrictEqual(outfile);
@@ -768,7 +782,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should download retry after stalling (ETIMEDOUT)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer(undefined, true);
+      const baseurl = await createTestServer(undefined, true);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -799,8 +813,7 @@ describe('MongoBinaryDownload', () => {
         tmpfile,
         2,
         0,
-        // timeout needs to be lower than handle clean-up in "createTestServer"
-        200
+        10000
       );
 
       expect(resolved).toStrictEqual(outfile);
@@ -821,7 +834,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should error of repeated retry errors (aborted & ECONNRESET)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer(10);
+      const baseurl = await createTestServer(10, undefined, undefined, true);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -853,18 +866,19 @@ describe('MongoBinaryDownload', () => {
           tmpfile,
           2,
           0,
-          200
+          5000
         );
       } catch (err) {
         expect(err).toBeInstanceOf(DownloadError);
         assertIsError(err);
-        expect(JSON.stringify(err)).toMatchSnapshot();
+        // replace to consistent port, as the test server uses a dynamic port
+        expect(JSON.stringify(err).replace(baseurl, 'https://localhost:5000')).toMatchSnapshot();
       }
     });
 
     it('should error on 403 without retrying', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer(undefined, undefined, 403);
+      const baseurl = await createTestServer(undefined, undefined, 403);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -896,13 +910,14 @@ describe('MongoBinaryDownload', () => {
           tmpfile,
           3,
           0,
-          200
+          5000
         );
       } catch (err) {
         expect(err).toBeInstanceOf(DownloadError);
         expect(err).toHaveProperty('attempts', 1);
         assertIsError(err);
-        expect(JSON.stringify(err)).toMatchSnapshot();
+        // replace to consistent port, as the test server uses a dynamic port
+        expect(JSON.stringify(err).replace(baseurl, 'https://localhost:5000')).toMatchSnapshot();
       }
     });
   });
@@ -910,7 +925,6 @@ describe('MongoBinaryDownload', () => {
   describe('should download correctly http', () => {
     let tmpdir: string;
     let server: http.Server;
-    let port = 5000;
 
     const totalBytes = 1024 * 10;
 
@@ -918,7 +932,6 @@ describe('MongoBinaryDownload', () => {
 
     beforeAll(async () => {
       originalUseHttp = process.env[envName(ResolveConfigVariables.USE_HTTP)];
-      port = await getFreePort(port);
     });
 
     beforeEach(async () => {
@@ -942,7 +955,7 @@ describe('MongoBinaryDownload', () => {
       process.env[envName(ResolveConfigVariables.USE_HTTP)] = originalUseHttp;
     });
 
-    function createTestServer() {
+    async function createTestServer() {
       const builder = http.createServer({}, (req, res) => {
         if (req.url != '/archive.tgz') {
           res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -972,9 +985,14 @@ describe('MongoBinaryDownload', () => {
         res.end();
       });
 
-      server = builder.listen(port);
+      server = await new Promise<http.Server>((resolve) => {
+        const s = builder.listen(0, () => resolve(s));
+      });
 
-      return `http://localhost:${port}`;
+      const address = server.address();
+      utils.assertion(address !== null && typeof address !== 'string');
+
+      return `http://localhost:${address.port}`;
     }
 
     /** Generate 4 bytes 00, then 4 bytes FF until "toGen" */
@@ -996,7 +1014,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should correctly allow HTTP requests', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer();
+      const baseurl = await createTestServer();
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 

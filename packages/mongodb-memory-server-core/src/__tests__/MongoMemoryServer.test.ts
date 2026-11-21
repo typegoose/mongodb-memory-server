@@ -11,7 +11,7 @@ import { InstanceInfoError, StateError } from '../util/errors';
 import { assertIsError } from './testUtils/test_utils';
 import { promises as fspromises } from 'fs';
 import * as path from 'path';
-import getFreePort from '../util/getport';
+import getFreePort, * as getport from '../util/getport';
 
 jest.setTimeout(100000); // 10s
 
@@ -1407,6 +1407,34 @@ describe('MongoMemoryServer', () => {
       expect(await utils.statPath(dbPath)).toBeUndefined();
 
       expect(mongoServer.state).toStrictEqual(MongoMemoryServerStates.new);
+    });
+  });
+  describe('getNewPort()', () => {
+    it('should probe on the loopback address by default', async () => {
+      const spy = jest.spyOn(getport, 'getFreePort').mockResolvedValueOnce(27017);
+      const mongoServer = new MongoMemoryServer();
+
+      // @ts-expect-error "getNewPort" is protected
+      await expect(mongoServer.getNewPort()).resolves.toStrictEqual(27017);
+      expect(spy).toHaveBeenCalledWith(undefined, undefined, '127.0.0.1');
+    });
+
+    it('should probe on the first configured instance ip', async () => {
+      const spy = jest.spyOn(getport, 'getFreePort').mockResolvedValueOnce(27018);
+      const mongoServer = new MongoMemoryServer({ instance: { ip: '::1,127.0.0.1' } });
+
+      // @ts-expect-error "getNewPort" is protected
+      await expect(mongoServer.getNewPort(27018)).resolves.toStrictEqual(27018);
+      expect(spy).toHaveBeenCalledWith(27018, undefined, '::1');
+    });
+
+    it('should keep the unbound probe for a wildcard ip', async () => {
+      const spy = jest.spyOn(getport, 'getFreePort').mockResolvedValueOnce(27019);
+      const mongoServer = new MongoMemoryServer({ instance: { ip: '::,0.0.0.0' } });
+
+      // @ts-expect-error "getNewPort" is protected
+      await expect(mongoServer.getNewPort()).resolves.toStrictEqual(27019);
+      expect(spy).toHaveBeenCalledWith(undefined, undefined, undefined);
     });
   });
 });

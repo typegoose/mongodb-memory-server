@@ -1,5 +1,5 @@
 import { SpawnOptions } from 'child_process';
-import { getFreePort } from './util/getport';
+import { getFreePort, probeHost } from './util/getport';
 import {
   assertion,
   generateDbName,
@@ -398,7 +398,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * @param port A User defined default port
    */
   protected async getNewPort(port?: number): Promise<number> {
-    const newPort = await getFreePort(port);
+    const newPort = await getFreePort(port, undefined, probeHost(this.opts.instance?.ip));
 
     // only log this message if a custom port was provided
     if (port != newPort && typeof port === 'number') {

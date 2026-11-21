@@ -543,9 +543,20 @@ This likely means there has been a bug or your filesystem is bad, please report 
       log(`httpDownload: trying to download "${downloadUrl}"`);
 
       const protocol = envToBool(resolveConfig(ResolveConfigVariables.USE_HTTP)) ? http : https;
+      let responseReceived = false;
+      let timedOut = false;
 
-      const request = protocol.get(url, useHttpsOptions, async (response) => {
+      const request = protocol.get(url.href, useHttpsOptions, async (response) => {
+        responseReceived = true;
+
+        response.setTimeout(timeout, () => {
+          timedOut = true;
+          response.destroy();
+        });
+
         if (response.statusCode != 200 && response.statusCode != 206) {
+          response.resume();
+
           if (response.statusCode === 403) {
             reject(
               new DownloadError(
@@ -599,6 +610,7 @@ This likely means there has been a bug or your filesystem is bad, please report 
           !envToBool(resolveConfig(ResolveConfigVariables.DOWNLOAD_IGNORE_MISSING_HEADER)) &&
           contentLength <= 0
         ) {
+          response.resume();
           reject(
             new DownloadError(
               downloadUrl,
@@ -621,22 +633,16 @@ This likely means there has been a bug or your filesystem is bad, please report 
         // not using option "start" as we already open in "append" mode
         const fileStream = createWriteStream(tempDownloadLocation, { /* start: offset, */ flags });
 
-        fileStream.on('error', (err) => {
-          response.destroy();
-
-          // use the code if available, otherwise use the entire message
-          const code = (err as any)?.code ?? err.message;
-
-          reject(new DownloadError(downloadUrl, err.message, code));
+        response.on('data', (chunk: any) => {
+          this.printDownloadProgress(chunk);
         });
 
-        response.pipe(fileStream);
+        try {
+          // Await teardown of both streams after failures before allowing a retry. Otherwise a new
+          // attempt can open and inspect the temporary file while the previous write is still active.
+          await pipeline(response, fileStream);
 
-        fileStream.on('finish', async () => {
-          if (
-            this.dlProgress.current < this.dlProgress.length &&
-            !useHttpsOptions.path?.endsWith('.md5')
-          ) {
+          if (this.dlProgress.current < this.dlProgress.length && !url.pathname.endsWith('.md5')) {
             reject(
               new DownloadError(
                 downloadUrl,
@@ -650,39 +656,47 @@ This likely means there has been a bug or your filesystem is bad, please report 
 
           this.printDownloadProgress({ length: 0 }, true);
 
-          fileStream.close();
           await fspromises.rename(tempDownloadLocation, downloadLocation);
           log(`httpDownload: moved "${tempDownloadLocation}" to "${downloadLocation}"`);
 
           resolve(downloadLocation);
-        });
+        } catch (err) {
+          log(`Response with error for download "${downloadUrl}"!, Error:`, (err as Error).message);
 
-        response.on('data', (chunk: any) => {
-          this.printDownloadProgress(chunk);
-        });
+          if (timedOut) {
+            reject(
+              new DownloadError(downloadUrl, `Request timeout after ${timeout}ms`, 'ETIMEDOUT')
+            );
 
-        response.on('error', (err: Error) => {
-          log(`Response with error for download "${downloadUrl}"!, Error:`, err.message);
+            return;
+          }
 
-          // use the code if available, otherwise use the entire message
-          const code = (err as any)?.code ?? err.message;
-
-          reject(new DownloadError(downloadUrl, err.message, code));
-        });
+          const code = (err as any)?.code ?? (err as Error).message;
+          reject(new DownloadError(downloadUrl, (err as Error).message, code));
+        }
       });
 
       request.on('error', (err: Error) => {
+        // Once a response exists, pipeline owns the response/file stream teardown and will reject
+        // the attempt after cleanup. Rejecting here would let a retry overlap that teardown.
+        if (responseReceived) {
+          return;
+        }
+
         log(`Request failed for download "${downloadUrl}"!, Error:`, err.message);
 
-        // use the code if available, otherwise use the entire message
         const code = (err as any)?.code ?? err.message;
-
         reject(new DownloadError(downloadUrl, err.message, code));
       });
 
       request.setTimeout(timeout, () => {
+        timedOut = true;
+
+        if (!responseReceived) {
+          reject(new DownloadError(downloadUrl, `Request timeout after ${timeout}ms`, 'ETIMEDOUT'));
+        }
+
         request.destroy();
-        reject(new DownloadError(downloadUrl, `Request timeout after ${timeout}ms`, 'ETIMEDOUT'));
       });
     });
   }
