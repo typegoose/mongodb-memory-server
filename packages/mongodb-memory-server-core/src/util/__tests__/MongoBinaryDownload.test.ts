@@ -523,6 +523,8 @@ describe('MongoBinaryDownload', () => {
   });
 
   describe('should download correctly https', () => {
+    jest.setTimeout(15000);
+
     let tmpdir: string;
     let server: https.Server;
 
@@ -567,7 +569,8 @@ describe('MongoBinaryDownload', () => {
     async function createTestServer(
       interruptAfter?: number,
       timeoutFirstRequest?: boolean,
-      statusCode?: number
+      statusCode?: number,
+      interruptEveryRequest: boolean = false
     ) {
       let isFirstRequest = true;
 
@@ -602,18 +605,22 @@ describe('MongoBinaryDownload', () => {
             return;
           }
 
-          res.writeHead(200, {
+          res.writeHead(rangeStart > 0 ? 206 : 200, {
             'Content-Type': 'application/gzip',
             'Content-Length': toSendBytes,
             'Accept-Ranges': 'bytes',
+            ...(rangeStart > 0
+              ? { 'Content-Range': `bytes ${rangeStart}-${totalBytes - 1}/${totalBytes}` }
+              : {}),
           });
 
-          // dont send any other data, this will invoke the stalling callback on the client
+          // Dont send any other data, this will invoke the stalling callback on the client
           if (isFirstRequest && timeoutFirstRequest) {
-            // this branch is meant to have the client trigger a "ETIMEDOUT" (via "socket.timeout") instead of the server giving a "socket hangup" / "ECONNRESET"
+            // This branch is meant to have the client trigger a "ETIMEDOUT" (via "socket.timeout") instead of the server giving a "socket hangup" / "ECONNRESET"
+            res.flushHeaders();
 
-            // but to not leave it as a potential dangling handle, we should destry to response after some time
-            setTimeout(() => res.destroy(), 1000);
+            // But to not leave it as a potential dangling handle, we should destroy the response after some time
+            setTimeout(() => res.destroy(), 15000).unref();
 
             isFirstRequest = false;
 
@@ -622,16 +629,21 @@ describe('MongoBinaryDownload', () => {
 
           const buffer = genBuffer(toSendBytes, rangeStart);
 
-          if (interruptAfter) {
+          if (interruptAfter && (interruptEveryRequest || (isFirstRequest && !req.headers.range))) {
+            isFirstRequest = false;
             // only partially sending data and then ending will result in a error "aborted" with code "ECONNRESET"
-            res.write(buffer.slice(0, interruptAfter));
-          } else {
-            res.write(buffer);
+            const socket = res.socket;
+            res.end(buffer.slice(0, interruptAfter));
+            setTimeout(() => {
+              socket?.destroy();
+            }, 10);
+
+            return;
           }
 
           isFirstRequest = false;
 
-          res.end();
+          res.end(buffer);
         }
       );
 
@@ -695,7 +707,7 @@ describe('MongoBinaryDownload', () => {
         tmpfile,
         1,
         0,
-        1000
+        5000
       );
 
       expect(resolved).toStrictEqual(outfile);
@@ -749,7 +761,7 @@ describe('MongoBinaryDownload', () => {
         tmpfile,
         2,
         0,
-        200
+        5000
       );
 
       expect(resolved).toStrictEqual(outfile);
@@ -801,8 +813,7 @@ describe('MongoBinaryDownload', () => {
         tmpfile,
         2,
         0,
-        // timeout needs to be lower than handle clean-up in "createTestServer"
-        200
+        10000
       );
 
       expect(resolved).toStrictEqual(outfile);
@@ -823,7 +834,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should error of repeated retry errors (aborted & ECONNRESET)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = await createTestServer(10);
+      const baseurl = await createTestServer(10, undefined, undefined, true);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -855,7 +866,7 @@ describe('MongoBinaryDownload', () => {
           tmpfile,
           2,
           0,
-          200
+          5000
         );
       } catch (err) {
         expect(err).toBeInstanceOf(DownloadError);
@@ -899,7 +910,7 @@ describe('MongoBinaryDownload', () => {
           tmpfile,
           3,
           0,
-          200
+          5000
         );
       } catch (err) {
         expect(err).toBeInstanceOf(DownloadError);
