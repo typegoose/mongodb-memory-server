@@ -838,39 +838,28 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for Oracle Linux', () => {
-        it('ol 8.7 (x86_64) & 5.0.0 (using rhel80)', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '5.0.0',
-            os: {
-              os: 'linux',
-              dist: 'ol',
-              release: '8.7',
-              id_like: ['fedora'],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-5.0.0.tgz'
-          );
-        });
-
-        it('ol 8.7 (x86_64) & 4.4.17 (using rhel80)', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '4.4.17',
-            os: {
-              os: 'linux',
-              dist: 'ol',
-              release: '8.7',
-              id_like: ['fedora'],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.4.17.tgz'
-          );
-        });
+        it.each<TestCase>([
+          { dist: '8.7', mongo: '5.0.0', expected: 'x86_64-rhel80-5.0.0', arch: 'x64' },
+          { dist: '8.7', mongo: '4.4.17', expected: 'x86_64-rhel80-4.4.17', arch: 'x64' },
+        ])(
+          'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
+          async ({ arch, dist, mongo, expected }) => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch,
+              version: mongo,
+              os: {
+                os: 'linux',
+                dist: 'ol',
+                release: dist,
+                id_like: ['fedora'],
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              expectedBaseUrl + `/linux/mongodb-linux-${expected}.tgz`
+            );
+          }
+        );
       });
 
       describe('for Suse', () => {
