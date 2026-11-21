@@ -568,59 +568,29 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for amazon', () => {
-        it('amzn 2023 (x86_64) & 7.0.2', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '7.0.2',
-            os: {
-              os: 'linux',
-              dist: 'amzn',
-              release: '2023',
-              id_like: ['fedora'],
-            },
-          });
-
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon2023-7.0.2.tgz'
-          );
-        });
-
-        it('amzn 2023 (x86_64) & 8.0.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '8.0.0',
-            os: {
-              os: 'linux',
-              dist: 'amzn',
-              release: '2023',
-              id_like: ['fedora'],
-            },
-          });
-
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon2023-8.0.0.tgz'
-          );
-        });
-
-        it('amzn 2023 (x86_64) & 8.2.0', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '8.2.0',
-            os: {
-              os: 'linux',
-              dist: 'amzn',
-              release: '2023',
-              id_like: ['fedora'],
-            },
-          });
-
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon2023-8.2.0.tgz'
-          );
-        });
+        it.each<TestCase>([
+          { dist: '2023', mongo: '7.0.2', expected: 'x86_64-amazon2023-7.0.2', arch: 'x64' },
+          { dist: '2023', mongo: '8.0.0', expected: 'x86_64-amazon2023-8.0.0', arch: 'x64' },
+          { dist: '2023', mongo: '8.2.0', expected: 'x86_64-amazon2023-8.2.0', arch: 'x64' },
+        ])(
+          'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
+          async ({ arch, dist, mongo, expected }) => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch,
+              version: mongo,
+              os: {
+                os: 'linux',
+                dist: 'amzn',
+                release: dist,
+                id_like: ['fedora'],
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              expectedBaseUrl + `/linux/mongodb-linux-${expected}.tgz`
+            );
+          }
+        );
       });
 
       describe('for rhel', () => {
