@@ -13,7 +13,6 @@ import { pack } from 'tar-stream';
 import { createGzip } from 'zlib';
 import https from 'https';
 import http from 'http';
-import getFreePort from '../getport';
 
 describe('MongoBinaryDownload', () => {
   let originalTTY: boolean = false;
@@ -526,7 +525,6 @@ describe('MongoBinaryDownload', () => {
   describe('should download correctly https', () => {
     let tmpdir: string;
     let server: https.Server;
-    let port = 5000;
 
     let key: string;
     let cert: string;
@@ -541,7 +539,6 @@ describe('MongoBinaryDownload', () => {
       // the certificate is only for localhost and only for testing
       key = await fspromises.readFile(path.resolve(certPath, './private-key.key'), 'utf-8');
       cert = await fspromises.readFile(path.resolve(certPath, './certificate.crt'), 'utf-8');
-      port = await getFreePort(port);
 
       resume_before = process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)];
     });
@@ -639,10 +636,13 @@ describe('MongoBinaryDownload', () => {
       );
 
       server = await new Promise<https.Server>((resolve) => {
-        const s = builder.listen(port, () => resolve(s));
+        const s = builder.listen(0, () => resolve(s));
       });
 
-      return `https://localhost:${port}`;
+      const address = server.address();
+      utils.assertion(address !== null && typeof address !== 'string');
+
+      return `https://localhost:${address.port}`;
     }
 
     /** Generate 4 bytes 00, then 4 bytes FF until "toGen" */
@@ -860,7 +860,8 @@ describe('MongoBinaryDownload', () => {
       } catch (err) {
         expect(err).toBeInstanceOf(DownloadError);
         assertIsError(err);
-        expect(JSON.stringify(err)).toMatchSnapshot();
+        // replace to consistent port, as the test server uses a dynamic port
+        expect(JSON.stringify(err).replace(baseurl, 'https://localhost:5000')).toMatchSnapshot();
       }
     });
 
@@ -904,7 +905,8 @@ describe('MongoBinaryDownload', () => {
         expect(err).toBeInstanceOf(DownloadError);
         expect(err).toHaveProperty('attempts', 1);
         assertIsError(err);
-        expect(JSON.stringify(err)).toMatchSnapshot();
+        // replace to consistent port, as the test server uses a dynamic port
+        expect(JSON.stringify(err).replace(baseurl, 'https://localhost:5000')).toMatchSnapshot();
       }
     });
   });
@@ -912,7 +914,6 @@ describe('MongoBinaryDownload', () => {
   describe('should download correctly http', () => {
     let tmpdir: string;
     let server: http.Server;
-    let port = 5000;
 
     const totalBytes = 1024 * 10;
 
@@ -920,7 +921,6 @@ describe('MongoBinaryDownload', () => {
 
     beforeAll(async () => {
       originalUseHttp = process.env[envName(ResolveConfigVariables.USE_HTTP)];
-      port = await getFreePort(port);
     });
 
     beforeEach(async () => {
@@ -975,10 +975,13 @@ describe('MongoBinaryDownload', () => {
       });
 
       server = await new Promise<http.Server>((resolve) => {
-        const s = builder.listen(port, () => resolve(s));
+        const s = builder.listen(0, () => resolve(s));
       });
 
-      return `http://localhost:${port}`;
+      const address = server.address();
+      utils.assertion(address !== null && typeof address !== 'string');
+
+      return `http://localhost:${address.port}`;
     }
 
     /** Generate 4 bytes 00, then 4 bytes FF until "toGen" */
