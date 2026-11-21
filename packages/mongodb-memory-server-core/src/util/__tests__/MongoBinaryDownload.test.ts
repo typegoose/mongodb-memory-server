@@ -567,7 +567,7 @@ describe('MongoBinaryDownload', () => {
       process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)] = resume_before;
     });
 
-    function createTestServer(
+    async function createTestServer(
       interruptAfter?: number,
       timeoutFirstRequest?: boolean,
       statusCode?: number
@@ -638,7 +638,9 @@ describe('MongoBinaryDownload', () => {
         }
       );
 
-      server = builder.listen(port);
+      server = await new Promise<https.Server>((resolve) => {
+        const s = builder.listen(port, () => resolve(s));
+      });
 
       return `https://localhost:${port}`;
     }
@@ -662,7 +664,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should download correctly and fully', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer();
+      const baseurl = await createTestServer();
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -716,7 +718,7 @@ describe('MongoBinaryDownload', () => {
       process.env[envName(ResolveConfigVariables.RESUME_DOWNLOAD)] = 'true';
 
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer(totalBytes / 2);
+      const baseurl = await createTestServer(totalBytes / 2);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -768,7 +770,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should download retry after stalling (ETIMEDOUT)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer(undefined, true);
+      const baseurl = await createTestServer(undefined, true);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -821,7 +823,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should error of repeated retry errors (aborted & ECONNRESET)', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer(10);
+      const baseurl = await createTestServer(10);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -864,7 +866,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should error on 403 without retrying', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer(undefined, undefined, 403);
+      const baseurl = await createTestServer(undefined, undefined, 403);
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
@@ -942,7 +944,7 @@ describe('MongoBinaryDownload', () => {
       process.env[envName(ResolveConfigVariables.USE_HTTP)] = originalUseHttp;
     });
 
-    function createTestServer() {
+    async function createTestServer() {
       const builder = http.createServer({}, (req, res) => {
         if (req.url != '/archive.tgz') {
           res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -972,7 +974,9 @@ describe('MongoBinaryDownload', () => {
         res.end();
       });
 
-      server = builder.listen(port);
+      server = await new Promise<http.Server>((resolve) => {
+        const s = builder.listen(port, () => resolve(s));
+      });
 
       return `http://localhost:${port}`;
     }
@@ -996,7 +1000,7 @@ describe('MongoBinaryDownload', () => {
 
     it('should correctly allow HTTP requests', async () => {
       jest.spyOn(console, 'log').mockImplementation(() => void 0);
-      const baseurl = createTestServer();
+      const baseurl = await createTestServer();
 
       const downloadDir = path.join(tmpdir, 'downloadDir');
 
