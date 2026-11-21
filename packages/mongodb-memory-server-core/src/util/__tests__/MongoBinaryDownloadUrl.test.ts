@@ -1014,155 +1014,40 @@ describe('MongoBinaryDownloadUrl', () => {
     });
 
     describe('for macos', () => {
-      it('macos (x86_64) & latest (using macos)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: 'latest',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-latest.tgz'
-        );
-      });
+      interface TestCase {
+        arch: 'x64' | 'arm64';
+        mongo: string;
+        expected: string;
+      }
 
-      it('macos (x86_64) & 4.4.0 (using macos)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: '4.4.0',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.4.0.tgz'
-        );
-      });
+      it.each<TestCase>([
+        { mongo: 'latest', expected: 'x86_64-latest', arch: 'x64' },
+        { mongo: '4.4.0', expected: 'x86_64-4.4.0', arch: 'x64' },
+        { mongo: '6.0.0', expected: 'x86_64-6.0.0', arch: 'x64' },
+        { mongo: '7.0.14', expected: 'x86_64-7.0.14', arch: 'x64' },
+        { mongo: '8.0.0', expected: 'x86_64-8.0.0', arch: 'x64' },
+        { mongo: '8.2.0', expected: 'x86_64-8.2.0', arch: 'x64' },
+        { mongo: 'v5.0-latest', expected: 'x86_64-v5.0-latest', arch: 'x64' },
 
-      it('macos (x86_64) & 6.0.0 (using macos)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: '6.0.0',
-        });
-
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-6.0.0.tgz'
-        );
-      });
-
-      it('macos (arm64) & 4.4.0 (arm64 should use the x64 binary for versions below 6.0.0)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'arm64',
-          version: '4.4.0',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.4.0.tgz'
-        );
-      });
-
-      it('macos (arm64) & 6.0.0 (arm64 should use the arm64 binary for versions above and equal to 6.0.0)', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'arm64',
-          version: '6.0.0',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-6.0.0.tgz'
-        );
-      });
-
-      it('macos (x86_64) & 7.0.14', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: '7.0.14',
-        });
-
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-7.0.14.tgz'
-        );
-      });
-
-      it('macos (arm64) & 7.0.14', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'arm64',
-          version: '7.0.14',
-        });
-
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-7.0.14.tgz'
-        );
-      });
-
-      it('macos (x86_64) & 8.0.0', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: '8.0.0',
-        });
-
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-8.0.0.tgz'
-        );
-      });
-
-      it('macos (arm64) & 8.0.0', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'arm64',
-          version: '8.0.0',
-        });
-
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-8.0.0.tgz'
-        );
-      });
-
-      it('macos (x86_64) & 8.2.0', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: '8.2.0',
-        });
-
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-8.2.0.tgz'
-        );
-      });
-
-      it('macos (arm64) & 8.2.0', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'arm64',
-          version: '8.2.0',
-        });
-
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-arm64-8.2.0.tgz'
-        );
-      });
-
-      it('macos (x86_64) & v5.0-latest', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'x64',
-          version: 'v5.0-latest',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-v5.0-latest.tgz'
-        );
-      });
-
-      it('macos (arm64) & v5.0-latest', async () => {
-        const du = new MongoBinaryDownloadUrl({
-          platform: 'darwin',
-          arch: 'arm64',
-          version: 'v5.0-latest',
-        });
-        expect(await du.getDownloadUrl()).toBe(
-          'https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-v5.0-latest.tgz'
-        );
-      });
+        { mongo: '4.4.0', expected: 'x86_64-4.4.0', arch: 'arm64' },
+        { mongo: '6.0.0', expected: 'arm64-6.0.0', arch: 'arm64' },
+        { mongo: '7.0.14', expected: 'arm64-7.0.14', arch: 'arm64' },
+        { mongo: '8.0.0', expected: 'arm64-8.0.0', arch: 'arm64' },
+        { mongo: '8.2.0', expected: 'arm64-8.2.0', arch: 'arm64' },
+        { mongo: 'v5.0-latest', expected: 'x86_64-v5.0-latest', arch: 'arm64' },
+      ])(
+        'Release: $arch at MongoDB $mongo, Expecting $expected',
+        async ({ arch, mongo, expected }) => {
+          const du = new MongoBinaryDownloadUrl({
+            platform: 'darwin',
+            arch,
+            version: mongo,
+          });
+          expect(await du.getDownloadUrl()).toBe(
+            'https://fastdl.mongodb.org/osx/mongodb-macos-' + expected + '.tgz'
+          );
+        }
+      );
     });
 
     it('should allow archive overwrite with "ARCHIVE_NAME"', async () => {
