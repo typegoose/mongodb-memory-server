@@ -458,43 +458,29 @@ describe('MongoBinaryDownloadUrl', () => {
       });
 
       describe('for gentoo', () => {
-        it('gentoo (x86_64) & 5.0.8 (using debian11)', async () => {
-          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '5.0.8',
-            os: {
-              os: 'linux',
-              dist: 'gentoo',
-              release: '',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian11-5.0.8.tgz'
-          );
-          expect(console.warn).toHaveBeenCalledTimes(1);
-        });
-
-        it('gentoo (x86_64) & 4.4.0 (using debian10)', async () => {
-          jest.spyOn(console, 'warn').mockImplementation(() => void 0);
-
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '4.4.0',
-            os: {
-              os: 'linux',
-              dist: 'gentoo',
-              release: '',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-4.4.0.tgz'
-          );
-          expect(console.warn).toHaveBeenCalledTimes(1);
-        });
+        it.each<TestCase>([
+          { dist: '', mongo: '5.0.8', expected: 'x86_64-debian11-5.0.8', arch: 'x64' },
+          { dist: '', mongo: '4.4.0', expected: 'x86_64-debian10-4.4.0', arch: 'x64' },
+        ])(
+          'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
+          async ({ arch, dist, mongo, expected }) => {
+            jest.spyOn(console, 'warn').mockImplementation(() => void 0);
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch,
+              version: mongo,
+              os: {
+                os: 'linux',
+                dist: 'gentoo',
+                release: dist,
+              },
+            });
+            expect(await du.getDownloadUrl()).toBe(
+              expectedBaseUrl + `/linux/mongodb-linux-${expected}.tgz`
+            );
+            expect(console.warn).toHaveBeenCalledTimes(1);
+          }
+        );
       });
 
       describe('for elementary', () => {
