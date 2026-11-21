@@ -24,7 +24,7 @@
     "ts-jest": "29.4.15",
     "typedoc": "^0.28.20",
     "typescript": "~5.9.3",
-    "typescript-eslint": "8.69.0",
+    "typescript-eslint": "8.73.0",
     "globals": "^17.12.0",
     "@eslint/js": "^10.0.1"
   },
