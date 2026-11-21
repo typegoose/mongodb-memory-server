@@ -657,41 +657,54 @@ describe('MongoBinaryDownloadUrl', () => {
           }
         );
 
-        it('rocky linux 9.2 (x86_64) & 6.0.4 (using rhel90)', async () => {
-          // lowest rhel 9 x64 supported version is 6.0.4
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '6.0.4',
-            os: {
-              os: 'linux',
-              dist: 'rocky',
-              release: '9.2',
-              id_like: ['rhel', 'centos', 'fedora'],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel90-6.0.4.tgz'
-          );
-        });
+        interface RhelExtraCase extends TestCase {
+          os: Omit<LinuxOS, 'release'>;
+        }
 
-        it('rocky linux 9.2 (arm64) & 6.0.7 (using rhel90)', async () => {
-          // lowest rhel 9 arm64 supported version is 6.0.7
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
+        // Define common OS configurations outside the test cases for cleaner formatting
+        const rockyOs: Omit<LinuxOS, 'release'> = {
+          os: 'linux',
+          dist: 'rocky',
+          id_like: ['rhel', 'centos', 'fedora'],
+        };
+
+        const testCases: RhelExtraCase[] = [
+          {
+            os: rockyOs,
+            dist: '9.2',
+            mongo: '6.0.4',
+            expected: 'x86_64-rhel90-6.0.4',
+            arch: 'x64',
+          },
+          {
+            os: rockyOs,
+            dist: '9.2',
+            mongo: '6.0.7',
+            expected: 'aarch64-rhel90-6.0.7',
             arch: 'arm64',
-            version: '6.0.7',
-            os: {
-              os: 'linux',
-              dist: 'rocky',
-              release: '9.2',
-              id_like: ['rhel', 'centos', 'fedora'],
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-rhel90-6.0.7.tgz'
-          );
-        });
+          },
+        ];
+
+        it.each<RhelExtraCase>(testCases)(
+          'Release: $os.dist ($arch) at MongoDB $mongo, Expecting $expected',
+          async ({ arch, os, mongo, expected, dist }) => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch,
+              version: mongo,
+              os: {
+                ...os,
+                release: dist,
+              },
+            });
+
+            const result = await du.getDownloadUrl();
+
+            expect(result).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-' + expected + '.tgz'
+            );
+          }
+        );
 
         it('should Error when ARM64 and rhel below 8 [KnownVersionIncompatibilityError]', async () => {
           const du = new MongoBinaryDownloadUrl({
