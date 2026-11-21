@@ -932,56 +932,60 @@ describe('MongoBinaryDownloadUrl', () => {
           }
         });
 
-        it('suse 12 (x86_64) & 7.0.24', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '7.0.24',
-            os: {
-              // pseudo os, may not represent actual data
-              os: 'linux',
-              dist: 'opensuse',
-              release: '12',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-suse12-7.0.24.tgz'
-          );
-        });
+        interface ArchCase extends TestCase {
+          os: Omit<LinuxOS, 'release'>;
+        }
 
-        it('openSuse-tumbleweed 20250925 (x86_64) & 7.0.24', async () => {
+        // Define common OS configurations outside the test cases for cleaner formatting
+        const suse: Omit<LinuxOS, 'release'> = {
+          // pseudo os, may not represent actual data
+          os: 'linux',
+          dist: 'opensuse',
+        };
+        const tumbleweed: Omit<LinuxOS, 'release'> = {
           // from https://github.com/typegoose/mongodb-memory-server/issues/948
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '7.0.24',
-            os: {
-              os: 'linux',
-              dist: 'opensuse-tumbleweed',
-              release: '20250925',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-suse15-7.0.24.tgz'
-          );
-        });
+          os: 'linux',
+          dist: 'opensuse-tumbleweed',
+        };
 
-        it('openSuse-tumbleweed 20250925 (x86_64) & 8.0.0', async () => {
+        it.each<ArchCase>([
+          // pseudo os, may not represent actual data
+          { os: suse, dist: '12', mongo: '7.0.24', expected: 'x86_64-suse12-7.0.24', arch: 'x64' },
           // from https://github.com/typegoose/mongodb-memory-server/issues/948
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
+          {
+            os: tumbleweed,
+            dist: '20250925',
+            mongo: '7.0.24',
+            expected: 'x86_64-suse15-7.0.24',
             arch: 'x64',
-            version: '8.0.0',
-            os: {
-              os: 'linux',
-              dist: 'opensuse-tumbleweed',
-              release: '20250925',
-            },
-          });
-          expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-suse15-8.0.0.tgz'
-          );
-        });
+          },
+          {
+            os: tumbleweed,
+            dist: '20250925',
+            mongo: '8.0.0',
+            expected: 'x86_64-suse15-8.0.0',
+            arch: 'x64',
+          },
+        ])(
+          'Release: $os.dist ($arch) at MongoDB $mongo, Expecting $expected',
+          async ({ arch, os, mongo, expected, dist }) => {
+            const du = new MongoBinaryDownloadUrl({
+              platform: 'linux',
+              arch,
+              version: mongo,
+              os: {
+                ...os,
+                release: dist,
+              },
+            });
+
+            const result = await du.getDownloadUrl();
+
+            expect(result).toBe(
+              'https://fastdl.mongodb.org/linux/mongodb-linux-' + expected + '.tgz'
+            );
+          }
+        );
       });
     });
 
