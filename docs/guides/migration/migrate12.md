@@ -11,7 +11,7 @@ This Guide is written for migration from version `11.4.0` to `12.0.0`, for versi
 
 ## Breaking Changes
 
-<!-- ### Minimal mongodb version is now `4.4.0`
+### Minimal mongodb version is now `4.4.0`
 
 Mongodb version before `4.4.0` have been dropped (`4.2`) as they are now unsupported by the latest mongodb drivers
 and are EOL for a couple of years.
@@ -25,7 +25,7 @@ Distribution support has been adjusted to only contain 4.4.0 and higher as well,
 - Linux mint: 18
 - Debian: 9.2
 - Rhel: 6.2
-- Fedora: 12 -->
+- Fedora: 12
 
 ### Mongodb Driver Version upgraded to 7.9
 
