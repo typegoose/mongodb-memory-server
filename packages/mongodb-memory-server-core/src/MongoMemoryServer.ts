@@ -529,7 +529,16 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     const { mongodOptions, createAuth, data } = await this.getStartOptions(useSamePort);
     this.debug(`_startUpInstance: Creating new MongoDB instance with options:`, mongodOptions);
 
-    const instance = await MongoInstance.create(mongodOptions);
+    let instance: MongoInstance;
+    try {
+      instance = await MongoInstance.create(mongodOptions);
+    } catch (err) {
+      if (!isNullOrUndefined(data.tmpDir)) {
+        await removeDir(data.tmpDir);
+      }
+
+      throw err;
+    }
 
     this._instanceInfo = {
       ...data,
