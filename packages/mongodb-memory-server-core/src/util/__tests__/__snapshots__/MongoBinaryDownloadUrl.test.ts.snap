@@ -15,16 +15,6 @@ exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for Suse should Error
 Mongodb does not provide binaries for Suse version 13 & 14"
 `;
 
-exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when requesting a version below 4.2.1 for debian 10+ [#554] [KnownVersionIncompatibilityError] 1`] = `
-"Requested Version \\"4.0.25\\" is not available for \\"Debian 10\\"! Available Versions: \\">=4.2.1\\"
-Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release"
-`;
-
-exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when requesting a version below 4.2.1 for debian 11+ [#554] [KnownVersionIncompatibilityError] 1`] = `
-"Requested Version \\"4.0.25\\" is not available for \\"Debian 11\\"! Available Versions: \\">=4.2.1\\"
-Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release"
-`;
-
 exports[`MongoBinaryDownloadUrl getDownloadUrl() for linux for debian should throw a Error when requesting a version below 7.0.3 for debian testing [KnownVersionIncompatibilityError] 1`] = `
 "Requested Version \\"7.0.2\\" is not available for \\"Debian trixie\\"! Available Versions: \\">=7.0.3\\"
 Mongodb does not provide binaries for versions before 7.0.3 for Debian 12+ and also cannot be mapped to a previous Debian release"

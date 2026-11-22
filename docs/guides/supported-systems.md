@@ -58,7 +58,7 @@ Default version is `2204`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 
 :::note
-Lower Versions than `2004` may be used if mongodb dosnt provide binaries for an lower version of mongodb for an higher version of ubuntu
+Lower Versions than `2004` may be used if mongodb doesn't provide binaries for an lower version of mongodb for an higher version of ubuntu
 :::
 :::note
 Since Mongodb `6.0.4` there are binaries for `2204`, any version before is mapped to `2004` (or earlier) and will require `libssl1.1` to be installed.  

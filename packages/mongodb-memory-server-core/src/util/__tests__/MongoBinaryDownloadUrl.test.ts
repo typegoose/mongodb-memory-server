@@ -95,8 +95,9 @@ describe('MongoBinaryDownloadUrl', () => {
             mongo: 'v5.0-latest',
             expected: 'x86_64-ubuntu2004-v5.0-latest',
             arch: 'x64',
-          }, // --- arm64 Tests ---
-          { dist: '20.04', mongo: '4.2.14', expected: 'aarch64-ubuntu1804-4.2.14', arch: 'arm64' },
+          },
+
+          // --- arm64 Tests ---
           { dist: '18.04', mongo: '4.4.6', expected: 'aarch64-ubuntu1804-4.4.6', arch: 'arm64' },
           { dist: '20.04', mongo: '4.4.6', expected: 'aarch64-ubuntu2004-4.4.6', arch: 'arm64' },
           { dist: '20.04', mongo: '5.0.0', expected: 'aarch64-ubuntu2004-5.0.0', arch: 'arm64' },
@@ -148,7 +149,6 @@ describe('MongoBinaryDownloadUrl', () => {
       describe('for debian', () => {
         it.each<TestCase>([
           // Debian 10 Tests
-          { dist: '10', mongo: '4.2.1', expected: 'x86_64-debian10-4.2.1', arch: 'x64' },
           {
             dist: '10',
             mongo: 'v5.0-latest',
@@ -157,7 +157,6 @@ describe('MongoBinaryDownloadUrl', () => {
           },
 
           // Debian 11 Tests
-          { dist: '11', mongo: '4.2.1', expected: 'x86_64-debian10-4.2.1', arch: 'x64' }, // Uses debian 10 binaries
           { dist: '11', mongo: '5.0.7', expected: 'x86_64-debian10-5.0.7', arch: 'x64' }, // Uses debian 10 binaries
           { dist: '11', mongo: '5.0.8', expected: 'x86_64-debian11-5.0.8', arch: 'x64' },
           {
@@ -228,28 +227,6 @@ describe('MongoBinaryDownloadUrl', () => {
           }
         });
 
-        it('should throw a Error when requesting a version below 4.2.1 for debian 10+ [#554] [KnownVersionIncompatibilityError]', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '4.0.25',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '10',
-            },
-          });
-
-          try {
-            await du.getDownloadUrl();
-            fail('Expected to throw a KnownVersionIncompatibilityError');
-          } catch (err) {
-            assertIsError(err);
-            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
-            expect(err.message).toMatchSnapshot();
-          }
-        });
-
         it('should not throw a error for v4.2-latest for debian 10+', async () => {
           const du = new MongoBinaryDownloadUrl({
             platform: 'linux',
@@ -264,28 +241,6 @@ describe('MongoBinaryDownloadUrl', () => {
           expect(await du.getDownloadUrl()).toBe(
             'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-v4.2-latest.tgz'
           );
-        });
-
-        it('should throw a Error when requesting a version below 4.2.1 for debian 11+ [#554] [KnownVersionIncompatibilityError]', async () => {
-          const du = new MongoBinaryDownloadUrl({
-            platform: 'linux',
-            arch: 'x64',
-            version: '4.0.25',
-            os: {
-              os: 'linux',
-              dist: 'debian',
-              release: '11',
-            },
-          });
-
-          try {
-            await du.getDownloadUrl();
-            fail('Expected to throw a KnownVersionIncompatibilityError');
-          } catch (err) {
-            assertIsError(err);
-            expect(err).toBeInstanceOf(KnownVersionIncompatibilityError);
-            expect(err.message).toMatchSnapshot();
-          }
         });
 
         it('should throw an error when requesting a version below 7.0.3 for debian 12+ [#797] [KnownVersionIncompatibilityError]', async () => {
@@ -997,7 +952,6 @@ describe('MongoBinaryDownloadUrl', () => {
       }
 
       it.each<TestCase>([
-        { mongo: '4.2.0', expected: '/win32/mongodb-win32-x86_64-2012plus-4.2.0', arch: 'x64' },
         { mongo: '4.4.0', expected: '/windows/mongodb-windows-x86_64-4.4.0', arch: 'x64' },
         { mongo: '7.0.14', expected: '/windows/mongodb-windows-x86_64-7.0.14', arch: 'x64' },
         { mongo: '8.0.0', expected: '/windows/mongodb-windows-x86_64-8.0.0', arch: 'x64' },
@@ -1184,17 +1138,6 @@ describe('MongoBinaryDownloadUrl', () => {
       ).toBe('ubuntu1804');
     });
 
-    it('should return a archive name for Ubuntu 20.04', () => {
-      downloadUrl.version = '4.2.0';
-      expect(
-        downloadUrl.getUbuntuVersionString({
-          os: 'linux',
-          dist: 'Ubuntu Linux',
-          release: '20.04',
-        })
-      ).toBe('ubuntu1804');
-    });
-
     it('should return a archive name for Ubuntu 21.04 using 2004', () => {
       downloadUrl.version = '5.0.3';
       expect(
@@ -1204,17 +1147,6 @@ describe('MongoBinaryDownloadUrl', () => {
           release: '21.04',
         })
       ).toBe('ubuntu2004');
-    });
-
-    it('should return a archive name for Ubuntu 22.04 using  1804 4.0', () => {
-      downloadUrl.version = '4.2.0';
-      expect(
-        downloadUrl.getUbuntuVersionString({
-          os: 'linux',
-          dist: 'Ubuntu Linux',
-          release: '22.04',
-        })
-      ).toBe('ubuntu1804');
     });
 
     it('should return a archive name for Ubuntu 22.04 using 2004 4.4', () => {
@@ -1502,15 +1434,6 @@ describe('MongoBinaryDownloadUrl', () => {
     it('for mongodb 4.4', () => {
       downloadUrl.version = '4.4.0';
       expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-windows-x86_64-4.4.0.zip');
-    });
-
-    it('for mongodb 4.2', () => {
-      // custom reset, because of versions below 4.3.0 using win32 (setting in translatePlatform)
-      downloadUrl = new MongoBinaryDownloadUrl({
-        ...downloadUrlBase,
-        version: '4.2.0',
-      });
-      expect(downloadUrl.getArchiveNameWin()).toBe('mongodb-win32-x86_64-2012plus-4.2.0.zip');
     });
 
     it('should allow v5.0-latest', () => {

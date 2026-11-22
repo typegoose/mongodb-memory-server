@@ -106,15 +106,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    */
   getArchiveNameWin(): string {
     let name = `mongodb-${this.platform}-${this.arch}`;
-    const coercedVersion = semver.coerce(this.version);
-
-    if (!isNullOrUndefined(coercedVersion)) {
-      if (semver.satisfies(coercedVersion, '4.2.x')) {
-        name += '-2012plus';
-      } else if (semver.lt(coercedVersion, '4.1.0')) {
-        name += '-2008plus-ssl';
-      }
-    }
 
     name += `-${this.version}.zip`;
 
@@ -126,15 +117,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    * (from: https://www.mongodb.org/dl/osx)
    */
   getArchiveNameOsx(): string {
-    let name = `mongodb-osx`;
+    let name = `mongodb-macos`;
     const coercedVersion = semver.coerce(this.version);
-
-    if (!isNullOrUndefined(coercedVersion) && semver.gte(coercedVersion, '3.2.0')) {
-      name += '-ssl';
-    }
-    if (isNullOrUndefined(coercedVersion) || semver.gte(coercedVersion, '4.2.0')) {
-      name = `mongodb-macos`; // somehow these files are not listed in https://www.mongodb.org/dl/osx
-    }
 
     // mongodb has native arm64
     if (this.arch === 'aarch64') {
@@ -311,15 +295,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           this.version,
           '>=7.0.3',
           'Mongodb does not provide binaries for versions before 7.0.3 for Debian 12+ and also cannot be mapped to a previous Debian release'
-        );
-      }
-    } else if (release >= 10) {
-      if (semver.lt(coercedVersion, '4.2.1') && !testVersionIsLatest(this.version)) {
-        throw new KnownVersionIncompatibilityError(
-          `Debian ${release || os.release || os.codename}`,
-          this.version,
-          '>=4.2.1',
-          'Mongodb does not provide binaries for versions before 4.2.1 for Debian 10+ and also cannot be mapped to a previous Debian release'
         );
       }
     }
@@ -619,29 +594,6 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     if (Number.isNaN(ubuntuYear)) {
       console.warn(`Could not parse ubuntu year from "${ubuntuOS.release}", using default`);
       ubuntuYear = DEFAULT_UBUNTU_YEAR;
-    }
-
-    if (this.arch === 'aarch64') {
-      // this is because, before version 4.1.10, everything for "arm64" / "aarch64" were just "arm64" and for "ubuntu1604"
-      if (semver.satisfies(coercedVersion, '<4.1.10')) {
-        this.arch = 'arm64';
-
-        return 'ubuntu1604';
-      }
-      // this is because versions below "4.4.0" did not provide an binary for anything above 1804
-      if (semver.satisfies(coercedVersion, '>=4.1.10 <4.4.0')) {
-        return 'ubuntu1804';
-      }
-    }
-
-    // there are no MongoDB <=4.3.x binary distributions for ubuntu > 18
-    // https://www.mongodb.org/dl/linux/x86_64-ubuntu1804
-    if (ubuntuYear > 18 && semver.satisfies(coercedVersion, '<=4.3.x')) {
-      log(
-        `getUbuntuVersionString: ubuntuYear is "${ubuntuYear}", which dosnt have an "<=4.3.x" version, defaulting to "1804"`
-      );
-
-      return 'ubuntu1804';
     }
 
     // there are only binaries for 2204 since 6.0.4 (and not binaries for ubuntu2104)
