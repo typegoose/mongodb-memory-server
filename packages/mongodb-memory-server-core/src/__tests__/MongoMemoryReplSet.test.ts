@@ -235,7 +235,7 @@ describe('single server replset', () => {
   it('should make use of "AutomaticAuth" (ephemeralForTest)', async () => {
     // @ts-expect-error because "initAllServers" is protected
     jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+    jest.spyOn(console, 'warn');
     const replSet = await MongoMemoryReplSet.create({
       replSet: { auth: { enable: true }, count: 3, storageEngine: 'ephemeralForTest' },
       binary: {
@@ -311,7 +311,7 @@ describe('single server replset', () => {
   it('should make use of "AutomaticAuth" (wiredTiger)', async () => {
     // @ts-expect-error because "initAllServers" is protected
     jest.spyOn(MongoMemoryReplSet.prototype, 'initAllServers');
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => void 0);
+    jest.spyOn(console, 'warn');
     const replSet = await MongoMemoryReplSet.create({
       replSet: { auth: { enable: true }, count: 3, storageEngine: 'wiredTiger' },
     });
@@ -389,6 +389,7 @@ describe('single server replset', () => {
     await testConnections();
 
     await replSet.stop();
+    expect(console.warn).toHaveBeenCalledTimes(0);
   });
 });
 
