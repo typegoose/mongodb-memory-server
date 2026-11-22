@@ -54,7 +54,7 @@ Depends on the distribution, many common ones should just work right out of the 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `1604`<br/>
 Highest version is `2404` (higher versions will be clamped to this value)<br/>
-Default version is `2204`<br/>
+Default version is `2404`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 
 :::note
@@ -81,7 +81,7 @@ Default version is `12` (when in `unstable` or `testing`, otherwise none)
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `12`<br/>
 Highest version is `42` (see note) (higher versions will be clamped to this value)<br/>
-Default version is `28` (when above or equal to `28`, otherwise none)
+Default version is `34`
 
 Mongodb compat chart (x86_64)
 (Limited to currently known mongodb versions as of writing)
@@ -103,7 +103,7 @@ This mapping to RHEL is based on the table in [Relationship between Fedora and R
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `6.2`<br/>
 Highest version is `9.3` (higher versions will be clamped to this value)<br/>
-Default version is `70`<br/>
+Default version is `9.3`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 
 :::note
@@ -135,7 +135,7 @@ Default version is `7`
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `18`<br/>
 Highest version is `22`<br/>
-Default version is `21`
+Default version is `22`
 
 ### Suse
 
@@ -160,10 +160,10 @@ A workaround reported to work is to use the `rhel-9` binaries via config option 
 <span class="badge badge--danger">Unsupported</span> <span class="badge badge--secondary">Working</span>
 
 There are no official mongodb builds for Arch Distributions, but the `ubuntu` binaries work on most Arch systems, so they are used.<br/>
-Currently Mapping to: `ubuntu2204`
+Currently Mapping to: `ubuntu2404`
 
 :::note
-Because Arch* dosnt base on ubuntu, there is no specific ubuntu version associated with an arch version, so it defaults to highest supported `ubuntu` version
+Because Arch* doesn't base on ubuntu, there is no specific ubuntu version associated with an arch version, so it defaults to highest supported `ubuntu` version
 :::
 :::note
 MongoDB Binary versions before `6.0.4` require OpenSSL 1.1 installed, on arch can be installed via `core/openssl-1.1`.
@@ -174,10 +174,10 @@ MongoDB Binary versions before `6.0.4` require OpenSSL 1.1 installed, on arch ca
 <span class="badge badge--danger">Unsupported</span> <span class="badge badge--secondary">Working</span>
 
 There are no official mongodb builds for Gentoo Distributions, but the `debian` binaries work on most Gentoo systems, so they are used.<br/>
-Currently Mapping to: `debain11`
+Currently Mapping to: `debain12`
 
 :::note
-Because Gentoo dosnt base on debian, there is no specific debian version associated with an gentoo version, so it defaults to highest supported `debian` version
+Because Gentoo doesn't base on debian, there is no specific debian version associated with an gentoo version, so it defaults to highest supported `debian` version
 :::
 
 ### Alpine

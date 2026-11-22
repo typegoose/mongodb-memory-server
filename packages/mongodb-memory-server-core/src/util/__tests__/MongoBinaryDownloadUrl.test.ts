@@ -327,7 +327,7 @@ describe('MongoBinaryDownloadUrl', () => {
           { os: archOs, mongo: '6.0.4', expected: 'x86_64-ubuntu2204-6.0.4', arch: 'x64' },
           { os: manjaroOs, mongo: '4.4.2', expected: 'x86_64-ubuntu2004-4.4.2', arch: 'x64' },
           { os: archstrikeOs, mongo: '4.4.2', expected: 'x86_64-ubuntu2004-4.4.2', arch: 'x64' },
-          { os: cachyosOs, mongo: '8.0.7', expected: 'x86_64-ubuntu2204-8.0.7', arch: 'x64' },
+          { os: cachyosOs, mongo: '8.0.7', expected: 'x86_64-ubuntu2404-8.0.7', arch: 'x64' },
         ];
 
         it.each<ArchCase>(testCases)(
@@ -354,8 +354,8 @@ describe('MongoBinaryDownloadUrl', () => {
 
       describe('for gentoo', () => {
         it.each<TestCase>([
-          { dist: '', mongo: '5.0.8', expected: 'x86_64-debian11-5.0.8', arch: 'x64' },
-          { dist: '', mongo: '4.4.0', expected: 'x86_64-debian10-4.4.0', arch: 'x64' },
+          { dist: '', mongo: '7.0.8', expected: 'x86_64-debian12-7.0.8', arch: 'x64' },
+          { dist: '', mongo: '8.2.0', expected: 'x86_64-debian12-8.2.0', arch: 'x64' },
         ])(
           'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
           async ({ arch, dist, mongo, expected }) => {
@@ -741,7 +741,7 @@ describe('MongoBinaryDownloadUrl', () => {
             },
           });
           expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-5.0.0.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel93-5.0.0.tgz'
           );
 
           expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
@@ -762,7 +762,7 @@ describe('MongoBinaryDownloadUrl', () => {
             },
           });
           expect(await du.getDownloadUrl()).toBe(
-            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-5.0.0.tgz'
+            'https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel93-5.0.0.tgz'
           );
 
           expect(consoleWarnSpy).toHaveBeenCalledTimes(1);

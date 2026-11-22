@@ -23,7 +23,7 @@ export interface MongoBinaryDownloadUrlOpts {
 }
 
 /** Set the default ubuntu version number */
-export const DEFAULT_UBUNTU_YEAR = 22; // TODO: try to keep this up-to-date to the latest LTS
+export const DEFAULT_UBUNTU_YEAR = 24; // TODO: try to keep this up-to-date to the latest LTS
 
 /**
  * Download URL generator
@@ -229,7 +229,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return this.getUbuntuVersionString({
         os: 'linux',
         dist: 'Ubuntu Linux',
-        release: '22.04',
+        release: '26.04',
       });
     } else if (regexHelper(/gentoo/i, os)) {
       // it seems like debian binaries work for gentoo too (at least most), see https://github.com/typegoose/mongodb-memory-server/issues/639
@@ -240,7 +240,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return this.getDebianVersionString({
         os: 'linux',
         dist: 'Debian',
-        release: '11',
+        release: '12',
       });
     } else if (regexHelper(/unknown/i, os)) {
       // "unknown" is likely to happen if no release file / command could be found
@@ -317,8 +317,8 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     const rhelOS: LinuxOS = {
       os: 'linux',
       dist: 'rhel',
-      // fallback to 8.0
-      release: '8.0',
+      // fallback
+      release: '9.3',
     };
 
     // rough fedora->rhel version mapping
@@ -430,7 +430,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     if (name === 'rhel') {
       log('getRhelVersionString: falling back to "70"');
       // fallback to "70", because that is what currently is supporting 3.6 to 5.0 and should work with many
-      name += '70';
+      name += '93';
     }
 
     return name;
@@ -546,7 +546,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
           os: 'linux',
           dist: 'ubuntu',
           release:
-            mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[21],
+            mintToUbuntuRelease[parseInt(os.release.split('.')[0])] || mintToUbuntuRelease[22],
         };
       }
 
@@ -613,7 +613,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
        * Highest ubuntu year supported by mongodb binaries
        * @see https://www.mongodb.com/download-center/community/releases/archive
        */
-      const highestUbuntuYear = 24; // 24 is the highest supported as of mongodb 8.0.1
+      const highestUbuntuYear = 24; // 24 is the highest supported as of mongodb 8.3.0, but 9.0.0 supports 26
 
       if (ubuntuYear > highestUbuntuYear) {
         log(
