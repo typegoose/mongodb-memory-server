@@ -1,3 +1,36 @@
+## [12.0.0-beta.1](https://github.com/typegoose/mongodb-memory-server/compare/v11.4.0...v12.0.0-beta.1) (2026-11-22)
+
+### ⚠ BREAKING CHANGES
+
+* **MongoBinaryDownloadUrl:** Distro mapping has been updated. This mean some unofficial distros may
+need to re-download to get newer versions or are unable to get older versions.
+* Remove "-global-4.2" package as it is now unsupported by the mongodb driver
+
+### Features
+
+* **MongoBinaryDownloadUrl:** strip support for before 4.4.0 ([a5a2434](https://github.com/typegoose/mongodb-memory-server/commit/a5a24341e39bd2515a03f7bf77755c8247ff2f9c))
+* **MongoBinaryDownloadUrl:** support mongodb 9.0.x and newer distros ([3dda2bf](https://github.com/typegoose/mongodb-memory-server/commit/3dda2bf79bd29a93f95a9d5048a15056a63441d9))
+* **MongoBinaryDownloadUrl:** update distro default / fallback versions ([e86c2a9](https://github.com/typegoose/mongodb-memory-server/commit/e86c2a9c242e1a3b15e93ed9472b88f8ee482c3c))
+* remove "mongodb-memory-server-global-4.2" ([788f8a7](https://github.com/typegoose/mongodb-memory-server/commit/788f8a7ac9774f37bc743cc5826615a01d290ed5))
+* **resolveConfig:** update default binary version to 8.3.16 ([1bbd15b](https://github.com/typegoose/mongodb-memory-server/commit/1bbd15bc390e0217ef84aa6ad71ebd72eb9378fb))
+* update default-4.4-binary to 4.4.31 ([26b0f64](https://github.com/typegoose/mongodb-memory-server/commit/26b0f64664c73098d92284415b24144d2cf98696))
+
+### Fixes
+
+* **MongoInstance::create:** cleanup temporary directory on error ([bd76bb0](https://github.com/typegoose/mongodb-memory-server/commit/bd76bb020f7fe376b9991500101a30ff3562bbdb))
+* **MongoInstance:** cleanup stale mongo socket on unexpected shutdown ([e9663a3](https://github.com/typegoose/mongodb-memory-server/commit/e9663a38b63ea5b970974c51c13ee67df635f077))
+* **MongoMemoryServer::createAuth:** emulate write concern "all" ([7057915](https://github.com/typegoose/mongodb-memory-server/commit/70579151e0e6fb931fe03b4af1679aef621fef47))
+* **MongoMemoryServer:** cleanup temporary directory on first-startup error ([959c7eb](https://github.com/typegoose/mongodb-memory-server/commit/959c7eba4167fecdbd5f416549cc464463e01f61))
+* pass the "os" runtime adapter to internal MongoClient connections ([a7146fe](https://github.com/typegoose/mongodb-memory-server/commit/a7146feb1980691f95421c3709c8f43d200ced69)), closes [#1026](https://github.com/typegoose/mongodb-memory-server/issues/1026)
+
+### Dependencies
+
+* **mongodb:** upgrade to 7.9.0 ([94ffedb](https://github.com/typegoose/mongodb-memory-server/commit/94ffedb03c90459b4477a138a4ada23b2daf410f)), closes [#1026](https://github.com/typegoose/mongodb-memory-server/issues/1026)
+
+### Dev-Dependencies
+
+* **typescript:** upgrade to 6.0.3 ([664768c](https://github.com/typegoose/mongodb-memory-server/commit/664768c685c318cd1efb8e12e8d584bdca893555))
+
 ## [11.4.0](https://github.com/typegoose/mongodb-memory-server/compare/v11.3.0...v11.4.0) (2026-11-21)
 
 ### Fixes
