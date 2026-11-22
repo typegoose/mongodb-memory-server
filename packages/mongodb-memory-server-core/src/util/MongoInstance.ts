@@ -15,6 +15,7 @@ import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
 import * as os from 'os';
+import { promises as fspromises } from 'fs';
 import {
   GenericMMSError,
   KeyFileMissingError,
@@ -244,6 +245,11 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
    */
   isInstanceReady: boolean = false;
   /**
+   * Whether this instance has successfully started at least once during the current start cycle.
+   * Used to distinguish owned Unix sockets from sockets belonging to another process.
+   */
+  protected hasInstanceBeenReady: boolean = false;
+  /**
    * This boolean is "true" if the instance is part of an replset
    */
   isReplSet: boolean = false;
@@ -264,6 +270,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
 
     this.on(MongoInstanceEvents.instanceReady, () => {
       this.isInstanceReady = true;
+      this.hasInstanceBeenReady = true;
       this.debug('constructor: Instance is ready!');
     });
 
@@ -367,6 +374,7 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     this.isInstancePrimary = false;
     this.isInstanceReady = false;
     this.isReplSet = false;
+    this.hasInstanceBeenReady = false;
 
     let timeout: NodeJS.Timeout;
 
@@ -496,6 +504,9 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
         // but in any other case, we still want to unset the variable
         this.mongodProcess = undefined; // reset reference to the childProcess for "mongod"
       }
+
+      await this.cleanupUnixSocket();
+
       if (!isNullOrUndefined(this.killerProcess)) {
         await killProcess(this.killerProcess, 'killerProcess', this.instanceOpts.port);
         this.killerProcess = undefined; // reset reference to the childProcess for "mongo_killer"
@@ -509,6 +520,38 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
     })().finally(() => (this.stopPromise = undefined));
 
     return this.stopPromise;
+  }
+
+  /** Remove a Unix socket left behind by an unexpectedly terminated mongod. */
+  protected async cleanupUnixSocket(): Promise<void> {
+    const port = this.instanceOpts.port;
+
+    if (process.platform === 'win32' || !this.hasInstanceBeenReady || !port) {
+      return;
+    }
+
+    const args = this.instanceOpts.args ?? [];
+
+    if (args.some((arg) => arg === '--nounixsocket')) {
+      return;
+    }
+
+    let socketPrefix = '/tmp';
+    const prefixIndex = args.findIndex(
+      (arg) => arg === '--unixSocketPrefix' || arg.startsWith('--unixSocketPrefix=')
+    );
+
+    if (prefixIndex >= 0) {
+      const prefixArg = args[prefixIndex];
+      socketPrefix = prefixArg.includes('=')
+        ? prefixArg.slice(prefixArg.indexOf('=') + 1)
+        : (args[prefixIndex + 1] ?? socketPrefix);
+    }
+
+    const socketPath = path.resolve(socketPrefix, `mongodb-${port}.sock`);
+    this.debug(`cleanupUnixSocket: removing stale socket at ${socketPath}`);
+    await fspromises.rm(socketPath, { force: true });
+    this.hasInstanceBeenReady = false;
   }
 
   /**
