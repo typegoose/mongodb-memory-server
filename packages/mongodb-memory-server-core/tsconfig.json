@@ -4,19 +4,20 @@
     "outDir": "./build",
     "noEmit": false,
     "target": "es2023",
-    "module": "commonjs",
+    "module": "node20",
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
     "skipLibCheck": false,
     "strict": true,
     "lib": ["esnext"],
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "jest"],
     "importHelpers": true,
-    "allowJs": true
+    "allowJs": true,
+    "isolatedModules": true
   },
   "include": ["src/**/*"]
 }
