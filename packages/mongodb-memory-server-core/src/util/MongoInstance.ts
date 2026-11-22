@@ -292,7 +292,13 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
   static async create(opts: Partial<MongodOpts>): Promise<MongoInstance> {
     log('create: Called .create() method');
     const instance = new this(opts);
-    await instance.start();
+
+    try {
+      await instance.start();
+    } catch (err) {
+      await instance.stop();
+      throw err;
+    }
 
     return instance;
   }
