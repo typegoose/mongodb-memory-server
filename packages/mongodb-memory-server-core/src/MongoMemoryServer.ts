@@ -775,9 +775,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
    * Create the Root user and additional users using the [localhost exception](https://www.mongodb.com/docs/manual/core/localhost-exception/#std-label-localhost-exception)
    * This Function assumes "this.opts.auth" is already processed into "this.auth"
    * @param data Used to get "ip" and "port"
+   * @param serverCount Number of servers in the replica set, used for writeConcern
    * @internal
    */
-  async createAuth(data: StartupInstanceData): Promise<void> {
+  async createAuth(data: StartupInstanceData, serverCount: number = 1): Promise<void> {
     assertion(
       !isNullOrUndefined(this.auth),
       new Error('"createAuth" got called, but "this.auth" is undefined!')
@@ -803,9 +804,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
           as: 'ROOTUSER',
         },
         roles: ['root'],
-        // "writeConcern" is needced, otherwise replset servers might fail with "auth failed: such user does not exist"
+        // "writeConcern" is needed, otherwise replset servers might fail with "auth failed: such user does not exist"
         writeConcern: {
-          w: 'majority',
+          // emulate a write concern of "all", as that does not natively exist
+          w: serverCount,
         },
       } as CreateUserMongoDB);
 
@@ -850,7 +852,7 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
             digestPassword: user.digestPassword ?? true,
             // "writeConcern" is needced, otherwise replset servers might fail with "auth failed: such user does not exist"
             writeConcern: {
-              w: 'majority',
+              w: serverCount,
             },
           } as CreateUserMongoDB);
         }

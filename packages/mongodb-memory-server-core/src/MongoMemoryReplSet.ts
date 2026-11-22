@@ -723,7 +723,7 @@ export class MongoMemoryReplSet extends EventEmitter implements ManagerAdvanced 
           );
 
           await con.close(); // just ensuring that no timeouts happen or conflicts happen
-          await primary.createAuth(primary.instanceInfo);
+          await primary.createAuth(primary.instanceInfo, this.servers.length);
           this._ranCreateAuth = true;
         }
       } catch (err) {
