@@ -27,6 +27,13 @@ Distribution support has been adjusted to only contain 4.4.0 and higher as well,
 - Rhel: 6.2
 - Fedora: 12
 
+### Unofficial Distribution mapping updated
+
+The mapping for unofficial distributions like arch have been updated:
+
+- Arch: ubuntu 24.04
+- Gentoo: debian 12
+
 ### Mongodb Driver Version upgraded to 7.9
 
 The used MongoDB Driver version is now `7.9.0`.
@@ -37,4 +44,14 @@ See [Minimal mongodb version is now `4.4.0`](#minimal-mongodb-version-is-now-440
 
 The default binary version has been upgraded from `8.2.x` to `8.3.x`. For more specifics see [mongodb-server-versions](../mongodb-server-versions.md). -->
 
-<!-- ## Non-Breaking changes / Additions
+## Non-Breaking changes / Additions
+
+### MongoDB 9 & Distribution support
+
+With version 12, we now test mongodb 9.0.x and have added the following new distribution versions:
+
+- Ubuntu 26.04
+- Debian 13
+- Rhel 10
+
+These changes may be backported to 11.x.
