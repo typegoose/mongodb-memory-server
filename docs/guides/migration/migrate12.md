@@ -33,8 +33,8 @@ The used MongoDB Driver version is now `7.9.0`.
 
 See [Minimal mongodb version is now `4.4.0`](#minimal-mongodb-version-is-now-440).
 
-<!-- ### Default binary version is now 8.2.x
+### Default binary version is now 8.3.x
 
-The default binary version has been upgraded from `7.0.x` to `8.2.x`. For more specifics see [mongodb-server-versions](../mongodb-server-versions.md). -->
+The default binary version has been upgraded from `8.2.x` to `8.3.x`. For more specifics see [mongodb-server-versions](../mongodb-server-versions.md). -->
 
-<!-- ## Non-Breaking changes / Additions -->
+<!-- ## Non-Breaking changes / Additions

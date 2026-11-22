@@ -13,14 +13,20 @@ import { MongoClient, MongoServerSelectionError } from 'mongodb';
 
 jest.setTimeout(100000); // 10s
 
+const cleanupList: string[] = [];
+
 let tmpDir: string;
 beforeEach(async () => {
   tmpDir = await dbUtil.createTmpDir('mongo-mem-instance-');
+  cleanupList.push(tmpDir);
 });
 
 afterEach(async () => {
-  await dbUtil.removeDir(tmpDir);
   jest.restoreAllMocks();
+});
+
+afterAll(async () => {
+  await Promise.all(cleanupList.map(dbUtil.removeDir));
 });
 
 describe('MongodbInstance', () => {
@@ -167,6 +173,9 @@ describe('MongodbInstance', () => {
   });
 
   it('should throw error if port is busy', async () => {
+    // since mongodb 8.3, it first checks the directory instead of first checking the port, resulting in error "lock already exists"
+    const tmpdir2 = await dbUtil.createTmpDir('mongo-mem-instance-');
+    cleanupList.push(tmpdir2);
     const gotPort = await getFreePort(27444);
     const mongod = await MongodbInstance.create({
       instance: { port: gotPort, dbPath: tmpDir },
@@ -175,7 +184,7 @@ describe('MongodbInstance', () => {
 
     try {
       await MongodbInstance.create({
-        instance: { port: gotPort, dbPath: tmpDir },
+        instance: { port: gotPort, dbPath: tmpdir2 },
         binary: { version },
       });
 
@@ -275,7 +284,7 @@ describe('MongodbInstance', () => {
       const mongod = await MongodbInstance.create({
         // this works without problems, because no explicit storage-engine is given, so mongodb automatically chooses wiredTiger
         instance: { port: gotPort, dbPath: tmpDir },
-        binary: { version: '8.2.6' },
+        binary: { version: '8.3.16' },
       });
       expect(mongod.mongodProcess!.pid).toBeGreaterThan(0);
       await mongod.stop();
