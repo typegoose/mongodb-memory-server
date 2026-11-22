@@ -259,7 +259,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
    */
   getDebianVersionString(os: LinuxOS): string {
     let name = 'debian';
-    const release: number = parseFloat(os.release);
+    let release: number = parseFloat(os.release);
     const coercedVersion = semver.coerce(this.version);
 
     if (isNullOrUndefined(coercedVersion)) {
@@ -270,7 +270,18 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
     // see https://tracker.debian.org/news/1433360/accepted-base-files-13-source-into-unstable/
     const isTesting = ['unstable', 'testing', ''].includes(os.release);
 
-    if (isTesting || release >= 12) {
+    if (isTesting) {
+      // Highest known version mongodb supports
+      release = 13;
+    }
+
+    if (release >= 13 && semver.gte(coercedVersion, '9.0.2')) {
+      name += '13';
+    } else if (
+      release >= 12 &&
+      (semver.gte(coercedVersion, '7.0.3') ||
+        (testVersionIsLatest(this.version) && semver.gte(coercedVersion, '7.0.0')))
+    ) {
       name += '12';
     } else if (release >= 11) {
       // Debian 11 is compatible with the binaries for debian 10
@@ -288,10 +299,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       name += '92';
     }
 
-    if (isTesting || release >= 12) {
+    if (release >= 12) {
       if (semver.lt(coercedVersion, '7.0.3') && !testVersionIsLatest(this.version)) {
+        const debianVersion = isTesting ? os.codename : (release ?? os.release);
         throw new KnownVersionIncompatibilityError(
-          `Debian ${release || os.release || os.codename}`,
+          `Debian ${debianVersion}`,
           this.version,
           '>=7.0.3',
           'Mongodb does not provide binaries for versions before 7.0.3 for Debian 12+ and also cannot be mapped to a previous Debian release'
@@ -394,7 +406,13 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
 
       // as of mongodb 8.0.9, there are currently no binaries for rhel 10.0
 
-      if (semver.satisfies(releaseAsSemver, '>=9.3.0') && semver.gte(coercedVersion, '8.0.0')) {
+      if (semver.satisfies(releaseAsSemver, '>=10.0.0') && semver.gte(coercedVersion, '7.0.4')) {
+        // since mongodb 7.0.4 there are binaries for `rhel10`
+        name += '10';
+      } else if (
+        semver.satisfies(releaseAsSemver, '>=9.3.0') &&
+        semver.gte(coercedVersion, '8.0.0')
+      ) {
         // since mongodb 8.0.0 there are only binaries for `rhel93`, no more `rhel90`
         name += '93';
       } else if (semver.satisfies(releaseAsSemver, '>=9.0.0')) {
@@ -403,7 +421,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       } else if (semver.satisfies(releaseAsSemver, '8.2.0') && this.arch == 'aarch64') {
         // Mongodb changed its naming for rhel8 only https://jira.mongodb.org/browse/SERVER-92375
         // NOTE: as of 10.10.2024 `(rhel8|rhel80)-7.0.13` is not downloadable but `7.0.14` is
-        if (semver.satisfies(coercedVersion, '^5.0.29 || ^6.0.17 || ^7.0.13 || ^8.0.0')) {
+        if (semver.satisfies(coercedVersion, '^5.0.29 || ^6.0.17 || ^7.0.13 || >=8.0.0')) {
           name += '8';
         } else {
           name += '82';
@@ -411,7 +429,7 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       } else if (semver.satisfies(releaseAsSemver, '^8.0.0')) {
         // Mongodb changed its naming for rhel8 only https://jira.mongodb.org/browse/SERVER-92375
         // NOTE: as of 10.10.2024 `(rhel8|rhel80)-7.0.13` is not downloadable but `7.0.14` is
-        if (semver.satisfies(coercedVersion, '^5.0.29 || ^6.0.17 || ^7.0.13 || ^8.0.0')) {
+        if (semver.satisfies(coercedVersion, '^5.0.29 || ^6.0.17 || ^7.0.13 || >=8.0.0')) {
           name += '8';
         } else {
           name += '80';
@@ -606,6 +624,11 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
       return 'ubuntu2204';
     }
 
+    // there are only binaries for 2604 since 9.0.4
+    if (ubuntuYear >= 24 && semver.satisfies(coercedVersion, '<9.0.4')) {
+      return 'ubuntu2404';
+    }
+
     // base case for higher than mongodb supported ubuntu versions
     {
       // TODO: try to keep this up-to-date to the latest mongodb supported ubuntu version
@@ -613,14 +636,14 @@ export class MongoBinaryDownloadUrl implements MongoBinaryDownloadUrlOpts {
        * Highest ubuntu year supported by mongodb binaries
        * @see https://www.mongodb.com/download-center/community/releases/archive
        */
-      const highestUbuntuYear = 24; // 24 is the highest supported as of mongodb 8.3.0, but 9.0.0 supports 26
+      const highestUbuntuYear = 26; // 26 is the highest supported as of mongodb 9.0.4
 
       if (ubuntuYear > highestUbuntuYear) {
         log(
           `getUbuntuVersionString: ubuntuYear "${ubuntuYear}" is higher than the currently supported mongodb year of "${highestUbuntuYear}". Using highest known ubuntu year.`
         );
 
-        return 'ubuntu2404';
+        return 'ubuntu2604';
       }
     }
 

@@ -90,6 +90,10 @@ describe('MongoBinaryDownloadUrl', () => {
           { dist: '24.04', mongo: '8.0.1', expected: 'x86_64-ubuntu2404-8.0.1', arch: 'x64' },
           { dist: '20.04', mongo: '8.2.1', expected: 'x86_64-ubuntu2004-8.2.1', arch: 'x64' },
           { dist: '24.04', mongo: '8.2.1', expected: 'x86_64-ubuntu2404-8.2.1', arch: 'x64' },
+          { dist: '26.04', mongo: '8.2.1', expected: 'x86_64-ubuntu2404-8.2.1', arch: 'x64' },
+          { dist: '24.04', mongo: '9.0.2', expected: 'x86_64-ubuntu2404-9.0.2', arch: 'x64' },
+          { dist: '26.04', mongo: '9.0.2', expected: 'x86_64-ubuntu2404-9.0.2', arch: 'x64' },
+          { dist: '26.04', mongo: '9.0.4', expected: 'x86_64-ubuntu2604-9.0.4', arch: 'x64' },
           {
             dist: '20.04',
             mongo: 'v5.0-latest',
@@ -104,6 +108,10 @@ describe('MongoBinaryDownloadUrl', () => {
           { dist: '22.04', mongo: '5.0.0', expected: 'aarch64-ubuntu2004-5.0.0', arch: 'arm64' },
           { dist: '24.04', mongo: '7.0.14', expected: 'aarch64-ubuntu2204-7.0.14', arch: 'arm64' },
           { dist: '24.04', mongo: '8.0.0', expected: 'aarch64-ubuntu2404-8.0.0', arch: 'arm64' },
+          { dist: '26.04', mongo: '8.0.0', expected: 'aarch64-ubuntu2404-8.0.0', arch: 'arm64' },
+          { dist: '24.04', mongo: '9.0.2', expected: 'aarch64-ubuntu2404-9.0.2', arch: 'arm64' },
+          { dist: '26.04', mongo: '9.0.2', expected: 'aarch64-ubuntu2404-9.0.2', arch: 'arm64' },
+          { dist: '26.04', mongo: '9.0.4', expected: 'aarch64-ubuntu2604-9.0.4', arch: 'arm64' },
         ])(
           'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
           async ({ arch, dist, mongo, expected }) => {
@@ -175,17 +183,15 @@ describe('MongoBinaryDownloadUrl', () => {
             expected: 'x86_64-debian12-v7.0-latest',
             arch: 'x64',
           },
+          { dist: '12', mongo: '8.3.0', expected: 'x86_64-debian12-8.3.0', arch: 'x64' },
+          { dist: '12', mongo: '9.0.2', expected: 'x86_64-debian12-9.0.2', arch: 'x64' },
+
+          // Debian 13 Tests
+          { dist: '13', mongo: '8.3.0', expected: 'x86_64-debian12-8.3.0', arch: 'x64' },
+          { dist: '13', mongo: '9.0.2', expected: 'x86_64-debian13-9.0.2', arch: 'x64' },
 
           // Debian Testing / Unstable (does not have a dist release set)
-          { dist: '', mongo: '7.0.3', expected: 'x86_64-debian12-7.0.3', arch: 'x64' }, // Testing/unstable (release: '')
-
-          // General Success Case
-          {
-            dist: '10',
-            mongo: 'v4.2-latest',
-            expected: 'x86_64-debian10-v4.2-latest',
-            arch: 'x64',
-          },
+          { dist: '', mongo: '8.3.0', expected: 'x86_64-debian12-8.3.0', arch: 'x64' }, // Testing/unstable (release: '')
         ])(
           'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
           async ({ arch, dist, mongo, expected }) => {
@@ -567,6 +573,7 @@ describe('MongoBinaryDownloadUrl', () => {
           { dist: '8.2', mongo: '7.0.13', expected: 'x86_64-rhel8-7.0.13', arch: 'x64' },
           { dist: '8.2', mongo: '8.0.0', expected: 'x86_64-rhel8-8.0.0', arch: 'x64' },
           { dist: '8.2', mongo: '8.2.0', expected: 'x86_64-rhel8-8.2.0', arch: 'x64' },
+          { dist: '8.2', mongo: '9.0.2', expected: 'x86_64-rhel8-9.0.2', arch: 'x64' },
           { dist: '8', mongo: 'v5.0-latest', expected: 'x86_64-rhel80-v5.0-latest', arch: 'x64' },
 
           { dist: '8.2', mongo: '5.0.29', expected: 'aarch64-rhel8-5.0.29', arch: 'arm64' },
@@ -574,6 +581,7 @@ describe('MongoBinaryDownloadUrl', () => {
           { dist: '8.2', mongo: '7.0.13', expected: 'aarch64-rhel8-7.0.13', arch: 'arm64' },
           { dist: '8.2', mongo: '8.0.0', expected: 'aarch64-rhel8-8.0.0', arch: 'arm64' },
           { dist: '8.2', mongo: '8.2.0', expected: 'aarch64-rhel8-8.2.0', arch: 'arm64' },
+          { dist: '8.2', mongo: '9.0.2', expected: 'aarch64-rhel8-9.0.2', arch: 'arm64' },
           {
             dist: '8.2',
             mongo: 'v4.4-latest',
@@ -584,15 +592,29 @@ describe('MongoBinaryDownloadUrl', () => {
           // RHEL 9
           { dist: '9', mongo: '6.0.4', expected: 'x86_64-rhel90-6.0.4', arch: 'x64' },
           { dist: '9', mongo: '7.0.0', expected: 'x86_64-rhel90-7.0.0', arch: 'x64' },
+          { dist: '9', mongo: '8.3.0', expected: 'x86_64-rhel90-8.3.0', arch: 'x64' },
+          { dist: '9', mongo: '9.0.2', expected: 'x86_64-rhel90-9.0.2', arch: 'x64' },
           { dist: '9', mongo: '6.0.7', expected: 'aarch64-rhel90-6.0.7', arch: 'arm64' },
           { dist: '9', mongo: '7.0.0', expected: 'aarch64-rhel90-7.0.0', arch: 'arm64' },
+          { dist: '9', mongo: '8.3.0', expected: 'aarch64-rhel90-8.3.0', arch: 'arm64' },
+          { dist: '9', mongo: '9.0.2', expected: 'aarch64-rhel90-9.0.2', arch: 'arm64' },
 
           // RHEL 9.3
           { dist: '9.3', mongo: '7.0.14', expected: 'x86_64-rhel90-7.0.14', arch: 'x64' },
           { dist: '9.3', mongo: '8.0.0', expected: 'x86_64-rhel93-8.0.0', arch: 'x64' },
           { dist: '9.3', mongo: '8.2.0', expected: 'x86_64-rhel93-8.2.0', arch: 'x64' },
+          { dist: '9.3', mongo: '9.0.2', expected: 'x86_64-rhel93-9.0.2', arch: 'x64' },
           { dist: '9.3', mongo: '8.0.0', expected: 'aarch64-rhel93-8.0.0', arch: 'arm64' },
           { dist: '9.3', mongo: '8.2.0', expected: 'aarch64-rhel93-8.2.0', arch: 'arm64' },
+          { dist: '9.3', mongo: '9.0.2', expected: 'aarch64-rhel93-9.0.2', arch: 'arm64' },
+
+          // RHEL 10
+          { dist: '10', mongo: '7.0.4', expected: 'x86_64-rhel10-7.0.4', arch: 'x64' },
+          { dist: '10', mongo: '8.3.0', expected: 'x86_64-rhel10-8.3.0', arch: 'x64' },
+          { dist: '10', mongo: '9.0.2', expected: 'x86_64-rhel10-9.0.2', arch: 'x64' },
+          { dist: '10', mongo: '7.0.4', expected: 'aarch64-rhel10-7.0.4', arch: 'arm64' },
+          { dist: '10', mongo: '8.3.0', expected: 'aarch64-rhel10-8.3.0', arch: 'arm64' },
+          { dist: '10', mongo: '9.0.2', expected: 'aarch64-rhel10-9.0.2', arch: 'arm64' },
         ])(
           'Release: $dist ($arch) at MongoDB $mongo, Expecting $expected',
           async ({ arch, dist, mongo, expected }) => {

@@ -53,15 +53,24 @@ Depends on the distribution, many common ones should just work right out of the 
 
 (uses mongodb's `ubuntu` release)<br/>
 Lowest supported Distribution version is `1604`<br/>
-Highest version is `2404` (higher versions will be clamped to this value)<br/>
+Highest version is `2604` (higher versions will be clamped to this value)<br/>
 Default version is `2404`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 
+Lower ubuntu versions may be used if there do not exist ones for the current version, unless they are known to not work.
+Specifically, the mapping of when a ubuntu version is started to be supported:
+
+| Mongodb version range | Ubuntu version |
+| :-------------------: | :------------: |
+|    `3.2.7 - 4.4.x`    |    `16.04`     |
+|   `3.6.20 - 6.0.x`    |    `18.04`     |
+|    `4.4.0 - 8.3.x`    |    `20.04`     |
+|    `6.0.4 - Unset`    |    `22.04`     |
+|    `8.0.0 - Unset`    |    `24.04`     |
+|    `9.0.4 - Unset`    |    `26.04`     |
+
 :::note
-Lower Versions than `2004` may be used if mongodb doesn't provide binaries for an lower version of mongodb for an higher version of ubuntu
-:::
-:::note
-Since Mongodb `6.0.4` there are binaries for `2204`, any version before is mapped to `2004` (or earlier) and will require `libssl1.1` to be installed.  
+For binaries that use `20.04` require `libssl1.1` to be installed, which is not provided with ubuntu `22.04` or higher!  
 See [this mongodb issue](https://jira.mongodb.org/browse/SERVER-62300).
 :::
 
@@ -71,8 +80,18 @@ See [this mongodb issue](https://jira.mongodb.org/browse/SERVER-62300).
 
 (uses mongodb's `debian` release)<br/>
 Lowest supported Distribution version is `9.2`<br/>
-Highest version is `12` (higher versions will be clamped to this value)<br/>
+Highest version is `13` (higher versions will be clamped to this value)<br/>
 Default version is `12` (when in `unstable` or `testing`, otherwise none)
+
+Lower debian versions may be used if there do not exist ones for the current version, unless they are known to not work.
+Specifically, the mapping of when a debian version is started to be supported:
+
+| Mongodb version range | Debian version |
+| :-------------------: | :------------: |
+|    `4.2.1 - 6.0.x`    |      `10`      |
+|    `5.0.8 - 7.0.x`    |      `11`      |
+|    `7.0.5 - Unset`    |      `12`      |
+|    `9.0.2 - Unset`    |      `13`      |
 
 ### Fedora
 
@@ -102,13 +121,24 @@ This mapping to RHEL is based on the table in [Relationship between Fedora and R
 
 (uses mongodb's `rhel` release)<br/>
 Lowest supported Distribution version is `6.2`<br/>
-Highest version is `9.3` (higher versions will be clamped to this value)<br/>
+Highest version is `10` (higher versions will be clamped to this value)<br/>
 Default version is `9.3`<br/>
 Architectures Supported: `x86_64`, `arm64`(`aarch64`)
 
 :::note
 `arm64`/`aarch64` support is only for Rhel 8.2 & mongodb 4.4.2 or Rhel 9 & mongodb 6.0.7
 :::
+
+Lower rhel versions may be used if there do not exist ones for the current version, unless they are known to not work.
+Specifically, the mapping of when a debian version is started to be supported:
+
+| Mongodb version range | rhel version |
+| :-------------------: | :----------: |
+|    `3.0.0 - 4.4.x`    |     `6`      |
+|    `3.0.0 - 7.0.x`    |     `7`      |
+|   `3.4.24 - Unset`    |     `8`      |
+|    `6.0.4 - Unset`    |     `9`      |
+|   `7.0.41 - Unset`    |     `10`     |
 
 ### Amazon
 
