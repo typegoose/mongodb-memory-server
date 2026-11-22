@@ -8,7 +8,7 @@ There are some common issues you may encounter with mongodb-memory-server (or al
 ## MongoWriteConcernError: operation was interrupted
 
 The Error `MongoWriteConcernError: operation was interrupted` happens when a operation which is not retryable fails, which includes for example `db.dropDatabase`.
-This Error happens because mongodb firstly starts all instances, says they are okay and has a primary (which are all events mongodb-memory-server listens for before resolving `.start`), but the shortly after the `.start` is resolved, the instace that is primary decides to step-down due to whatever reason.
+This Error happens because mongodb firstly starts all instances, says they are okay and has a primary (which are all events mongodb-memory-server listens for before resolving `.start`), but the shortly after the `.start` is resolved, the instance that is primary decides to step-down due to whatever reason.
 
 The fix is to manually re-try those operations, like:
 
