@@ -784,7 +784,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
     );
     assertionInstanceInfo(this._instanceInfo);
     this.debug('createAuth: options:', this.auth);
-    let con: MongoClient = await MongoClient.connect(uriTemplate(data.ip, data.port, 'admin'));
+    // pass "os" explicitly, the driver's dynamic import of it fails in jest (https://jira.mongodb.org/browse/NODE-7832)
+    let con: MongoClient = await MongoClient.connect(uriTemplate(data.ip, data.port, 'admin'), {
+      runtimeAdapters: { os },
+    });
 
     try {
       let db = con.db('admin'); // just to ensure it is actually the "admin" database AND to have the "Db" data
@@ -818,10 +821,10 @@ export class MongoMemoryServer extends EventEmitter implements ManagerAdvanced {
 
         // reconnecting the database because the root user now exists and the "localhost exception" only allows the first user
         await con.close();
-        con = await MongoClient.connect(
-          this.getUri('admin'),
-          this._instanceInfo.instance.extraConnectionOptions ?? {}
-        );
+        con = await MongoClient.connect(this.getUri('admin'), {
+          runtimeAdapters: { os },
+          ...this._instanceInfo.instance.extraConnectionOptions,
+        });
         db = con.db('admin');
 
         for (const user of this.auth.extraUsers) {

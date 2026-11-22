@@ -14,6 +14,7 @@ import {
 import { lt } from 'semver';
 import { EventEmitter } from 'events';
 import { MongoClient, MongoClientOptions, MongoNetworkError } from 'mongodb';
+import * as os from 'os';
 import {
   GenericMMSError,
   KeyFileMissingError,
@@ -447,6 +448,8 @@ export class MongoInstance extends EventEmitter implements ManagerBase {
             con = await MongoClient.connect(uriTemplate(ip, port, 'admin'), {
               // stopping a instance should not take long to connect to, default would be 30 seconds
               serverSelectionTimeoutMS: 5000, // 5 seconds
+              // pass "os" explicitly, the driver's dynamic import of it fails in jest (https://jira.mongodb.org/browse/NODE-7832)
+              runtimeAdapters: { os },
               ...this.extraConnectionOptions,
               directConnection: true,
             });

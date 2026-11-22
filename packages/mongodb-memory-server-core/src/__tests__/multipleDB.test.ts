@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb';
+import { clientOpts } from './testUtils/test_utils';
 import { MongoMemoryServer } from '../index';
 
 // This is an Example test, do not merge it with others and do not delete this file
@@ -11,10 +12,10 @@ describe('Multiple MongoMemoryServer', () => {
 
   beforeAll(async () => {
     mongoServer1 = await MongoMemoryServer.create();
-    con1 = await MongoClient.connect(mongoServer1.getUri(), {});
+    con1 = await MongoClient.connect(mongoServer1.getUri(), clientOpts);
 
     mongoServer2 = await MongoMemoryServer.create();
-    con2 = await MongoClient.connect(mongoServer2.getUri(), {});
+    con2 = await MongoClient.connect(mongoServer2.getUri(), clientOpts);
   });
 
   afterAll(async () => {

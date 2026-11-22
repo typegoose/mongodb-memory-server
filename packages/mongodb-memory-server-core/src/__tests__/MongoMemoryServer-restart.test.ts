@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb';
+import { clientOpts } from './testUtils/test_utils';
 import { MongoMemoryServer } from '../index';
 import { assertion, isNullOrUndefined, uuidv4 } from '../util/utils';
 
@@ -17,7 +18,7 @@ describe('Restart single MongoMemoryServer instance', () => {
     let insertedDoc: Record<string, any>;
     // first connect and insert
     {
-      const connection = await MongoClient.connect(instance.getUri(), {});
+      const connection = await MongoClient.connect(instance.getUri(), clientOpts);
       const db = connection.db(databaseName);
 
       expect(db).toBeDefined();
@@ -40,7 +41,7 @@ describe('Restart single MongoMemoryServer instance', () => {
 
     // second connect and check
     {
-      const connection = await MongoClient.connect(instance.getUri(), {});
+      const connection = await MongoClient.connect(instance.getUri(), clientOpts);
       const db = connection.db(databaseName);
 
       expect(db).toBeDefined();
